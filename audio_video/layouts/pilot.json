@@ -1,6 +1,6 @@
 {
-  "title": "Video Room",
-  "subtitle": "Room with video livestream support",
+  "title": "Aud(i)o Pilot Room",
+  "subtitle": "Room with audio support",
   "html": [
     {
       "layout-type": "div",
@@ -40,6 +40,6 @@
     "submit-message": "send-message",
     "print-history": "plain-history",
     "typing-users": "typing-users",
-    "document-ready": "video"
+    "document-ready": "https://raw.githubusercontent.com/clp-research/slurk-audio-pilot/master/scripts/document.ready.js"
   }
 }

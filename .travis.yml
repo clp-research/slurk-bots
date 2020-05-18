@@ -13,7 +13,6 @@ jobs:
     services:
     - docker
     script:
-    #- docker build -t slurk/server -f docker/slurk/Dockerfile .
     - docker build -t slurk/concierge-bot -f sample_bots/concierge/Dockerfile .
     - docker build -t slurk/minimal-bot -f sample_bots/minimal/Dockerfile  .
     - docker build -t slurk/echo-bot -f sample_bots/echo/Dockerfile  .
@@ -21,10 +20,6 @@ jobs:
     before_deploy:
         - echo "$REPOSITORY_PASS" | docker login -u "$REPOSITORY_USER" --password-stdin
     deploy:
-    #  - provider: script
-    #    script: docker push slurk/server
-    #    on:
-    #      branch: master
       - provider: script
         script: docker push slurk/concierge-bot
         on:
@@ -37,18 +32,3 @@ jobs:
         script: docker push slurk/echo-bot
         on:
           branch: master
-#   - stage: deploy
-#     name: Documentation
-#     language: python
-#     python: 3.7
-#     install: pip install sphinx sphinx_rtd_theme
-#     script: (cd docs && make html)
-#     after_success: touch docs/_build/html/.nojekyll
-#     deploy:
-#       provider: pages
-#       skip-cleanup: true
-#       local_dir: docs/_build/html
-#       github-token: $GH_TOKEN
-#       keep-history: true
-#       on:
-#         branch: master
