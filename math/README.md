@@ -9,4 +9,4 @@ To run the bot, you can build the bot and run the following command:
 docker run -e TOKEN=$MATH_BOT_TOKEN -e MATH_TASK_ID=$TASK_ID --net="host" math-bot
 ```
 
-where `MATH_BOT_TOKEN` and `TASK_ID` are assumed to already exist.
+where `MATH_BOT_TOKEN` and `TASK_ID` can be obtained with `scripts/create_token.sh` and `scripts/create_task.sh`, respectively. Please refer to <https://clp-research.github.io/slurk/slurk_multibots.html> for a more detailed information.

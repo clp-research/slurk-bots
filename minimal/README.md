@@ -8,4 +8,4 @@ To run the bot, you can run the following command:
 docker run -e TOKEN=$MINIMAL_BOT_TOKEN --net="host" slurk/minimal-bot
 ```
 
-where `$MINIMAL_BOT_TOKEN` is assumed to already exist.
+where `$MINIMAL_BOT_TOKEN` can be obtained with `scripts/create_token.sh`. Please refer to <https://clp-research.github.io/slurk/slurk_multibots.html> for a more detailed information.

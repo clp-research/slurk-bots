@@ -10,4 +10,4 @@ To run the bot, you can run the following command:
 docker run -e TOKEN=$ECHO_BOT_TOKEN -e ECHO_TASK_ID=$TASK_ID --net="host" slurk/echo-bot
 ```
 
-where `ECHO_BOT_TOKEN` and `TASK_ID` are assumed to already exist.
+where `ECHO_BOT_TOKEN` and `TASK_ID` can be obtained with `scripts/create_token.sh` and `scripts/create_task.sh`, respectively. Please refer to <https://clp-research.github.io/slurk/slurk_multibots.html> for a more detailed information.

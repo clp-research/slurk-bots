@@ -8,4 +8,4 @@ To run the bot, you can run the following command:
 docker run -e TOKEN=$CONCIERGE_BOT_TOKEN --net="host" slurk/concierge-bot
 ```
 
-where `CONCIERGE_BOT_TOKEN` is assumed to already exist.
+where `CONCIERGE_BOT_TOKEN` can be obtained with `scripts/create_token.sh`. Please refer to <https://clp-research.github.io/slurk/slurk_multibots.html> for a more detailed information.
