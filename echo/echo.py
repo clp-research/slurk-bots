@@ -3,6 +3,7 @@ from socketIO_client import SocketIO, BaseNamespace
 import sys
 import os
 import argparse
+import logging
 
 TASK_ID = None
 
@@ -22,10 +23,10 @@ class ChatNamespace(BaseNamespace):
     @staticmethod
     def get_message_response(success, error=None):
         if not success:
-            print("Could not send message:", error)
+            logging.error("Could not send message:", error)
             sys.exit(2)
 
-        print("message sent successfully")
+        logging.debug("message sent successfully")
 
     def on_text_message(self, data):
         if not self.id:
@@ -35,7 +36,7 @@ class ChatNamespace(BaseNamespace):
         if sender == self.id:
             return
 
-        print("I got a message, let's send it back!:", data)
+        logging.debug("I got a message, let's send it back!:", data)
 
         message = data['msg']
         if message.lower() == "hello":
@@ -46,7 +47,7 @@ class ChatNamespace(BaseNamespace):
         if 'room' in data and data['room']:
             self.emit("text", {'room': data['room'], 'msg': message}, self.get_message_response)
         else:
-            print("It was actually a private message oO")
+            logging.debug("It was actually a private message oO")
             self.emit("text", {'receiver_id': data['user']['id'], 'msg': message}, self.get_message_response)
 
     def on_image_message(self, data):
@@ -54,7 +55,7 @@ class ChatNamespace(BaseNamespace):
         if sender == self.id:
             return
 
-        print("I got an image, let's send it back!:", data)
+        logging.debug("I got an image, let's send it back!:", data)
 
         if 'room' in data and data['room']:
             self.emit("image", {'room': data['room'],
@@ -63,7 +64,7 @@ class ChatNamespace(BaseNamespace):
                                 'height': data['height']},
                       self.get_message_response)
         else:
-            print("It was actually a private message oO")
+            logging.debug("It was actually a private message oO")
             self.emit("image", {'receiver_id': data['user']['id'],
                                 'url': data['url'],
                                 'width': data['width'],
@@ -71,13 +72,22 @@ class ChatNamespace(BaseNamespace):
                       self.get_message_response)
 
     def on_new_task_room(self, data):
-        print("new task room", data)
+        logging.debug("new task room", data)
         if data['task'] == TASK_ID:
             self.emit("join_room", {'user': self.id, 'room': data['room']})
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run Echo bot')
+
+    # set up logging configuration
+    logging.basicConfig(level=logging.DEBUG)
+
+    # define handler to write INFO message
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add handler to the root logger
+    logging.getLogger('Echo-bot').addHandler(console)
 
     if 'TOKEN' in os.environ:
         token = {'default': os.environ['TOKEN']}
@@ -120,6 +130,7 @@ if __name__ == '__main__':
     if args.chat_port:
         uri += f":{args.chat_port}"
 
+    logging.info("running echo bot on %s with token %s", uri, args.token)
     sys.stdout.flush()
     uri += "/api/v2"
     token = args.token
