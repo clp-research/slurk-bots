@@ -2,6 +2,7 @@ import requests
 import sys
 import argparse
 import os
+import logging
 
 from socketIO_client import SocketIO, BaseNamespace
 
@@ -23,30 +24,39 @@ class ChatNamespace(BaseNamespace):
         user = requests.get(f"{uri}/user/{user_id}", headers={'Authorization': f"Token {token}"})
 
         if not user.ok:
-            print("Could not get user")
+            logging.error("Could not get user")
             sys.exit(2)
 
-        print('Hi! I am "%s"' % user.json()['name'])
+        logging.debug('Hi! I am "%s"' % user.json()['name'])
 
         room_name = data['room']
         room = requests.get(f"{uri}/room/{room_name}", headers={'Authorization': f"Token {token}"})
         if not room.ok:
-            print("Could not get room")
+            logging.error("Could not get room")
             sys.exit(3)
-        print('I joined "%s"' % room.json()['name'])
+        logging.debug('I joined "%s"' % room.json()['name'])
 
         logs = requests.get(f"{uri}/room/{room_name}/logs", headers={'Authorization': f"Token {token}"})
         if not logs.ok:
-            print("Could not get logs")
+            logging.error("Could not get logs")
             sys.exit(4)
-        print('I found this logs in "%s":' % room.json()['label'])
+        logging.debug('I found this logs in "%s":' % room.json()['label'])
         for log_entry in logs.json():
             # print(log_entry)
-            print("- %s by %s, data:" % (log_entry['event'], log_entry['user']['name']), log_entry['data'])
+            logging.debug("- %s by %s, data:" % (log_entry['event'], log_entry['user']['name']), log_entry['data'])
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run Minimal bot')
+
+    # set up logging configuration
+    logging.basicConfig(level=logging.DEBUG)
+
+    # define handler to write INFO message
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add handler to the root logger
+    logging.getLogger('Minimal-bot').addHandler(console)
 
     if 'TOKEN' in os.environ:
         token = {'default': os.environ['TOKEN']}
@@ -79,6 +89,7 @@ if __name__ == '__main__':
     if args.chat_port:
         uri += f":{args.chat_port}"
 
+    logging.info("running minimal bot on %s with token %s", uri, args.token)
     sys.stdout.flush()
     uri += "/api/v2"
     token = args.token

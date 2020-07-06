@@ -21,6 +21,7 @@ from socketIO_client import BaseNamespace, SocketIO
 import sys
 import os
 import argparse
+import logging
 
 TASK_ID = None
 
@@ -35,10 +36,10 @@ class ChatNamespace(BaseNamespace):
     @staticmethod
     def get_message_response(success, error=None):
         if not success:
-            print("Could not send message:", error)
+            logging.error("Could not send message:", error)
             sys.exit(2)
 
-        print("message sent successfully")
+        logging.debug("message sent successfully")
         sys.stdout.flush()
 
     def on_command(self, data):
@@ -92,6 +93,15 @@ class ChatNamespace(BaseNamespace):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Math Bot')
 
+    # set up logging configuration
+    logging.basicConfig(level=logging.DEBUG)
+
+    # define handler to write INFO message
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add handler to the root logger
+    logging.getLogger('Math-bot').addHandler(console)
+
     if 'TOKEN' in os.environ:
         token = {'default': os.environ['TOKEN']}
     else:
@@ -133,6 +143,7 @@ if __name__ == "__main__":
     if args.chat_port:
         uri += f":{args.chat_port}"
 
+    logging.info("running math bot on %s with token %s", uri, args.token)
     sys.stdout.flush()
     uri += "/api/v2"
     token = args.token
