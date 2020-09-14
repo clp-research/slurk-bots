@@ -1,0 +1,99 @@
+<QuestionForm xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd'>
+
+  <Question>
+      <QuestionIdentifier>cola1_question</QuestionIdentifier>
+      <DisplayName>Q1</DisplayName>
+      <IsRequired>true</IsRequired>
+      <QuestionContent>
+        <Text> What should be typed to provide an answer? </Text>
+      </QuestionContent>
+      <AnswerSpecification>
+        <SelectionAnswer>
+          <StyleSuggestion>radiobutton</StyleSuggestion>
+          <Selections>
+            <Selection>
+              <SelectionIdentifier>/answer</SelectionIdentifier>
+              <Text> /answer </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>/ answer</SelectionIdentifier>
+              <Text> / answer </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>answer/</SelectionIdentifier>
+              <Text> answer/ </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>\answer</SelectionIdentifier>
+              <Text> \answer </Text>
+            </Selection>
+          </Selections>
+        </SelectionAnswer>
+      </AnswerSpecification>
+  </Question>
+
+  <Question>
+      <QuestionIdentifier>cola2_question</QuestionIdentifier>
+      <DisplayName>Q2</DisplayName>
+      <IsRequired>true</IsRequired>
+      <QuestionContent>
+        <Text> What should be typed to agree? </Text>
+      </QuestionContent>
+      <AnswerSpecification>
+        <SelectionAnswer>
+          <StyleSuggestion>radiobutton</StyleSuggestion>
+          <Selections>
+            <Selection>
+              <SelectionIdentifier>agree\</SelectionIdentifier>
+              <Text> agree\ </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>/agree</SelectionIdentifier>
+              <Text> /agree </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>/ agree</SelectionIdentifier>
+              <Text> '/done' </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>\agree</SelectionIdentifier>
+              <Text> \agree </Text>
+            </Selection>
+          </Selections>
+        </SelectionAnswer>
+      </AnswerSpecification>
+  </Question>
+
+  <Question>
+      <QuestionIdentifier>cola3_question</QuestionIdentifier>
+      <DisplayName>Q3</DisplayName>
+      <IsRequired>true</IsRequired>
+      <QuestionContent>
+        <Text> Your partner is not replying or left the room. What should you type? </Text>
+      </QuestionContent>
+      <AnswerSpecification>
+        <SelectionAnswer>
+          <StyleSuggestion>radiobutton</StyleSuggestion>
+          <Selections>
+            <Selection>
+              <SelectionIdentifier>nothing</SelectionIdentifier>
+              <Text> empty field </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>/no reply</SelectionIdentifier>
+              <Text> /no reply </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>no reply/</SelectionIdentifier>
+              <Text> no reply/ </Text>
+            </Selection>
+            <Selection>
+              <SelectionIdentifier>/noreply</SelectionIdentifier>
+              <Text> /noreply </Text>
+            </Selection>
+          </Selections>
+        </SelectionAnswer>
+      </AnswerSpecification>
+  </Question>
+
+</QuestionForm>
