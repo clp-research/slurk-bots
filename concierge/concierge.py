@@ -2,6 +2,7 @@ import requests
 import sys
 import os
 import argparse
+import logging
 
 from uuid import uuid1
 from socketIO_client import SocketIO, BaseNamespace
@@ -12,10 +13,10 @@ token = None
 
 def message_response(success, error=None):
     if not success:
-        print("Could not send message:", error)
+        logging.error("Could not send message:", error)
         sys.exit(2)
 
-    print("message sent successfully")
+    logging.debug("message sent successfully")
 
 
 # Define the namespace
@@ -26,7 +27,7 @@ class ChatNamespace(BaseNamespace):
     def get_user_task(user):
         task = requests.get(f"{uri}/user/{user['id']}/task", headers={'Authorization': f"Token {token}"})
         if not task.ok:
-            print("Could not get user task")
+            logging.error("Could not get user task")
             sys.exit(2)
         return task.json()
 
@@ -44,7 +45,7 @@ class ChatNamespace(BaseNamespace):
                                  static=False)
                              )
         if not room.ok:
-            print("Could not create task room")
+            logging.error("Could not create task room")
             sys.exit(3)
         return room.json()
 
@@ -80,7 +81,7 @@ class ChatNamespace(BaseNamespace):
                 self.emit("join_room", {'user': user, 'room': new_room['name']}, self.join_room_feedback)
                 self.emit("leave_room", {'user': user, 'room': old_room}, self.leave_room_feedback)
             del self.tasks[task_id]
-            print("created room:", new_room)
+            logging.debug("created room:", new_room)
             sys.stdout.flush()
         else:
             self.emit('text', {'msg': f'### Hello, {user_name}!\n\nI am looking for a partner for you, it might take '
@@ -101,30 +102,39 @@ class ChatNamespace(BaseNamespace):
     @staticmethod
     def join_room_feedback(success, error=None):
         if not success:
-            print("Could not join room:", error)
+            logging.error("Could not join room:", error)
             sys.exit(4)
-        print("user joined room")
+        logging.debug("user joined room")
         sys.stdout.flush()
 
     @staticmethod
     def leave_room_feedback(success, error=None):
         if not success:
-            print("Could not leave room:", error)
+            logging.error("Could not leave room:", error)
             sys.exit(5)
-        print("user left room")
+        logging.debug("user left room")
         sys.stdout.flush()
 
     @staticmethod
     def room_created_feedback(success, error=None):
         if not success:
-            print("Could not create task room:", error)
+            logging.error("Could not create task room:", error)
             sys.exit(6)
-        print("task room created")
+        logging.debug("task room created")
         sys.stdout.flush()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run Concierge bot')
+
+    # set up logging configuration
+    logging.basicConfig(level=logging.DEBUG)
+
+    # define handler to write INFO message
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add handler to the root logger
+    logging.getLogger('Concierge-bot').addHandler(console)
 
     if 'TOKEN' in os.environ:
         token = {'default': os.environ['TOKEN']}
@@ -157,7 +167,7 @@ if __name__ == '__main__':
     if args.chat_port:
         uri += f":{args.chat_port}"
 
-    print("running concierge bot on", uri, "with token", args.token)
+    logging.info("running concierge bot on %s with token %s", uri, args.token)
     sys.stdout.flush()
     uri += "/api/v2"
     token = args.token

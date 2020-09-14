@@ -1,0 +1,134 @@
+[
+ {
+  "content": "sil", 
+  "end": 0.15000000596046448, 
+  "start": 0.0, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "cptk_6_6_3_3", 
+  "end": 0.15000000596046448, 
+  "start": 0.15000000596046448, 
+  "type": "marker"
+ }, 
+ {
+  "content": "the", 
+  "end": 0.25, 
+  "start": 0.14999999105930328, 
+  "type": "word"
+ }, 
+ {
+  "content": "dh", 
+  "end": 0.20000000298023224, 
+  "start": 0.14999999105930328, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "@", 
+  "end": 0.25, 
+  "start": 0.20000000298023224, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "cptk_10_10_4_4", 
+  "end": 0.25, 
+  "start": 0.25, 
+  "type": "marker"
+ }, 
+ {
+  "content": "blue", 
+  "end": 0.5741041898727417, 
+  "start": 0.25, 
+  "type": "word"
+ }, 
+ {
+  "content": "b", 
+  "end": 0.36000001430511475, 
+  "start": 0.25, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "l", 
+  "end": 0.460645854473114, 
+  "start": 0.36000001430511475, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "uu", 
+  "end": 0.5741041898727417, 
+  "start": 0.460645854473114, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "cptk_15_15_9_9", 
+  "end": 0.5741041898727417, 
+  "start": 0.5741041898727417, 
+  "type": "marker"
+ }, 
+ {
+  "content": "triangle", 
+  "end": 1.2558958530426025, 
+  "start": 0.5741041898727417, 
+  "type": "word"
+ }, 
+ {
+  "content": "t", 
+  "end": 0.6831874847412109, 
+  "start": 0.5741041898727417, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "r", 
+  "end": 0.7532082796096802, 
+  "start": 0.6831874847412109, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "ai", 
+  "end": 0.893833339214325, 
+  "start": 0.7532082796096802, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "a", 
+  "end": 0.9439374804496765, 
+  "start": 0.893833339214325, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "ng", 
+  "end": 0.9959166646003723, 
+  "start": 0.9439374804496765, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "g", 
+  "end": 1.0458959341049194, 
+  "start": 0.9959166646003723, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "@", 
+  "end": 1.0758750438690186, 
+  "start": 1.0458959341049194, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "l", 
+  "end": 1.2558958530426025, 
+  "start": 1.0758750438690186, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "sil", 
+  "end": 1.6558958292007446, 
+  "start": 1.2558958530426025, 
+  "type": "phoneme"
+ }, 
+ {
+  "content": "cprc_final", 
+  "end": 1.6558958292007446, 
+  "start": 1.6558958292007446, 
+  "type": "marker"
+ }
+]
