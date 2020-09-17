@@ -18,7 +18,6 @@ self_id = None
 class Game:
 
     def __init__(self):
-        #self.images = False
         self.images = {}
         self.pointer = False
         self.curr_img = False
@@ -36,6 +35,7 @@ class Game:
                 continue
             self.images[img_id]["img_data"] = Image.open(os.path.join(self.img_path, i))
             self.images[img_id]["is_used"] = False
+            self.images[img_id]["filename"] = os.path.join(self.img_path, i)
 
     # def get_json(self, dir):
     #     """
@@ -84,7 +84,10 @@ class Game:
         """
         #bb = self.curr_img["bb"]
         #x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
-        x, y, width, height = 0, 0, 50, 50 # for testing
+        img = self.curr_img["img_data"]
+        # Take 10% left bottom corner of the image as bounding boxes
+        img_width, img_height = img.size
+        x, y, width, height = 0, 0, 0.1 * img_width, 0.1 * img_height # for testing
 
         if int(click['x']) in range(x, x+width+1) and int(click['y']) in range(y, y+height+1):
             return True
@@ -119,7 +122,7 @@ class ChatNamespace(BaseNamespace):
             'room': room,
             'id': "current-image",
             'attribute': "src",
-            'value': game.img_path+game.curr_img
+            'value': game.img_path+game.curr_img["filename"]
             })
             # new audio file
             # self.emit('set_attribute', {
@@ -128,6 +131,7 @@ class ChatNamespace(BaseNamespace):
             # 'attribute': "src",
             # 'value': game.audio_path+game.curr_img['audio_filename']
             # })
+            game.curr_img["is_used"] = True
         else:
             # return message if no images are left
             self.emit("text", {"msg": "No images left", 'room': room})
@@ -200,7 +204,7 @@ class ChatNamespace(BaseNamespace):
         room = data['room']
         print("Joining room", room['name'])
         self.emit('join_task', {'room': room['id']})
-        self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
+        # self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
     def on_message(self, data):
         # prevent parroting own messages
@@ -243,7 +247,8 @@ class ChatNamespace(BaseNamespace):
                 return
             elif data['element'] == "#overlayButton":
                 # display target description and return
-                self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+                # self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+                pass
             elif data['element'] == "confirmReportButton":
                 # skip image
                 game.next_image()
