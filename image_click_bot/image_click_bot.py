@@ -1,15 +1,15 @@
 #!/bin/env python
 
 import argparse
-import sys
-import os
 import json
-import time
+import os
 import random
 import string
+import sys
+import time
 
-from socketIO_client import SocketIO, BaseNamespace
 from PIL import Image
+from socketIO_client import SocketIO, BaseNamespace
 
 chat_namespace = None
 users = {}
@@ -225,6 +225,7 @@ class ChatNamespace(BaseNamespace):
     def on_mouse_position(self, data):
         """
         on mouse click:
+        ** log all kinds of clicks**
         check if client clicked on button
             if so: perform corresponding action
             if not: check if client clicked on target.
