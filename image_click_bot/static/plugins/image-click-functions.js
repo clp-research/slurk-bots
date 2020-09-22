@@ -7,9 +7,11 @@ let mouse = {
 };
 let scaleFactor = {x:undefined, y:undefined};
 let mousePositions = [];
+/*
 var audioDescription = document.getElementById('audio-description');
 var audioCorrect = document.getElementById('audio-correct');
 var audioFalse = document.getElementById('audio-false');
+*/
 let image = document.getElementById("current-image")
 var imgWrapper = document.getElementById('image-wrapper');
 var sidebar = document.getElementById('sidebar');
@@ -18,9 +20,11 @@ var sidebar = document.getElementById('sidebar');
     ***Event listener***
 */
 
+/*
 audioDescription.addEventListener("play", function(){emitAudioEvent(audioDescription)}, false);
 audioCorrect.addEventListener("play", function(){emitAudioEvent(audioCorrect)}, false);
 audioFalse.addEventListener("play", function(){emitAudioEvent(audioFalse)}, false);
+*/
 
 document.addEventListener("fullscreenchange", fullscreenChange );
 document.addEventListener("mozfullscreenchange", fullscreenChange()); // Firefox
@@ -338,10 +342,10 @@ $('.button').click(function(e){
 trackMovement(trackingArea, 10);
 
 // add preload and type attributes to audio elements
-$(".audio").attr({
+/*$(".audio").attr({
     preload:"auto",
     type:"audio/wav"
-});
+});*/
 
 // center image if new image is loaded or window is resized
 image.onload = function () {
