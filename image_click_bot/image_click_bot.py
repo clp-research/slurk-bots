@@ -1,13 +1,14 @@
 #!/bin/env python
 
 import argparse
-import sys
-import os
 import json
-import time
+import os
 import random
 import string
+import sys
+import time
 
+from PIL import Image
 from socketIO_client import SocketIO, BaseNamespace
 
 chat_namespace = None
@@ -17,42 +18,53 @@ self_id = None
 class Game:
 
     def __init__(self):
-        self.images = False
+        self.images = {}
         self.pointer = False
         self.curr_img = False
         self.started = False
         self.json_path = False
         self.img_path = "/static/images/"
         self.audio_path = "/static/audio/"
+        self.valid_images = [".jpg", ".png", ".tga"]
 
-    def get_json(self, dir):
-        """
-        search for unused json files, store content in game instance attributes
-        """
-        cwd = os.getcwd()+"/"
-        # find json files in directory
-        for file in [f for f in os.listdir(cwd+dir) if f.endswith(".json")]:
-            path = os.path.join(cwd+dir,file)
-            with open(path) as raw_jfile:
-                jfile = json.load(raw_jfile)
-                if jfile["used"] == False:
-                    self.images = jfile
-                    self.json_path = path
-                    self.started, self.pointer = True, 0
-                    return
-                print("File {name} was already used.".format(name=file))
-        # if no unused json files were found
-        self.images = False
-        self.json_path = False
+        # Load all available images
+        for i in os.listdir(self.img_path):
+            img_id = os.path.splitext(i)[0]
+            ext = os.path.splitext(i)[1]
+            if ext.lower() not in self.valid_images:
+                continue
+            self.images[img_id]["img_data"] = Image.open(os.path.join(self.img_path, i))
+            self.images[img_id]["is_used"] = False
+            self.images[img_id]["filename"] = os.path.join(self.img_path, i)
+
+    # def get_json(self, dir):
+    #     """
+    #     search for unused json files, store content in game instance attributes
+    #     """
+    #     cwd = os.getcwd()+"/"
+    #     # find json files in directory
+    #     for file in [f for f in os.listdir(cwd+dir) if f.endswith(".json")]:
+    #         path = os.path.join(cwd+dir,file)
+    #         with open(path) as raw_jfile:
+    #             jfile = json.load(raw_jfile)
+    #             if jfile["used"] == False:
+    #                 self.images = jfile
+    #                 self.json_path = path
+    #                 self.started, self.pointer = True, 0
+    #                 return
+    #             print("File {name} was already used.".format(name=file))
+    #     # if no unused json files were found
+    #     self.images = False
+    #     self.json_path = False
 
     def get_image(self):
         """
         iterate through keys in current json file,
         if key corresponds to current state of self.pointer: set value as self.curr_img
         """
-        for entry in self.images:
-            if entry == str(self.pointer):
-                self.curr_img = self.images[entry]
+        for entry in self.images.keys():
+            if not entry["is_used"]:
+                self.curr_img = entry
                 return
         # if self.pointer exeeds the highest id
         self.curr_img = False
@@ -70,8 +82,12 @@ class Game:
         retrieve bounding box information from self.curr_img,
         check whether click is located within that bounding box
         """
-        bb = self.curr_img["bb"]
-        x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
+        #bb = self.curr_img["bb"]
+        #x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
+        img = self.curr_img["img_data"]
+        # Take 10% left bottom corner of the image as bounding boxes
+        img_width, img_height = img.size
+        x, y, width, height = 0, 0, 0.1 * img_width, 0.1 * img_height # for testing
 
         if int(click['x']) in range(x, x+width+1) and int(click['y']) in range(y, y+height+1):
             return True
@@ -106,15 +122,16 @@ class ChatNamespace(BaseNamespace):
             'room': room,
             'id': "current-image",
             'attribute': "src",
-            'value': game.img_path+game.curr_img["image_filename"]
+            'value': game.img_path+game.curr_img["filename"]
             })
             # new audio file
-            self.emit('set_attribute', {
-            'room': room,
-            'id': "audio-description",
-            'attribute': "src",
-            'value': game.audio_path+game.curr_img['audio_filename']
-            })
+            # self.emit('set_attribute', {
+            # 'room': room,
+            # 'id': "audio-description",
+            # 'attribute': "src",
+            # 'value': game.audio_path+game.curr_img['audio_filename']
+            # })
+            game.curr_img["is_used"] = True
         else:
             # return message if no images are left
             self.emit("text", {"msg": "No images left", 'room': room})
@@ -145,7 +162,7 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
-        game.get_json("app/static/json/")
+        # game.get_json("app/static/json/")
         if game.images == False:
             print ("no json files left in directory")
             return
@@ -187,7 +204,7 @@ class ChatNamespace(BaseNamespace):
         room = data['room']
         print("Joining room", room['name'])
         self.emit('join_task', {'room': room['id']})
-        self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
+        # self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
     def on_message(self, data):
         # prevent parroting own messages
@@ -208,6 +225,7 @@ class ChatNamespace(BaseNamespace):
     def on_mouse_position(self, data):
         """
         on mouse click:
+        ** log all kinds of clicks**
         check if client clicked on button
             if so: perform corresponding action
             if not: check if client clicked on target.
@@ -230,7 +248,8 @@ class ChatNamespace(BaseNamespace):
                 return
             elif data['element'] == "#overlayButton":
                 # display target description and return
-                self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+                # self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+                pass
             elif data['element'] == "confirmReportButton":
                 # skip image
                 game.next_image()
