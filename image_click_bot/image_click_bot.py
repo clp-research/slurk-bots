@@ -7,6 +7,7 @@ import json
 import time
 import random
 import string
+import logging
 
 from socketIO_client import SocketIO, BaseNamespace
 from PIL import Image
@@ -117,6 +118,7 @@ class ChatNamespace(BaseNamespace):
         emit new_image command if there are images left
         """
         if game.curr_img:
+            game.started = True
             # new image
             self.emit('set_attribute', {
             'room': room,
@@ -158,13 +160,13 @@ class ChatNamespace(BaseNamespace):
         os.chdir(slurk_path)
 
         # check if game was already started
-        if game.started == True:
+        if game.started is True:
             self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
         # game.get_json("app/static/json/")
-        if game.images == False:
-            print ("no json files left in directory")
+        if game.images is False:
+            print("no json files left in directory")
             return
         game.get_image()
         # mark file as used
@@ -265,15 +267,15 @@ class ChatNamespace(BaseNamespace):
             else:
                 self.emit("text", {"msg": "Try again!", 'room': room})
 
-class LoginNamespace(BaseNamespace):
-    @staticmethod
-    def on_login_status(data):
-        global chat_namespace
-        if data["success"]:
-            chat_namespace = socketIO.define(ChatNamespace, '/chat')
-        else:
-            print("Could not login to server")
-            sys.exit(1)
+# class LoginNamespace(BaseNamespace):
+#     @staticmethod
+#     def on_login_status(data):
+#         global chat_namespace
+#         if data["success"]:
+#             chat_namespace = socketIO.define(ChatNamespace, '/chat')
+#         else:
+#             print("Could not login to server")
+#             sys.exit(1)
 
 
 if __name__ == '__main__':
