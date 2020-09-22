@@ -110,12 +110,12 @@ class ChatNamespace(BaseNamespace):
             'value': game.img_path+game.curr_img["image_filename"]
             })
             # new audio file
-            self.emit('set_attribute', {
-            'room': room,
-            'id': "audio-description",
-            'attribute': "src",
-            'value': game.audio_path+game.curr_img['audio_filename']
-            })
+            # self.emit('set_attribute', {
+            # 'room': room,
+            # 'id': "audio-description",
+            # 'attribute': "src",
+            # 'value': game.audio_path+game.curr_img['audio_filename']
+            # })
 
         else:
             # return message if no images are left
