@@ -7,9 +7,11 @@ import random
 import string
 import sys
 import time
+import logging
 
 from PIL import Image
 from socketIO_client import SocketIO, BaseNamespace
+from collections import defaultdict
 
 chat_namespace = None
 users = {}
@@ -18,13 +20,13 @@ self_id = None
 class Game:
 
     def __init__(self):
-        self.images = {}
+        self.images = defaultdict(dict)
         self.pointer = False
         self.curr_img = False
         self.started = False
         self.json_path = False
-        self.img_path = "/static/images/"
-        self.audio_path = "/static/audio/"
+        self.img_path = "/usr/src/image_click_bot/static/images/"
+        self.audio_path = "/usr/src/image_click_bot/static/audio/"
         self.valid_images = [".jpg", ".png", ".tga"]
 
         # Load all available images
@@ -33,6 +35,7 @@ class Game:
             ext = os.path.splitext(i)[1]
             if ext.lower() not in self.valid_images:
                 continue
+            print(img_id)
             self.images[img_id]["img_data"] = Image.open(os.path.join(self.img_path, i))
             self.images[img_id]["is_used"] = False
             self.images[img_id]["filename"] = os.path.join(self.img_path, i)
@@ -63,8 +66,9 @@ class Game:
         if key corresponds to current state of self.pointer: set value as self.curr_img
         """
         for entry in self.images.keys():
-            if not entry["is_used"]:
-                self.curr_img = entry
+            print(entry)
+            if not self.images[entry]["is_used"]:
+                self.curr_img = self.images[entry]
                 return
         # if self.pointer exeeds the highest id
         self.curr_img = False
@@ -98,7 +102,7 @@ game = Game()
 
 def add_user(room, id):
     global users
-    room = int(room)
+    # room = int(room)
     id = int(id)
     print("adding user", id, "to room", room)
     if room == 1:
@@ -117,12 +121,13 @@ class ChatNamespace(BaseNamespace):
         emit new_image command if there are images left
         """
         if game.curr_img:
+            game.started = True
             # new image
             self.emit('set_attribute', {
             'room': room,
             'id': "current-image",
             'attribute': "src",
-            'value': game.img_path+game.curr_img["filename"]
+            'value': game.curr_img["filename"]
             })
             # new audio file
             # self.emit('set_attribute', {
@@ -158,22 +163,22 @@ class ChatNamespace(BaseNamespace):
         os.chdir(slurk_path)
 
         # check if game was already started
-        if game.started == True:
+        if game.started is True:
             self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
         # game.get_json("app/static/json/")
-        if game.images == False:
-            print ("no json files left in directory")
+        if game.images is False:
+            print("no json files left in directory")
             return
         game.get_image()
         # mark file as used
-        with open(game.json_path, 'w') as outfile:
+        # with open(game.json_path, 'w') as outfile:
             # mark json file as used
             #game.images["used"] = True
-            json.dump(game.images, outfile, sort_keys=True, indent=1)
+            # json.dump(game.images, outfile, sort_keys=True, indent=1)
         self.emit("text", {"msg": "Game started!", 'room': room})
-        self.emit('log', {'type': 'message', 'msg': 'json file: ' + os.path.basename(game.json_path),'room': room})
+        # self.emit('log', {'type': 'message', 'msg': 'json file: ' + os.path.basename(game.json_path),'room': room})
         #set first image
         self.set_image(room)
 
@@ -193,32 +198,37 @@ class ChatNamespace(BaseNamespace):
         print("status:", data)
 
         if data['user']['id'] != self_id:
-            add_user(data['room']['id'], data['user']['id'])
+            add_user(data['room'], data['user']['id'])
 
     def on_new_task_room(self, data):
         print("hello!!! I have been triggered!")
         print("new task room:", data)
-        if data['task']['name'] != 'meetup':
-            return
+        # if data['task']['name'] != 'meetup':
+        #     return
 
-        room = data['room']
-        print("Joining room", room['name'])
-        self.emit('join_task', {'room': room['id']})
+        if data['task'] == TASK_ID:
+            room = data['room']
+            print("Joining room")
+            self.emit('join_room', {'room': room})
         # self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
-    def on_message(self, data):
+    def on_text_message(self, data):
         # prevent parroting own messages
-        if data["user"]["name"] == "ImageClick_Pretest":
-            message = data['msg']
-            room = data["user"]["latest_room"]["id"]
-            if message == 'start_game':
-                self.start_game(room)
+        # if data["user"]["name"] == "ImageClick_Pretest":
+        #     message = data['msg']
+        #     room = data["user"]["latest_room"]["id"]
+        #     if message == 'start_game':
+        #         self.start_game(room)
+        message = data['msg']
+        room = data['room']
+        if message == 'start_game':
+            self.start_game(room)
 
-    def on_skip_image(self,data):
+    def on_skip_image(self, data):
         """
         set next image
         """
-        room = data['room']['id']
+        room = data['room']
         game.next_image()
         self.set_image(room)
 
@@ -233,7 +243,7 @@ class ChatNamespace(BaseNamespace):
                 otherwise send feedback message
         """
         if data['type'] == 'click':
-            room = data['user']['latest_room']['id']
+            room = data['room']
             pos = data['coordinates']
 
             print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name'],element=data['element']))
@@ -266,31 +276,93 @@ class ChatNamespace(BaseNamespace):
             else:
                 self.emit("text", {"msg": "Try again!", 'room': room})
 
-class LoginNamespace(BaseNamespace):
-    @staticmethod
-    def on_login_status(data):
-        global chat_namespace
-        if data["success"]:
-            chat_namespace = socketIO.define(ChatNamespace, '/chat')
-        else:
-            print("Could not login to server")
-            sys.exit(1)
+# class LoginNamespace(BaseNamespace):
+#     @staticmethod
+#     def on_login_status(data):
+#         global chat_namespace
+#         if data["success"]:
+#             chat_namespace = socketIO.define(ChatNamespace, '/chat')
+#         else:
+#             print("Could not login to server")
+#             sys.exit(1)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Example MultiBot')
-    parser.add_argument('token',
-                        help='token for logging in as bot ' +
-                        '(see SERVURL/token)')
-    parser.add_argument('-c', '--chat_host',
-                        help='full URL (protocol, hostname; ' +
-                        'ending with /) of chat server',
-                        default='http://localhost')
-    parser.add_argument('-p', '--chat_port', type=int,
-                        help='port of chat server', default=5000)
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser(description='Example MultiBot')
+    # parser.add_argument('token',
+    #                     help='token for logging in as bot ' +
+    #                     '(see SERVURL/token)')
+    # parser.add_argument('-c', '--chat_host',
+    #                     help='full URL (protocol, hostname; ' +
+    #                     'ending with /) of chat server',
+    #                     default='http://localhost')
+    # parser.add_argument('-p', '--chat_port', type=int,
+    #                     help='port of chat server', default=5000)
+    # args = parser.parse_args()
 
-    with SocketIO(args.chat_host, args.chat_port) as socketIO:
-        login_namespace = socketIO.define(LoginNamespace, '/login')
-        login_namespace.emit('connectWithToken', {'token': args.token, 'name': "ImageClick_Main"})
-        socketIO.wait()
+    # with SocketIO(args.chat_host, args.chat_port) as socketIO:
+    #     login_namespace = socketIO.define(LoginNamespace, '/login')
+    #     login_namespace.emit('connectWithToken', {'token': args.token, 'name': "ImageClick_Main"})
+    #     socketIO.wait()
+    parser = argparse.ArgumentParser(description='Run ImageClick Bot')
+
+    # set up logging configuration
+    logging.basicConfig(level=logging.DEBUG)
+
+    # define handler to write INFO message
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add handler to the root logger
+    logging.getLogger('ImageClickBot').addHandler(console)
+
+    if 'TOKEN' in os.environ:
+        token = {'default': os.environ['TOKEN']}
+    else:
+        token = {'required': True}
+
+    if 'CHAT_HOST' in os.environ:
+        chat_host = {'default': os.environ['CHAT_HOST']}
+    else:
+        chat_host = {'default': 'http://localhost'}
+
+    if 'CHAT_PORT' in os.environ:
+        chat_port = {'default': os.environ['CHAT_PORT']}
+    else:
+        chat_port = {'default': None}
+
+    if 'IMAGECLICK_TASK_ID' in os.environ:
+        task_id = {'default':os.environ['IMAGECLICK_TASK_ID']}
+    else:
+        task_id = {'default': None}
+
+    parser.add_argument('-t', '--token',
+                        help='token for logging in as bot (see SERVURL/token)',
+                        **token)
+    parser.add_argument('-c', '--chat_host',
+                        help='full URL (protocol, hostname; ending with /) of chat server',
+                        **chat_host)
+    parser.add_argument('-p', '--chat_port',
+                        type=int,
+                        help='port of chat server',
+                        **chat_port)
+    parser.add_argument('--task_id',
+                        type=int,
+                        help='Task to join',
+                        **task_id)
+    args = parser.parse_args()
+    TASK_ID = args.task_id
+
+    uri = args.chat_host
+    if args.chat_port:
+        uri += f":{args.chat_port}"
+
+    logging.info("running imageclick bot on %s with token %s", uri, args.token)
+    sys.stdout.flush()
+    uri += "/api/v2"
+    token = args.token
+
+    # We pass token and name in request header
+    socketIO = SocketIO(args.chat_host, args.chat_port,
+                        headers={'Authorization': args.token, 'Name': 'ImageClick_Main'},
+                        Namespace=ChatNamespace)
+    socketIO.wait()
