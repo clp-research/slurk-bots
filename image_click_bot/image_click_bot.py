@@ -25,7 +25,7 @@ class Game:
         self.curr_img = False
         self.started = False
         self.json_path = False
-        self.img_path = "/usr/src/image_click_bot/static/images/"
+        self.img_path = "/usr/src/image_click_bot/image_serve/"
         self.audio_path = "/usr/src/image_click_bot/static/audio/"
         self.valid_images = [".jpg", ".png", ".tga"]
 
@@ -35,10 +35,10 @@ class Game:
             ext = os.path.splitext(i)[1]
             if ext.lower() not in self.valid_images:
                 continue
-            print(img_id)
+            # print(img_id)
             self.images[img_id]["img_data"] = Image.open(os.path.join(self.img_path, i))
             self.images[img_id]["is_used"] = False
-            self.images[img_id]["filename"] = os.path.join(self.img_path, i)
+            self.images[img_id]["filename"] = img_id + ext
 
     # def get_json(self, dir):
     #     """
@@ -127,7 +127,7 @@ class ChatNamespace(BaseNamespace):
             'room': room,
             'id': "current-image",
             'attribute': "src",
-            'value': game.curr_img["filename"]
+            'value': "http://localhost:3000/" + game.curr_img["filename"]
             })
             # new audio file
             # self.emit('set_attribute', {
