@@ -62,23 +62,21 @@ class Game:
 
     def get_image(self):
         """
-        iterate through keys in current json file,
-        if key corresponds to current state of self.pointer: set value as self.curr_img
+        iterate through images in dictionary,
+        if key corresponds to unused images: set value as self.curr_img
         """
         for entry in self.images.keys():
             print(entry)
             if not self.images[entry]["is_used"]:
                 self.curr_img = self.images[entry]
                 return
-        # if self.pointer exeeds the highest id
         self.curr_img = False
 
     def next_image(self):
         """
-        increment value of self.pointer by 1,
         call get_image method to retrieve data for next image
         """
-        self.pointer += 1
+        # self.pointer += 1
         self.get_image()
 
     def click_on_target(self, click):
@@ -155,7 +153,7 @@ class ChatNamespace(BaseNamespace):
     def start_game(self,room):
         """
         prepare & start game:
-        import json files, set first image, send audio files to client
+        set first images
         """
         # navigate to main slurk directory
         file_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -223,6 +221,9 @@ class ChatNamespace(BaseNamespace):
         room = data['room']
         if message == 'start_game':
             self.start_game(room)
+        elif message == 'skip_image':
+            game.next_image()
+            self.set_image(room)
 
     def on_skip_image(self, data):
         """
