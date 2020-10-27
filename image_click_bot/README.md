@@ -5,7 +5,7 @@ the only function that has been tested is image loading capability.
 
 ### Instructions
 1. Open Terminal and start slurk server
-2. Open another Terminal and run `image_serve/app.py`. Note that you should put the images under `/image_serve` folder
+2. Open another Terminal and run `image_serve/app.py`. Note that you should put the images under `/image_serve` folder (with .jpg, .png or .tga format). The sequence in which the image is served is random, as it is accessed through a dictionary
 3. Create a room using `static/layouts/test_room.json` as layout and an image click task
 4. Create a token for image click bot and run `image_click_bot.py`
 5. Create user tokens for the task
