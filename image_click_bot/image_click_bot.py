@@ -1,7 +1,6 @@
 #!/bin/env python
 
 import argparse
-import json
 import os
 import random
 import string
@@ -17,6 +16,7 @@ chat_namespace = None
 users = {}
 self_id = None
 
+
 class Game:
 
     def __init__(self):
@@ -25,7 +25,7 @@ class Game:
         self.curr_img = False
         self.started = False
         self.json_path = False
-        self.img_path = "/usr/src/image_click_bot/static/images/"
+        self.img_path = "/usr/src/image_click_bot/image_serve/"
         self.audio_path = "/usr/src/image_click_bot/static/audio/"
         self.valid_images = [".jpg", ".png", ".tga"]
 
@@ -35,50 +35,28 @@ class Game:
             ext = os.path.splitext(i)[1]
             if ext.lower() not in self.valid_images:
                 continue
-            print(img_id)
             self.images[img_id]["img_data"] = Image.open(os.path.join(self.img_path, i))
             self.images[img_id]["is_used"] = False
-            self.images[img_id]["filename"] = os.path.join(self.img_path, i)
-
-    # def get_json(self, dir):
-    #     """
-    #     search for unused json files, store content in game instance attributes
-    #     """
-    #     cwd = os.getcwd()+"/"
-    #     # find json files in directory
-    #     for file in [f for f in os.listdir(cwd+dir) if f.endswith(".json")]:
-    #         path = os.path.join(cwd+dir,file)
-    #         with open(path) as raw_jfile:
-    #             jfile = json.load(raw_jfile)
-    #             if jfile["used"] == False:
-    #                 self.images = jfile
-    #                 self.json_path = path
-    #                 self.started, self.pointer = True, 0
-    #                 return
-    #             print("File {name} was already used.".format(name=file))
-    #     # if no unused json files were found
-    #     self.images = False
-    #     self.json_path = False
+            self.images[img_id]["filename"] = img_id + ext
 
     def get_image(self):
         """
-        iterate through keys in current json file,
-        if key corresponds to current state of self.pointer: set value as self.curr_img
+        iterate through images in dictionary,
+        if key corresponds to unused images: set value as self.curr_img
         """
         for entry in self.images.keys():
             print(entry)
             if not self.images[entry]["is_used"]:
                 self.curr_img = self.images[entry]
                 return
-        # if self.pointer exeeds the highest id
         self.curr_img = False
 
     def next_image(self):
         """
-        increment value of self.pointer by 1,
         call get_image method to retrieve data for next image
         """
-        self.pointer += 1
+        # FIXME: does pointer need to be increased?
+        # self.pointer += 1
         self.get_image()
 
     def click_on_target(self, click):
@@ -86,23 +64,22 @@ class Game:
         retrieve bounding box information from self.curr_img,
         check whether click is located within that bounding box
         """
-        #bb = self.curr_img["bb"]
-        #x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
         img = self.curr_img["img_data"]
         # Take 10% left bottom corner of the image as bounding boxes
         img_width, img_height = img.size
-        x, y, width, height = 0, 0, 0.1 * img_width, 0.1 * img_height # for testing
+        x, y, width, height = 0, 0, 0.1 * img_width, 0.1 * img_height  # for testing
 
         if int(click['x']) in range(x, x+width+1) and int(click['y']) in range(y, y+height+1):
             return True
         else:
             return False
 
+
 game = Game()
+
 
 def add_user(room, id):
     global users
-    # room = int(room)
     id = int(id)
     print("adding user", id, "to room", room)
     if room == 1:
@@ -111,24 +88,26 @@ def add_user(room, id):
         users[room] = []
     users[room].append(id)
 
+
 def generate_token(len):
     return (''.join(random.choices(string.ascii_letters + string.digits, k=len)))
 
+
 class ChatNamespace(BaseNamespace):
 
-    def set_image(self,room):
+    def set_image(self, room):
         """
         emit new_image command if there are images left
         """
         if game.curr_img:
             game.started = True
             # new image
-            self.emit('set_attribute', {
-            'room': room,
-            'id': "current-image",
-            'attribute': "src",
-            'value': game.curr_img["filename"]
-            })
+            self.emit('set_attribute',
+                      {'room': room,
+                       'id': "current-image",
+                       'attribute': "src",
+                       'value': "http://localhost:3000/" + game.curr_img["filename"]
+                       })
             # new audio file
             # self.emit('set_attribute', {
             # 'room': room,
@@ -143,19 +122,23 @@ class ChatNamespace(BaseNamespace):
             game.started = False
 
             amt_token = generate_token(14)+"02"
-            self.emit("set_text", {"id": "overlay-textbox", 'text': "Good job! Here's your token: {token}".format(token=amt_token), 'room': room})
+            self.emit("set_text",
+                      {"id": "overlay-textbox",
+                       'text': "Good job! Here's your token: {token}".format(token=amt_token),
+                       'room': room
+                       })
 
-            self.emit('set_attribute', {
-            'room': room,
-            'id': "current-image",
-            'attribute': "src",
-            'value': ""
-            })
+            self.emit('set_attribute',
+                      {'room': room,
+                       'id': "current-image",
+                       'attribute': "src",
+                       'value': ""
+                       })
 
-    def start_game(self,room):
+    def start_game(self, room):
         """
         prepare & start game:
-        import json files, set first image, send audio files to client
+        set first images
         """
         # navigate to main slurk directory
         file_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -164,7 +147,7 @@ class ChatNamespace(BaseNamespace):
 
         # check if game was already started
         if game.started is True:
-            self.emit("text", {"msg": "Game already started!", 'room':room})
+            self.emit("text", {"msg": "Game already started!", 'room': room})
             return
         # assign initial values
         # game.get_json("app/static/json/")
@@ -172,14 +155,16 @@ class ChatNamespace(BaseNamespace):
             print("no json files left in directory")
             return
         game.get_image()
+        # FIXME is this needed?
         # mark file as used
         # with open(game.json_path, 'w') as outfile:
-            # mark json file as used
-            #game.images["used"] = True
-            # json.dump(game.images, outfile, sort_keys=True, indent=1)
+        #     mark json file as used
+        #     game.images["used"] = True
+        #     json.dump(game.images, outfile, sort_keys=True, indent=1)
         self.emit("text", {"msg": "Game started!", 'room': room})
+        # FIXME: is anything logged?
         # self.emit('log', {'type': 'message', 'msg': 'json file: ' + os.path.basename(game.json_path),'room': room})
-        #set first image
+        # set first image
         self.set_image(room)
 
     @staticmethod
@@ -203,6 +188,7 @@ class ChatNamespace(BaseNamespace):
     def on_new_task_room(self, data):
         print("hello!!! I have been triggered!")
         print("new task room:", data)
+        # FIXME: this looks like task-specific code: move to own file or branch
         # if data['task']['name'] != 'meetup':
         #     return
 
@@ -210,9 +196,11 @@ class ChatNamespace(BaseNamespace):
             room = data['room']
             print("Joining room")
             self.emit('join_room', {'room': room})
+        # FIXME: what is this for?
         # self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
     def on_text_message(self, data):
+        # FIXME: why is this commented?
         # prevent parroting own messages
         # if data["user"]["name"] == "ImageClick_Pretest":
         #     message = data['msg']
@@ -223,6 +211,9 @@ class ChatNamespace(BaseNamespace):
         room = data['room']
         if message == 'start_game':
             self.start_game(room)
+        elif message == 'skip_image':
+            game.next_image()
+            self.set_image(room)
 
     def on_skip_image(self, data):
         """
@@ -246,12 +237,17 @@ class ChatNamespace(BaseNamespace):
             room = data['room']
             pos = data['coordinates']
 
-            print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name'],element=data['element']))
+            print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(
+                x_pos=pos['x'],
+                y_pos=pos['y'],
+                user_name=data['user']['name'],
+                element=data['element']
+                ))
 
             # check whether client clicked on button
             if data['element'] == "#startButton":
                 # start game
-                #self.start_game(room)
+                # self.start_game(room)
                 pass
             elif not game.curr_img:
                 # if image is clicked before game was started
@@ -264,7 +260,7 @@ class ChatNamespace(BaseNamespace):
                 # skip image
                 game.next_image()
                 self.set_image(room)
-            elif data['element'] in ["#replayButton","#reportButton","#fullscreenButton"]:
+            elif data['element'] in ["#replayButton", "#reportButton", "#fullscreenButton"]:
                 return
             # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):
@@ -331,7 +327,7 @@ if __name__ == '__main__':
         chat_port = {'default': None}
 
     if 'IMAGECLICK_TASK_ID' in os.environ:
-        task_id = {'default':os.environ['IMAGECLICK_TASK_ID']}
+        task_id = {'default': os.environ['IMAGECLICK_TASK_ID']}
     else:
         task_id = {'default': None}
 
