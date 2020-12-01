@@ -35,30 +35,9 @@ class Game:
             ext = os.path.splitext(i)[1]
             if ext.lower() not in self.valid_images:
                 continue
-            # print(img_id)
             self.images[img_id]["img_data"] = Image.open(os.path.join(self.img_path, i))
             self.images[img_id]["is_used"] = False
             self.images[img_id]["filename"] = img_id + ext
-
-    # def get_json(self, dir):
-    #     """
-    #     search for unused json files, store content in game instance attributes
-    #     """
-    #     cwd = os.getcwd()+"/"
-    #     # find json files in directory
-    #     for file in [f for f in os.listdir(cwd+dir) if f.endswith(".json")]:
-    #         path = os.path.join(cwd+dir,file)
-    #         with open(path) as raw_jfile:
-    #             jfile = json.load(raw_jfile)
-    #             if jfile["used"] == False:
-    #                 self.images = jfile
-    #                 self.json_path = path
-    #                 self.started, self.pointer = True, 0
-    #                 return
-    #             print("File {name} was already used.".format(name=file))
-    #     # if no unused json files were found
-    #     self.images = False
-    #     self.json_path = False
 
     def get_image(self):
         """
@@ -76,6 +55,7 @@ class Game:
         """
         call get_image method to retrieve data for next image
         """
+        # FIXME: does pointer need to be increased?
         # self.pointer += 1
         self.get_image()
 
@@ -84,8 +64,6 @@ class Game:
         retrieve bounding box information from self.curr_img,
         check whether click is located within that bounding box
         """
-        #bb = self.curr_img["bb"]
-        #x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
         img = self.curr_img["img_data"]
         # Take 10% left bottom corner of the image as bounding boxes
         img_width, img_height = img.size
@@ -100,7 +78,6 @@ game = Game()
 
 def add_user(room, id):
     global users
-    # room = int(room)
     id = int(id)
     print("adding user", id, "to room", room)
     if room == 1:
@@ -170,14 +147,16 @@ class ChatNamespace(BaseNamespace):
             print("no json files left in directory")
             return
         game.get_image()
+        # FIXME is this needed?
         # mark file as used
         # with open(game.json_path, 'w') as outfile:
             # mark json file as used
             #game.images["used"] = True
             # json.dump(game.images, outfile, sort_keys=True, indent=1)
         self.emit("text", {"msg": "Game started!", 'room': room})
+        # FIXME: is anything logged?
         # self.emit('log', {'type': 'message', 'msg': 'json file: ' + os.path.basename(game.json_path),'room': room})
-        #set first image
+        # set first image
         self.set_image(room)
 
     @staticmethod
@@ -201,6 +180,7 @@ class ChatNamespace(BaseNamespace):
     def on_new_task_room(self, data):
         print("hello!!! I have been triggered!")
         print("new task room:", data)
+        # FIXME: this looks like task-specific code: move to own file or branch
         # if data['task']['name'] != 'meetup':
         #     return
 
@@ -208,9 +188,11 @@ class ChatNamespace(BaseNamespace):
             room = data['room']
             print("Joining room")
             self.emit('join_room', {'room': room})
+        # FIXME: what is this for?
         # self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
     def on_text_message(self, data):
+        # FIXME: why is this commented?
         # prevent parroting own messages
         # if data["user"]["name"] == "ImageClick_Pretest":
         #     message = data['msg']
