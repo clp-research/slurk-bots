@@ -1,7 +1,6 @@
 #!/bin/env python
 
 import argparse
-import json
 import os
 import random
 import string
@@ -16,6 +15,7 @@ from collections import defaultdict
 chat_namespace = None
 users = {}
 self_id = None
+
 
 class Game:
 
@@ -67,14 +67,16 @@ class Game:
         img = self.curr_img["img_data"]
         # Take 10% left bottom corner of the image as bounding boxes
         img_width, img_height = img.size
-        x, y, width, height = 0, 0, 0.1 * img_width, 0.1 * img_height # for testing
+        x, y, width, height = 0, 0, 0.1 * img_width, 0.1 * img_height  # for testing
 
         if int(click['x']) in range(x, x+width+1) and int(click['y']) in range(y, y+height+1):
             return True
         else:
             return False
 
+
 game = Game()
+
 
 def add_user(room, id):
     global users
@@ -86,24 +88,26 @@ def add_user(room, id):
         users[room] = []
     users[room].append(id)
 
+
 def generate_token(len):
     return (''.join(random.choices(string.ascii_letters + string.digits, k=len)))
 
+
 class ChatNamespace(BaseNamespace):
 
-    def set_image(self,room):
+    def set_image(self, room):
         """
         emit new_image command if there are images left
         """
         if game.curr_img:
             game.started = True
             # new image
-            self.emit('set_attribute', {
-            'room': room,
-            'id': "current-image",
-            'attribute': "src",
-            'value': "http://localhost:3000/" + game.curr_img["filename"]
-            })
+            self.emit('set_attribute',
+                      {'room': room,
+                       'id': "current-image",
+                       'attribute': "src",
+                       'value': "http://localhost:3000/" + game.curr_img["filename"]
+                       })
             # new audio file
             # self.emit('set_attribute', {
             # 'room': room,
@@ -118,16 +122,20 @@ class ChatNamespace(BaseNamespace):
             game.started = False
 
             amt_token = generate_token(14)+"02"
-            self.emit("set_text", {"id": "overlay-textbox", 'text': "Good job! Here's your token: {token}".format(token=amt_token), 'room': room})
+            self.emit("set_text",
+                      {"id": "overlay-textbox",
+                       'text': "Good job! Here's your token: {token}".format(token=amt_token),
+                       'room': room
+                       })
 
-            self.emit('set_attribute', {
-            'room': room,
-            'id': "current-image",
-            'attribute': "src",
-            'value': ""
-            })
+            self.emit('set_attribute',
+                      {'room': room,
+                       'id': "current-image",
+                       'attribute': "src",
+                       'value': ""
+                       })
 
-    def start_game(self,room):
+    def start_game(self, room):
         """
         prepare & start game:
         set first images
@@ -139,7 +147,7 @@ class ChatNamespace(BaseNamespace):
 
         # check if game was already started
         if game.started is True:
-            self.emit("text", {"msg": "Game already started!", 'room':room})
+            self.emit("text", {"msg": "Game already started!", 'room': room})
             return
         # assign initial values
         # game.get_json("app/static/json/")
@@ -150,9 +158,9 @@ class ChatNamespace(BaseNamespace):
         # FIXME is this needed?
         # mark file as used
         # with open(game.json_path, 'w') as outfile:
-            # mark json file as used
-            #game.images["used"] = True
-            # json.dump(game.images, outfile, sort_keys=True, indent=1)
+        #     mark json file as used
+        #     game.images["used"] = True
+        #     json.dump(game.images, outfile, sort_keys=True, indent=1)
         self.emit("text", {"msg": "Game started!", 'room': room})
         # FIXME: is anything logged?
         # self.emit('log', {'type': 'message', 'msg': 'json file: ' + os.path.basename(game.json_path),'room': room})
@@ -229,12 +237,17 @@ class ChatNamespace(BaseNamespace):
             room = data['room']
             pos = data['coordinates']
 
-            print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name'],element=data['element']))
+            print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(
+                x_pos=pos['x'],
+                y_pos=pos['y'],
+                user_name=data['user']['name'],
+                element=data['element']
+                ))
 
             # check whether client clicked on button
             if data['element'] == "#startButton":
                 # start game
-                #self.start_game(room)
+                # self.start_game(room)
                 pass
             elif not game.curr_img:
                 # if image is clicked before game was started
@@ -247,7 +260,7 @@ class ChatNamespace(BaseNamespace):
                 # skip image
                 game.next_image()
                 self.set_image(room)
-            elif data['element'] in ["#replayButton","#reportButton","#fullscreenButton"]:
+            elif data['element'] in ["#replayButton", "#reportButton", "#fullscreenButton"]:
                 return
             # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):
@@ -314,7 +327,7 @@ if __name__ == '__main__':
         chat_port = {'default': None}
 
     if 'IMAGECLICK_TASK_ID' in os.environ:
-        task_id = {'default':os.environ['IMAGECLICK_TASK_ID']}
+        task_id = {'default': os.environ['IMAGECLICK_TASK_ID']}
     else:
         task_id = {'default': None}
 
