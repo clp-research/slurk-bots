@@ -1,4 +1,4 @@
-from socketIO_client import SocketIO, BaseNamespace
+import socketio
 
 import sys
 import os
@@ -6,77 +6,52 @@ import argparse
 
 TASK_ID = None
 
+class EchoBot:
+    sio = socketio.Client()
+    user_id = None
 
-# Define the namespace
-class ChatNamespace(BaseNamespace):
-    # Called when connected
-    def __init__(self, io, path):
-        super().__init__(io, path)
+    def __init__(self, host, port, token):
+        self.uri = host
+        if port:
+            self.uri += f":{port}"
+        self.uri += "/api/v2"
+        self.token = token
+        self.callbacks()
 
-        self.id = None
-        self.emit('ready')
+    def run(self):
+        self.sio.connect(self.uri, headers={'Authorization': self.token, 'Name': 'Echo'})
+        self.sio.wait()
 
-    def on_joined_room(self, data):
-        self.id = data['user']
+    def callbacks(self):
+        @self.sio.event
+        def joined_room(data):
+            self.user_id = data['user']
+            print("joined as", self.user_id)
 
-    @staticmethod
-    def get_message_response(success, error=None):
-        if not success:
-            print("Could not send message:", error)
-            sys.exit(2)
+        @self.sio.event
+        def text_message(data):
+            if not self.user_id:
+                return
 
-        print("message sent successfully")
+            sender = data['user']['id']
+            if sender == self.user_id:
+                return
 
-    def on_text_message(self, data):
-        if not self.id:
-            return
+            print("I got a message, let's send it back!:", data)
 
-        sender = data['user']['id']
-        if sender == self.id:
-            return
+            message = data['msg']
+            if message.lower() == "hello":
+                message = "World!"
+            if message.lower() == "ping":
+                message = "Pong!"
 
-        print("I got a message, let's send it back!:", data)
+            if 'room' in data and data['room']:
+                self.sio.emit("text", {'room': data['room'], 'msg': message})
+            else:
+                print("It was actually a private message oO")
+                self.sio.emit("text", {'receiver_id': data['user']['id'], 'msg': message})
 
-        message = data['msg']
-        if message.lower() == "hello":
-            message = "World!"
-        if message.lower() == "ping":
-            message = "Pong!"
-
-        if 'room' in data and data['room']:
-            self.emit("text", {'room': data['room'], 'msg': message}, self.get_message_response)
-        else:
-            print("It was actually a private message oO")
-            self.emit("text", {'receiver_id': data['user']['id'], 'msg': message}, self.get_message_response)
-
-    def on_image_message(self, data):
-        sender = data['user']['id']
-        if sender == self.id:
-            return
-
-        print("I got an image, let's send it back!:", data)
-
-        if 'room' in data and data['room']:
-            self.emit("image", {'room': data['room'],
-                                'url': data['url'],
-                                'width': data['width'],
-                                'height': data['height']},
-                      self.get_message_response)
-        else:
-            print("It was actually a private message oO")
-            self.emit("image", {'receiver_id': data['user']['id'],
-                                'url': data['url'],
-                                'width': data['width'],
-                                'height': data['height']},
-                      self.get_message_response)
-
-    def on_new_task_room(self, data):
-        print("new task room", data)
-        if data['task'] == TASK_ID:
-            self.emit("join_room", {'user': self.id, 'room': data['room']})
-
-
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='Run Echo bot')
 
     if 'TOKEN' in os.environ:
@@ -116,16 +91,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     TASK_ID = args.task_id
 
-    uri = args.chat_host
-    if args.chat_port:
-        uri += f":{args.chat_port}"
-
     sys.stdout.flush()
-    uri += "/api/v2"
-    token = args.token
 
-    # We pass token and name in request header
-    socketIO = SocketIO(args.chat_host, args.chat_port,
-                        headers={'Authorization': args.token, 'Name': 'Echo'},
-                        Namespace=ChatNamespace)
-    socketIO.wait()
+    echo_bot = EchoBot(args.chat_host, args.chat_port, args.token)
+    echo_bot.run()
+
+if __name__ == '__main__':
+    main()
