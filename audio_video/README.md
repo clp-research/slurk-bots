@@ -17,4 +17,3 @@ Following steps setup and run an OpenVidu Server and Slurk Audio Bot (+Slurk Ser
 on OpenVidu server was started like ```penvidu.Server - Created new session `pilot-4243a8e0-1054-11ea-87a6-025000000001```)
 5. Open a browser with url [http://localhost:5000](http://localhost:5000)
 6. Enter any username and the client token provided in the output of ```start.sh``` script
-7. Rage because an error occurs
