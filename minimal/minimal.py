@@ -36,7 +36,7 @@ class MinimalBot:
             self.uri += f':{port}'
         self.uri += '/slurk/api'
         # register all event handlers
-        self.callbacks()
+        self.register_callbacks()
 
     def run(self):
         # establish a connection to the server
@@ -48,7 +48,7 @@ class MinimalBot:
         # wait until the connection with the server ends
         self.sio.wait()
 
-    def callbacks(self):
+    def register_callbacks(self):
         @self.sio.event
         def joined_room(data):
             # get the id of the room that was entered
