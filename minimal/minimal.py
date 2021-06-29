@@ -110,8 +110,8 @@ if __name__ == '__main__':
         user = {'default': os.environ['SLURK_USER']}
     else:
         user = {'required': True}
-    chat_host = {'default': os.environ.get('SLURK_HOST', 'http://localhost')}
-    chat_port = {'default': os.environ.get('SLURK_PORT')}
+    host = {'default': os.environ.get('SLURK_HOST', 'http://localhost')}
+    port = {'default': os.environ.get('SLURK_PORT')}
 
     # register commandline arguments
     parser.add_argument('-t', '--token',
@@ -120,16 +120,16 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--user',
                         help='user id for the bot',
                         **user)
-    parser.add_argument('-c', '--chat_host',
+    parser.add_argument('-c', '--host',
                         help='full URL (protocol, hostname) of chat server',
-                        **chat_host)
-    parser.add_argument('-p', '--chat_port',
+                        **host)
+    parser.add_argument('-p', '--port',
                         type=int,
                         help='port of chat server',
-                        **chat_port)
+                        **port)
     args = parser.parse_args()
 
     # create bot instance
-    minimal_bot = MinimalBot(args.token, args.user, args.chat_host, args.chat_port)
+    minimal_bot = MinimalBot(args.token, args.user, args.host, args.port)
     # connect to chat server
     minimal_bot.run()
