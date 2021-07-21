@@ -9,4 +9,4 @@ docker run -e SLURK_TOKEN=d8fb2d9a-8afe-43c3-87b5-2c934596907f -e SLURK_USER=2 -
 ```
 
 The token has to be linked to a permissions entry that gives the bot at least the following rights: `api`, `send_html_message` and `send_privately`
-Please refer to <https://clp-research.github.io/slurk/slurk_multibots.html> for a more detailed information.
+Please refer to <https://clp-research.github.io/slurk/slurk_multibots.html> for more detailed information.
