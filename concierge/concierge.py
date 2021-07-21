@@ -183,6 +183,7 @@ class ConciergeBot:
                 etag = self.join_room(user_id, new_room["id"])
                 self.delete_room(user_id, old_room_id, etag)
             del self.tasks[task_id]
+            self.sio.emit("room_created", {"room": new_room["id"], "task": task_id})
         else:
             import time  # TODO: temporary solution
             time.sleep(2)
