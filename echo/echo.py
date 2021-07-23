@@ -22,7 +22,7 @@ class EchoBot:
             self.uri += f":{port}"
         self.uri += "/slurk/api"
 
-        LOG.info(f"Running concierge bot on {self.uri} with token {self.token}")
+        LOG.info(f"Running echo bot on {self.uri} with token {self.token}")
         # register all event handlers
         self.register_callbacks()
 
@@ -37,7 +37,7 @@ class EchoBot:
         self.sio.wait()
 
     @staticmethod
-    def message_callback(success, error_msg=None):
+    def message_callback(success, error_msg="Unknown Error"):
         if not success:
             LOG.error(f"Could not send message: {error_msg}")
             exit(1)
@@ -52,14 +52,14 @@ class EchoBot:
         def new_task_room(data):
             room_id = data["room"]
             task_id = data["task"]
-            if task_id == self.task_id:
+            if self.task_id is None or task_id == self.task_id:
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}"
                 )
                 if not response.ok:
-                    LOG.error(f"Could not let EchoBot join room: {response.status_code}")
-                    exit(2)
-                LOG.debug("EchoBot joins new task room", data)
+                    LOG.error(f"Could not let echo bot join room: {response.status_code}")
+                    response.raise_for_status()
+                LOG.debug("Echo bot joins new task room", data)
 
         @self.sio.event
         def text_message(data):
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     # register commandline arguments
     parser.add_argument(
-        "-t", "--token", help="token for logging in as bot (see SERVURL/token)", **token
+        "-t", "--token", help="token for logging in as bot", **token
     )
     parser.add_argument("-u", "--user", help="user id for the bot", **user)
     parser.add_argument(
