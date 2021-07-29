@@ -54,7 +54,8 @@ class EchoBot:
             task_id = data["task"]
             if self.task_id is None or task_id == self.task_id:
                 response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}"
+                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
                 )
                 if not response.ok:
                     LOG.error(f"Could not let echo bot join room: {response.status_code}")
