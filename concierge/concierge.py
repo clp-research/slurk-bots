@@ -127,7 +127,8 @@ class ConciergeBot:
         :type room_id: int
         """
         response = requests.post(
-            f"{self.uri}/users/{user_id}/rooms/{room_id}"
+            f"{self.uri}/users/{user_id}/rooms/{room_id}",
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         if not response.ok:
             LOG.error(f"Could not let user join room: {response.status_code}")
@@ -147,7 +148,8 @@ class ConciergeBot:
         """
         response = requests.delete(
             f"{self.uri}/users/{user_id}/rooms/{room_id}",
-            headers={"If-Match": etag}
+            headers={"Authorization": f"Bearer {self.token}",
+                     "If-Match": etag}
         )
         if not response.ok:
             LOG.error(f"Could not remove user from room: {response.status_code}")
@@ -185,8 +187,6 @@ class ConciergeBot:
             del self.tasks[task_id]
             self.sio.emit("room_created", {"room": new_room["id"], "task": task_id})
         else:
-            import time  # TODO: temporary solution
-            time.sleep(2)
             self.sio.emit(
                 "text",
                 {
