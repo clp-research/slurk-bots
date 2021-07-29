@@ -54,7 +54,7 @@ class MathBot:
     def register_callbacks(self):
         @self.sio.event
         def new_task_room(data):
-            """Listen to events and join the room when the task matches the ID."""
+            """Join the room when the task matches the ID."""
             room_id = data["room"]
             task_id = data["task"]
             if self.task_id is None or task_id == self.task_id:
@@ -108,13 +108,13 @@ class MathBot:
         self.sio.emit(
             "text",
             {"message": "A math question has been created!",
-            "room": room_id},
+             "room": room_id},
             callback=self.message_callback
         )
         self.sio.emit(
             "text",
             {"message": query,
-            "room": room_id},
+             "room": room_id},
             callback=self.message_callback
         )
 
@@ -124,7 +124,7 @@ class MathBot:
         if room_id not in self.questions:
             self.sio.emit(
                 "text",
-                {"message": f"Ups, no question found that you could answer!",
+                {"message": "Ups, no question found that you could answer!",
                  "room": room_id,
                  "receiver_id": user_id},
                 callback=self.message_callback
@@ -154,7 +154,7 @@ class MathBot:
         else:
             self.sio.emit(
                 "text",
-                {"message": f"Come on! Don't answer your own question.",
+                {"message": "Come on! Don't answer your own question.",
                  "room": room_id,
                  "receiver_id": user_id},
                 callback=self.message_callback
