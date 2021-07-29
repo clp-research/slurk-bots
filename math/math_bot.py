@@ -1,145 +1,200 @@
-"""
-A simple math bot where two parties ask each other simple math
-questions and the bot check the correct answer.
-
-The bot consists of several functions:
-on_command - provides interface for users to create and answer math questions
-_command_question - provides logic for question creation
-_command_answer - provides logic for comparing proposed answer with the solution
-on_new_task_room - listen on "new_task_room" event and join the room
-get_message_response - callback to verify successful emits
-
-You can create question and answer using "/question" and "/answer" e.g.
-"/question 3+6" (where the appropriate response is "/answer 9").
-
-To ensure users are permitted to send commands, please set "message_command: true"
-when creating token for new users and math bot.
-"""
-
-from socketIO_client import BaseNamespace, SocketIO
-
-import sys
-import os
 import argparse
+import logging
+import os
+import re
 
-TASK_ID = None
+import requests
+import socketio
 
 
-class ChatNamespace(BaseNamespace):
-    def __init__(self, io, path):
-        super().__init__(io, path)
-        self.id = None
-        self.emit('ready')
-        self.questions = {}
+LOG = logging.getLogger(__name__)
+
+
+class MathBot:
+    sio = socketio.Client(logger=True)
+    task_id = None
+
+    def __init__(self, token, user, host, port):
+        """
+        Two parties ask each other simple math questions
+        and the bot checks the correct answer.
+        """
+        self.token = token
+        self.user = user
+
+        self.uri = host
+        if port is not None:
+            self.uri += f":{port}"
+        self.uri += "/slurk/api"
+
+        self.questions = dict()
+
+        LOG.info(f"Running math bot on {self.uri} with token {self.token}")
+        # register all event handlers
+        self.register_callbacks()
+
+    def run(self):
+        """Establish a connection to the server."""
+        self.sio.connect(
+            self.uri,
+            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            namespaces="/",
+        )
+        # wait until the connection with the server ends
+        self.sio.wait()
 
     @staticmethod
-    def get_message_response(success, error=None):
+    def message_callback(success, error_msg="Unknown Error"):
+        """Verify whether an emit was succesful."""
         if not success:
-            print("Could not send message:", error)
-            sys.exit(2)
+            LOG.error(f"Could not send message: {error_msg}")
+            exit(1)
+        LOG.debug("Sent message successfully.")
 
-        print("message sent successfully")
-        sys.stdout.flush()
+    def register_callbacks(self):
+        @self.sio.event
+        def new_task_room(data):
+            """Listen to events and join the room when the task matches the ID."""
+            room_id = data["room"]
+            task_id = data["task"]
+            if self.task_id is None or task_id == self.task_id:
+                response = requests.post(
+                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                if not response.ok:
+                    LOG.error(f"Could not let math bot join room: {response.status_code}")
+                    response.raise_for_status()
+                LOG.debug("Math bot joins new task room", data)
 
-    def on_command(self, data):
-        """
-        Process the question and answer turns for both parties.
-        """
-        if data["command"].startswith("question"):
-            self.emit("text", {'room': data['room'], 'msg': 'You have set a question', 'receiver_id': data['user']['id']}, self.get_message_response)
-            self._command_question(data)
-        elif data["command"].startswith("answer"):
-            self.emit("text", {'room': data['room'], 'msg': 'You have set an answer', 'receiver_id': data['user']['id']}, self.get_message_response)
-            self._command_answer(data)
-        else:
-            self.emit("text", {'room': data['room'], 'msg': '{} is not a valid command'.format(data['command']), 
-                               'receiver_id': data['user']['id']}, self.get_message_response)
-
-    def _command_question(self, data):
-        """
-        Broadcast math question to the room.
-        """
-        if 'room' in data and data['room']:
-            query = data["command"].split(' ')[-1]
-            self.questions[data["room"]] = query
-            self.questions["sender"] = data["user"]["id"]
-            self.emit("text", {'room': data['room'], 'msg': "A math question has been created!"}, self.get_message_response)
-            self.emit("text", {'room': data['room'], 'msg': query}, self.get_message_response)
-
-    def _command_answer(self, data):
-        """
-        Check if the provided answer is correct.
-        """
-        sender = data["user"]["id"]
-        answer = data["command"].split(' ')[-1]
-
-        if 'room' in data and data['room'] and self.questions["sender"] != sender:
-            self.emit("text", {'room': data['room'], 'msg': "Your answer is {}".format(answer), 'receiver_id' : sender}, self.get_message_response)
-            self.emit("text", {'room': data['room'], 'msg': "The proposed answer is {}".format(answer)}, self.get_message_response)
-            if eval(self.questions[data["room"]]) == int(answer):
-                self.emit("text", {'room': data['room'], 'msg': "Turns out {}'s answer is correct!".format(data['user']['name'])}, self.get_message_response)
+        @self.sio.event
+        def command(data):
+            """Process question and answer turns for both parties."""
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+            if data["command"].startswith("question"):
+                self.sio.emit(
+                    "text",
+                    {"message": "You have sent a question.",
+                     "room": room_id,
+                     "receiver_id": user_id},
+                    callback=self.message_callback
+                )
+                self._command_question(user_id, room_id, data["command"])
+            elif data["command"].startswith("answer"):
+                self.sio.emit(
+                    "text",
+                    {"message": "You have sent an answer.",
+                     "room": room_id,
+                     "receiver_id": user_id},
+                    callback=self.message_callback
+                )
+                self._command_answer(user_id, room_id, data["command"])
             else:
-                self.emit("text", {'room': data['room'], 'msg': "Unfortunately {}'s answer is wrong, please try again!".format(data['user']['name'])}, self.get_message_response)
+                self.sio.emit(
+                    "text",
+                    {"message": f"`{data['command']}` is not a valid command.",
+                     "room": room_id,
+                     "receiver_id": user_id},
+                    callback=self.message_callback
+                )
 
-    def on_new_task_room(self, data):
-        """
-        Listen to events and join the room when the task matches the ID.
-        """
-        if data['task'] == TASK_ID:
-            self.emit("join_room", {'user': self.id, 'room': data['room']})
+    def _command_question(self, user_id, room_id, command):
+        """Broadcast math question to the room."""
+        query = re.sub(r"^question\s*", "", command)
+        self.questions[room_id] = query
+        self.questions["sender"] = user_id
+
+        self.sio.emit(
+            "text",
+            {"message": "A math question has been created!",
+            "room": room_id},
+            callback=self.message_callback
+        )
+        self.sio.emit(
+            "text",
+            {"message": query,
+            "room": room_id},
+            callback=self.message_callback
+        )
+
+    def _command_answer(self, user_id, room_id, command):
+        """Check if the provided answer is correct."""
+        answer = re.sub(r"^answer\s*", "", command)
+        if room_id not in self.questions:
+            self.sio.emit(
+                "text",
+                {"message": f"Ups, no question found that you could answer!",
+                 "room": room_id,
+                 "receiver_id": user_id},
+                callback=self.message_callback
+            )
+            return
+        if self.questions["sender"] != user_id:
+            self.sio.emit(
+                "text",
+                {"message": f"The proposed answer is: {answer}",
+                 "room": room_id},
+                callback=self.message_callback
+            )
+            if eval(self.questions[room_id]) == int(answer):
+                self.sio.emit(
+                    "text",
+                    {"message": "Turns out the answer is correct!",
+                     "room": room_id},
+                    callback=self.message_callback
+                )
+            else:
+                self.sio.emit(
+                    "text",
+                    {"message": "Unfortunately the answer is wrong, please try again!",
+                     "room": room_id},
+                    callback=self.message_callback
+                )
+        else:
+            self.sio.emit(
+                "text",
+                {"message": f"Come on! Don't answer your own question.",
+                 "room": room_id,
+                 "receiver_id": user_id},
+                callback=self.message_callback
+            )
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run Math Bot')
+    # set up logging configuration
+    logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
-    if 'TOKEN' in os.environ:
-        token = {'default': os.environ['TOKEN']}
+    # create commandline parser
+    parser = argparse.ArgumentParser(description="Run Math Bot.")
+
+    # collect environment variables as defaults
+    if "SLURK_TOKEN" in os.environ:
+        token = {"default": os.environ["SLURK_TOKEN"]}
     else:
-        token = {'required': True}
-
-    if 'CHAT_HOST' in os.environ:
-        chat_host = {'default': os.environ['CHAT_HOST']}
+        token = {"required": True}
+    if "SLURK_USER" in os.environ:
+        user = {"default": os.environ["SLURK_USER"]}
     else:
-        chat_host = {'default': 'http://localhost'}
+        user = {"required": True}
+    host = {"default": os.environ.get("SLURK_HOST", "http://localhost")}
+    port = {"default": os.environ.get("SLURK_PORT")}
+    task_id = {"default": os.environ.get("MATH_TASK_ID")}
 
-    if 'CHAT_PORT' in os.environ:
-        chat_port = {'default': os.environ['CHAT_PORT']}
-    else:
-        chat_port = {'default': None}
-
-    if 'MATH_TASK_ID' in os.environ:
-        task_id = {'default':os.environ['MATH_TASK_ID']}
-    else:
-        task_id = {'default': None}
-
-    parser.add_argument('-t', '--token',
-                        help='token for logging in as bot (see SERVURL/token)',
-                        **token)
-    parser.add_argument('-c', '--chat_host',
-                        help='full URL (protocol, hostname; ending with /) of chat server',
-                        **chat_host)
-    parser.add_argument('-p', '--chat_port',
-                        type=int,
-                        help='port of chat server',
-                        **chat_port)
-    parser.add_argument('--task_id',
-                        type=int,
-                        help='Task to join',
-                        **task_id)
+    # register commandline arguments
+    parser.add_argument(
+        "-t", "--token", help="token for logging in as bot", **token
+    )
+    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument(
+        "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
+    )
+    parser.add_argument("-p", "--port", type=int, help="port of chat server", **port)
+    parser.add_argument("--task_id", type=int, help="task to join", **task_id)
     args = parser.parse_args()
-    TASK_ID = args.task_id
 
-    uri = args.chat_host
-    if args.chat_port:
-        uri += f":{args.chat_port}"
-
-    sys.stdout.flush()
-    uri += "/api/v2"
-    token = args.token
-
-    # We pass token and name in request header
-    socketIO = SocketIO(args.chat_host, args.chat_port,
-                        headers={'Authorization': args.token, 'Name': 'Math Bot'},
-                        Namespace=ChatNamespace)
-    socketIO.wait()
-
+    # create bot instance
+    math_bot = MathBot(args.token, args.user, args.host, args.port)
+    math_bot.task_id = args.task_id
+    # connect to chat server
+    math_bot.run()
