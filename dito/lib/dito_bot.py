@@ -163,7 +163,8 @@ class DiToBot:
                 self.timers_per_room[room_id].ready_timer.start()
 
                 response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}"
+                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
                 )
                 if not response.ok:
                     LOG.error(f"Could not let dito bot join room: {response.status_code}")
