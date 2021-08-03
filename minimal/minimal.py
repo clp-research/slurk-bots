@@ -78,7 +78,7 @@ class MinimalBot:
                 # read out information delivered with the response
                 user = response.json()
                 self.sio.emit(
-                    "text", {"msg": f'Hi^o^ I am a {user["name"]}!', "room": room_id}
+                    "text", {"message": f'Hi^o^ I am a {user["name"]}!', "room": room_id}
                 )
 
             # retrieve all log entries for this room and user
