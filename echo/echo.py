@@ -86,7 +86,11 @@ class EchoBot:
                 LOG.debug("It was actually a private message o.O")
                 self.sio.emit(
                     "text",
-                    {"receiver_id": data["user"]["id"], "message": message},
+                    {
+                        "room": data["room"],
+                        "receiver_id": data["user"]["id"],
+                        "message": message
+                    },
                     callback=self.message_callback
                 )
 
@@ -114,6 +118,7 @@ class EchoBot:
                 self.sio.emit(
                     "image",
                     {
+                        "room": data["room"],
                         "receiver_id": data["user"]["id"],
                         "url": data["url"],
                         "width": data["width"],
