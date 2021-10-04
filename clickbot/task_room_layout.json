@@ -8,19 +8,19 @@
         {
             "layout-type": "div",
             "style": "text-align: center; margin: 10px;",
-            "layout-content": [{
+            "layout-content": [
+	        {
+                    "layout-type": "audio controls",
+                    "id": "audio-file",
+                    "src": "",
+                    "autoplay": "true",
+                    "style": "height:30px; width: 70%;"
+		},
+		{
                     "layout-type": "button",
                     "layout-content": "Start!",
                     "id": "start-button",
                     "onclick": "submit_command(\"start\");"
-                },
-                {
-                    "layout-type": "audio",
-                    "id": "audio-file",
-                    "controls src": "",
-                    "class": "dis-button",
-                    "autoplay": "true"
-
                 },
                 {
                     "layout-type": "button",

@@ -6,7 +6,7 @@ While the game is running an image is displayed on the right side of the page. T
 
 To run the bot, you can run a command in a similar fashion as:
 ```bash
-docker run -e SLURK_TOKEN="6c2796b1-0c55-4c1d-a379-5d7afe5629c1" -e SLURK_USER=1 -e SLURK_PORT=5000 -e CLICK_DATA="shape-colors.json" -e CLICK_TASK_ID=1 --net="host" slurk/concierge-bot
+docker run -e SLURK_TOKEN=ad6f2c73-95c3-478f-977f-bc25edcd8c5e -e SLURK_USER=170 -e CLICK_DATA="test_items/shape-colors.json" -e CLICK_TASK_ID=2 -e SLURK_PORT=5000 --net="host" slurk/click-bot
 ```
 
 The token has to be linked to a permissions entry that gives the bot at least the following rights: `api` and `send_message`
