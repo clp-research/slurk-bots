@@ -35,7 +35,7 @@ echo $SLURK_TOKEN
 WAITING_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/concierge/waiting_room_layout.json | jq .id)
 echo "Waiting Room Layout Id:"
 echo $WAITING_ROOM_LAYOUT
-WAITING_ROOM=$(check_response scripts/create_room.sh 1 | jq .id)
+WAITING_ROOM=$(check_response scripts/create_room.sh $WAITING_ROOM_LAYOUT | jq .id)
 echo "Waiting Room Id:"
 echo $WAITING_ROOM
 
