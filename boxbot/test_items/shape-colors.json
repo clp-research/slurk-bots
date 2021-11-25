@@ -1,0 +1,101 @@
+{
+    "0": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/red-triangle.wav",
+        "bb": [
+            0.00,
+            0.00,
+            0.35,
+            0.25
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "red triangle"
+    },
+    "1": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/green-triangle.wav",
+        "bb": [
+            0.35,
+            0.00,
+            0.65,
+            0.25
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "green triangle"
+    },
+    "2": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/blue-triangle.wav",
+        "bb": [
+            0.65,
+            0.00,
+            1.00,
+            0.25
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "blue triangle"
+    },
+    "3": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/red-circle.wav",
+        "bb": [
+            0.00,
+            0.25,
+            0.35,
+            0.46
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "red circle"
+    },
+    "4": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/green-circle.wav",
+        "bb": [
+            0.35,
+            0.25,
+            0.65,
+            0.46
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "green circle"
+    },
+    "5": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/blue-circle.wav",
+        "bb": [
+            0.65,
+            0.25,
+            1.00,
+            0.46
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "blue circle"
+    },
+    "6": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/red-square.wav",
+        "bb": [
+            0.00,
+            0.46,
+            0.35,
+            0.72
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "red square"
+    },
+    "7": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/green-square.wav",
+        "bb": [
+            0.35,
+            0.46,
+            0.65,
+            0.72
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "green square"
+    },
+    "8": {
+        "audio_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/blue-square.wav",
+        "bb": [
+            0.65,
+            0.46,
+            1.00,
+            0.72
+        ],
+        "image_filename": "https://raw.githubusercontent.com/clp-research/slurk-bots/master/clickbot/test_items/shapes-colors.png",
+        "refexp": "blue square"
+    }
+}
