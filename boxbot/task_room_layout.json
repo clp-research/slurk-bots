@@ -1,0 +1,62 @@
+{
+    "title": "Box Task Room",
+    "html": [
+        {
+            "layout-type": "div",
+            "style": "margin: 5px 10px; min-height: 20px"
+        },
+        {
+            "layout-type": "div",
+            "style": "text-align: center; margin: 10px;",
+            "layout-content": [
+	        {
+                    "layout-type": "audio controls",
+                    "id": "audio-file",
+                    "src": "",
+                    "autoplay": "true",
+                    "style": "height:30px; width: 70%;"
+		},
+		{
+                    "layout-type": "button",
+                    "layout-content": "Start!",
+                    "id": "start-button",
+                    "onclick": "submit_command(\"start\");"
+                },
+                {
+                    "layout-type": "button",
+                    "layout-content": "Next>",
+                    "id": "next-button",
+                    "onclick": "submit_command(\"next\");",
+                    "class": "dis-button"
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "style": "text-align: center;",
+            "layout-content": [
+                {
+                    "layout-type": "image",
+                    "id": "drawing-area"
+                }
+            ]
+        }
+    ],
+    "css": {
+        ".dis-button": {
+            "display": "none;"
+        },
+        "button": {
+            "vertical-align": "top;",
+            "height": "30px;",
+            "margin": "0% 5%;"
+        }
+    },
+    "scripts": {
+        "incoming-text": "markdown",
+        "incoming-image": "display-image",
+        "submit-message": "send-message",
+        "print-history": "markdown-history",
+        "plain": "bounding-boxes"
+    }
+}

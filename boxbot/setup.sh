@@ -16,7 +16,7 @@ function check_response {
 
 # build docker images for bots
 cd ../slurk-bots
-docker build --tag "slurk/click-bot" -f clickbot/Dockerfile .
+docker build --tag "slurk/box-bot" -f boxbot/Dockerfile .
 docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
 # run slurk
@@ -40,12 +40,12 @@ echo "Waiting Room Id:"
 echo $WAITING_ROOM
 
 # create task room layout
-TASK_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/clickbot/task_room_layout.json | jq .id)
+TASK_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/boxbot/task_room_layout.json | jq .id)
 echo "Task Room Layout Id:"
 echo $TASK_ROOM_LAYOUT
 
-# create click task
-TASK_ID=$(check_response scripts/create_task.sh  "Click Task" 1 "$TASK_ROOM_LAYOUT" | jq .id)
+# create box task
+TASK_ID=$(check_response scripts/create_task.sh  "Box Task" 1 "$TASK_ROOM_LAYOUT" | jq .id)
 echo "Task Id:"
 echo $TASK_ID
 
@@ -59,18 +59,18 @@ echo $CONCIERGE_BOT
 docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e SLURK_PORT=5000 --net="host" slurk/concierge-bot &
 sleep 5
 
-# create click bot
-CLICK_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/clickbot/click_bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
-echo "Click Bot Token: "
-echo $CLICK_BOT_TOKEN
-CLICK_BOT=$(check_response scripts/create_user.sh "ClickBot" "$CLICK_BOT_TOKEN" | jq .id)
-echo "Click Bot Id:"
-echo $CLICK_BOT
-docker run -e SLURK_TOKEN=$CLICK_BOT_TOKEN -e SLURK_USER=$CLICK_BOT -e CLICK_DATA="test_items/shape-colors.json" -e CLICK_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/click-bot &
+# create box bot
+BOX_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/boxbot/box_bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
+echo "Box Bot Token: "
+echo $BOX_BOT_TOKEN
+BOX_BOT=$(check_response scripts/create_user.sh "BoxBot" "$BOX_BOT_TOKEN" | jq .id)
+echo "Box Bot Id:"
+echo $BOX_BOT
+docker run -e SLURK_TOKEN=$BOX_BOT_TOKEN -e SLURK_USER=$BOX_BOT -e BOX_DATA="test_items/shape-colors.json" -e BOX_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/box-bot &
 sleep 5
 
 # create a user
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/clickbot/click_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/boxbot/box_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User Token:"
 echo $USER1
 
