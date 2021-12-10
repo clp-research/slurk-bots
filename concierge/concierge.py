@@ -62,7 +62,7 @@ class ConciergeBot:
                 user = data["user"]
                 task = self.get_user_task(user)
                 if task:
-                    self.user_task_join(user, task, data["room"], openvidu)
+                    self.user_task_join(user, task, data["room"], self.openvidu)
             elif data["type"] == "leave":
                 user = data["user"]
                 task = self.get_user_task(user)
@@ -112,8 +112,10 @@ class ConciergeBot:
         :type layout_id: int
         """
         json = {"layout_id": layout_id}
+
         if openvidu_session_id:
             json["openvidu_session_id"] = openvidu_session_id
+
         room = requests.post(
             f"{self.uri}/rooms",
             headers={"Authorization": f"Bearer {self.token}"},
@@ -198,6 +200,7 @@ class ConciergeBot:
 
         if len(self.tasks[task_id]) == task["num_users"]:
             session_id = None
+
             if openvidu:
                 # create session
                 session = self.create_openvidu_session()
