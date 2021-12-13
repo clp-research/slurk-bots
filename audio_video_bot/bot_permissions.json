@@ -1,0 +1,6 @@
+{
+    "api": true,
+    "send_message": true,
+    "send_privately": true,
+    "openvidu_role": "MODERATOR"
+}

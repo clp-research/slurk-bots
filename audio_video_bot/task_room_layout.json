@@ -1,0 +1,39 @@
+{
+    "title": "Video Room",
+    "subtitle": "Test room for audio and video functionality",
+    "html": [
+        {
+            "layout-type": "div",
+            "style": "margin: 5px 10px; min-height: 20px"
+        },
+        {
+            "layout-type": "div",
+            "style": "text-align: left; margin: 10px;",
+            "layout-content": [
+		            {
+                    "layout-type": "button",
+                    "layout-content": "Start!",
+                    "id": "start-button",
+                    "onclick": "submit_command(\"start\");"
+                }
+            ]
+        }
+    ],
+    "css": {
+        ".dis-button": {
+            "display": "none;"
+        },
+        "button": {
+            "vertical-align": "top;",
+            "height": "30px;",
+            "margin": "0% 5%;"
+        }
+    },
+    "show_latency": false,
+    "scripts": {
+        "incoming-text": ["display-text"],
+        "incoming-image": ["display-image"],
+        "submit-message": ["send-message"],
+        "print-history": ["plain-history"]
+    }
+}
