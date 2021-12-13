@@ -92,8 +92,6 @@ class AudioVideoBot:
                     callback=self.message_callback
                 )
 
-        # FIXME: human user seems to be disconnected when entering and cannot write any messages
-        # Could not let audio video bot join room: 401
         @self.sio.event
         def command(data):
             room_id = data["room"]
