@@ -1,11 +1,11 @@
 FROM python:3.9
 
-RUN mkdir -p /usr/src/concierge
-WORKDIR /usr/src/concierge
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
 
-COPY concierge/requirements.txt /usr/src/concierge
-RUN pip install --no-cache-dir -r requirements.txt
-
+COPY templates.py /usr/src/
 COPY concierge /usr/src/concierge
 
-ENTRYPOINT ["python", "concierge.py"]
+RUN pip install --no-cache-dir -r concierge/requirements.txt
+
+ENTRYPOINT ["python", "-m", "concierge"]
