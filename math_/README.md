@@ -4,7 +4,8 @@ This is a bot that moderates a simple math question and answer session between t
 * `on_command`: provides interface for users to create and answer math questions
 
 **Commands**  
-* `
+* `/question` set a new math question, overriding any unanswered one
+* `/answer` provide an answer to a question 
 
 **Allowed Operators**  
 Mathematical expressions may only contain a limited set of operators.
