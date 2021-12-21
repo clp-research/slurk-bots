@@ -1,11 +1,11 @@
 FROM python:3.9
 
-RUN mkdir -p /usr/src/minimal
-WORKDIR /usr/src/minimal
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
 
-COPY minimal/requirements.txt /usr/src/minimal
-RUN pip install --no-cache-dir -r requirements.txt
-
+COPY templates.py /usr/src/
 COPY minimal /usr/src/minimal
 
-ENTRYPOINT ["python", "minimal.py"]
+RUN pip install --no-cache-dir -r minimal/requirements.txt
+
+ENTRYPOINT ["python", "-m", "minimal"]

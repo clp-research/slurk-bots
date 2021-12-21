@@ -1,11 +1,11 @@
 FROM python:3.9
 
-RUN mkdir -p /usr/src/math
-WORKDIR /usr/src/math
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
 
-COPY math/requirements.txt /usr/src/math
-RUN pip install --no-cache-dir -r requirements.txt
+COPY templates.py /usr/src/
+COPY math_ /usr/src/math_
 
-COPY math /usr/src/math
+RUN pip install --no-cache-dir -r math_/requirements.txt
 
-ENTRYPOINT ["python", "math_bot.py"]
+ENTRYPOINT ["python", "-m", "math_"]
