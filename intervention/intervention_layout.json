@@ -1,0 +1,10 @@
+{
+    "title": "test room for Intervention Bot",
+    "scripts": {
+        "incoming-text": "display-text",
+        "incoming-image": "display-image",
+        "submit-message": "send-intercepted-message",
+        "print-history": "plain-history"
+    },
+    "show_latency": false
+}
