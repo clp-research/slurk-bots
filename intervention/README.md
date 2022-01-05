@@ -17,11 +17,7 @@ The token needs to have at least the permissions `api`, `send_privately`, `send_
 
 The example script modifies every other message, counting separately for each user. It takes the message, capitalizes the characters and reverses the string, then sends it on.
 
-.. figure:: screenshot-example-intervention.png
-   :align: center
-   :scale: 25%
-
-   The Intervention Bot intercepting every other message, counting for each user separately.
+![The Intervention Bot intercepting every other message, counting for each user separately.](screenshot-example-intervention.png)
 
 The logs show the bot as message sender. User messages are logged as commands.
 
