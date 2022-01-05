@@ -6,7 +6,6 @@ export FLASK_ENV=development
 
 # build docker images for bots
 cd ../slurk-bots
-docker build --tag "slurk/audio-video-bot" -f audio_video_bot/Dockerfile .
 docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 docker build --tag "slurk/intervention-bot" -f intervention/Dockerfile .
 
