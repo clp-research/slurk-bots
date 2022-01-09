@@ -1,4 +1,6 @@
+import argparse
 import logging
+import os
 
 import requests
 
@@ -6,13 +8,18 @@ from templates import Bot
 
 
 class ConciergeBot(Bot):
-    def __init__(self, token, user, host, port):
+    def __init__(self, token, user, host, port, openvidu=False):
         """This bot lists users joining a designated
         waiting room and sends a group of users to a task room
         as soon as the minimal number of users needed for the
         task is reached.
+
+        :param openvidu: Whether slurk has an OpenVidu connection
+            specified that is to be used.
+        :type openvidu: bool
         """
         super().__init__(token, user, host, port)
+        self.openvidu = openvidu
         self.tasks = dict()
 
     def register_callbacks(self):
@@ -22,7 +29,7 @@ class ConciergeBot(Bot):
             task = self.get_user_task(user)
             if data["type"] == "join":
                 if task:
-                    self.user_task_join(user, task, data["room"])
+                    self.user_task_join(user, task, data["room"], self.openvidu)
             elif data["type"] == "leave":
                 if task:
                     self.user_task_leave(user, task)
@@ -40,19 +47,33 @@ class ConciergeBot(Bot):
         self.request_feedback(task, "ConciergeBot requests user task")
         return task.json()
 
-    def create_room(self, layout_id):
+    def create_room(self, layout_id, openvidu_session_id=None):
         """Create room for the task.
 
         :param layout_id: Unique key of layout object.
         :type layout_id: int
         """
+        json = {"layout_id": layout_id}
+
+        if openvidu_session_id:
+            json["openvidu_session_id"] = openvidu_session_id
+
         room = requests.post(
             f"{self.uri}/rooms",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"layout_id": layout_id}
+            json=json
         )
         self.request_feedback(room, "ConciergeBot creates task room")
         return room.json()
+
+    def create_openvidu_session(self):
+        """Create OpenVidu session for a room."""
+        session = requests.post(
+            f"{self.uri}/openvidu/sessions",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
+        self.request_feedback(session, "ConciergeBot creates openvidu session")
+        return session.json()
 
     def join_room(self, user_id, room_id):
         """Let user join task room.
@@ -86,7 +107,7 @@ class ConciergeBot(Bot):
         )
         self.request_feedback(response, "ConciergeBot removes user from waiting room")
 
-    def user_task_join(self, user, task, room_id):
+    def user_task_join(self, user, task, room_id, openvidu=False):
         """A connected user and their task are registered.
 
         Once the final user necessary to start a task
@@ -108,7 +129,13 @@ class ConciergeBot(Bot):
         self.tasks.setdefault(task_id, {})[user_id] = room_id
 
         if len(self.tasks[task_id]) == task["num_users"]:
-            new_room = self.create_room(task["layout_id"])
+            session_id = None
+
+            if openvidu:
+                # create session
+                session = self.create_openvidu_session()
+                session_id = session["id"]
+            new_room = self.create_room(task["layout_id"], session_id)
             # list cast necessary because the dictionary is actively altered
             # due to parallel received "leave" events
             for user_id, old_room_id in list(self.tasks[task_id].items()):
@@ -151,10 +178,19 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
-    parser = ConciergeBot.create_argparser()
+    default_parser = ConciergeBot.create_argparser()
+    parser = argparse.ArgumentParser(
+        description=f"Run ConciergeBot.", parents=[default_parser], add_help=False
+    )
+
+    openvidu = {"default": bool(os.environ.get('SLURK_OPENVIDU_URL'))}
+    parser.add_argument(
+        "--openvidu", type=bool, help="specify if an OpenVidu connection exists", **openvidu
+    )
+
     args = parser.parse_args()
 
     # create bot instance
-    concierge_bot = ConciergeBot(args.token, args.user, args.host, args.port)
+    concierge_bot = ConciergeBot(args.token, args.user, args.host, args.port, args.openvidu)
     # connect to chat server
     concierge_bot.run()
