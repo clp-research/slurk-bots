@@ -16,4 +16,4 @@ Running `setup_audio_video_room.sh` from the slurk/ directory will directly lead
 to a room, skipping the waiting room setup and clicking the button won't do
 anything.
 
-[^1] This assumes that the slurk/ and slurk-bots/ are located in the same parent directory.˘
+[^1] This assumes that the slurk/ and slurk-bots/ are located in the same parent directory.

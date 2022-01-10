@@ -124,6 +124,15 @@ class AudioVideoBot:
                     callback=self.message_callback
                 )
 
+                response = requests.post(
+                    f"{self.uri}/openvidu/recordings/start/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                self.request_feedback(response, "starting a recording")
+
+
+
+
 
 if __name__ == "__main__":
     # set up logging configuration
