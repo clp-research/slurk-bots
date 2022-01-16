@@ -66,7 +66,7 @@ echo $BOX_BOT_TOKEN
 BOX_BOT=$(check_response scripts/create_user.sh "BoxBot" "$BOX_BOT_TOKEN" | jq .id)
 echo "Box Bot Id:"
 echo $BOX_BOT
-docker run -e SLURK_TOKEN=$BOX_BOT_TOKEN -e SLURK_USER=$BOX_BOT -e BOX_DATA="test_items/shape-colors.json" -e BOX_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/box-bot &
+docker run -e SLURK_TOKEN=$BOX_BOT_TOKEN -e SLURK_USER=$BOX_BOT -e BOX_DATA="boxbot/test_items/shape-colors.json" -e BOX_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/box-bot &
 sleep 5
 
 # create a user

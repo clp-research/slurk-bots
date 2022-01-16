@@ -7,7 +7,7 @@
         },
         {
             "layout-type": "div",
-            "style": "text-align: center; margin: 10px;",
+            "style": "margin: 0px 30px;",
             "layout-content": [
 	        {
                     "layout-type": "audio controls",
@@ -33,7 +33,7 @@
         },
         {
             "layout-type": "div",
-            "style": "text-align: center;",
+            "style": "padding: 10px 30px",
             "layout-content": [
                 {
                     "layout-type": "image",

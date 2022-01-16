@@ -66,7 +66,7 @@ echo $CLICK_BOT_TOKEN
 CLICK_BOT=$(check_response scripts/create_user.sh "ClickBot" "$CLICK_BOT_TOKEN" | jq .id)
 echo "Click Bot Id:"
 echo $CLICK_BOT
-docker run -e SLURK_TOKEN=$CLICK_BOT_TOKEN -e SLURK_USER=$CLICK_BOT -e CLICK_DATA="test_items/shape-colors.json" -e CLICK_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/click-bot &
+docker run -e SLURK_TOKEN=$CLICK_BOT_TOKEN -e SLURK_USER=$CLICK_BOT -e CLICK_DATA="clickbot/test_items/shape-colors.json" -e CLICK_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/click-bot &
 sleep 5
 
 # create a user
