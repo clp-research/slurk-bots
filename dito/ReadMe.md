@@ -29,3 +29,8 @@ Under `lib/config.py` you find a number of global variables that define experime
 Image pairs for the task should be specified one pair per line
 in the `image_data.csv`. The components of a pair are separated by
 a comma followed by no whitespace.
+
+
+#### Versions
+A variant of this bot compatible with slurk v2 can be accessed under the name `cola` in branch `2.0.0`. This older version comes with an AMT connector part.
+
