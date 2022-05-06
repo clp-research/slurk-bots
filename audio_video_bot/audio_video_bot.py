@@ -124,15 +124,38 @@ class AudioVideoBot:
                     callback=self.message_callback
                 )
 
+                session_id = requests.get(
+                    f"{self.uri}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
+                ).json().get('openvidu_session_id')
                 response = requests.post(
-                    f"{self.uri}/openvidu/recordings/start/{room_id}",
+                    f"{self.uri}/openvidu/recordings/start/{session_id}",
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
-                self.request_feedback(response, "starting a recording")
+                self.request_feedback(response, "start a recording")
+                file = response.json().get('')
 
+        @self.sio.event
+        def status(data):
+            if data["type"] == "leave":
+                # stop recording when a user leaves
+                room_id = data["room"]
+                session_id = requests.get(
+                    f"{self.uri}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
+                ).json().get('openvidu_session_id')
 
+                response = requests.post(
+                    f"{self.uri}/openvidu/recordings/stop/{session_id}",
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                self.request_feedback(response, "stop the recording")
 
-
+                # response = requests.get(
+                #     f"{self.uri}/openvidu/recordings/download/{session_id}",
+                #     headers={"Authorization": f"Bearer {self.token}"}
+                # )
+                # self.request_feedback(response, "download the recording")
 
 if __name__ == "__main__":
     # set up logging configuration
