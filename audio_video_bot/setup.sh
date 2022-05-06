@@ -74,11 +74,11 @@ docker run -e SLURK_TOKEN=$AV_BOT_TOKEN -e SLURK_USER=$AV_BOT -e AV_TASK_ID=$AV_
 sleep 5
 
 # create a user
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/audio_video_bot/user_permissions.json 1 $AV_TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/audio_video_bot/user_permissions_publisher.json 1 $AV_TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User Token:"
 echo $USER1
 
 # create a user
-USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/audio_video_bot/user_permissions.json 1 $AV_TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/audio_video_bot/user_permissions_publisher.json 1 $AV_TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User Token:"
 echo $USER2

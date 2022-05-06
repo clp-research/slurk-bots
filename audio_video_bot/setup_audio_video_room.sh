@@ -42,11 +42,11 @@ echo "Task Room Id:"
 echo $TASK_ROOM
 
 # create two users
-USER1=$(check_response scripts/create_room_token.sh $TASK_ROOM ../slurk-bots/audio_video_bot/user_permissions.json 1 | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER1=$(check_response scripts/create_room_token.sh $TASK_ROOM ../slurk-bots/audio_video_bot/user_permissions_publisher.json 1 | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User Token:"
 echo $USER1
 
-USER2=$(check_response scripts/create_room_token.sh $TASK_ROOM ../slurk-bots/audio_video_bot/user_permissions.json 1 | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER2=$(check_response scripts/create_room_token.sh $TASK_ROOM ../slurk-bots/audio_video_bot/user_permissions_publisher.json 1 | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User Token:"
 echo $USER2
 
