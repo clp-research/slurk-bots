@@ -70,7 +70,7 @@ echo $AV_BOT_TOKEN
 AV_BOT=$(check_response scripts/create_user.sh "AudioVideoBot" "$AV_BOT_TOKEN" | jq .id)
 echo "Audio Video Bot Id:"
 echo $AV_BOT
-docker run -e SLURK_TOKEN=$AV_BOT_TOKEN -e SLURK_USER=$AV_BOT -e AV_TASK_ID=$AV_TASK_ID -e SLURK_PORT=5000 --net="host" slurk/audio-video-bot &
+docker run -e SLURK_TOKEN=$AV_BOT_TOKEN -e SLURK_USER=$AV_BOT -e SLURK_WAITING_ROOM=$WAITING_ROOM -e AV_TASK_ID=$AV_TASK_ID -e SLURK_PORT=5000 --net="host" slurk/audio-video-bot &
 sleep 5
 
 # create a user

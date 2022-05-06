@@ -145,11 +145,12 @@ class AudioVideoBot:
                     headers={"Authorization": f"Bearer {self.token}"}
                 ).json().get('openvidu_session_id')
 
-                response = requests.post(
-                    f"{self.uri}/openvidu/recordings/stop/{session_id}",
-                    headers={"Authorization": f"Bearer {self.token}"}
-                )
-                self.request_feedback(response, "stop the recording")
+                if session_id:
+                    response = requests.post(
+                        f"{self.uri}/openvidu/recordings/stop/{session_id}",
+                        headers={"Authorization": f"Bearer {self.token}"}
+                    )
+                    self.request_feedback(response, "stop the recording")
 
                 # response = requests.get(
                 #     f"{self.uri}/openvidu/recordings/download/{session_id}",
