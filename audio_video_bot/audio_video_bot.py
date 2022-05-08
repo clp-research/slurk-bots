@@ -61,7 +61,7 @@ class AudioVideoBot:
             room_id = data["room"]
             task_id = data["task"]
 
-            if self.task_id is None or task_id == self.task_id:
+            if self.task_id is not None or task_id == self.task_id:
                 LOG.debug("Sending bot to task room")
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
@@ -91,6 +91,31 @@ class AudioVideoBot:
                      "room": room_id},
                     callback=self.message_callback
                 )
+
+        @self.sio.event
+        def status(data):
+            """Triggered if a user enters or leaves a room."""
+            # check whether the user is eligible to join this task
+            task = requests.get(
+                f"{self.uri}/users/{data['user']['id']}/task",
+                headers={"Authorization": f"Bearer {self.token}"}
+            )
+            if not task.ok:
+                LOG.error(f"Could not set task instruction title: {task.status_code}")
+                task.raise_for_status()
+            if not task.json() or task.json()["id"] != int(self.task_id):
+                return
+
+            room_id = data["room"]
+            # some joined a room
+            if data["type"] == "join":
+                # inform game partner about the rejoin event
+                self.sio.emit(
+                    "text",
+                    {"message": f"{curr_usr['name']} has joined the game. ",
+                     "room": room_id,
+                     "receiver_id": other_usr["id"]}
+                    )
 
         @self.sio.event
         def command(data):
