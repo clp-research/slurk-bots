@@ -1,6 +1,3 @@
-The image that you see is slightly different from the one your partner sees.
-
-(1) Identify the difference!
-(2) Once you agree that you have found it, you both need to type **/difference**, together with a brief description of the difference to end the game.
-(Do not forget the / preceding the word)
-
+You're Playing Imagle now! It's like Wordle, but you also see a picture.
+In some way the picture has to do with the word you're trying to guess.
+Remeber, words have only 5 letters.

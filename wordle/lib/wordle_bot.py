@@ -511,12 +511,11 @@ class WordleBot:
 
         if self.images_per_room[room_id]:
             word, image = self.images_per_room[room_id][0]
-            breakpoint()
             # show a different image to each user
-            for usr, img in zip(users, images):
+            for usr in users:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": img, "receiver_id": usr["id"]},
+                    json={"attribute": "src", "value": image, "receiver_id": usr["id"]},
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
                 if not response.ok:

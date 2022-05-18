@@ -66,7 +66,7 @@ echo $WORDLE_BOT_TOKEN
 WORDLE_BOT=$(check_response scripts/create_user.sh "WordleBot" "$WORDLE_BOT_TOKEN" | jq .id)
 echo "Wordle Bot Id:"
 echo $WORDLE_BOT
-docker run -e SLURK_TOKEN=$WORDLE_BOT_TOKEN -e SLURK_USER=$WORDLE_BOT -e SLURK_WAITING_ROOM=$WAITING_ROOM -e WORDLE_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/wordle-bot
+docker run -e SLURK_TOKEN=$WORDLE_BOT_TOKEN -e SLURK_USER=$WORDLE_BOT -e SLURK_WAITING_ROOM=$WAITING_ROOM -e WORDLE_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/wordle-bot &
 sleep 5
 
 # create two users
