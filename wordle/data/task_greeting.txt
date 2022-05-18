@@ -1,0 +1,10 @@
+**Welcome to the DiTo Game!**
+
+
+For this game you need to provide decriptions and discuss with your partner. Remember the following command to play the game:
+
+(1) Type **/difference** together with a brief description of the difference once you and your partner think you are done.
+For example : **/difference no red pyramid**
+
+
+Please type **/ready** to begin the game.
