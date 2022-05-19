@@ -483,6 +483,7 @@ class WordleBot:
                                     "text",
                                     {
                                         "message": (
+                                            f"Guesses remaining: {wordle.n} \n\n"
                                             f"Right position: {wordle.correct} \n\n"
                                             f"Wrong position: {wordle.wrong_position} \n\n "
                                             f"Useless letters: {wordle.not_in_word}"),
