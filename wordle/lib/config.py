@@ -8,6 +8,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to a comma separated (csv) file with two columns.
 # Each column containing the url to one image file.
 DATA_PATH = os.path.join(ROOT, "data", "image_data.tsv")
+WORD_LIST = os.path.join(ROOT, "data", "wordlist.txt")
+
 # This many game rounds will be played per room and player pair.
 N = 1
 # Set this seed to make the random process reproducible.
