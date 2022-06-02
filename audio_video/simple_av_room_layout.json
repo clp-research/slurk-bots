@@ -1,0 +1,14 @@
+{
+  "title": "Video Room",
+  "subtitle": "Test room for audio and video functionality",
+  "html": [
+    {
+      "layout-type": "div",
+      "style": "margin: 5px 10px; min-height: 20px"
+    }
+  ],
+  "scripts": {
+    "incoming-text": "markdown",
+    "submit-message": "send-message"
+  }
+}
