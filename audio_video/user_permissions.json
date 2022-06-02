@@ -1,5 +1,4 @@
 {
     "send_message": true,
-    "send_command": true,
     "openvidu_role": "PUBLISHER"
 }
