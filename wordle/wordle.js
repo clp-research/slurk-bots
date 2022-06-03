@@ -101,25 +101,10 @@ function checkGuess (guessString) {
         }, delay)
     }
 
-    // // users won
-    // if (guessString === rightGuessString) {
-    //     socket.emit("message_command", 
-    //         {"command": "end_round won", "room": self_room}
-    //     );
-    //     guessesRemaining = 0;
-    //     return
-
-    // } else {
-    //     guessesRemaining -= 1;
-    //     currentGuess = [];
-    //     nextLetter = 0;
-
-    //     if (guessesRemaining === 0) {
-    //         socket.emit("message_command", 
-    //             {"command": "end_round lost", "room": self_room}
-    //         );
-    //     }
-    // }
+    // update game variables
+    guessesRemaining -= 1;
+    currentGuess = [];
+    nextLetter = 0;
 }
 
 
@@ -204,9 +189,6 @@ function getKeyPressed(letter) {
 document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     const target = e.target
     let key = target.textContent.trim()
-    // console.log("emitting")
-    // console.log(e.originalTarget.innerText)
-    
     
     socket.emit("text_message", key);     
     if (!target.classList.contains("keyboard-button")) {
