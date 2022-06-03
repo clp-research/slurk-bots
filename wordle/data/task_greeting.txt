@@ -1,10 +1,11 @@
-**Welcome to the DiTo Game!**
+**Welcome to Wordle with Images**
 
 
-For this game you need to provide decriptions and discuss with your partner. Remember the following command to play the game:
+In this game you will play classic wordle with a twist: not only you will also see an image related to 
+the misterious word, but you will also play together with another person.
 
-(1) Type **/difference** together with a brief description of the difference once you and your partner think you are done.
-For example : **/difference no red pyramid**
+You will be able to enter you guess using the wordle keyboard on the right side of the web page,
+but make sure to coordinate your guesses with your parnter, only if you enter the same word you will 
+be able to advance in the game.
 
-
-Please type **/ready** to begin the game.
+Have fun!

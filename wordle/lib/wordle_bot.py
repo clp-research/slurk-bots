@@ -130,16 +130,6 @@ class WordleBot:
                     )
                 self.last_message_from[room_id] = None
 
-                # send message
-                self.sio.emit(
-                    "text",
-                    {"message": "Are you ready? "
-                                "Please type **/ready** to begin the game.",
-                        "room": room_id,
-                        "html": True}
-                )
-       
-
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
                     headers={"Authorization": f"Bearer {self.token}"}
@@ -148,6 +138,21 @@ class WordleBot:
                     LOG.error(f"Could not let wordle bot join room: {response.status_code}")
                     response.raise_for_status()
                 LOG.debug("Sending dito bot to new room was successful.")
+
+                # self.sio.emit(
+                #     "text",
+                #     {"message": "Woo-Hoo! The game will begin now.",
+                #     "room": room_id}
+                #     )
+
+                word, _ = self.images_per_room[room_id][0]
+                logging.info(room_id)
+                self.sio.emit("message_command", 
+                    {"command": f"wordle_init {word}", "room": room_id}
+                )
+
+                self.guesses_per_room[room_id] = dict()
+                self.show_item(room_id)
 
         @self.sio.event
         def joined_room(data):
@@ -273,8 +278,6 @@ class WordleBot:
                     )  
                 elif data["command"].startswith("guess"):
                     self._command_guess(room_id, user_id, data['command'])
-                elif data["command"].startswith("ready"):
-                    self._command_ready(room_id, user_id)
                 elif data["command"].startswith("end_round"):
                     self._command_end_round(room_id, user_id, data["command"])
                 elif data["command"] in {"noreply", "no reply"}:
@@ -292,81 +295,6 @@ class WordleBot:
                          "receiver_id": user_id}
                     )
 
-    def _command_ready(self, room_id, user_id):
-        """Must be sent to begin a conversation."""
-        # identify the user that has not sent this event
-        curr_usr, other_usr = self.players_per_room[room_id]
-        if curr_usr["id"] != user_id:
-            curr_usr, other_usr = other_usr, curr_usr
-
-        # only one user has sent /ready repetitively
-        if curr_usr["status"] in {"ready", "done"}:
-            sleep(.5)
-            self.sio.emit(
-                "text",
-                {"message": "You have already typed /ready.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
-            )
-            return
-        curr_usr["status"] = "ready"
-
-        # self.timers_per_room[room_id].ready_timer.cancel()
-        # a first ready command was sent
-        if other_usr["status"] == "joined":
-            sleep(.5)
-            # give the user feedback that his command arrived
-            self.sio.emit(
-                "text",
-                {"message": "Now, waiting for your partner to type /ready.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
-            )
-            # give the other user time before reminding him
-            # self.timers_per_room[room_id].ready_timer = Timer(
-            #     (TIME_READY/2)*60,
-            #     self.sio.emit,
-            #     args=[
-            #         "text",
-            #         {"message": "Your partner is ready. Please, type /ready!",
-            #          "room": room_id,
-            #          "receiver_id": other_usr["id"]}
-            #     ]
-            # )
-            # self.timers_per_room[room_id].ready_timer.start()
-        # the other player was already ready
-        else:
-            # both users are ready and the game begins
-            self.sio.emit(
-                "text",
-                {"message": "Woo-Hoo! The game will begin now.",
-                 "room": room_id}
-            )
-
-            word, _ = self.images_per_room[room_id][0]
-
-            logging.info(room_id)
-
-            self.sio.emit("message_command", 
-                {"command": f"wordle_init {word}", "room": room_id}
-            )
-
-            self.guesses_per_room[room_id] = dict()
-            self.show_item(room_id)
-            # kindly ask the users to come to an end after a certain time
-            # self.timers_per_room[room_id].game_timer = Timer(
-            #     TIME_GAME*60,
-            #     self.sio.emit,
-            #     args=[
-            #         "text",
-            #         {"message": "You both seem to be having a discussion "
-            #                     "for a long time. Could you reach an "
-            #                     "agreement and provide an answer?",
-            #          "room": room_id}
-            #     ]
-            # )
-            # self.timers_per_room[room_id].game_timer.start()
-
     def _command_guess(self, room_id, user_id, command):
         """Must be sent to end a game round."""
         # identify the user that has not sent this event
@@ -375,34 +303,6 @@ class WordleBot:
             curr_usr, other_usr = other_usr, curr_usr
 
         LOG.debug(command)
-
-        # one can't be done before both were ready
-        if "joined" in {curr_usr["status"], other_usr["status"]}:
-            self.sio.emit(
-                "text",
-                {"message": "The game has not started yet.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
-            )
-            return
-        # we expect at least 3 messages of each player
-        # elif curr_usr["msg_n"] < 3 or other_usr["msg_n"] < 3:
-        #     self.sio.emit(
-        #         "text",
-        #         {"message": "Are you sure? Please discuss some more!",
-        #          "receiver_id": curr_usr["id"],
-        #          "room": room_id}
-        #     )
-        # # this user has already recently typed /difference
-        # elif curr_usr["status"] == "done":
-        #     sleep(.5)
-        #     self.sio.emit(
-        #         "text",
-        #         {"message": "You have already typed **/difference**.",
-        #          "receiver_id": curr_usr["id"],
-        #          "room": room_id,
-        #          "html": True}
-        #     )
         
         # get the wordle for this room and the guess from the user
         wordle, _ = self.images_per_room[room_id][0]
@@ -449,17 +349,6 @@ class WordleBot:
 
         # only one entry in dict, notify other user he should send something
         if len(self.guesses_per_room[room_id]) == 1:
-        # curr_usr["status"] = "done"
-
-        # # only one user thinks they are done
-        # if other_usr["status"] != "done":
-        #     # await for the other user to agree
-        #     self.timers_per_room[room_id].done_timer = Timer(
-        #         TIME_DONE*60,
-        #         self._not_done,
-        #         args=[room_id, user_id]
-        #     )
-        #     self.timers_per_room[room_id].done_timer.start()
             self.sio.emit(
                 "text",
                 {"message": "Let's wait for your partner "
@@ -540,19 +429,7 @@ class WordleBot:
                     for usr in self.players_per_room[room_id]:
                         usr["status"] = "ready"
                         usr["msg_n"] = 0
-                    # self.timers_per_room[room_id].game_timer.cancel()
-                    # self.timers_per_room[room_id].game_timer = Timer(
-                    #     TIME_GAME*60,
-                    #     self.sio.emit,
-                    #     args=[
-                    #         "text",
-                    #         {"message": "You both seem to be having a discussion "
-                    #                 "for a long time. Could you reach an "
-                    #                 "agreement and provide an answer?",
-                    #         "room": room_id}
-                    #     ]
-                    # )
-                    # self.timers_per_room[room_id].game_timer.start()
+
                     self.show_item(room_id)
 
     def _not_done(self, room_id, user_id):
