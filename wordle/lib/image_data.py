@@ -73,13 +73,12 @@ class ImageData(dict):
             else:
                 sample.append((word, image))
         if self._shuffle:
-            pass
-            # # implements reservoir sampling
-            # for img_line, img in enumerate(self._images, self._n):
-            #     rand_line = random.randint(0, img_line)
-            #     if rand_line < self._n:
-            #         sample[rand_line] = tuple(img)
-            # self._images = None
+            # implements reservoir sampling
+            for img_line, img in enumerate(self._images, self._n):
+                rand_line = random.randint(0, img_line)
+                if rand_line < self._n:
+                    sample[rand_line] = tuple(img)
+            self._images = None
         self[room_id] = sample
 
     def _image_gen(self):
@@ -95,7 +94,7 @@ if __name__ == "__main__":
     import sys
     import unittest
 
-    im = ImageData(path="wordle/data/image_data.csv", n=3)
+    im = ImageData(path="data/image_data.tsv", n=15, shuffle=True)
 
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.append(ROOT)

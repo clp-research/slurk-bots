@@ -1,4 +1,4 @@
-### DiTo Bot: Let's Spot the **Di**fference - **To**gether!
+### Wordle Bot: Play wordle with images!
 The setting is that agent A sees a picture, and separately, agent B also sees a picture; the task for the agents then is to determine, via exchanging messages, whether they are looking at the same picture or not.
 
 This task can be divided into the following task phases:
@@ -13,12 +13,14 @@ For this purpose the following commands are defined to manage the transition bet
 + */difference* or */done* : Indicates that the players think they have come to a conclusion. */difference* requires an additional description of the difference.
 
 #### Run the Bot
+* copy ```wordle.js``` to ```slurk/slurk/views/static/plugins```
+
 To run the bot, you can run the following command:
 ```bash
-docker run -e SLURK_TOKEN=$DITO_BOT_TOKEN -e SLURK_USER=$DITO_BOT -e SLURK_WAITING_ROOM=$WAITING_ROOM -e DITO_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/dito-bot &
+docker run -e SLURK_TOKEN=$WORDLE_BOT_TOKEN -e SLURK_USER=$WORDLE_BOT -e SLURK_WAITING_ROOM=$WAITING_ROOM -e WORDLE_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/wordle-bot &
 ```
 
-The token has to be linked to a permissions entry that gives the bot at least the following rights: `api`, `send_html_message` and `send_privately`.
+The token has to be linked to a permissions entry that gives the bot at least the following rights: `api`, `send_html_message`, `send_command` and `send_privately`.
 Users assigned to this task need at least the rights: `send_message` and `send_command`
 Please refer to the slurk documentation for more detailed information.
 
