@@ -71,10 +71,16 @@ class WordleBot:
             self.uri += f":{port}"
         self.uri += "/slurk/api"
 
-        self.images_per_room = ImageData(DATA_PATH, 2, SHUFFLE, SEED)
+        self.images_per_room = ImageData(DATA_PATH, 10, SHUFFLE, SEED)
         self.players_per_room = dict()
         self.last_message_from = dict()
         self.guesses_per_room = dict()
+        self.points_per_room = dict()
+
+        # maps number of guesses to points
+        self.point_system = dict(zip(
+            [6, 5, 4, 3, 2, 1], [100, 50, 25, 10, 5, 1]
+        ))
 
         # read wordlist
         with open(WORD_LIST) as infile:
@@ -145,6 +151,7 @@ class WordleBot:
                 )
 
                 self.guesses_per_room[room_id] = dict()
+                self.points_per_room[room_id] = 0
                 self.show_item(room_id)
 
         @self.sio.event
@@ -373,16 +380,36 @@ class WordleBot:
             
             if ((wordle == guess) or (remaining_guesses == "1")):
                 sleep(2)
-                result = "WON" if wordle == guess else "LOST"
+
+                result = "LOST"
+                points = 0
+
+                if wordle == guess:
+                    result = "WON"
+                    points = self.point_system[int(remaining_guesses)]
+
+                # update points for this room
+                self.points_per_room[room_id] += points
 
                 #self.timers_per_room[room_id].done_timer.cancel()
                 self.images_per_room[room_id].pop(0)
+
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": (
+                            f"YOU {result}! For this round you get {points} points. "
+                            f"Your total standing is: {self.points_per_room[room_id]}"
+                        ),
+                        "room": room_id
+                    }
+                )
 
                 # was this the last game round?
                 if not self.images_per_room[room_id]:
                     self.sio.emit(
                         "text",
-                        {"message": f"YOU {result}! The game is over! Thank you for participating!",
+                        {"message": f"The game is over! Thank you for participating!",
                         "room": room_id}
                     )
                     sleep(1)
@@ -393,7 +420,7 @@ class WordleBot:
                     # load the next image
                     self.sio.emit(
                         "text",
-                        {"message": f"YOU {result}! Ok, let's get both of you the next image. "
+                        {"message": f"Ok, let's get both of you the next image. "
                                     f"{len(self.images_per_room[room_id])} to go!",
                         "room": room_id}
                     )
