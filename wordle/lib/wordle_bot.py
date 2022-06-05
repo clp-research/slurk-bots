@@ -82,7 +82,6 @@ class WordleBot:
                 (line.strip()) for line in infile
             )
 
-
         self.waiting_timer = None
         self.received_waiting_token = set()
 
@@ -138,12 +137,6 @@ class WordleBot:
                     LOG.error(f"Could not let wordle bot join room: {response.status_code}")
                     response.raise_for_status()
                 LOG.debug("Sending dito bot to new room was successful.")
-
-                # self.sio.emit(
-                #     "text",
-                #     {"message": "Woo-Hoo! The game will begin now.",
-                #     "room": room_id}
-                #     )
 
                 word, _ = self.images_per_room[room_id][0]
                 logging.info(room_id)
@@ -243,20 +236,6 @@ class WordleBot:
             for usr in self.players_per_room[room_id]:
                 if usr["id"] == user_id and usr["status"] == "ready":
                     usr["msg_n"] += 1
-
-            # # reset the answer timer if the message was an answer
-            # if user_id != self.last_message_from[room_id]:
-            #     LOG.debug(f"{data['user']['name']} awaits an answer.")
-            #     if self.last_message_from[room_id] is not None:
-            #         self.timers_per_room[room_id].last_answer_timer.cancel()
-            #     self.timers_per_room[room_id].last_answer_timer = Timer(
-            #         TIME_ANSWER*60,
-            #         self._noreply,
-            #         args=[room_id, user_id]
-            #     )
-            #     self.timers_per_room[room_id].last_answer_timer.start()
-            #     # save the person that last left a message
-            #     self.last_message_from[room_id] = user_id
 
         @self.sio.event
         def command(data):
@@ -394,9 +373,7 @@ class WordleBot:
             
             if ((wordle == guess) or (remaining_guesses == "1")):
                 sleep(2)
-                result = "LOST"
-                if (wordle == guess):
-                    result = "WON"
+                result = "WON" if wordle == guess else "LOST"
 
                 #self.timers_per_room[room_id].done_timer.cancel()
                 self.images_per_room[room_id].pop(0)
@@ -413,6 +390,7 @@ class WordleBot:
                     sleep(1)
                     self.close_game(room_id)
                 else:
+                    # load the next image
                     self.sio.emit(
                         "text",
                         {"message": f"YOU {result}! Ok, let's get both of you the next image. "
@@ -499,14 +477,7 @@ class WordleBot:
                 {"message": "You may also wait some more :)",
                  "room": room_id, "receiver_id": user_id}
              )
-            # no need to cancel
-            # the running out of this timer triggered this event
-            # self.waiting_timer = Timer(
-            #     TIME_WAITING*60,
-            #     self._no_partner,
-            #     args=[room_id, user_id]
-            # )
-            # self.waiting_timer.start()
+
             self.received_waiting_token.add(user_id)
         else:
             self.sio.emit(
@@ -597,44 +568,35 @@ class WordleBot:
         )
         self.room_to_read_only(room_id)
 
-        # disable all timers
-        # for timer_id in {"ready_timer",
-        #                  "game_timer",
-        #                  "done_timer",
-        #                  "last_answer_timer"}:
-        #     timer = getattr(self.timers_per_room[room_id], timer_id)
-        #     if timer is not None:
-        #         timer.cancel()
+        # # send users back to the waiting room
+        # sleep(TIME_CLOSE*60)
+        # for usr in self.players_per_room[room_id]:
+        #     sleep(TIME_CLOSE*60)
 
-        # send users back to the waiting room
-        sleep(TIME_CLOSE*60)
-        for usr in self.players_per_room[room_id]:
-            sleep(TIME_CLOSE*60)
+        #     self.rename_users(usr["id"])
 
-            self.rename_users(usr["id"])
+        #     response = requests.post(
+        #         f"{self.uri}/users/{usr['id']}/rooms/{self.waiting_room}",
+        #         headers={"Authorization": f"Bearer {self.token}"}
+        #     )
+        #     if not response.ok:
+        #         LOG.error(
+        #             f"Could not let user join waiting room: {response.status_code}"
+        #         )
+        #         response.raise_for_status()
+        #     LOG.debug("Sending user to waiting room was successful.")
 
-            response = requests.post(
-                f"{self.uri}/users/{usr['id']}/rooms/{self.waiting_room}",
-                headers={"Authorization": f"Bearer {self.token}"}
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not let user join waiting room: {response.status_code}"
-                )
-                response.raise_for_status()
-            LOG.debug("Sending user to waiting room was successful.")
-
-            response = requests.delete(
-                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={"If-Match": response.headers["ETag"],
-                         "Authorization": f"Bearer {self.token}"}
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not remove user from task room: {response.status_code}"
-                )
-                response.raise_for_status()
-            LOG.debug("Removing user from task room was successful.")
+        #     response = requests.delete(
+        #         f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+        #         headers={"If-Match": response.headers["ETag"],
+        #                  "Authorization": f"Bearer {self.token}"}
+        #     )
+        #     if not response.ok:
+        #         LOG.error(
+        #             f"Could not remove user from task room: {response.status_code}"
+        #         )
+        #         response.raise_for_status()
+        #     LOG.debug("Removing user from task room was successful.")
 
         # remove any task room specific objects
         self.images_per_room.pop(room_id)

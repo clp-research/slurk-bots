@@ -217,7 +217,7 @@
                         {
                             "layout-type": "image",
                             "id": "current-image",
-                            "style": "min-width: 70vmin; max-width: 90vmax; object-fit: contain; padding: 2%;"
+                            "style": "min-width: 70vmin; max-width: 100%; height: auto; object-fit: contain; padding: 2%;"
                         }
                     ]
                 }
