@@ -69,9 +69,11 @@ class WordleBot:
         self.uri = host
         if port is not None:
             self.uri += f":{port}"
+
+        self.url = self.uri
         self.uri += "/slurk/api"
 
-        self.images_per_room = ImageData(DATA_PATH, 10, SHUFFLE, SEED)
+        self.images_per_room = ImageData(DATA_PATH, 3, SHUFFLE, SEED)
         self.players_per_room = dict()
         self.last_message_from = dict()
         self.guesses_per_room = dict()
@@ -413,6 +415,38 @@ class WordleBot:
                         "room": room_id}
                     )
                     sleep(1)
+
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": (
+                                "Please share the folliowing text on social media: "
+                                "I played slurdle and helped science! "
+                                f"Together with {other_usr['name']}, I got {self.points_per_room[room_id]} "
+                                f"points for {self.images_per_room.n} puzzle(s). "                             
+                                f"Play here: {self.url}. #slurdle"
+                            ),
+                            "receiver_id": curr_usr["id"],
+                            "room": room_id,
+                            "html": True
+                        }
+                    )
+                    self.sio.emit(
+                        "text",
+                        {   
+                            "message": (
+                                "Please share the folliowing text on social media: "
+                                "I played slurdle and helped science! "
+                                f"Together with {curr_usr['name']}, I got {self.points_per_room[room_id]} "
+                                f"points for {self.images_per_room.n} puzzle(s). "                             
+                                f"Play here: {self.url}. #slurdle"
+                            ),
+                            "receiver_id": other_usr["id"],
+                            "room": room_id,
+                            "html": True
+                        }
+                    )
+
                     self.confirmation_code(room_id, "success")
                     sleep(1)
                     self.close_game(room_id)
