@@ -215,6 +215,21 @@ class WordleBot:
                          "room": room_id,
                          "receiver_id": other_usr["id"]}
                     )
+
+                    # start with a new word
+                    self.sio.emit(
+                        "text",
+                        {"message": (
+                            "Since there was a disconnection let's just start over"
+                        ),
+                        "room": room_id}
+                    )
+
+                    wordle, _ = self.images_per_room[room_id][0]
+                    self.sio.emit("message_command", 
+                        {"command": f"wordle_init {wordle}", "room": room_id}
+                    )
+
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
                     self.sio.emit(
@@ -360,13 +375,13 @@ class WordleBot:
         if ((len(self.guesses_per_room[room_id]) == 2) 
                 and (len(set(self.guesses_per_room[room_id].values())) == 2)):
             self.sio.emit(
-                    "text",
-                    {"message": (
-                        "You and your partner sent a different word, "
-                        "please discuss and enter the same guess"
-                    ),
-                    "room": room_id}
-                )
+                "text",
+                {"message": (
+                    "You and your partner sent a different word, "
+                    "please discuss and enter the same guess"
+                ),
+                "room": room_id}
+            )
             self.guesses_per_room[room_id] = dict()
             return
 
