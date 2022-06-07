@@ -220,15 +220,20 @@ class WordleBot:
                     self.sio.emit(
                         "text",
                         {"message": (
-                            "Since there was a disconnection let's just start over"
+                            "Since there was a disconnection let's just start "
+                            "with a new word! Have fun!"
                         ),
                         "room": room_id}
                     )
+
+                    # shuffle remaining words and start over with a new one
+                    random.shuffle(self.images_per_room[room_id])
 
                     wordle, _ = self.images_per_room[room_id][0]
                     self.sio.emit("message_command", 
                         {"command": f"wordle_init {wordle}", "room": room_id}
                     )
+                    self.show_item(room_id)
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
