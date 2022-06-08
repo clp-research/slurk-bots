@@ -101,6 +101,18 @@ class ConciergeBot:
         LOG.debug("Got user task successfully.")
         return task.json()
 
+    def get_user(self, user):
+        response = requests.get(
+            f"{self.uri}/users/{user}",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
+        if not response.ok:
+            LOG.error(
+                f"Could not get user: {response.status_code}"
+            )
+            response.raise_for_status()
+        return response.headers["ETag"]
+
     def create_room(self, layout_id):
         """Create room for the task.
 
@@ -182,8 +194,9 @@ class ConciergeBot:
             # list cast necessary because the dictionary is actively altered
             # due to parallely received "leave" events
             for user_id, old_room_id in list(self.tasks[task_id].items()):
-                etag = self.join_room(user_id, new_room["id"])
+                etag = self.get_user(user_id)
                 self.delete_room(user_id, old_room_id, etag)
+                self.join_room(user_id, new_room["id"])
             del self.tasks[task_id]
             self.sio.emit("room_created", {"room": new_room["id"], "task": task_id})
         else:
