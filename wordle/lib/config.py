@@ -37,7 +37,7 @@ TIME_GAME = 5.5
 TIME_CLOSE = 0.25
 
 
-TASK_TITLE = "Identify the difference."
+TASK_TITLE = "Find the word."
 
 with open(os.path.join(ROOT, "data", "task_description.txt"), 'r', encoding="utf-8") as f:
     TASK_DESCR = f.read()

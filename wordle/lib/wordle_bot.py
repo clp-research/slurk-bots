@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # University of Potsdam
-"""DiTo bot logic including dialog and game phases."""
+"""Wordle bot logic including dialog and game phases."""
 
 import logging
 import os
@@ -93,7 +93,7 @@ class WordleBot:
         self.waiting_timer = None
         self.received_waiting_token = set()
 
-        LOG.info(f"Running dito bot on {self.uri} with token {self.token}")
+        LOG.info(f"Running wordle bot on {self.uri} with token {self.token}")
         # register all event handlers
         self.register_callbacks()
 
@@ -144,11 +144,11 @@ class WordleBot:
                 if not response.ok:
                     LOG.error(f"Could not let wordle bot join room: {response.status_code}")
                     response.raise_for_status()
-                LOG.debug("Sending dito bot to new room was successful.")
+                LOG.debug("Sending wordle bot to new room was successful.")
 
                 word, _ = self.images_per_room[room_id][0]
                 logging.info(room_id)
-                self.sio.emit("message_command", 
+                self.sio.emit("message_command",
                     {"command": f"wordle_init {word}", "room": room_id}
                 )
 
@@ -230,7 +230,7 @@ class WordleBot:
                     random.shuffle(self.images_per_room[room_id])
 
                     wordle, _ = self.images_per_room[room_id][0]
-                    self.sio.emit("message_command", 
+                    self.sio.emit("message_command",
                         {"command": f"wordle_init {wordle}", "room": room_id}
                     )
                     self.show_item(room_id)
@@ -283,7 +283,7 @@ class WordleBot:
                          {"message": "You need to provide a guess!",
                           "room": room_id,
                           "receiver_id": user_id}
-                    )  
+                    )
                 elif data["command"].startswith("guess"):
                     self._command_guess(room_id, user_id, data['command'])
                 elif data["command"].startswith("end_round"):
@@ -311,7 +311,7 @@ class WordleBot:
             curr_usr, other_usr = other_usr, curr_usr
 
         LOG.debug(command)
-        
+
         # get the wordle for this room and the guess from the user
         wordle, _ = self.images_per_room[room_id][0]
         guess, remaining_guesses = command.split()[1:]
@@ -323,7 +323,7 @@ class WordleBot:
                 {
                     "message": (
                         "Unfortunately this word is not valid. "
-                        "make sure that there aren't any typos"
+                        "Make sure that there aren't any typos."
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -339,7 +339,7 @@ class WordleBot:
                 {
                     "message": (
                         "Unfortunately this word is not valid. "
-                        f"Your guess needs to have {len(wordle)} letters"
+                        f"Your guess needs to have {len(wordle)} letters."
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -368,8 +368,8 @@ class WordleBot:
             self.sio.emit(
                 "text",
                 {"message": "Your partner thinks that you "
-                            "have found the right word "
-                            "enter your guess",
+                            "have found the right word. "
+                            "Enter your guess.",
                     "receiver_id": other_usr["id"],
                     "room": room_id,
                     "html": True}
@@ -377,13 +377,13 @@ class WordleBot:
             return
 
         # 2 users sent different words
-        if ((len(self.guesses_per_room[room_id]) == 2) 
+        if ((len(self.guesses_per_room[room_id]) == 2)
                 and (len(set(self.guesses_per_room[room_id].values())) == 2)):
             self.sio.emit(
                 "text",
                 {"message": (
                     "You and your partner sent a different word, "
-                    "please discuss and enter the same guess"
+                    "please discuss and enter the same guess."
                 ),
                 "room": room_id}
             )
@@ -399,7 +399,7 @@ class WordleBot:
             self.sio.emit("message_command",
                 {"command": f"wordle_guess {guess}", "room": room_id}
             )
-            
+
             if ((wordle == guess) or (remaining_guesses == "1")):
                 sleep(2)
 
@@ -421,7 +421,7 @@ class WordleBot:
                     {
                         "message": (
                             f"YOU {result}! For this round you get {points} points. "
-                            f"Your total standing is: {self.points_per_room[room_id]}"
+                            f"Your total score is: {self.points_per_room[room_id]}"
                         ),
                         "room": room_id
                     }
@@ -440,10 +440,10 @@ class WordleBot:
                         "text",
                         {
                             "message": (
-                                "Please share the folliowing text on social media: "
+                                "Please share the following text on social media: "
                                 "I played slurdle and helped science! "
                                 f"Together with {other_usr['name']}, I got {self.points_per_room[room_id]} "
-                                f"points for {self.images_per_room.n} puzzle(s). "                             
+                                f"points for {self.images_per_room.n} puzzle(s). "
                                 f"Play here: {self.url}. #slurdle"
                             ),
                             "receiver_id": curr_usr["id"],
@@ -453,12 +453,12 @@ class WordleBot:
                     )
                     self.sio.emit(
                         "text",
-                        {   
+                        {
                             "message": (
-                                "Please share the folliowing text on social media: "
+                                "Please share the following text on social media: "
                                 "I played slurdle and helped science! "
                                 f"Together with {curr_usr['name']}, I got {self.points_per_room[room_id]} "
-                                f"points for {self.images_per_room.n} puzzle(s). "                             
+                                f"points for {self.images_per_room.n} puzzle(s). "
                                 f"Play here: {self.url}. #slurdle"
                             ),
                             "receiver_id": other_usr["id"],
@@ -480,7 +480,7 @@ class WordleBot:
                     )
 
                     wordle, _ = self.images_per_room[room_id][0]
-                    self.sio.emit("message_command", 
+                    self.sio.emit("message_command",
                         {"command": f"wordle_init {wordle}", "room": room_id}
                     )
 
@@ -555,7 +555,7 @@ class WordleBot:
             sleep(5)
             self.sio.emit(
                 "text",
-                {"message": "You may also wait some more :)",
+                {"message": "You may also wait some more:)",
                  "room": room_id, "receiver_id": user_id}
              )
 
