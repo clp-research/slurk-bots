@@ -1,18 +1,8 @@
 ### Wordle Bot: Play wordle with images!
-The setting is that agent A sees a picture, and separately, agent B also sees a picture; the task for the agents then is to determine, via exchanging messages, whether they are looking at the same picture or not.
-
-This task can be divided into the following task phases:
-1. Waiting for both players to get ready.
-2. Presenting each of the two players one out of a pair of pictures.
-3. Let both players discuss.
-4. Collect their decision on whether the pictures are different. In one task variant one may also require them to provide a description of the suspected difference.
-
-
-For this purpose the following commands are defined to manage the transition between task phases:
-+ */ready* : Both players have to send this command in order to move from phase 1 to phase 2
-+ */difference* or */done* : Indicates that the players think they have come to a conclusion. */difference* requires an additional description of the difference.
+Two people come together to play wordle together with a twist: they also get an extra hint in the shape of a picture. The players can discuss as long as they want before entering their guess, but they must coordinate as the Bot will only accept a guess if both players agree.
 
 #### Run the Bot
+Before you start the Bot it is important to copy the javascript file responsible for the wordle interface to slurk's plugins:
 * copy ```wordle.js``` to ```slurk/slurk/views/static/plugins```
 
 To run the bot, you can run the following command:
@@ -28,11 +18,4 @@ Please refer to the slurk documentation for more detailed information.
 #### Modifications
 Under `lib/config.py` you find a number of global variables that define experiment settings as well as short descriptions of their effect on the experiment.
 
-Image pairs for the task should be specified one pair per line
-in the `image_data.csv`. The components of a pair are separated by
-a comma followed by no whitespace.
-
-
-#### Versions
-A variant of this bot compatible with slurk v2 can be accessed under the name `cola` in branch `2.0.0`. This older version comes with an AMT connector part.
-
+Word/image pairs should be specified in a tab separated file: ```data/image_data.tsv```. The components of a pair are separated by a tab in the order: word tab link-to-image
