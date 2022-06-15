@@ -13,7 +13,7 @@ class ConciergeBot:
     sio = socketio.Client(logger=True)
     tasks = dict()
 
-    def __init__(self, token, user, host, port):
+    def __init__(self, token, user, host, port, openvidu=False):
         """This bot lists users joining a designated
         waiting room and sends a group of users to a task room
         as soon as the minimal number of users needed for the
@@ -29,9 +29,13 @@ class ConciergeBot:
         :type host: str
         :param port: Port used by the slurk chat server.
         :type port: int
+        :param openvidu: Whether slurk has an OpenVidu connection specified
+            that is to be used.
+        :type openvidu: bool
         """
         self.token = token
         self.user = user
+        self.openvidu = openvidu
         self.uri = host
         if port is not None:
             self.uri += f":{port}"
@@ -58,7 +62,7 @@ class ConciergeBot:
                 user = data["user"]
                 task = self.get_user_task(user)
                 if task:
-                    self.user_task_join(user, task, data["room"])
+                    self.user_task_join(user, task, data["room"], self.openvidu)
             elif data["type"] == "leave":
                 user = data["user"]
                 task = self.get_user_task(user)
@@ -113,22 +117,39 @@ class ConciergeBot:
             response.raise_for_status()
         return response.headers["ETag"]
 
-    def create_room(self, layout_id):
+    def create_room(self, layout_id, openvidu_session_id=None):
         """Create room for the task.
 
         :param layout_id: Unique key of layout object.
         :type layout_id: int
         """
+        json = {"layout_id": layout_id}
+
+        if openvidu_session_id:
+            json["openvidu_session_id"] = openvidu_session_id
+
         room = requests.post(
             f"{self.uri}/rooms",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"layout_id": layout_id}
+            json=json
         )
         if not room.ok:
             LOG.error(f"Could not create task room: {room.status_code}")
             exit(3)
         LOG.debug("Created room successfully.")
         return room.json()
+
+    def create_openvidu_session(self):
+        """Create OpenVidu session for a room."""
+        session = requests.post(
+            f"{self.uri}/openvidu/sessions",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
+        if not session.ok:
+            LOG.error(f"Could not create openvidu session: {session.status_code}")
+            exit(3)
+        LOG.debug("Created OpenVidu session successfully.")
+        return session.json()
 
     def join_room(self, user_id, room_id):
         """Let user join task room.
@@ -168,7 +189,7 @@ class ConciergeBot:
             exit(5)
         LOG.debug("Removing user from room was successful.")
 
-    def user_task_join(self, user, task, room):
+    def user_task_join(self, user, task, room, openvidu=False):
         """A connected user and their task are registered.
 
         Once the final user necessary to start a task
@@ -190,7 +211,13 @@ class ConciergeBot:
         self.tasks.setdefault(task_id, {})[user_id] = room
 
         if len(self.tasks[task_id]) == task["num_users"]:
-            new_room = self.create_room(task["layout_id"])
+            session_id = None
+
+            if openvidu:
+                # create session
+                session = self.create_openvidu_session()
+                session_id = session["id"]
+            new_room = self.create_room(task["layout_id"], session_id)
             # list cast necessary because the dictionary is actively altered
             # due to parallely received "leave" events
             for user_id, old_room_id in list(self.tasks[task_id].items()):
@@ -199,6 +226,9 @@ class ConciergeBot:
                 self.join_room(user_id, new_room["id"])
             del self.tasks[task_id]
             self.sio.emit("room_created", {"room": new_room["id"], "task": task_id})
+
+            LOG.info(f"Created session {session_id}")
+
         else:
             self.sio.emit(
                 "text",
@@ -247,6 +277,7 @@ if __name__ == "__main__":
         user = {"required": True}
     host = {"default": os.environ.get("SLURK_HOST", "http://localhost")}
     port = {"default": os.environ.get("SLURK_PORT")}
+    openvidu = {"default": bool(os.environ.get('SLURK_OPENVIDU_URL'))}
 
     # register commandline arguments
     parser.add_argument(
@@ -257,9 +288,12 @@ if __name__ == "__main__":
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )
     parser.add_argument("-p", "--port", type=int, help="port of chat server", **port)
+    parser.add_argument(
+        "--openvidu", type=bool, help="specify if an OpenVidu connection exists", **openvidu
+        )
     args = parser.parse_args()
 
     # create bot instance
-    concierge_bot = ConciergeBot(args.token, args.user, args.host, args.port)
+    concierge_bot = ConciergeBot(args.token, args.user, args.host, args.port, args.openvidu)
     # connect to chat server
     concierge_bot.run()
