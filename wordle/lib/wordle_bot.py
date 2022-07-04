@@ -29,9 +29,7 @@ class WordleBot:
     waiting_room = None
 
     def __init__(self, token, user, host, port):
-        """This bot allows two players that are shown two different
-        or equal pictures to discuss about what they see and decide
-        whether there are differences.
+        """This bot allows two players to play wordle together
 
         :param token: A uuid; a string following the same pattern
             as `0c45b30f-d049-43d1-b80d-e3c3a3ca22a0`
@@ -57,11 +55,14 @@ class WordleBot:
             that has answered last. A user is represented as a
             dict with the keys 'name' and 'id'.
         :type last_message_from: dict
-        :param waiting_timer: Only one user can be in the waiting
-            room at a time because the concierge bot would move
-            them once there are two. If this single user waits for
-            a prolonged time their receive an AMT token for waiting.
-        :type waiting_timer: Timer
+        :param guesses_per_room: each room is mapped to a current guess.
+            this is used to make sure that both users sent the same
+            guess for the current wordle, only so it is possible to
+            advance in the game
+        :type guesses_per_room: dict
+        :param points_per_room: a dictionary that saves for each room
+            the current point stand
+        :type points_per_room: dict
         """
         self.token = token
         self.user = user
