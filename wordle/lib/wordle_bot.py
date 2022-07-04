@@ -356,7 +356,7 @@ class WordleBot:
         # }
         self.guesses_per_room[room_id][curr_usr["id"]] = guess
 
-        # only one entry in dict, notify other user he should send something
+        # only one entry in dict, notify other user he should send a guess
         if len(self.guesses_per_room[room_id]) == 1:
             self.sio.emit(
                 "text",
@@ -377,7 +377,7 @@ class WordleBot:
             )
             return
 
-        # 2 users sent different words
+        # 2 users sent different words, notify them
         if ((len(self.guesses_per_room[room_id]) == 2)
                 and (len(set(self.guesses_per_room[room_id].values())) == 2)):
             self.sio.emit(
@@ -506,7 +506,7 @@ class WordleBot:
         )
 
     def show_item(self, room_id):
-        """Update the image and task description of the players."""
+        """Update the image of the players."""
         LOG.debug("Update the image and task description of the players.")
         # guarantee fixed user order - necessary for update due to rejoin
         users = sorted(self.players_per_room[room_id], key=lambda x: x["id"])
