@@ -1,6 +1,9 @@
+import ast
 import argparse
 import logging
+from math import *
 import os
+from pathlib import Path
 import re
 
 import requests
@@ -8,6 +11,11 @@ import socketio
 
 
 LOG = logging.getLogger(__name__)
+
+
+TASK_TITLE = "Let's solve some math!"
+TASK_DESCR = Path("task_description.txt").read_text()
+IMG_LINK = "https://upload.wikimedia.org/wikipedia/commons/a/a2/Nuvola_Math_and_Inf.svg"
 
 
 class MathBot:
@@ -67,6 +75,22 @@ class MathBot:
                     response.raise_for_status()
                 LOG.debug("Math bot joins new task room", data)
 
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr",
+                    json={"text": TASK_DESCR},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr_title",
+                    json={"text": TASK_TITLE},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": IMG_LINK},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+
         @self.sio.event
         def command(data):
             """Process question and answer turns for both parties."""
@@ -102,63 +126,103 @@ class MathBot:
     def _command_question(self, user_id, room_id, command):
         """Broadcast math question to the room."""
         query = re.sub(r"^question\s*", "", command)
-        self.questions[room_id] = query
-        self.questions["sender"] = user_id
 
-        self.sio.emit(
-            "text",
-            {"message": "A math question has been created!",
-             "room": room_id},
-            callback=self.message_callback
-        )
-        self.sio.emit(
-            "text",
-            {"message": query,
-             "room": room_id},
-            callback=self.message_callback
-        )
+        try:
+            # try to parse the input from user into a math formula
+            tree = ast.parse(query, mode='eval')
+            if not isinstance(tree.body, ast.BinOp):
+                raise SyntaxError
+
+            co = compile(tree, filename='<string>', mode='eval')
+            self.questions[room_id] = co
+            self.questions["sender"] = user_id
+
+            self.sio.emit(
+                "text",
+                {"message": "A math question has been created!",
+                "room": room_id},
+                callback=self.message_callback
+            )
+            self.sio.emit(
+                "text",
+                {"message": query,
+                "room": room_id},
+                callback=self.message_callback
+            )
+
+        except (SyntaxError, NameError):
+            # user input is malformed, inform user
+            self.sio.emit(
+                "text",
+                {"message": "Your question is malformed, please try again",
+                 "room": room_id,
+                 "receiver_id": user_id},
+                callback=self.message_callback
+            )
 
     def _command_answer(self, user_id, room_id, command):
         """Check if the provided answer is correct."""
         answer = re.sub(r"^answer\s*", "", command)
-        if room_id not in self.questions:
-            self.sio.emit(
-                "text",
-                {"message": "Ups, no question found that you could answer!",
-                 "room": room_id,
-                 "receiver_id": user_id},
-                callback=self.message_callback
-            )
-            return
-        if self.questions["sender"] != user_id:
-            self.sio.emit(
-                "text",
-                {"message": f"The proposed answer is: {answer}",
-                 "room": room_id},
-                callback=self.message_callback
-            )
-            if eval(self.questions[room_id]) == int(answer):
+
+        try:
+            # only proceed if the user entered a number as an answer
+            answer = float(answer)
+            if room_id not in self.questions:
                 self.sio.emit(
                     "text",
-                    {"message": "Turns out the answer is correct!",
-                     "room": room_id},
+                    {"message": "Oops, no question found that you could answer!",
+                    "room": room_id,
+                    "receiver_id": user_id},
                     callback=self.message_callback
                 )
+                return
+            if self.questions["sender"] != user_id:
+                self.sio.emit(
+                    "text",
+                    {"message": f"The proposed answer is: {answer}",
+                    "room": room_id},
+                    callback=self.message_callback
+                )
+                if eval(self.questions[room_id]) == answer:
+                    self.sio.emit(
+                        "text",
+                        {"message": "Turns out the answer is correct!",
+                        "room": room_id},
+                        callback=self.message_callback
+                    )
+                else:
+                    self.sio.emit(
+                        "text",
+                        {"message": "Unfortunately the answer is wrong.",
+                        "room": room_id},
+                        callback=self.message_callback
+                    )
+                    self.sio.emit(
+                        "text",
+                        {"message": "Please try again!",
+                        "room": room_id,
+                        "receiver_id": user_id},
+                        callback=self.message_callback
+                    )
             else:
                 self.sio.emit(
                     "text",
-                    {"message": "Unfortunately the answer is wrong, please try again!",
-                     "room": room_id},
+                    {"message": "Come on! Don't answer your own question.",
+                    "room": room_id,
+                    "receiver_id": user_id},
                     callback=self.message_callback
                 )
-        else:
+
+        # invalid input, inform the user the input is malformed
+        except ValueError:
             self.sio.emit(
                 "text",
-                {"message": "Come on! Don't answer your own question.",
+                {"message": "Your answer is malformed, please try again",
                  "room": room_id,
                  "receiver_id": user_id},
                 callback=self.message_callback
             )
+
 
 
 if __name__ == "__main__":
