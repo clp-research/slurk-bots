@@ -3,11 +3,6 @@
     "html": [
         {
             "layout-type": "div",
-            "id": "typing",
-            "style": "margin: 5px 10px; min-height: 20px"
-        },
-        {
-            "layout-type": "div",
             "class": "card",
             "layout-content": [
                 {
