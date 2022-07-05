@@ -1,11 +1,11 @@
 FROM python:3.9
 
-RUN mkdir -p /usr/src/echo
-WORKDIR /usr/src/echo
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
 
-COPY echo/requirements.txt /usr/src/echo
-RUN pip install --no-cache-dir -r requirements.txt
-
+COPY templates.py /usr/src/
 COPY echo /usr/src/echo
 
-ENTRYPOINT ["python", "echo.py"]
+RUN pip install --no-cache-dir -r echo/requirements.txt
+
+ENTRYPOINT ["python", "-m", "echo"]
