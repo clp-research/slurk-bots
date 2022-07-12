@@ -12,7 +12,7 @@ docker run -e SLURK_TOKEN=$WORDLE_BOT_TOKEN -e SLURK_USER=$WORDLE_BOT -e SLURK_W
 
 The token has to be linked to a permissions entry that gives the bot at least the following rights: `api`, `send_html_message`, `send_command` and `send_privately`.
 Users assigned to this task need at least the rights: `send_message` and `send_command`
-Please refer to the slurk documentation for more detailed information.
+Please refer to the [slurk documentation](https://clp-research.github.io/slurk/slurk_permissions.html) for more detailed information.
 
 
 #### Modifications
