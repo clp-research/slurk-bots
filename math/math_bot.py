@@ -147,7 +147,7 @@ class MathBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": "Ups, no question found you could answer!",
+                    "message": "Oops, no question found you could answer!",
                     "room": room_id, "receiver_id": user_id
                 },
                 callback=self.message_callback
