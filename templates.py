@@ -1,5 +1,6 @@
 """Slurk (Task)Bot template classes."""
 
+from abc import ABC, abstractmethod
 import argparse
 import logging
 import os
@@ -8,7 +9,7 @@ import requests  # NOQA
 import socketio
 
 
-class Bot:
+class Bot(ABC):
     sio = socketio.Client(logger=True)
 
     def __init__(self, token, user, host, port):
@@ -36,12 +37,13 @@ class Bot:
 
         self.register_callbacks()
 
+    @abstractmethod
     def register_callbacks(self):
         """Register all necessary event handlers."""
         pass
 
     def run(self):
-        """Establish a connections to the slurk chat server."""
+        """Establish a connection to the slurk chat server."""
         self.sio.connect(
             self.uri,
             headers={
