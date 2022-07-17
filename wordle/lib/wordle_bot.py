@@ -217,16 +217,6 @@ class WordleBot:
                          "receiver_id": other_usr["id"]}
                     )
 
-                    # start with a new word
-                    self.sio.emit(
-                        "text",
-                        {"message": (
-                            "Since there was a disconnection let's just start "
-                            "with a new word! Have fun!"
-                        ),
-                        "room": room_id}
-                    )
-
                     # shuffle remaining words and start over with a new one
                     random.shuffle(self.images_per_room[room_id])
 
