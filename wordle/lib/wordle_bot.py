@@ -626,28 +626,24 @@ class WordleBot:
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
-        self.sio.emit(
-            "text",
-            {"message": "You will be moved out of this room "
-                        f"in {TIME_CLOSE*2*60}-{TIME_CLOSE*3*60}s.",
-             "room": room_id}
-        )
         sleep(2)
         self.sio.emit(
             "text",
-            {"message": "Make sure to save your token before that.",
+            {"message": (
+                "Make sure to save your token "
+                "before you leave or reload this page."
+                ),
              "room": room_id}
         )
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
         self.images_per_room.pop(room_id)
-        # self.timers_per_room.pop(room_id)
-        self.players_per_room.pop(room_id)
         self.last_message_from.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
+        # set room to read-only
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "readonly", "value": "True"},
@@ -664,6 +660,35 @@ class WordleBot:
         if not response.ok:
             LOG.error(f"Could not set room to read_only: {response.status_code}")
             response.raise_for_status()
+
+        # remove user from room
+        for usr in self.players_per_room[room_id]:
+            response = requests.get(
+                f"{self.uri}/users/{usr['id']}",
+                headers={"Authorization": f"Bearer {self.token}"}
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not get user: {response.status_code}"
+                )
+                response.raise_for_status()
+            etag = response.headers["ETag"]
+
+            response = requests.delete(
+                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                headers={"If-Match": etag,
+                         "Authorization": f"Bearer {self.token}"}
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            LOG.debug("Removing user from task room was successful.")
+
+        # remove users from room
+        if room_id in self.players_per_room:
+            self.players_per_room.pop(room_id)
 
     def rename_users(self, user_id):
         """Give all users in a room a new random name."""
