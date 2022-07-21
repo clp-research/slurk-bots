@@ -1,3 +1,7 @@
 You're playing Slurdle now! It's like Wordle, but you also see a picture.
 In some way the picture is related to the word you're trying to guess.
 Remember, words have only 5 letters.
+Once you submit a letter, the system will check it against the secret word and the submitted letters will change colour:
+green means that the letter is in the right position.
+yellow means that the letter is in the wrong position.
+grey means that the word does not contain this letter.
