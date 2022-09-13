@@ -66,7 +66,7 @@ echo $ECHO_BOT_TOKEN
 ECHO_BOT=$(check_response scripts/create_user.sh "EchoBot" "$ECHO_BOT_TOKEN" | jq .id)
 echo "Echo Bot Id:"
 echo $ECHO_BOT
-docker run -e SLURK_TOKEN=$ECHO_BOT_TOKEN -e SLURK_USER=$ECHO_BOT -e ECHO_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/echo-bot &
+docker run -e ECHO_TOKEN=$ECHO_BOT_TOKEN -e ECHO_USER=$ECHO_BOT -e ECHO_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/echo-bot &
 sleep 5
 
 # create users
