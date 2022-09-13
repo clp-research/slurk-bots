@@ -4,8 +4,7 @@
         "incoming-text": "display-text",
         "incoming-image": "display-image",
         "submit-message": "send-message",
-        "print-history": "plain-history",
-        "plain": "keylogger"
+        "print-history": "plain-history"
     },
     "show_latency": false
 }
