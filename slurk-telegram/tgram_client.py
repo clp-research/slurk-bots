@@ -1,29 +1,52 @@
 import json
 from pathlib import Path
+from multiprocessing import Process
 
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+import time
+
+import requests
 
 
-class TGramClient:
+class TeleClient:
     def __init__(self, token):
-        self.app = ApplicationBuilder().token(token).build()
-
-    async def login(self, update, context):
-        await update.message.reply_text(f'Hello {update.effective_user.first_name}')
-
+        self.token = token
+        self.offset = 0
     
-    async def echo(self, update, context):
-        print(update)
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+    def process_updates(self, updates):
+        updates = json.loads(updates)
+        to_process = updates.get("result")
+        if to_process:
+            for update in to_process:
+                self.offset = update["update_id"] + 1
+                self.process_update(update)
+
+    def process_update(self, update):
+        message = update["message"]["text"]
+        chat_id = update["message"]["from"]["id"]
+        nickname = update["message"]["from"]["username"]
+        
+
 
     def run(self):
-        self.app.add_handler(CommandHandler("login", self.login))
-        self.app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), self.echo))
-        self.app.run_polling()
+        while True:
+            updates = requests.get(
+                f"https://api.telegram.org/bot{self.token}/getUpdates",
+                params={'offset': self.offset}
+            )
+            self.process_updates(updates.text)
+            time.sleep(2)  
+
+    def send_message(self, message, chat_id):
+        requests.post(
+            f'https://api.telegram.org/bot{self.token}/sendMessage?chat_id={chat_id}&text={message}'
+        )
 
 
 if __name__ == "__main__":
-    tokens = json.loads(Path("TOKENS.json").read_text())
-    bot = TGramClient(tokens["test"])
+    token = Path("token.txt").read_text()
+    bot = TeleClient(token)
     bot.run()
+    # p = Process(target=bot.run)
+    # p.start()
+    # # bot.run()
+    # p.join()

@@ -74,4 +74,8 @@ USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/
 echo "User 1 Token:"
 echo $USER1
 
+# USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/slurk-telegram/telegram_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+# echo "User 2 Token:"
+# echo $USER2
+
 cd ../slurk-bots
