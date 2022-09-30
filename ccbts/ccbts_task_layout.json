@@ -1,0 +1,117 @@
+{
+    "title": "Room",
+    "html": [
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content":[
+                {
+                    "layout-type": "div",
+                    "id": "instr",
+                    "style": "white-space: pre-wrap;",
+                    "layout-content": "Instruction goes here"
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content":[
+                {
+                    "layout-type": "div",
+                    "layout-content": "SOURCE BOARD"
+                },
+                {
+                    "layout-type": "div",
+                    "id": "source-grid"
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content":[
+                {
+                    "layout-type": "div",
+                    "layout-content": "TARGET BOARD"
+                },
+                {
+                    "layout-type": "div",
+                    "id": "target-grid"
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content":[
+                {
+                    "layout-type": "div",
+                    "id": "image-area",
+                    "layout-content": [
+                        {
+                            "layout-type": "image",
+                            "id": "current-image",
+                            "src": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Sailboat_Flat_Icon_Vector.svg",
+                            "style": "min-width: 70vmin; max-width: 100%; height: auto; object-fit: contain; padding: 2%;"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "css": {
+        ".grid-container": {
+            "display": "float",
+            "grid-template-columns": "auto auto auto",
+            "padding": "10px",
+            "grid-auto-flow": "column"
+        },
+        ".grid-item": {
+            "background-color": "red",
+            "border": "1px solid rgba(0, 0, 0, 0.8)",
+            "padding": "1px",
+            "font-size": "20px",
+            "text-align": "center",
+            "width": "100%"
+        },
+        ".grid-row": {
+            "width": "100%",
+            "display": "flex",
+            "grid-template-columns": "auto auto auto",
+            "grid-template-rows": "50px 100px"
+        },
+        ".card": {
+            "position": "relative",
+            "display": "flex",
+            "flex-direction": "column",
+            "min-width": "0",
+            "background-color": "#fff",
+            "background-clip": "border-box",
+            "border": "1px solid rgba(0,0,0,.125)",
+            "border-radius": ".25rem",
+            "height": "100%",
+            "margin": "0px 15px",
+            "padding": "20px"
+        },
+        "time:before": {
+            "content": "''"
+        },
+        "#image-area": {
+            "margin": "0 auto",
+            "align-items":"center",
+            "justify-content": "center"
+        },            
+        "#instr": {
+        "text-align": "center"
+        }
+    },
+    "scripts": {
+        "incoming-text": "display-text",
+        "incoming-image": "display-image",
+        "submit-message": "send-message",
+        "print-history": "plain-history",
+        "plain": "ccbt"
+    },
+    "show_latency": false
+}
