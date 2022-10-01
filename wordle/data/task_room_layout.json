@@ -27,14 +27,25 @@
                     "style": "color: #abb2b9;"
                 },
                 {
+                    "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
+                },
+                {
                     "layout-type": "hr",
-                    "layout-content": "",
-                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                    "layout-content": ""
                 },
                 {
                     "layout-type": "div",
                     "id": "instr",
                     "style": "white-space: pre-wrap;"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": ""
+                },
+                {
+                    "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
                 },
                 {
                     "layout-type": "div",
@@ -212,12 +223,24 @@
                 },
                 {
                     "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": ""
+                },
+                {
+                    "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
+                },
+                {
+                    "layout-type": "div",
                     "id": "image-area",
                     "layout-content": [
                         {
                             "layout-type": "image",
                             "id": "current-image",
-                            "style": "min-width: 70vmin; max-width: 100%; height: auto; object-fit: contain; padding: 2%;"
+                            "style": "width: 100%;"
                         }
                     ]
                 }
@@ -238,13 +261,16 @@
                 "margin": "0px 15px",
                 "padding": "20px"
             },
+            ".hr": {
+                "margin": "10px",
+                "background-color": "#abb2b9",
+                "opacity": ".50"
+            },
             "time:before": {
                 "content": "''"
             },
             "#image-area": {
-                "margin": "0 auto",
-                "align-items":"center",
-                "justify-content": "center"
+                "margin": "10 px"
             },
             "#game-board": {
                 "display": "flex",
@@ -297,7 +323,8 @@
             "text-transform": "uppercase"
             },
             "#instr": {
-            "text-align": "center"
+            "text-align": "center",
+            "margin": "10px"
             }
     },
     "scripts": {
