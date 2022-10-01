@@ -21,6 +21,10 @@ function initBoard() {
 
         board.appendChild(row)
     }
+
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        elem.style.backgroundColor = "";
+    }
 }
 
 
