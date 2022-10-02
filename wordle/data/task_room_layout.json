@@ -14,7 +14,7 @@
                                 {
                                     "layout-type": "lighter",
                                     "id": "instr_title",
-                                    "style": "min-height: 20px"
+                                    "style": "min-height: 20px; text-align: justify; text-justify: inter-word;"
                                 }
                             ]
                         }
@@ -318,7 +318,8 @@
             "text-transform": "uppercase"
             },
             "#instr": {
-            "text-align": "center",
+            "text-align": "justify",
+            "text-justify": "inter-word",
             "margin": "10px"
             }
     },
