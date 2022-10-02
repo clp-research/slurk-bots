@@ -470,6 +470,8 @@ class WordleBot:
                         "room": room_id}
                     )
 
+                    sleep(2)
+
                     wordle, _ = self.images_per_room[room_id][0]
                     self.sio.emit("message_command",
                         {"command": f"wordle_init {wordle}", "room": room_id}
