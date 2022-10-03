@@ -8,14 +8,33 @@
                 {
                     "layout-type": "div",
                     "id": "instr",
-                    "style": "white-space: pre-wrap;",
-                    "layout-content": "Instruction goes here"
+                    "layout-content": "Choose your role"
+                },
+                {
+                    "layout-type": "div",
+                    "style": "text-align: center; display: grid",
+                    "layout-content": [
+                        {
+                            "layout-type": "button",
+                            "class": "button",
+                            "role": "button",
+                            "layout-content": "Wizard",
+                            "id": "wizard_button"
+                        }, 
+                        {
+                            "layout-type": "button",
+                            "class": "button",
+                            "role": "button",
+                            "layout-content": "Player",
+                            "id": "player_button"
+                        }
+                    ]
                 }
             ]
         },
         {
             "layout-type": "div",
-            "class": "card",
+            "class": "hidden_card",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -29,7 +48,7 @@
         },
         {
             "layout-type": "div",
-            "class": "card",
+            "class": "hidden_card",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -43,7 +62,7 @@
         },
         {
             "layout-type": "div",
-            "class": "card",
+            "class": "hidden_card",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -52,7 +71,6 @@
                         {
                             "layout-type": "image",
                             "id": "current-image",
-                            "src": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Sailboat_Flat_Icon_Vector.svg",
                             "style": "min-width: 70vmin; max-width: 100%; height: auto; object-fit: contain; padding: 2%;"
                         }
                     ]
@@ -81,7 +99,7 @@
             "grid-template-columns": "auto auto auto",
             "grid-template-rows": "50px 100px"
         },
-        ".card": {
+        ".card, hidden_card": {
             "position": "relative",
             "display": "flex",
             "flex-direction": "column",
@@ -104,14 +122,49 @@
         },            
         "#instr": {
         "text-align": "center"
+        },
+        ".hidden_card": {
+            "visibility": "hidden"
+        }
+        ,
+        ".button": {
+            "background-color": "#EA4C89",
+            "border-radius": "8px",
+            "border-style": "none",
+            "box-sizing": "border-box",
+            "color": "#FFFFFF",
+            "cursor": "pointer",
+            "display": "inline-block",
+            "font-size": "14px",
+            "font-weight": "500",
+            "height": "40px",
+            "line-height": "20px",
+            "list-style": "none",
+            "margin": "10px",
+            "outline": "none",
+            "padding": "10px 16px",
+            "position": "relative",
+            "text-align": "center",
+            "text-decoration": "none",
+            "transition": "color 100ms",
+            "vertical-align": "baseline",
+            "user-select": "none",
+            "-webkit-user-select": "none",
+            "touch-action": "manipulation"
+        },
+        ".button:hover" : {
+            "content": "''"
+        },
+        ".button:focus": {
+            "background-color": "#F082AC"
         }
     },
     "scripts": {
-        "incoming-text": "display-text",
-        "incoming-image": "display-image",
-        "submit-message": "send-message",
-        "print-history": "plain-history",
-        "plain": "ccbt"
-    },
-    "show_latency": false
-}
+            "incoming-text": "display-text",
+            "incoming-image": "display-image",
+            "submit-message": "send-message",
+            "print-history": "plain-history",
+            "plain": "ccbt"
+        },
+        "show_latency": false
+    }
