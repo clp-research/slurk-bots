@@ -1,13 +1,23 @@
-$("#player_button").on('click', function(){
-    console.log("player")
+$("#player_button").on('click', function () {
+    socket.emit("message_command",
+        {
+            "command": "set_role_player",
+            "room": self_room 
+        }
+    )
 });
 
 $("#wizard_button").on('click', function () {
-    console.log("wizard")
+    socket.emit("message_command",
+        {
+            "command": "set_role_wizard",
+            "room": self_room
+        }
+    )
 });
 
 
-function display_grid(data, grid_name){
+function display_grid(data, grid_name) {
     colors = ["red", "blue", "green", "orange"]
 
     // pad data
@@ -15,13 +25,13 @@ function display_grid(data, grid_name){
     x_target = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     y = [" ", "A", "B", "C", "D"]
 
-    if (grid_name === "source"){
+    if (grid_name === "source") {
         data.unshift(x_source)
     } else {
         data.unshift(x_target)
     }
 
-    for (let i=0; i<y.length; i++) {
+    for (let i = 0; i < y.length; i++) {
         data[i].unshift(y[i])
     }
 
@@ -30,14 +40,14 @@ function display_grid(data, grid_name){
         const div = document.createElement("div");
         div.setAttribute("class", "grid-row");
 
-        for (let j=0; j<data[0].length; j++) {
+        for (let j = 0; j < data[0].length; j++) {
             const item = document.createElement("div");
             item.setAttribute("class", "grid-item");
 
             if ((i == 0) || (j == 0)) {
                 item.style.backgroundColor = "grey";
             } else {
-                item.style.backgroundColor = colors[Math.floor((j-1)/3)];
+                item.style.backgroundColor = colors[Math.floor((j - 1) / 3)];
             }
 
             item.innerHTML = data[i][j]
@@ -64,6 +74,28 @@ data = [
 ]
 
 
-display_grid(data, "source")
-display_grid(data2, "target")
-$("#current-image").attr("src", "https://upload.wikimedia.org/wikipedia/commons/d/d8/Sailboat_Flat_Icon_Vector.svg")
+//$("#current-image").attr("src", "")
+function set_wizard() {
+    $("#buttons").hide();
+    $("#source-grid").show();
+    $("#target-grid").show();
+    $("#instr").html("Harry, You're a Wizard now!");
+};
+
+
+function set_player() {
+    $("#buttons").hide();
+    $("#current-image").show();
+    $("#target-grid").show();
+    $("#instr").html("Hello player!");
+};
+
+$(document).ready(() => {
+    display_grid(data, "source")
+    display_grid(data2, "target")
+    socket.on("command", (data) => {
+        if (data.command.startsWith("role")){
+            console.log(data)
+        }
+    });
+});

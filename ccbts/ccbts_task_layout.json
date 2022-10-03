@@ -13,6 +13,7 @@
                 {
                     "layout-type": "div",
                     "style": "text-align: center; display: grid",
+                    "id": "buttons",
                     "layout-content": [
                         {
                             "layout-type": "button",
@@ -35,6 +36,7 @@
         {
             "layout-type": "div",
             "class": "hidden_card",
+            "id": "source_card",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -49,6 +51,7 @@
         {
             "layout-type": "div",
             "class": "hidden_card",
+            "id": "target_card",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -63,6 +66,7 @@
         {
             "layout-type": "div",
             "class": "hidden_card",
+            "id": "image_card",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -124,7 +128,7 @@
         "text-align": "center"
         },
         ".hidden_card": {
-            "visibility": "hidden"
+            "display": "none"
         }
         ,
         ".button": {
