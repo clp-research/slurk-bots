@@ -45,7 +45,7 @@ echo "Task Room Layout Id:"
 echo $TASK_ROOM_LAYOUT
 
 # create math task
-TASK_ID=$(check_response scripts/create_task.sh  "Ccbts Task" 1 "$TASK_ROOM_LAYOUT" | jq .id)
+TASK_ID=$(check_response scripts/create_task.sh  "Ccbts Task" 2 "$TASK_ROOM_LAYOUT" | jq .id)
 echo "Task Id:"
 echo $TASK_ID
 
@@ -74,8 +74,8 @@ USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/
 echo "User 1 Token:"
 echo $USER1
 
-# USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/echo/echo_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
-# echo "User 2 Token:"
-# echo $USER2
+USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+echo "User 2 Token:"
+echo $USER1
 
 cd ../slurk-bots
