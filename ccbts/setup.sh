@@ -66,7 +66,7 @@ echo $CCBTS_BOT_TOKEN
 CCBTS_BOT=$(check_response scripts/create_user.sh "CcbtsBot" "$CCBTS_BOT_TOKEN" | jq .id)
 echo "Ccbts Bot Id:"
 echo $CCBTS_BOT
-docker run -e CCBTS_TOKEN=$CCBTS_BOT_TOKEN -e CCBTS_USER=$CCBTS_BOT -e CCBTS_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/ccbts-bot &
+docker run -e CCBTS_TOKEN=$CCBTS_BOT_TOKEN -e CCBTS_USER=$CCBTS_BOT -e CCBTS_TASK_ID=$TASK_ID -e SLURK_WAITING_ROOM=$WAITING_ROOM -e SLURK_PORT=5000 --net="host" slurk/ccbts-bot &
 sleep 5
 
 # create users
