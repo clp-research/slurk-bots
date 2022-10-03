@@ -74,19 +74,20 @@ data = [
 ]
 
 
-//$("#current-image").attr("src", "")
+$("#current-image").attr("src", "https://upload.wikimedia.org/wikipedia/commons/d/d8/Sailboat_Flat_Icon_Vector.svg")
+
 function set_wizard() {
     $("#buttons").hide();
-    $("#source-grid").show();
-    $("#target-grid").show();
+    $("#source_card").show();
+    $("#target_card").show();
     $("#instr").html("Harry, You're a Wizard now!");
 };
 
 
 function set_player() {
     $("#buttons").hide();
-    $("#current-image").show();
-    $("#target-grid").show();
+    $("#image_card").show();
+    $("#target_card").show();
     $("#instr").html("Hello player!");
 };
 
@@ -96,6 +97,14 @@ $(document).ready(() => {
     socket.on("command", (data) => {
         if (data.command.startsWith("role")){
             console.log(data)
+
+            role = data.command.split("_")[1]
+            if (role === "wizard"){
+                set_wizard()
+            } else {
+                set_player()
+            }
         }
     });
 });
+
