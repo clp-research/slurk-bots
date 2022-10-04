@@ -275,9 +275,11 @@
             "#wrapper": {
                 "display": "flex",
                 "align-items":"center",
-                "justify-content": "center"
+                "justify-content": "center",
+                "column-gap": "2rem"
             },
             ".letter-box": {
+                "padding-top": "0.5rem",
                 "border": "2px solid gray",
                 "border-radius": "3px",
                 "margin": "2px",
@@ -294,33 +296,33 @@
                 "border": "2px solid black"
             },
             ".letter-row": {
-            "display": "flex"
+                "display": "flex"
             },
             "#keyboard-cont": {
-            "margin": "1rem 0",
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content":"center"
+                "margin": "1rem 0",
+                "display": "flex",
+                "flex-direction": "column",
+                "align-items": "center",
+                "justify-content":"center"
             },
             "#keyboard-cont div": {
-            "display": "flex"
+                "display": "flex"
             },              
             ".second-row": {
-            "margin": "0.5rem 0"
+                "margin": "0.5rem 0"
             },
             ".keyboard-button":{
-            "font-size": "1rem",
-            "font-weight": "700",
-            "padding": "0.5rem",
-            "margin": "0 2px",
-            "cursor": "pointer",
-            "text-transform": "uppercase"
+                "font-size": "1rem",
+                "font-weight": "700",
+                "padding": "0.5rem",
+                "margin": "0 2px",
+                "cursor": "pointer",
+                "text-transform": "uppercase"
             },
             "#instr": {
-            "text-align": "justify",
-            "text-justify": "inter-word",
-            "margin": "10px"
+                "text-align": "justify",
+                "text-justify": "inter-word",
+                "margin": "10px"
             }
     },
     "scripts": {

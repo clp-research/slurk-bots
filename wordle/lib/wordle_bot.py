@@ -172,6 +172,14 @@ class WordleBot:
                          "html": True}
                     )
                     sleep(.5)
+
+                self.sio.emit(
+                        "text",
+                        {"message": f"Let's start with the first of {self.images_per_room.n} images",
+                         "room": room_id,
+                         "html": True}
+                    )
+
                 # ask players to send \ready
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
