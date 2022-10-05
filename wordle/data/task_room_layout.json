@@ -3,11 +3,6 @@
     "html": [
         {
             "layout-type": "div",
-            "id": "typing",
-            "style": "margin: 5px 10px; min-height: 20px"
-        },
-        {
-            "layout-type": "div",
             "class": "card",
             "layout-content": [
                 {
@@ -19,7 +14,7 @@
                                 {
                                     "layout-type": "lighter",
                                     "id": "instr_title",
-                                    "style": "min-height: 20px"
+                                    "style": "min-height: 20px; text-align: justify; text-justify: inter-word;"
                                 }
                             ]
                         }
@@ -27,14 +22,58 @@
                     "style": "color: #abb2b9;"
                 },
                 {
+                    "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
+                },
+                {
                     "layout-type": "hr",
-                    "layout-content": "",
-                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                    "layout-content": ""
                 },
                 {
                     "layout-type": "div",
                     "id": "instr",
-                    "style": "white-space: pre-wrap;"
+                    "layout-content": [
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px",
+                            "layout-content": "Together with your partner, guess the secret 5 letter word. The picture gives you a hint, but the connection may be indirect."
+                        },
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px",
+                            "layout-content": "You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints: "
+                        },
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px"
+                        },
+                        {
+                            "layout-type": "p",
+                            "layout-content": "<span style='color:green;'>Green</span> means that the letter is in the right position."
+                        },
+                        {
+                            "layout-type": "p",
+                            "layout-content": "<span style='color:orange;'>Yellow</span> means that the letter is in the wrong position."
+                        },
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px",
+                            "layout-content": "<span style='color:grey;'>Grey</span> means that the word does not contain this letter."
+                        
+                        },
+                        {
+                            "layout-type": "p",
+                            "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
+                        }
+                    ]
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": ""
+                },
+                {
+                    "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
                 },
                 {
                     "layout-type": "div",
@@ -212,12 +251,24 @@
                 },
                 {
                     "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": ""
+                },
+                {
+                    "layout-type": "div",
+                    "style": "white-space: pre-wrap; margin:10px"
+                },
+                {
+                    "layout-type": "div",
                     "id": "image-area",
                     "layout-content": [
                         {
                             "layout-type": "image",
                             "id": "current-image",
-                            "style": "min-width: 70vmin; max-width: 100%; height: auto; object-fit: contain; padding: 2%;"
+                            "style": "width: 100%;"
                         }
                     ]
                 }
@@ -238,13 +289,16 @@
                 "margin": "0px 15px",
                 "padding": "20px"
             },
+            ".hr": {
+                "margin": "10px",
+                "background-color": "#abb2b9",
+                "opacity": ".50"
+            },
             "time:before": {
                 "content": "''"
             },
             "#image-area": {
-                "margin": "0 auto",
-                "align-items":"center",
-                "justify-content": "center"
+                "margin": "10 px"
             },
             "#game-board": {
                 "display": "flex",
@@ -254,9 +308,11 @@
             "#wrapper": {
                 "display": "flex",
                 "align-items":"center",
-                "justify-content": "center"
+                "justify-content": "center",
+                "column-gap": "2rem"
             },
             ".letter-box": {
+                "padding-top": "0.5rem",
                 "border": "2px solid gray",
                 "border-radius": "3px",
                 "margin": "2px",
@@ -273,31 +329,33 @@
                 "border": "2px solid black"
             },
             ".letter-row": {
-            "display": "flex"
+                "display": "flex"
             },
             "#keyboard-cont": {
-            "margin": "1rem 0",
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content":"center"
+                "margin": "1rem 0",
+                "display": "flex",
+                "flex-direction": "column",
+                "align-items": "center",
+                "justify-content":"center"
             },
             "#keyboard-cont div": {
-            "display": "flex"
+                "display": "flex"
             },              
             ".second-row": {
-            "margin": "0.5rem 0"
+                "margin": "0.5rem 0"
             },
             ".keyboard-button":{
-            "font-size": "1rem",
-            "font-weight": "700",
-            "padding": "0.5rem",
-            "margin": "0 2px",
-            "cursor": "pointer",
-            "text-transform": "uppercase"
+                "font-size": "1rem",
+                "font-weight": "700",
+                "padding": "0.5rem",
+                "margin": "0 2px",
+                "cursor": "pointer",
+                "text-transform": "uppercase"
             },
             "#instr": {
-            "text-align": "center"
+                "text-align": "justify",
+                "text-justify": "inter-word",
+                "margin": "10px"
             }
     },
     "scripts": {

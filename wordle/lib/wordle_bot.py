@@ -172,6 +172,14 @@ class WordleBot:
                          "html": True}
                     )
                     sleep(.5)
+
+                self.sio.emit(
+                        "text",
+                        {"message": f"Let's start with the first of {self.images_per_room.n} images",
+                         "room": room_id,
+                         "html": True}
+                    )
+
                 # ask players to send \ready
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
@@ -470,6 +478,8 @@ class WordleBot:
                         "room": room_id}
                     )
 
+                    sleep(2)
+
                     wordle, _ = self.images_per_room[room_id][0]
                     self.sio.emit("message_command",
                         {"command": f"wordle_init {wordle}", "room": room_id}
@@ -522,15 +532,6 @@ class WordleBot:
             )
             if not response.ok:
                 LOG.error(f"Could not set task instruction title: {response.status_code}")
-                response.raise_for_status()
-
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": TASK_DESCR},
-                headers={"Authorization": f"Bearer {self.token}"}
-            )
-            if not response.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
                 response.raise_for_status()
 
     def _no_partner(self, room_id, user_id):

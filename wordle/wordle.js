@@ -21,12 +21,16 @@ function initBoard() {
 
         board.appendChild(row)
     }
+
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        elem.style.backgroundColor = "";
+    }
 }
 
 
 function shadeKeyBoard(letter, color) {
     for (const elem of document.getElementsByClassName("keyboard-button")) {
-        if (elem.textContent === letter) {
+        if (elem.textContent.trim() === letter) {
             let oldColor = elem.style.backgroundColor
             if (oldColor === 'green') {
                 return
@@ -78,6 +82,10 @@ function checkGuess (guessString) {
 		if (remaining.includes(guessLetter) === true){
 		    if (colors[i] === ""){
 		  		colors[i] = "yellow";
+
+                // remove this letter from remaining
+                to_remove_index = remaining.indexOf(guessLetter)
+                remaining.splice(to_remove_index, 1)
 		  	}
 		} else {
 		    if (colors[i] === ""){
@@ -88,7 +96,6 @@ function checkGuess (guessString) {
 
     for (let i = 0; i < 5; i++) {
   	    let box = row.children[i]
-        console.log(box)
         let delay = 250 * i
         setTimeout(()=> {
             // flip box
@@ -152,10 +159,8 @@ function sendGuess() {
         guessString += val
     }
     
-    console.log(guessString)
-    console.log(self_room)
     socket.emit("message_command", 
-        {"command": "guess " + guessString + " " + guessesRemaining, "room": self_room}
+        { "command": `guess ${guessString} ${guessesRemaining}`, "room": self_room}
     )
 }
 
@@ -202,8 +207,6 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
 $("#keyboard-cont").hide()
 $(document).ready(() => {
     socket.on("command", (data) => {
-        console.log(data)
-
         var command = data.command
         if (command.includes("wordle_init")){
             rightGuessString = command.split(" ")[1];
@@ -218,7 +221,6 @@ $(document).ready(() => {
         } else if (command.includes("wordle_guess")){
             userInput = command.split(" ")[1];
             checkGuess(userInput);
-        }
-        
+        }         
     });
 });
