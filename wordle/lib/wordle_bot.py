@@ -534,15 +534,6 @@ class WordleBot:
                 LOG.error(f"Could not set task instruction title: {response.status_code}")
                 response.raise_for_status()
 
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": TASK_DESCR},
-                headers={"Authorization": f"Bearer {self.token}"}
-            )
-            if not response.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response.raise_for_status()
-
     def _no_partner(self, room_id, user_id):
         """Handle the situation that a participant waits in vain."""
         if user_id not in self.received_waiting_token:

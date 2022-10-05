@@ -32,7 +32,40 @@
                 {
                     "layout-type": "div",
                     "id": "instr",
-                    "style": "white-space: pre-wrap;"
+                    "layout-content": [
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px",
+                            "layout-content": "Together with your partner, guess the secret 5 letter word. The picture gives you a hint, but the connection may be indirect."
+                        },
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px",
+                            "layout-content": "You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints: "
+                        },
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px"
+                        },
+                        {
+                            "layout-type": "p",
+                            "layout-content": "<span style='color:green;'>Green</span> means that the letter is in the right position."
+                        },
+                        {
+                            "layout-type": "p",
+                            "layout-content": "<span style='color:orange;'>Yellow</span> means that the letter is in the wrong position."
+                        },
+                        {
+                            "layout-type": "p",
+                            "style": "padding-bottom: 5px",
+                            "layout-content": "<span style='color:grey;'>Grey</span> means that the word does not contain this letter."
+                        
+                        },
+                        {
+                            "layout-type": "p",
+                            "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
+                        }
+                    ]
                 },
                 {
                     "layout-type": "hr",

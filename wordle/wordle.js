@@ -160,7 +160,7 @@ function sendGuess() {
     }
     
     socket.emit("message_command", 
-        {"command": "guess " + guessString + " " + guessesRemaining, "room": self_room}
+        { "command": `guess ${guessString} ${guessesRemaining}`, "room": self_room}
     )
 }
 
@@ -221,7 +221,6 @@ $(document).ready(() => {
         } else if (command.includes("wordle_guess")){
             userInput = command.split(" ")[1];
             checkGuess(userInput);
-        }
-        
+        }         
     });
 });
