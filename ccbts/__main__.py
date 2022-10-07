@@ -143,6 +143,8 @@ class CcbtsBot(TaskBot):
                 if data["command"] == "set_role_wizard":
 
                     curr_usr, other_usr = self.players_per_room[room_id]
+                    if curr_usr["id"] != data["user"]["id"]:
+                        curr_usr, other_usr = other_usr, curr_usr
 
                     self.sio.emit(
                          "message_command",
