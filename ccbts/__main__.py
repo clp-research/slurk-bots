@@ -64,6 +64,16 @@ class CcbtsBot(TaskBot):
             room_id = data["room"]
 
             if room_id in self.images_per_room:
+                # add description title
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr_title",
+                    json={"text": "Choose your role"},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                if not response.ok:
+                    logging.error(f"Could not set task instruction title: {response.status_code}")
+                    response.raise_for_status()
+
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
@@ -73,25 +83,6 @@ class CcbtsBot(TaskBot):
                          "html": True}
                     )
                     sleep(.5)
-
-                # # update instructions
-                # response = requests.patch(
-                #     f"{self.uri}/rooms/{room_id}/text/instr_player",
-                #     json={"text": PLAYER_INSTRUCTIONS},
-                #     headers={"Authorization": f"Bearer {self.token}"}
-                # )
-                # if not response.ok:
-                #     logging.error(f"Could not set task instruction title: {response.status_code}")
-                #     response.raise_for_status()
-
-                # response = requests.patch(
-                #     f"{self.uri}/rooms/{room_id}/text/instr_wizard",
-                #     json={"text": WIZARD_INSTRUCTIONS},
-                #     headers={"Authorization": f"Bearer {self.token}"}
-                # )
-                # if not response.ok:
-                #     logging.error(f"Could not set task instruction title: {response.status_code}")
-                #     response.raise_for_status()
 
         @self.sio.event
         def status(data):
@@ -157,17 +148,21 @@ class CcbtsBot(TaskBot):
                         curr_usr, other_usr = other_usr, curr_usr
 
                     self.sio.emit(
-                         "message_command",
-                         {"command": "role_wizard",
-                          "room": room_id,
-                          "receiver_id": curr_usr["id"]}
+                        "message_command",
+                        {
+                            "command": f"role_wizard\t{WIZARD_INSTRUCTIONS}",
+                            "room": room_id,
+                            "receiver_id": curr_usr["id"]
+                        }
                     )        
 
                     self.sio.emit(
-                         "message_command",
-                         {"command": "role_player",
-                          "room": room_id,
-                          "receiver_id": other_usr["id"]}
+                        "message_command",
+                        {
+                            "command": f"role_player\t{PLAYER_INSTRUCTIONS}",
+                            "room": room_id,
+                            "receiver_id": other_usr["id"]
+                        }
                     )         
                 else:
                     self.sio.emit(

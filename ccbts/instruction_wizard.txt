@@ -1,0 +1,2 @@
+Receive instructions from the player and enter commands to manipulate the board.
+A command could look like this /move A2 C3
