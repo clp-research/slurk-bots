@@ -73,15 +73,25 @@ class CcbtsBot(TaskBot):
                          "html": True}
                     )
                     sleep(.5)
-                # ask players to send \ready
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": line},
-                    headers={"Authorization": f"Bearer {self.token}"}
-                )
-                if not response.ok:
-                    logging.error(f"Could not set task instruction title: {response.status_code}")
-                    response.raise_for_status()
+
+                # # update instructions
+                # response = requests.patch(
+                #     f"{self.uri}/rooms/{room_id}/text/instr_player",
+                #     json={"text": PLAYER_INSTRUCTIONS},
+                #     headers={"Authorization": f"Bearer {self.token}"}
+                # )
+                # if not response.ok:
+                #     logging.error(f"Could not set task instruction title: {response.status_code}")
+                #     response.raise_for_status()
+
+                # response = requests.patch(
+                #     f"{self.uri}/rooms/{room_id}/text/instr_wizard",
+                #     json={"text": WIZARD_INSTRUCTIONS},
+                #     headers={"Authorization": f"Bearer {self.token}"}
+                # )
+                # if not response.ok:
+                #     logging.error(f"Could not set task instruction title: {response.status_code}")
+                #     response.raise_for_status()
 
         @self.sio.event
         def status(data):

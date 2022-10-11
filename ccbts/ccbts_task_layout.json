@@ -40,7 +40,13 @@
             "layout-content":[
                 {
                     "layout-type": "div",
-                    "layout-content": "SOURCE BOARD"
+                    "layout-content": "SOURCE BOARD",
+                    "style": "text-align: center; font-weight: bold"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 10px 2px; background-color: #abb2b9; opacity: .50;"
                 },
                 {
                     "layout-type": "div",
@@ -55,7 +61,13 @@
             "layout-content":[
                 {
                     "layout-type": "div",
-                    "layout-content": "TARGET BOARD"
+                    "layout-content": "TARGET BOARD",
+                    "style": "text-align: center; font-weight: bold"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 10px 2px; background-color: #abb2b9; opacity: .50;"
                 },
                 {
                     "layout-type": "div",
@@ -103,7 +115,7 @@
             "grid-template-columns": "auto auto auto",
             "grid-template-rows": "50px 100px"
         },
-        ".card, hidden_card": {
+        ".card, .hidden_card": {
             "position": "relative",
             "display": "flex",
             "flex-direction": "column",
@@ -125,9 +137,10 @@
             "justify-content": "center"
         },            
         "#instr": {
-        "text-align": "center"
+            "text-align": "center",
+            "font-weight": "bold"
         },
-        ".hidden_card": {
+        ".hidden_card, #instr_wizard, #instr_player": {
             "display": "none"
         }
         ,
