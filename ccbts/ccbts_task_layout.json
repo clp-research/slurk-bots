@@ -7,8 +7,28 @@
             "layout-content":[
                 {
                     "layout-type": "div",
-                    "id": "instr",
-                    "layout-content": "Choose your role"
+                    "layout-content": [
+                        {
+                            "layout-type": "b",
+                            "layout-content": [
+                                {
+                                    "layout-type": "lighter",
+                                    "id": "instr_title",
+                                    "style": "min-height: 20px; text-align: center"
+                                }
+                            ]
+                        }
+                    ],
+                    "style": "color: #abb2b9;"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                },
+                {
+                    "layout-type": "div",
+                    "id": "instr"
                 },
                 {
                     "layout-type": "div",
@@ -136,11 +156,7 @@
             "align-items":"center",
             "justify-content": "center"
         },            
-        "#instr": {
-            "text-align": "center",
-            "font-weight": "bold"
-        },
-        ".hidden_card, #instr_wizard, #instr_player": {
+        ".hidden_card": {
             "display": "none"
         }
         ,
