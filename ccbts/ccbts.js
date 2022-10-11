@@ -38,9 +38,13 @@ $(document).ready(() => {
         }
     });
     
+
     function display_grid(grid, grid_name) {
+        // clear grid div
+        $(`#${grid_name}-grid`).empty();
+
         // define elements for padding
-        colors = ["red", "blue", "green", "orange"]  //TODO: this list should be longer
+        colors = ["red", "blue", "green", "orange"]
         alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
         alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] used for y coordinates
         alphabet.unshift(" ")  // add empty space for padding
