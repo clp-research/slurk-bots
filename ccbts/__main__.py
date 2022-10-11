@@ -8,6 +8,7 @@ import requests
 from templates import TaskBot
 
 from .config import *
+from .robot.controller import Controller
 
 
 class CcbtsBot(TaskBot):
@@ -17,6 +18,7 @@ class CcbtsBot(TaskBot):
         self.players_per_room = dict()
         self.images_per_room = dict()
         self.register_callbacks()
+        self.controller = Controller()
 
 
     def register_callbacks(self):
@@ -150,7 +152,11 @@ class CcbtsBot(TaskBot):
                     self.sio.emit(
                         "message_command",
                         {
-                            "command": f"role_wizard\t{WIZARD_INSTRUCTIONS}",
+                            "command": 
+                            {
+                                "role": "wizard",
+                                "instruction": WIZARD_INSTRUCTIONS,
+                            },
                             "room": room_id,
                             "receiver_id": curr_usr["id"]
                         }
@@ -159,11 +165,58 @@ class CcbtsBot(TaskBot):
                     self.sio.emit(
                         "message_command",
                         {
-                            "command": f"role_player\t{PLAYER_INSTRUCTIONS}",
+                            "command": 
+                            {
+                                "role": "player",
+                                "instruction": PLAYER_INSTRUCTIONS,
+                            },
                             "room": room_id,
                             "receiver_id": other_usr["id"]
                         }
-                    )         
+                    )    
+
+
+                    # set image
+                    image = self.controller.get_image()
+                    response = requests.patch(
+                        f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                        json={"attribute": "src", "value": image, "receiver_id": other_usr["id"]},
+                        headers={"Authorization": f"Bearer {self.token}"}
+                    )
+                    if not response.ok:
+                        logging.error(f"Could not set image: {response.status_code}")
+                        response.raise_for_status() 
+
+                    # set boards
+                    source_board, target_board = self.controller.get_boards()
+                    logging.debug(source_board)
+                    
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": 
+                            {
+                                "board": source_board,
+                                "name": "source",
+                            },
+                            "room": room_id,
+                        }
+                    ) 
+
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": 
+                            {
+                                "board": target_board,
+                                "name": "target",
+                            },
+                            "room": room_id,
+                        }
+                    )
+
+
+
                 else:
                     self.sio.emit(
                         "text",
