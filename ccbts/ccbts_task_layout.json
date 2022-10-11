@@ -161,35 +161,22 @@
         }
         ,
         ".button": {
-            "background-color": "#EA4C89",
-            "border-radius": "8px",
-            "border-style": "none",
-            "box-sizing": "border-box",
-            "color": "#FFFFFF",
-            "cursor": "pointer",
-            "display": "inline-block",
-            "font-size": "14px",
-            "font-weight": "500",
-            "height": "40px",
-            "line-height": "20px",
-            "list-style": "none",
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
             "margin": "10px",
-            "outline": "none",
-            "padding": "10px 16px",
-            "position": "relative",
-            "text-align": "center",
-            "text-decoration": "none",
-            "transition": "color 100ms",
-            "vertical-align": "baseline",
-            "user-select": "none",
-            "-webkit-user-select": "none",
-            "touch-action": "manipulation"
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
         },
         ".button:hover" : {
-            "content": "''"
-        },
-        ".button:focus": {
-            "background-color": "#F082AC"
+            "content": "''",
+            "background": "#818BAC"
         }
     },
     "scripts": {
