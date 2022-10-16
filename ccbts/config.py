@@ -9,8 +9,9 @@ ROOT = Path().resolve() #os.path.dirname(os.path.dirname(os.path.abspath(__file_
 
 TASK_GREETING = Path(f"{ROOT}/ccbts/task_greeting.txt").read_text().strip().split("\n\n")
 
-PLAYER_INSTRUCTIONS = Path(f"{ROOT}/ccbts/instruction_player.txt").read_text().strip()
-WIZARD_INSTRUCTIONS = Path(f"{ROOT}/ccbts/instruction_wizard.txt").read_text().strip()
-
+INSTRUCTIONS = dict(
+    player=Path(f"{ROOT}/ccbts/instruction_player.txt").read_text().strip(),
+    wizard=Path(f"{ROOT}/ccbts/instruction_wizard.txt").read_text().strip()
+)
 
 IMGS = Path(f"{ROOT}/ccbts/task_greeting.txt").read_text().strip().split("\n")
