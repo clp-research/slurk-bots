@@ -5,3 +5,7 @@ env/
 slurk-telegram/token.txt
 ccbts/html_test
 ccbts/90_cocobots_blockworld
+token.txt
+.vscode
+ccbts/test.html
+ccbts/style.css
