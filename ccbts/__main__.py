@@ -2,13 +2,14 @@ import logging
 import os
 from time import sleep
 from pathlib import Path
+import sys
 
 import requests
 
 from templates import TaskBot
+from executor import Executor
 
 from .config import *
-from .robot.controller import Controller
 
 
 class CcbtsBot(TaskBot):
@@ -18,8 +19,7 @@ class CcbtsBot(TaskBot):
         self.players_per_room = dict()
         self.images_per_room = dict()
         self.register_callbacks()
-        self.controller = Controller()
-
+        self.executor = Executor()
 
     def register_callbacks(self):
         @self.sio.event
@@ -47,7 +47,7 @@ class CcbtsBot(TaskBot):
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
-                        {**usr, "role": 0, "status": "joined"}
+                        {**usr, "role": None, "status": "joined"}
                     )
 
                 response = requests.post(
@@ -144,76 +144,27 @@ class CcbtsBot(TaskBot):
 
             if room_id in self.images_per_room:
                 if data["command"] == "set_role_wizard":
-
+                    
                     curr_usr, other_usr = self.players_per_room[room_id]
-                    if curr_usr["id"] != data["user"]["id"]:
+                    if curr_usr["id"] != user_id:
                         curr_usr, other_usr = other_usr, curr_usr
 
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": 
+                    for role, user in zip(["wizard", "player"], [curr_usr, other_usr]):
+                        self.sio.emit(
+                            "message_command",
                             {
-                                "role": "wizard",
-                                "instruction": WIZARD_INSTRUCTIONS,
-                            },
-                            "room": room_id,
-                            "receiver_id": curr_usr["id"]
-                        }
-                    )        
+                                "command": 
+                                {
+                                    "role": role,
+                                    "instruction": INSTRUCTIONS[role],
+                                },
+                                "room": room_id,
+                                "receiver_id": user["id"]
+                            }
+                        )
 
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": 
-                            {
-                                "role": "player",
-                                "instruction": PLAYER_INSTRUCTIONS,
-                            },
-                            "room": room_id,
-                            "receiver_id": other_usr["id"]
-                        }
-                    )    
-
-
-                    # set image
-                    image = self.controller.get_image()
-                    response = requests.patch(
-                        f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                        json={"attribute": "src", "value": image, "receiver_id": other_usr["id"]},
-                        headers={"Authorization": f"Bearer {self.token}"}
-                    )
-                    if not response.ok:
-                        logging.error(f"Could not set image: {response.status_code}")
-                        response.raise_for_status() 
-
-                    # set boards
-                    source_board, target_board = self.controller.get_boards()
-                    logging.debug(source_board)
-                    
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": 
-                            {
-                                "board": source_board,
-                                "name": "source",
-                            },
-                            "room": room_id,
-                        }
-                    ) 
-
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": 
-                            {
-                                "board": target_board,
-                                "name": "target",
-                            },
-                            "room": room_id,
-                        }
-                    )
+                    self.set_image(room_id, other_usr)
+                    self.set_boards(room_id)
 
 
 
@@ -224,6 +175,90 @@ class CcbtsBot(TaskBot):
                          "room": room_id,
                          "receiver_id": user_id}
                     )
+
+    # def set_roles(self, role, room_id, user_id):
+        # curr_usr, other_usr = self.players_per_room[room_id]
+        # if curr_usr["id"] != user_id:
+        #     curr_usr, other_usr = other_usr, curr_usr
+
+    #     logging.debug(curr_usr, other_usr)
+    #     roles = {"wizard", "player"}
+    #     roles.remove(role)
+    #     other_role = roles.pop()
+
+    #     # user already selected a role, let's wait for the other one
+    #     if curr_usr["role"] is not None:
+    #         self.sio.emit(
+    #             "text",
+    #             {
+    #                 "message": "You already have a role",
+    #                 "room": room_id,
+    #                 "receiver_id": user_id
+    #             }
+    #         )
+    #         return
+
+    #     # roles can be assigned
+    #     if curr_usr["role"] is None:
+    #         if other_usr["role"] is None:
+    #             curr_usr["role"] = role
+    #             self.sio.emit(
+    #                 "text",
+    #                 {
+    #                     "message": f"You are now the {role}, let's wait for your partner to choose his role",
+    #                     "room": room_id,
+    #                     "receiver_id": user_id
+    #                 }
+    #             )
+    #             return
+            
+    #         elif other_usr["role"] is not None:
+    #             pass
+
+
+
+    def set_image(self, room_id, user):
+        # set image
+        image = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Sailboat_Flat_Icon_Vector.svg"
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+            json={"attribute": "src", "value": image, "receiver_id": user["id"]},
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
+        if not response.ok:
+            logging.error(f"Could not set image: {response.status_code}")
+            response.raise_for_status()
+
+    def set_boards(self, room_id):
+        # set boards
+        source_board, target_board = self.executor.get_slurk_boards()
+        
+        self.sio.emit(
+            "message_command",
+            {
+                "command": 
+                {
+                    "board": source_board,
+                    "name": "source",
+                },
+                "room": room_id,
+            }
+        ) 
+
+        self.sio.emit(
+            "message_command",
+            {
+                "command": 
+                {
+                    "board": target_board,
+                    "name": "target",
+                },
+                "room": room_id,
+            }
+        )
+
+    def assign_roles(self):
+        pass
 
 
 if __name__ == "__main__":

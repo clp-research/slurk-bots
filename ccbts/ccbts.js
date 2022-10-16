@@ -1,3 +1,78 @@
+function display_grid(grid, grid_name) {
+    // clear grid div
+    $(`#${grid_name}-grid`).empty();
+    $(`#${grid_name}-header`).empty();
+
+    // define elements for padding
+    alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
+    alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] 
+    alphabet.unshift("")
+
+    // create left header
+    for (let i = 0; i < grid.length + 1; i++) {
+        let item = document.createElement("div");
+        item.setAttribute("class", "grid-header");
+
+        if (alphabet[i] === "") {
+            item.innerHTML = "&nbsp;"
+        } else {
+            item.innerHTML = alphabet[i]
+        }
+
+        $(`#${grid_name}-header`).append(item)
+    }
+
+    // add coordinates on upper header
+    numbers = Array.from(Array(26).keys(), n => ["grey", n + 1]); // [1..26] used         
+    if (grid_name === "target") {
+        reducing_factor = 4
+    } else {
+        reducing_factor = 3
+    }
+
+    grid.unshift(numbers.slice(0, Math.floor((grid[0].length) / reducing_factor)))
+
+    // create grid 
+    for (let i = 0; i < grid.length; i++) {
+        let div = document.createElement("div");
+        div.setAttribute("class", "grid-row");
+
+        for (let j = 0; j < grid[i].length; j++) {
+            let item = document.createElement("div");
+            item.setAttribute("class", "grid-item");
+
+            item.style.backgroundColor = grid[i][j][0]
+
+            if (grid[i][j][1] === "") {
+                item.innerHTML = "&nbsp;"
+            } else {
+                item.innerHTML = grid[i][j][1]
+            }
+            div.append(item)
+        }
+        $(`#${grid_name}-grid`).append(div);
+    }
+};
+
+
+function set_wizard(description) {
+    $("#buttons").hide();
+    $("#source_card").show();
+    $("#target_card").show();
+    $("#instr_title").html("Wizard");
+    $("#instr").html(description);
+};
+
+
+function set_player(description) {
+    $("#buttons").hide();
+    $("#image_card").show();
+    $("#target_card").show();
+    $("#instr_title").html("Player");
+    $("#instr").html(description);
+};
+
+
 $(document).ready(() => {
     $("#player_button").on('click', function () {
         socket.emit("message_command",
@@ -37,60 +112,4 @@ $(document).ready(() => {
             }
         }
     });
-    
-
-    function display_grid(grid, grid_name) {
-        // clear grid div
-        $(`#${grid_name}-grid`).empty();
-
-        // define elements for padding
-        colors = ["red", "blue", "green", "orange"]
-        alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
-        alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] used for y coordinates
-        alphabet.unshift(" ")  // add empty space for padding
-        numbers = Array.from(Array(26).keys(), n => n + 1); // [1..26] used for x coordinates
-
-        // pad grid
-        grid.unshift(numbers.slice(0, grid[0].length))
-        for (let i = 0; i < grid.length; i++) {
-            grid[i].unshift(alphabet[i])
-        }
-
-        // create grid 
-        for (let i = 0; i < grid.length; i++) {
-            const div = document.createElement("div");
-            div.setAttribute("class", "grid-row");
-
-            for (let j = 0; j < grid[0].length; j++) {
-                const item = document.createElement("div");
-                item.setAttribute("class", "grid-item");
-
-                if ((i == 0) || (j == 0)) {
-                    item.style.backgroundColor = "grey";
-                } else {
-                    item.style.backgroundColor = colors[j - 1];
-                }
-
-                item.innerHTML = grid[i][j]
-                div.append(item)
-            }
-            $(`#${grid_name}-grid`).append(div);
-        }
-    };
-
-    function set_wizard(description) {
-        $("#buttons").hide();
-        $("#source_card").show();
-        $("#target_card").show();
-        $("#instr_title").html("Wizard");
-        $("#instr").html(description);
-    };
-
-    function set_player(description) {
-        $("#buttons").hide();
-        $("#image_card").show();
-        $("#target_card").show();
-        $("#instr_title").html("Player");
-        $("#instr").html(description);
-    };
 });
