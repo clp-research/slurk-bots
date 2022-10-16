@@ -3,3 +3,5 @@ env/
 .DS_Store
 token.txt
 .vscode
+ccbts/test.html
+ccbts/style.css
