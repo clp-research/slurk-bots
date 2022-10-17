@@ -56,7 +56,7 @@ function display_grid(grid, grid_name) {
 
 
 function set_wizard(description) {
-    $("#buttons").hide();
+    $("#intro-image").hide();
     $("#source_card").show();
     $("#target_card").show();
     $("#instr_title").html("Wizard");
@@ -65,12 +65,22 @@ function set_wizard(description) {
 
 
 function set_player(description) {
-    $("#buttons").hide();
+    $("#intro-image").hide();
     $("#image_card").show();
     $("#target_card").show();
     $("#instr_title").html("Player");
     $("#instr").html(description);
 };
+
+
+function reset_role(description) {
+    $("#intro-image").show();
+    $("#image_card").hide();
+    $("#source_card").hide();
+    $("#target_card").hide();
+    $("#instr_title").html("");
+    $("#instr").html(description);
+}
 
 
 $(document).ready(() => {
@@ -94,18 +104,21 @@ $(document).ready(() => {
 
     socket.on("command", (data) => {
         if (typeof(data.command) === "object"){
+            // assign role
+
+            console.log(data)
 
             if ("role" in data.command){
-                console.log("role")
-                console.log(data.command)
-
                 if (data.command.role === "wizard"){
                     set_wizard(data.command.instruction)
-                } else {
+                } else if (data.command.role === "player") {
                     set_player(data.command.instruction)
+                } else if (data.command.role === "reset") {
+                    reset_role(data.command.instruction)
                 }
-            } else if ("board" in data.command) {
 
+            // board update
+            } else if ("board" in data.command) {
                 console.log("SEE MY BOARD");
                 console.log(data.command);
                 display_grid(data.command.board, data.command.name)
