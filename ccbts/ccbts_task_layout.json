@@ -33,21 +33,18 @@
                 {
                     "layout-type": "div",
                     "style": "text-align: center; display: grid",
-                    "id": "buttons",
+                    "id": "intro-image",
                     "layout-content": [
                         {
-                            "layout-type": "button",
-                            "class": "button",
-                            "role": "button",
-                            "layout-content": "Wizard",
-                            "id": "wizard_button"
-                        }, 
-                        {
-                            "layout-type": "button",
-                            "class": "button",
-                            "role": "button",
-                            "layout-content": "Player",
-                            "id": "player_button"
+                            "layout-type": "div",
+                            "id": "image-area",
+                            "layout-content": [
+                                {
+                                    "layout-type": "image",
+                                    "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
+                                    "style": "width: 100%; height: auto; object-fit: contain; padding: 2%;"
+                                }
+                            ]
                         }
                     ]
                 }
