@@ -1,5 +1,7 @@
+import base64
 import logging
 import os
+import random
 from time import sleep
 
 import requests
@@ -39,7 +41,7 @@ class CcbtsBot(TaskBot):
 
                 # create image items for this room
                 logging.debug("Create data for the new task room...")
-                self.images_per_room[room_id] = IMGS
+                self.images_per_room[room_id] = random.choice(IMGS)
 
                 # create executor for this room
                 self.executors[room_id] = Executor()
@@ -260,7 +262,12 @@ class CcbtsBot(TaskBot):
 
     def set_image(self, room_id, user):
         # set image
-        image = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Sailboat_Flat_Icon_Vector.svg"
+        imagepath = self.images_per_room[room_id]
+        with imagepath.open("rb") as infile:
+            img_byte = infile.read()
+
+        image = f"data:image/jpg;base64, {base64.b64encode(img_byte).decode('utf-8')}"
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
             json={"attribute": "src", "value": image, "receiver_id": user["id"]},

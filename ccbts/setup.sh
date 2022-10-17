@@ -40,7 +40,7 @@ echo "Waiting Room Id:"
 echo $WAITING_ROOM
 
 # create task room layout
-TASK_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/ccbts/ccbts_task_layout.json | jq .id)
+TASK_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/ccbts/data/ccbts_task_layout.json | jq .id)
 echo "Task Room Layout Id:"
 echo $TASK_ROOM_LAYOUT
 
@@ -60,7 +60,7 @@ docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e
 sleep 5
 
 # create math bot
-CCBTS_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/ccbts_bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
+CCBTS_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/data/ccbts_bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "ccbts Bot Token: "
 echo $CCBTS_BOT_TOKEN
 CCBTS_BOT=$(check_response scripts/create_user.sh "CcbtsBot" "$CCBTS_BOT_TOKEN" | jq .id)
@@ -70,11 +70,11 @@ docker run -e CCBTS_TOKEN=$CCBTS_BOT_TOKEN -e CCBTS_USER=$CCBTS_BOT -e CCBTS_TAS
 sleep 5
 
 # create users
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/data/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User 1 Token:"
 echo $USER1
 
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/data/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "User 2 Token:"
 echo $USER1
 
