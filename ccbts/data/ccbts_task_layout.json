@@ -42,7 +42,7 @@
                                 {
                                     "layout-type": "image",
                                     "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
-                                    "style": "width: 100%; height: auto; object-fit: contain; padding: 2%;"
+                                    "style": "width: 100%; height: auto; object-fit: contain;"
                                 }
                             ]
                         }
@@ -127,12 +127,22 @@
             "layout-content":[
                 {
                     "layout-type": "div",
+                    "layout-content": "IMAGE",
+                    "style": "text-align: center; font-weight: bold"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 10px 2px; background-color: #abb2b9; opacity: .50;"
+                },
+                {
+                    "layout-type": "div",
                     "id": "image-area",
                     "layout-content": [
                         {
                             "layout-type": "image",
                             "id": "current-image",
-                            "style": "min-width: 70vmin; max-width: 100%; height: auto; object-fit: contain; padding: 2%;"
+                            "style": "width: 100%; height: auto; object-fit: contain;"
                         }
                     ]
                 }
