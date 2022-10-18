@@ -73,13 +73,24 @@
                             "layout-type": "div",
                             "class": "grid-container",
                             "style": "width: 3rem; float: left",
-                            "id": "source-header"
+                            "id": "source-left-header"
                         },
                         {
                             "layout-type": "div",
-                            "class": "grid-container",
-                            "style": "float:right; width: 100%;",
-                            "id": "source-grid"
+                            "style": "display: inline; float: right; width: 100%;",
+                            "layout-content": [
+                                {
+                                    "layout-type": "div",
+                                    "id": "source-top-header",
+                                    "class": "grid-row"
+                                },
+                                {
+                                    "layout-type": "div",
+                                    "class": "grid-container",
+                                    "style": "float:right; width: 100%;",
+                                    "id": "source-grid"
+                                }
+                            ]
                         }
                     ]
                 }
@@ -108,13 +119,24 @@
                             "layout-type": "div",
                             "class": "grid-container",
                             "style": "width: 3rem; float: left",
-                            "id": "target-header"
+                            "id": "target-left-header"
                         },
                         {
                             "layout-type": "div",
-                            "class": "grid-container",
-                            "style": "float:right; width: 100%;",
-                            "id": "target-grid"
+                            "style": "display: inline; float: right; width: 100%;",
+                            "layout-content": [
+                                {
+                                    "layout-type": "div",
+                                    "id": "target-top-header",
+                                    "class": "grid-row"
+                                },
+                                {
+                                    "layout-type": "div",
+                                    "class": "grid-container",
+                                    "style": "float:right; width: 100%;",
+                                    "id": "target-grid"
+                                }
+                            ]
                         }
                     ]
                 }
@@ -155,7 +177,8 @@
             "height": "100%"
         },
         ".grid-item, .grid-header": {
-            "border": "1px solid rgba(0, 0, 0, 0.8)",
+            "border-bottom": "1px solid rgba(0, 0, 0, 0.8)",
+            "border-top": "1px solid rgba(0, 0, 0, 0.8)",
             "padding": "1px",
             "font-size": "20px",
             "text-align": "center",
@@ -163,7 +186,8 @@
             "height": "2rem"
         },
         ".grid-header": {
-            "background-color": "grey"
+            "background-color": "grey",
+            "border": "1px solid rgba(0, 0, 0, 0.8);"
         },
         ".grid-row": {
             "width": "100%",

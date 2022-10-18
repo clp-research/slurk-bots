@@ -1,7 +1,8 @@
 function display_grid(grid, grid_name) {
     // clear grid div
     $(`#${grid_name}-grid`).empty();
-    $(`#${grid_name}-header`).empty();
+    $(`#${grid_name}-top-header`).empty();
+    $(`#${grid_name}-left-header`).empty();
 
     // define elements for padding
     alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
@@ -19,18 +20,23 @@ function display_grid(grid, grid_name) {
             item.innerHTML = alphabet[i]
         }
 
-        $(`#${grid_name}-header`).append(item)
+        $(`#${grid_name}-left-header`).append(item)
     }
 
     // add coordinates on upper header
-    numbers = Array.from(Array(26).keys(), n => ["grey", n + 1]); // [1..26] used         
+    numbers = Array.from(Array(26).keys(), n => n + 1); // [1..26] used         
     if (grid_name === "target") {
         reducing_factor = 4
     } else {
         reducing_factor = 3
     }
 
-    grid.unshift(numbers.slice(0, Math.floor((grid[0].length) / reducing_factor)))
+    for (let i=0; i<reducing_factor; i++){
+        let item = document.createElement("div");
+        item.setAttribute("class", "grid-header");
+        item.innerHTML = numbers[i]
+        $(`#${grid_name}-top-header`).append(item)
+    }
 
     // create grid 
     for (let i = 0; i < grid.length; i++) {
@@ -39,10 +45,22 @@ function display_grid(grid, grid_name) {
 
         for (let j = 0; j < grid[i].length; j++) {
             let item = document.createElement("div");
-            item.setAttribute("class", "grid-item");
 
+            item.setAttribute("class", "grid-item");
             item.style.backgroundColor = grid[i][j][0]
 
+            // only add right border between big cells
+            if ((j + 1) % reducing_factor === 0) {
+                old = item.getAttribute("style")
+                item.setAttribute("style", old + " border-right: 1px solid rgba(0, 0, 0, 0.8);")
+            }
+
+            if ((j === 0) || (j  % reducing_factor === 0)){
+                old = item.getAttribute("style");
+                item.setAttribute("style", old + " border-left: 1px solid rgba(0, 0, 0, 0.8);");
+            }
+
+            // add content
             if (grid[i][j][1] === "") {
                 item.innerHTML = "&nbsp;"
             } else {
