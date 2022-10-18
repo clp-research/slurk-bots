@@ -174,81 +174,49 @@ class CcbtsBot(TaskBot):
 
                 # set wizard
                 if data["command"] == "set_role_wizard":
-                    curr_usr, other_usr = self.players_per_room[room_id]
-                    if curr_usr["id"] != user_id:
-                        curr_usr, other_usr = other_usr, curr_usr
-
-                    # users have no roles so we can assign them
-                    if curr_usr["role"] is None and other_usr["role"] is None:
-                        for role, user in zip(
-                            ["wizard", "player"], [curr_usr, other_usr]
-                        ):
-                            user["role"] = role
-                            self.sio.emit(
-                                "message_command",
-                                {
-                                    "command": {
-                                        "role": role,
-                                        "instruction": INSTRUCTIONS[role],
-                                    },
-                                    "room": room_id,
-                                    "receiver_id": user["id"],
-                                },
-                            )
-
-                        self.set_image(room_id, other_usr)
-                        self.set_boards(room_id)
-
-                    else:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "Roles have already be assigned, please reset roles first",
-                                "room": room_id,
-                                "receiver_id": user_id,
-                            },
-                        )
+                    self.set_wizard_role(room_id, user_id)
 
                 # reset roles
                 elif data["command"] == "reset_roles":
-                    self.sio.emit(
+                    self.reset_roles(room_id)
+
+                elif data["command"] == "game_over":
+                    curr_usr, other_usr = self.players_per_room[room_id]
+                    if curr_usr["id"] != user_id:
+                        curr_usr, other_usr = other_usr, curr_usr
+                    
+                    if curr_usr["role"] == "player":
+                        self.close_game(room_id)
+                    else:
+                        self.sio.emit(
                         "text",
                         {
-                            "message": "Roles have been resetted, please wait for new roles to be assigned",
+                            "message": "You're not allowed to do that",
                             "room": room_id,
+                            "receiver_id": user_id,
                         },
                     )
 
-                    for user in self.players_per_room[room_id]:
-                        user["role"] = None
-                        self.sio.emit(
-                            "message_command",
-                            {
-                                "command": {
-                                    "role": "reset",
-                                    "instruction": "",
-                                },
-                                "room": room_id,
-                                "receiver_id": user["id"],
-                            },
-                        )
-
-                    response = requests.patch(
-                        f"{self.uri}/rooms/{room_id}/text/instr_title",
-                        json={"text": "Please wait for the roles to be assigned"},
-                        headers={"Authorization": f"Bearer {self.token}"},
-                    )
-                    if not response.ok:
-                        logging.error(
-                            f"Could not set task instruction title: {response.status_code}"
-                        )
-                        response.raise_for_status()
-
                 # TODO: maybe add checks for executor commands?
                 elif isinstance(data["command"], str):
-                    executor = self.executors[room_id]
-                    executor.execute(data["command"])
-                    self.set_boards(room_id)
+                    curr_usr, other_usr = self.players_per_room[room_id]
+                    if curr_usr["id"] != user_id:
+                        curr_usr, other_usr = other_usr, curr_usr
+                    
+                    if curr_usr["role"] == "wizard":
+                        executor = self.executors[room_id]
+                        executor.execute(data["command"])
+                        self.set_boards(room_id)
+                    else:
+                        self.sio.emit(
+                        "text",
+                        {
+                            "message": "You're not allowed to do that",
+                            "room": room_id,
+                            "receiver_id": user_id,
+                        },
+                    )
+
 
                 else:
                     self.sio.emit(
@@ -259,6 +227,76 @@ class CcbtsBot(TaskBot):
                             "receiver_id": user_id,
                         },
                     )
+
+    def set_wizard_role(self, room_id, user_id):
+        curr_usr, other_usr = self.players_per_room[room_id]
+        if curr_usr["id"] != user_id:
+            curr_usr, other_usr = other_usr, curr_usr
+
+        # users have no roles so we can assign them
+        if curr_usr["role"] is None and other_usr["role"] is None:
+            for role, user in zip(
+                ["wizard", "player"], [curr_usr, other_usr]
+            ):
+                user["role"] = role
+                self.sio.emit(
+                    "message_command",
+                    {
+                        "command": {
+                            "role": role,
+                            "instruction": INSTRUCTIONS[role],
+                        },
+                        "room": room_id,
+                        "receiver_id": user["id"],
+                    },
+                )
+
+            self.set_image(room_id, other_usr)
+            self.set_boards(room_id)
+
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "Roles have already be assigned, please reset roles first",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+
+    def reset_roles(self, room_id):
+        self.sio.emit(
+            "text",
+            {
+                "message": "Roles have been resetted, please wait for new roles to be assigned",
+                "room": room_id,
+            },
+        )
+
+        for user in self.players_per_room[room_id]:
+            user["role"] = None
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "role": "reset",
+                        "instruction": "",
+                    },
+                    "room": room_id,
+                    "receiver_id": user["id"],
+                },
+            )
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={"text": "Please wait for the roles to be assigned"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
 
     def set_image(self, room_id, user):
         # set image
