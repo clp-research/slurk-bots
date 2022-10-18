@@ -13,4 +13,11 @@ INSTRUCTIONS = dict(
     wizard=Path(f"{ROOT}/ccbts/data/instruction_wizard.txt").read_text().strip()
 )
 
-IMGS = [image for image in Path(f"{ROOT}/ccbts/data/images").iterdir()]
+# IMGS = [image for image in Path(f"{ROOT}/ccbts/data/images").iterdir()]
+IMGS = [
+    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/parallel_bridges.jpg",
+    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/square_bridges.jpg",
+    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack_bridges_nuts.jpg",
+    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack_nuts_screws.jpg",
+    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack_nuts_washers_screws.jpg"
+]

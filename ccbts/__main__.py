@@ -197,8 +197,7 @@ class CcbtsBot(TaskBot):
                         },
                     )
 
-                # TODO: maybe add checks for executor commands?
-                elif isinstance(data["command"], str):
+                elif (data["command"].startswith("pick") or data["command"].startswith("place")):
                     curr_usr, other_usr = self.players_per_room[room_id]
                     if curr_usr["id"] != user_id:
                         curr_usr, other_usr = other_usr, curr_usr
@@ -300,11 +299,13 @@ class CcbtsBot(TaskBot):
 
     def set_image(self, room_id, user):
         # set image
-        imagepath = self.images_per_room[room_id]
-        with imagepath.open("rb") as infile:
-            img_byte = infile.read()
+        # imagepath = self.images_per_room[room_id]
+        # with imagepath.open("rb") as infile:
+        #     img_byte = infile.read()
 
-        image = f"data:image/jpg;base64, {base64.b64encode(img_byte).decode('utf-8')}"
+        # image = f"data:image/jpg;base64, {base64.b64encode(img_byte).decode('utf-8')}"
+
+        image = self.images_per_room[room_id]
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
