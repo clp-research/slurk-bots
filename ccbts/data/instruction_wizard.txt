@@ -1,2 +1,2 @@
 Receive instructions from the player and enter commands to manipulate the board.
-A command could look like this /move A2 C3
+A command could look like this /pick('s', 1, 2) or place('t', 1, 2, 1, 2)
