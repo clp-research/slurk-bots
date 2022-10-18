@@ -204,7 +204,17 @@ class CcbtsBot(TaskBot):
                     
                     if curr_usr["role"] == "wizard":
                         executor = self.executors[room_id]
-                        executor.execute(data["command"])
+                        try:
+                            executor.execute(data["command"])
+                        except (KeyError, TypeError, OverflowError) as error:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": str(error),
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                }, 
+                            )
                         self.set_boards(room_id)
                     else:
                         self.sio.emit(

@@ -4,6 +4,13 @@ function display_grid(grid, grid_name) {
     $(`#${grid_name}-top-header`).empty();
     $(`#${grid_name}-left-header`).empty();
 
+    color_mapping = {
+        "red": "#f44336",
+        "blue": "#0080ff",
+        "green": "#588F3A",
+        "white": "white"
+    }
+
     // define elements for padding
     alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
     alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] 
@@ -31,7 +38,7 @@ function display_grid(grid, grid_name) {
         reducing_factor = 3
     }
 
-    for (let i=0; i<reducing_factor; i++){
+    for (let i = 0; i < reducing_factor; i++) {
         let item = document.createElement("div");
         item.setAttribute("class", "grid-header");
         item.innerHTML = numbers[i]
@@ -47,7 +54,7 @@ function display_grid(grid, grid_name) {
             let item = document.createElement("div");
 
             item.setAttribute("class", "grid-item");
-            item.style.backgroundColor = grid[i][j][0]
+            item.style.backgroundColor = color_mapping[grid[i][j][0]]
 
             // only add right border between big cells
             if ((j + 1) % reducing_factor === 0) {
@@ -55,7 +62,7 @@ function display_grid(grid, grid_name) {
                 item.setAttribute("style", old + " border-right: 1px solid rgba(0, 0, 0, 0.8);")
             }
 
-            if ((j === 0) || (j  % reducing_factor === 0)){
+            if ((j === 0) || (j % reducing_factor === 0)) {
                 old = item.getAttribute("style");
                 item.setAttribute("style", old + " border-left: 1px solid rgba(0, 0, 0, 0.8);");
             }
@@ -106,7 +113,7 @@ $(document).ready(() => {
         socket.emit("message_command",
             {
                 "command": "set_role_player",
-                "room": self_room 
+                "room": self_room
             }
         )
     });
@@ -121,13 +128,10 @@ $(document).ready(() => {
     });
 
     socket.on("command", (data) => {
-        if (typeof(data.command) === "object"){
-            // assign role
+        if (typeof (data.command) === "object") {
 
-            console.log(data)
-
-            if ("role" in data.command){
-                if (data.command.role === "wizard"){
+            if ("role" in data.command) {
+                if (data.command.role === "wizard") {
                     set_wizard(data.command.instruction)
                 } else if (data.command.role === "player") {
                     set_player(data.command.instruction)
@@ -135,10 +139,8 @@ $(document).ready(() => {
                     reset_role(data.command.instruction)
                 }
 
-            // board update
+                // board update
             } else if ("board" in data.command) {
-                console.log("SEE MY BOARD");
-                console.log(data.command);
                 display_grid(data.command.board, data.command.name)
             }
         }
