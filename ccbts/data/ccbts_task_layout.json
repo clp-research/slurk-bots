@@ -242,7 +242,7 @@
             "incoming-image": "display-image",
             "submit-message": "send-message",
             "print-history": "plain-history",
-            "plain": "ccbt"
+            "plain": "ccbts"
         },
         "show_latency": false
     }
