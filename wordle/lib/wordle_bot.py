@@ -621,7 +621,7 @@ class WordleBot:
                 },
             )
 
-            self.confirmation_code(room_id, "success")
+            #self.confirmation_code(room_id, "success")
             sleep(1)
             self.close_game(room_id)
         else:
@@ -768,7 +768,7 @@ class WordleBot:
                     color=STANDARD_COLOR,
                     message=(
                         "This room is closing. Make sure to save your token "
-                        "before you leave or reload this page."
+                        # "before you leave or reload this page."
                     ),
                 ),
                 "room": room_id,

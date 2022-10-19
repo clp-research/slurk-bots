@@ -213,7 +213,7 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
 $("#keyboard-cont").hide()
 $(document).ready(() => {
     socket.on("command", (data) => {
-        console.log(data);
+
         if (typeof (data.command) === "object") {
             if (data.command.command === "wordle_init") {
                 rightGuessString = data.command.word;
