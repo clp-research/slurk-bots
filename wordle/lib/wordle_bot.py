@@ -78,6 +78,7 @@ class WordleBot:
         self.players_per_room = dict()
         self.last_message_from = dict()
         self.guesses_per_room = dict()
+        self.guesses_history = dict()
         self.points_per_room = dict()
 
         # maps number of guesses to points
@@ -125,6 +126,7 @@ class WordleBot:
 
                 # create image items for this room
                 LOG.debug("Create data for the new task room...")
+                LOG.debug(data)
 
                 self.images_per_room.get_image_pairs(room_id)
                 self.players_per_room[room_id] = []
@@ -149,10 +151,17 @@ class WordleBot:
                 logging.info(room_id)
                 self.sio.emit(
                     "message_command",
-                    {"command": f"wordle_init {word}", "room": room_id},
+                    {
+                        "command": {
+                            "command": "wordle_init",
+                            "word": word
+                        },
+                        "room": room_id
+                    }
                 )
 
                 self.guesses_per_room[room_id] = dict()
+                self.guesses_history[room_id] = list()
                 self.points_per_room[room_id] = 0
                 self.show_item(room_id)
 
@@ -241,15 +250,35 @@ class WordleBot:
                         },
                     )
 
+                    
                     # shuffle remaining words and start over with a new one
-                    random.shuffle(self.images_per_room[room_id])
+                    # random.shuffle(self.images_per_room[room_id])
 
-                    wordle, _ = self.images_per_room[room_id][0]
+                    word, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
-                        {"command": f"wordle_init {wordle}", "room": room_id},
+                        {
+                            "command": {
+                                "command": "wordle_init",
+                                "word": word
+                            },
+                            "room": room_id,
+                            "receiver_id": curr_usr["id"],
+                        }
                     )
                     self.show_item(room_id)
+                    for word in self.guesses_history[room_id]:
+                        self.sio.emit(
+                            "message_command", 
+                            {
+                                "command": {
+                                    "command": "wordle_guess",
+                                    "guess": word
+                                },
+                                "room": room_id,
+                                "receiver_id": curr_usr["id"],
+                            }
+                        )
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
@@ -297,39 +326,28 @@ class WordleBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            LOG.debug(data)
+            # do not prcess commands from itself
+            if str(user_id) == self.user:
+                return
 
             if room_id in self.images_per_room:
-                if data["command"] == "guess":
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message="You need to provide a guess!",
-                            ),
-                            "room": room_id,
-                            "receiver_id": user_id,
-                            "html": True,
-                        },
-                    )
-                elif data["command"].startswith("guess"):
-                    self._command_guess(room_id, user_id, data["command"])
-                elif data["command"].startswith("end_round"):
-                    self._command_end_round(room_id, user_id, data["command"])
-                elif data["command"] in {"noreply", "no reply"}:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message="Please wait some more for an answer.",
-                            ),
-                            "room": room_id,
-                            "receiver_id": user_id,
-                            "html": True,
-                        },
-                    )
+                if isinstance(data["command"], dict):
+                    if "guess" in data["command"]:
+                        if data["command"]["guess"].strip() == "":
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        color=WARNING_COLOR,
+                                        message="**You need to provide a guess!**",
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                    "html": True,
+                                },
+                            )
+                        else:
+                            self._command_guess(room_id, user_id, data["command"])
                 else:
                     self.sio.emit(
                         "text",
@@ -354,8 +372,9 @@ class WordleBot:
         LOG.debug(command)
 
         # get the wordle for this room and the guess from the user
-        wordle, _ = self.images_per_room[room_id][0]
-        guess, remaining_guesses = command.split()[1:]
+        word, _ = self.images_per_room[room_id][0]
+        guess = command["guess"] 
+        remaining_guesses = command["remaining"]
 
         # make sure it's a good guess
         if guess not in self.wordlist:
@@ -374,13 +393,13 @@ class WordleBot:
             return
 
         # make sure the guess has the right length
-        if len(wordle) != len(guess):
+        if len(word) != len(guess):
             self.sio.emit(
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Unfortunately this word is not valid. Your guess needs to have {len(wordle)} letters.",
+                        message=f"Unfortunately this word is not valid. Your guess needs to have {len(word)} letters.",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -449,17 +468,25 @@ class WordleBot:
         ):
             # reset guess and send it to client to check
             self.guesses_per_room[room_id] = dict()
+            self.guesses_history[room_id].append(guess)
             self.sio.emit(
-                "message_command", {"command": f"wordle_guess {guess}", "room": room_id}
+                "message_command", 
+                {
+                    "command": {
+                        "command": "wordle_guess",
+                        "guess": guess
+                    },
+                    "room": room_id
+                }
             )
 
-            if (wordle == guess) or (remaining_guesses == "1"):
+            if (word == guess) or (remaining_guesses == "1"):
                 sleep(2)
 
                 result = "LOST"
                 points = 0
 
-                if wordle == guess:
+                if word == guess:
                     result = "WON"
                     points = self.point_system[int(remaining_guesses)]
 
@@ -468,6 +495,7 @@ class WordleBot:
 
                 # self.timers_per_room[room_id].done_timer.cancel()
                 self.images_per_room[room_id].pop(0)
+                self.guesses_history[room_id] = list()
 
                 self.sio.emit(
                     "text",
@@ -552,10 +580,16 @@ class WordleBot:
 
                     sleep(2)
 
-                    wordle, _ = self.images_per_room[room_id][0]
+                    word, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
-                        {"command": f"wordle_init {wordle}", "room": room_id},
+                        {
+                            "command": {
+                                "command": "wordle_init",
+                                "word": word
+                            },
+                            "room": room_id
+                        }
                     )
 
                     # reset attributes for the new round
