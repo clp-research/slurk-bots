@@ -12,7 +12,7 @@ function initBoard() {
     for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
         let row = document.createElement("div")
         row.className = "letter-row"
-        
+
         for (let j = 0; j < 5; j++) {
             let box = document.createElement("div")
             box.className = "letter-box"
@@ -34,7 +34,7 @@ function shadeKeyBoard(letter, color) {
             let oldColor = elem.style.backgroundColor
             if (oldColor === 'green') {
                 return
-            } 
+            }
 
             if (oldColor === 'yellow' && color !== 'green') {
                 return
@@ -47,7 +47,7 @@ function shadeKeyBoard(letter, color) {
 }
 
 
-function deleteLetter () {
+function deleteLetter() {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let box = row.children[nextLetter - 1]
     box.textContent = ""
@@ -57,47 +57,47 @@ function deleteLetter () {
 }
 
 
-function checkGuess (guessString) {
+function checkGuess(guessString) {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let rightGuess = Array.from(rightGuessString)
 
 
     let colors = ["", "", "", "", ""];
-	let remaining = Array.from(rightGuessString)
+    let remaining = Array.from(rightGuessString)
 
     // first check for green letters
-    for (let i=0; i<5; i++){
-      	let guessLetter = guessString.charAt(i);
-      	let solutionLetter = rightGuess[i];
-      	if (guessLetter === solutionLetter){
-      		colors[i] = "green";
-      		remaining[i] = " ";
-      	}
+    for (let i = 0; i < 5; i++) {
+        let guessLetter = guessString.charAt(i);
+        let solutionLetter = rightGuess[i];
+        if (guessLetter === solutionLetter) {
+            colors[i] = "green";
+            remaining[i] = " ";
+        }
     }
- 
+
     // check for yellows and greys
     for (let i = 0; i < 5; i++) {
-	    let guessLetter = guessString.charAt(i);
+        let guessLetter = guessString.charAt(i);
 
-		if (remaining.includes(guessLetter) === true){
-		    if (colors[i] === ""){
-		  		colors[i] = "yellow";
+        if (remaining.includes(guessLetter) === true) {
+            if (colors[i] === "") {
+                colors[i] = "yellow";
 
                 // remove this letter from remaining
                 to_remove_index = remaining.indexOf(guessLetter)
                 remaining.splice(to_remove_index, 1)
-		  	}
-		} else {
-		    if (colors[i] === ""){
-		  		colors[i] = "grey";
-		  	}
-	    }  
+            }
+        } else {
+            if (colors[i] === "") {
+                colors[i] = "grey";
+            }
+        }
     }
 
     for (let i = 0; i < 5; i++) {
-  	    let box = row.children[i]
+        let box = row.children[i]
         let delay = 250 * i
-        setTimeout(()=> {
+        setTimeout(() => {
             // flip box
             animateCSS(box, 'flipInX')
             // shade box
@@ -115,7 +115,7 @@ function checkGuess (guessString) {
 }
 
 
-function insertLetter (pressedKey) {
+function insertLetter(pressedKey) {
     if (nextLetter === 5) {
         return
     }
@@ -132,24 +132,24 @@ function insertLetter (pressedKey) {
 
 
 const animateCSS = (element, animation, prefix = 'animate__') =>
-// We create a Promise and return it
-new Promise((resolve, reject) => {
-    const animationName = `${prefix}${animation}`;
-    // const node = document.querySelector(element);
-    const node = element
-    node.style.setProperty('--animate-duration', '0.3s');
-    
-    node.classList.add(`${prefix}animated`, animationName);
+    // We create a Promise and return it
+    new Promise((resolve, reject) => {
+        const animationName = `${prefix}${animation}`;
+        // const node = document.querySelector(element);
+        const node = element
+        node.style.setProperty('--animate-duration', '0.3s');
 
-    // When the animation ends, we clean the classes and resolve the Promise
-    function handleAnimationEnd(event) {
-    event.stopPropagation();
-    node.classList.remove(`${prefix}animated`, animationName);
-    resolve('Animation ended');
-    }
+        node.classList.add(`${prefix}animated`, animationName);
 
-    node.addEventListener('animationend', handleAnimationEnd, {once: true});
-});
+        // When the animation ends, we clean the classes and resolve the Promise
+        function handleAnimationEnd(event) {
+            event.stopPropagation();
+            node.classList.remove(`${prefix}animated`, animationName);
+            resolve('Animation ended');
+        }
+
+        node.addEventListener('animationend', handleAnimationEnd, { once: true });
+    });
 
 
 function sendGuess() {
@@ -158,9 +158,15 @@ function sendGuess() {
     for (const val of currentGuess) {
         guessString += val
     }
-    
-    socket.emit("message_command", 
-        { "command": `guess ${guessString} ${guessesRemaining}`, "room": self_room}
+
+    socket.emit("message_command",
+        {
+            "command": {
+                "guess": guessString,
+                "remaining": guessesRemaining
+            },
+            "room": self_room
+        }
     )
 }
 
@@ -194,8 +200,8 @@ function getKeyPressed(letter) {
 document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     const target = e.target
     let key = target.textContent.trim()
-    
-    socket.emit("text_message", key);     
+
+    // socket.emit("text_message", key);     
     if (!target.classList.contains("keyboard-button")) {
         return
     }
@@ -207,20 +213,22 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
 $("#keyboard-cont").hide()
 $(document).ready(() => {
     socket.on("command", (data) => {
-        var command = data.command
-        if (command.includes("wordle_init")){
-            rightGuessString = command.split(" ")[1];
-            guessesRemaining = NUMBER_OF_GUESSES;
-            currentGuess = [];
-            $("#keyboard-cont").show()
-            initBoard();
-            for (let i = 0; i < 5; i++) {
-                deleteLetter()
-            }
+        console.log(data);
+        if (typeof (data.command) === "object") {
+            if (data.command.command === "wordle_init") {
+                rightGuessString = data.command.word;
+                guessesRemaining = NUMBER_OF_GUESSES;
+                currentGuess = [];
+                $("#keyboard-cont").show()
+                initBoard();
+                for (let i = 0; i < 5; i++) {
+                    deleteLetter()
+                }
 
-        } else if (command.includes("wordle_guess")){
-            userInput = command.split(" ")[1];
-            checkGuess(userInput);
-        }         
+            } else if (data.command.command === "wordle_guess") {
+                userInput = data.command.guess;
+                checkGuess(userInput);
+            }
+        }
     });
 });
