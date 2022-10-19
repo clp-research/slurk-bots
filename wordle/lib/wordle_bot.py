@@ -700,6 +700,9 @@ class WordleBot:
         # remove any task room specific objects
         self.images_per_room.pop(room_id)
         self.last_message_from.pop(room_id)
+        self.guesses_per_room.pop(room_id)
+        self.guesses_history.pop(room_id)
+        self.points_per_room.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
