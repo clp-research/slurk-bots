@@ -21,6 +21,21 @@ LOG = logging.getLogger(__name__)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+class RoomTimers:
+    """A number of timed events during the game.
+
+    :param alone_in_room: Closes a room if one player is alone in
+        the room for longer than 5 minutes
+
+    :param round_timer: After 15 minutes the image will change
+        and players get no points
+
+    """
+    def __init__(self):
+        self.left_room = dict()
+        self.round_timer = None
+
+
 class WordleBot:
     sio = socketio.Client(logger=True)
     """The ID of the task the bot is involved in."""
@@ -80,6 +95,7 @@ class WordleBot:
         self.guesses_per_room = dict()
         self.guesses_history = dict()
         self.points_per_room = dict()
+        self.timers_per_room = dict()
 
         # maps number of guesses to points
         self.point_system = dict(zip([6, 5, 4, 3, 2, 1], [100, 50, 25, 10, 5, 1]))
@@ -164,6 +180,15 @@ class WordleBot:
                 self.guesses_history[room_id] = list()
                 self.points_per_room[room_id] = 0
                 self.show_item(room_id)
+
+                # begin timers
+                self.timers_per_room[room_id] = RoomTimers()
+                self.timers_per_room[room_id].round_timer = Timer(
+                    TIME_ROUND*60,
+                    self.time_out_round, args=[room_id]
+                )
+                self.timers_per_room[room_id].round_timer.start()
+
 
         @self.sio.event
         def joined_room(data):
@@ -250,10 +275,6 @@ class WordleBot:
                         },
                     )
 
-                    
-                    # shuffle remaining words and start over with a new one
-                    # random.shuffle(self.images_per_room[room_id])
-
                     word, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
@@ -280,6 +301,11 @@ class WordleBot:
                             }
                         )
 
+                    # cancel timer
+                    LOG.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
+                    if curr_usr["id"] in self.timers_per_room[room_id].left_room:
+                        self.timers_per_room[room_id].left_room[curr_usr["id"]].cancel()
+
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
                     self.sio.emit(
@@ -294,6 +320,13 @@ class WordleBot:
                             "html": True,
                         },
                     )
+
+                    LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
+                    self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
+                        TIME_LEFT*60,
+                        self.close_game, args=[room_id]
+                    )
+                    self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
 
         @self.sio.event
         def text_message(data):
@@ -513,9 +546,6 @@ class WordleBot:
                 self.points_per_room[room_id] += points
 
                 # self.timers_per_room[room_id].done_timer.cancel()
-                self.images_per_room[room_id].pop(0)
-                self.guesses_history[room_id] = list()
-
                 self.sio.emit(
                     "text",
                     {
@@ -530,95 +560,124 @@ class WordleBot:
                     },
                 )
 
-                # was this the last game round?
-                if not self.images_per_room[room_id]:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message="The game is over! Thank you for participating!",
-                            ),
-                            "room": room_id,
-                            "html": True,
-                        },
-                    )
-                    sleep(1)
+                self.next_round(room_id)
 
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message=(
-                                    "Please share the following text on social media: "
-                                    "I played slurdle and helped science! "
-                                    f"Together with {other_usr['name']}, I got {self.points_per_room[room_id]} "
-                                    f"points for {self.images_per_room.n} puzzle(s). "
-                                    f"Play here: {self.url}. #slurdle"
-                                ),
-                            ),
-                            "receiver_id": curr_usr["id"],
-                            "room": room_id,
-                            "html": True,
-                        },
-                    )
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message=(
-                                    "Please share the following text on social media: "
-                                    "I played slurdle and helped science! "
-                                    f"Together with {curr_usr['name']}, I got {self.points_per_room[room_id]} "
-                                    f"points for {self.images_per_room.n} puzzle(s). "
-                                    f"Play here: {self.url}. #slurdle"
-                                ),
-                            ),
-                            "receiver_id": other_usr["id"],
-                            "room": room_id,
-                            "html": True,
-                        },
-                    )
+    def next_round(self, room_id):        
+        self.images_per_room[room_id].pop(0)
+        self.guesses_history[room_id] = list()
+        self.guesses_per_room[room_id] = dict()
 
-                    self.confirmation_code(room_id, "success")
-                    sleep(1)
-                    self.close_game(room_id)
-                else:
-                    # load the next image
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message=f"Ok, let's get both of you the next image. {len(self.images_per_room[room_id])} to go!",
-                            ),
-                            "room": room_id,
-                            "html": True,
-                        },
-                    )
+        curr_usr, other_usr = self.players_per_room[room_id]
 
-                    sleep(2)
+        # was this the last game round?
+        if not self.images_per_room[room_id]:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message="The game is over! Thank you for participating!",
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            sleep(1)
 
-                    word, _ = self.images_per_room[room_id][0]
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": {
-                                "command": "wordle_init",
-                                "word": word
-                            },
-                            "room": room_id
-                        }
-                    )
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=(
+                            "Please share the following text on social media: "
+                            "I played slurdle and helped science! "
+                            f"Together with {other_usr['name']}, I got {self.points_per_room[room_id]} "
+                            f"points for {self.images_per_room.n} puzzle(s). "
+                            f"Play here: {self.url}. #slurdle"
+                        ),
+                    ),
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=(
+                            "Please share the following text on social media: "
+                            "I played slurdle and helped science! "
+                            f"Together with {curr_usr['name']}, I got {self.points_per_room[room_id]} "
+                            f"points for {self.images_per_room.n} puzzle(s). "
+                            f"Play here: {self.url}. #slurdle"
+                        ),
+                    ),
+                    "receiver_id": other_usr["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
 
-                    # reset attributes for the new round
-                    for usr in self.players_per_room[room_id]:
-                        usr["status"] = "ready"
-                        usr["msg_n"] = 0
+            self.confirmation_code(room_id, "success")
+            sleep(1)
+            self.close_game(room_id)
+        else:
+            # load the next image
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=f"Ok, let's get both of you the next image. {len(self.images_per_room[room_id])} to go!",
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
 
-                    self.show_item(room_id)
+            sleep(2)
+
+            word, _ = self.images_per_room[room_id][0]
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "command": "wordle_init",
+                        "word": word
+                    },
+                    "room": room_id
+                }
+            )
+
+            # reset attributes for the new round
+            for usr in self.players_per_room[room_id]:
+                usr["status"] = "ready"
+                usr["msg_n"] = 0
+
+            self.show_item(room_id)
+
+            self.timers_per_room[room_id].round_timer = Timer(
+                TIME_ROUND*60,
+                self.time_out_round, args=[room_id]
+            )
+            self.timers_per_room[room_id].round_timer.start()
+
+    def time_out_round(self, room_id):
+        self.sio.emit(
+            "text",
+            {
+                "message": COLOR_MESSAGE.format(
+                    color=WARNING_COLOR,
+                    message="**Your time is up! Unfortunately you get no points for this round.**"
+                   ),
+                "room": room_id,
+                "html": True,
+            },
+        )
+        self.next_round(room_id)
 
     def show_item(self, room_id):
         """Update the image of the players."""
@@ -708,7 +767,7 @@ class WordleBot:
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
                     message=(
-                        "Make sure to save your token "
+                        "This room is closing. Make sure to save your token "
                         "before you leave or reload this page."
                     ),
                 ),
@@ -724,6 +783,7 @@ class WordleBot:
         self.guesses_per_room.pop(room_id)
         self.guesses_history.pop(room_id)
         self.points_per_room.pop(room_id)
+        self.timers_per_room.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
