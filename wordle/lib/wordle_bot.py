@@ -413,6 +413,25 @@ class WordleBot:
         #     room_id : {user_id: guess, other_user_id: guess},
         #     ...
         # }
+        if curr_usr["id"] in self.guesses_per_room[room_id]:
+            users_guess = self.guesses_per_room[room_id][curr_usr["id"]]
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=WARNING_COLOR,
+                        message=(
+                            f"**You already entered the guess: {users_guess}, "
+                            "let's wait for your partner to also enter a guess.**"
+                        )
+                    ),
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            return
+
         self.guesses_per_room[room_id][curr_usr["id"]] = guess
 
         # only one entry in dict, notify other user he should send a guess
