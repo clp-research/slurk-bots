@@ -499,7 +499,7 @@ class WordleBot:
                 }
             )
 
-            if (word == guess) or (remaining_guesses == "1"):
+            if (word == guess) or (remaining_guesses == 1):
                 sleep(2)
 
                 result = "LOST"
@@ -521,7 +521,9 @@ class WordleBot:
                     {
                         "message": COLOR_MESSAGE.format(
                             color=STANDARD_COLOR,
-                            message=f"YOU {result}! For this round you get {points} points. Your total score is: {self.points_per_room[room_id]}",
+                            message=(
+                                f"**YOU {result}! For this round you get {points} points. "
+                                f"Your total score is: {self.points_per_room[room_id]}**"),
                         ),
                         "room": room_id,
                         "html": True,
