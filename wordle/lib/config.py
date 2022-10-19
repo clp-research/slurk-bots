@@ -36,6 +36,11 @@ TIME_GAME = 5.5
 # The participants will be moved back to the waiting room after the game finished.
 TIME_CLOSE = 0.25
 
+# colored messages
+COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
+STANDARD_COLOR = "Purple"
+WARNING_COLOR = "FireBrick"
+
 
 TASK_TITLE = "Find the word."
 
