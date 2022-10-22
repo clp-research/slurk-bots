@@ -7,7 +7,7 @@ from time import sleep
 import requests
 
 from templates import TaskBot
-from executor import Executor
+from wizardinterface import WizardInterface
 from .config import *
 
 
@@ -17,7 +17,7 @@ class CcbtsBot(TaskBot):
         self.received_waiting_token = set()
         self.players_per_room = dict()
         self.images_per_room = dict()
-        self.executors = dict()
+        self.robot_interfaces = dict()
         self.register_callbacks()
 
     def register_callbacks(self):
@@ -43,8 +43,8 @@ class CcbtsBot(TaskBot):
                 logging.debug("Create data for the new task room...")
                 self.images_per_room[room_id] = random.choice(IMGS)
 
-                # create executor for this room
-                self.executors[room_id] = Executor()
+                # create robot interface for this room
+                self.robot_interfaces[room_id] = WizardInterface()
 
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
@@ -163,15 +163,23 @@ class CcbtsBot(TaskBot):
         @self.sio.event
         def command(data):
             """Parse user commands."""
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            # do not prcess commands from itself
+            if user_id == self.user:
+                return
+
+            logging.debug(user_id)
+            logging.debug(type(user_id))
+            logging.debug(self.user)
+            logging.debug(type(self.user))
+
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            room_id = data["room"]
-            user_id = data["user"]["id"]
-
             if room_id in self.images_per_room:
-
                 # set wizard
                 if data["command"] == "set_role_wizard":
                     self.set_wizard_role(room_id, user_id)
@@ -203,9 +211,9 @@ class CcbtsBot(TaskBot):
                         curr_usr, other_usr = other_usr, curr_usr
                     
                     if curr_usr["role"] == "wizard":
-                        executor = self.executors[room_id]
+                        interface = self.robot_interfaces[room_id]
                         try:
-                            executor.execute(data["command"])
+                            interface.execute(data["command"])
                         except (KeyError, TypeError, OverflowError) as error:
                             self.sio.emit(
                                 "text",
@@ -327,33 +335,35 @@ class CcbtsBot(TaskBot):
             response.raise_for_status()
 
     def set_boards(self, room_id):
-        # set boards
-        executor = self.executors[room_id]
-        source_board, target_board = executor.get_slurk_boards()
-        for user in self.players_per_room[room_id]:
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "board": source_board,
-                        "name": "source",
-                    },
-                    "room": room_id,
-                    "receiver_id": user["id"],
+        # get boards from the robot interface
+        interface = self.robot_interfaces[room_id]
+        boards = interface.get_boards()
+        source_board = boards["s"].tolist()
+        target_board = boards["t"].tolist()
+        
+        # set source board
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "board": source_board,
+                    "name": "source",
                 },
-            )
+                "room": room_id
+            },
+        )
 
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "board": target_board,
-                        "name": "target",
-                    },
-                    "room": room_id,
-                    "receiver_id": user["id"],
+        # set target board
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "board": target_board,
+                    "name": "target",
                 },
-            )
+                "room": room_id
+            },
+        )
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
@@ -366,7 +376,7 @@ class CcbtsBot(TaskBot):
 
         # remove any task room specific objects
         self.images_per_room.pop(room_id)
-        self.executors.pop(room_id)
+        self.robot_interfaces.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
