@@ -1,7 +1,11 @@
 __pycache__
 env/
 .DS_Store
+<<<<<<< HEAD
 .vscode
 slurk-telegram/token.txt
 ccbts/html_test
 ccbts/90_cocobots_blockworld
+=======
+.vscode
+>>>>>>> d4c2cb94cfa7f929257885c6a1f8a7ebe3fc726f
