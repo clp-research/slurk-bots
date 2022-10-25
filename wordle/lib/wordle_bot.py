@@ -163,14 +163,12 @@ class WordleBot:
                     response.raise_for_status()
                 LOG.debug("Sending wordle bot to new room was successful.")
 
-                word, _ = self.images_per_room[room_id][0]
                 logging.info(room_id)
                 self.sio.emit(
                     "message_command",
                     {
                         "command": {
-                            "command": "wordle_init",
-                            "word": word
+                            "command": "wordle_init"
                         },
                         "room": room_id
                     }
@@ -281,20 +279,20 @@ class WordleBot:
                         {
                             "command": {
                                 "command": "wordle_init",
-                                "word": word
                             },
                             "room": room_id,
                             "receiver_id": curr_usr["id"],
                         }
                     )
                     self.show_item(room_id)
-                    for word in self.guesses_history[room_id]:
+                    for guess in self.guesses_history[room_id]:
                         self.sio.emit(
                             "message_command", 
                             {
                                 "command": {
                                     "command": "wordle_guess",
-                                    "guess": word
+                                    "guess": guess,
+                                    "correct_word": word
                                 },
                                 "room": room_id,
                                 "receiver_id": curr_usr["id"],
@@ -526,7 +524,8 @@ class WordleBot:
                 {
                     "command": {
                         "command": "wordle_guess",
-                        "guess": guess
+                        "guess": guess,
+                        "correct_word": word
                     },
                     "room": room_id
                 }
@@ -640,13 +639,11 @@ class WordleBot:
 
             sleep(2)
 
-            word, _ = self.images_per_room[room_id][0]
             self.sio.emit(
                 "message_command",
                 {
                     "command": {
-                        "command": "wordle_init",
-                        "word": word
+                        "command": "wordle_init"
                     },
                     "room": room_id
                 }

@@ -2,7 +2,6 @@ const NUMBER_OF_GUESSES = 6;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
-let rightGuessString = "";
 
 
 function initBoard() {
@@ -57,13 +56,13 @@ function deleteLetter() {
 }
 
 
-function checkGuess(guessString) {
+function checkGuess(guessString, rightWordString) {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
-    let rightGuess = Array.from(rightGuessString)
+    let rightGuess = Array.from(rightWordString)
 
 
     let colors = ["", "", "", "", ""];
-    let remaining = Array.from(rightGuessString)
+    let remaining = Array.from(rightWordString)
 
     // first check for green letters
     for (let i = 0; i < 5; i++) {
@@ -216,7 +215,7 @@ $(document).ready(() => {
 
         if (typeof (data.command) === "object") {
             if (data.command.command === "wordle_init") {
-                rightGuessString = data.command.word;
+
                 guessesRemaining = NUMBER_OF_GUESSES;
                 currentGuess = [];
                 $("#keyboard-cont").show()
@@ -226,8 +225,7 @@ $(document).ready(() => {
                 }
 
             } else if (data.command.command === "wordle_guess") {
-                userInput = data.command.guess;
-                checkGuess(userInput);
+                checkGuess(data.command.guess, data.command.correct_word);
             }
         }
     });
