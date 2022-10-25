@@ -341,6 +341,14 @@ class CcbtsBot(TaskBot):
         source_board = boards["s"].tolist()
         target_board = boards["t"].tolist()
         
+        # for vertical target
+        # np.apply_along_axis(
+        #     lambda x: x.reshape(3, 3).T,
+        #     1,
+        #     a.get_boards()["s"]
+        # ).tolist()
+
+
         # set source board
         self.sio.emit(
             "message_command",
