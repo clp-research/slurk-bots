@@ -2,3 +2,6 @@ __pycache__
 env/
 .DS_Store
 .vscode
+slurk-telegram/token.txt
+ccbts/html_test
+ccbts/90_cocobots_blockworld
