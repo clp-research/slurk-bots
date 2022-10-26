@@ -14,9 +14,13 @@ function check_response {
     echo "$response"
 }
 
+# define here name of the bot and number of users
+BOT_NAME="ccbts"
+NUMBER_USERS=2
+
 # build docker images for bots
 cd ../slurk-bots
-docker build --tag "slurk/ccbts-bot" -f ccbts/Dockerfile .
+docker build --tag "slurk/$BOT_NAME-bot" -f $BOT_NAME/Dockerfile .
 docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
 # run slurk
@@ -40,12 +44,12 @@ echo "Waiting Room Id:"
 echo $WAITING_ROOM
 
 # create task room layout
-TASK_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/ccbts/data/ccbts_task_layout.json | jq .id)
+TASK_ROOM_LAYOUT=$(check_response scripts/create_layout.sh ../slurk-bots/$BOT_NAME/data/task_layout.json | jq .id)
 echo "Task Room Layout Id:"
 echo $TASK_ROOM_LAYOUT
 
 # create math task
-TASK_ID=$(check_response scripts/create_task.sh  "Ccbts Task" 2 "$TASK_ROOM_LAYOUT" | jq .id)
+TASK_ID=$(check_response scripts/create_task.sh  "${BOT_NAME^} Task" $NUMBER_USERS "$TASK_ROOM_LAYOUT" | jq .id)
 echo "Task Id:"
 echo $TASK_ID
 
@@ -60,22 +64,20 @@ docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e
 sleep 5
 
 # create math bot
-CCBTS_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/data/ccbts_bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
-echo "ccbts Bot Token: "
-echo $CCBTS_BOT_TOKEN
-CCBTS_BOT=$(check_response scripts/create_user.sh "CcbtsBot" "$CCBTS_BOT_TOKEN" | jq .id)
-echo "Ccbts Bot Id:"
-echo $CCBTS_BOT
-docker run -e CCBTS_TOKEN=$CCBTS_BOT_TOKEN -e CCBTS_USER=$CCBTS_BOT -e CCBTS_TASK_ID=$TASK_ID -e SLURK_WAITING_ROOM=$WAITING_ROOM -e SLURK_PORT=5000 --net="host" slurk/ccbts-bot &
+THIS_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/$BOT_NAME/data/bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
+echo "$BOT_NAME Bot Token: "
+echo $THIS_BOT_TOKEN
+THIS_BOT=$(check_response scripts/create_user.sh "${BOT_NAME^}Bot" "$THIS_BOT_TOKEN" | jq .id)
+echo "$BOT_NAME Bot Id:"
+echo $THIS_BOT
+docker run -e ${BOT_NAME^^}_TOKEN=$THIS_BOT_TOKEN -e ${BOT_NAME^^}_USER=$THIS_BOT -e ${BOT_NAME^^}_TASK_ID=$TASK_ID -e SLURK_WAITING_ROOM=$WAITING_ROOM -e SLURK_PORT=5000 --net="host" slurk/$BOT_NAME-bot &
 sleep 5
 
 # create users
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/data/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
-echo "User 1 Token:"
-echo $USER1
-
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/ccbts/data/ccbts_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
-echo "User 2 Token:"
-echo $USER1
+for ((c=0; c<NUMBER_USERS; c++))
+do
+    USER=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/$BOT_NAME/data/user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+    echo "User ${c+1} Token: $USER"
+done
 
 cd ../slurk-bots

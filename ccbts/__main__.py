@@ -1,10 +1,10 @@
-import base64
 import logging
 import os
 import random
 from time import sleep
 
 import requests
+import numpy as np
 
 from templates import TaskBot
 from wizardinterface import WizardInterface
@@ -170,11 +170,6 @@ class CcbtsBot(TaskBot):
             if user_id == self.user:
                 return
 
-            logging.debug(user_id)
-            logging.debug(type(user_id))
-            logging.debug(self.user)
-            logging.debug(type(self.user))
-
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
@@ -213,15 +208,18 @@ class CcbtsBot(TaskBot):
                     if curr_usr["role"] == "wizard":
                         interface = self.robot_interfaces[room_id]
                         try:
-                            interface.execute(data["command"])
+                            interface.play(data["command"])
                         except (KeyError, TypeError, OverflowError) as error:
                             self.sio.emit(
                                 "text",
                                 {
-                                    "message": str(error),
+                                    "message": COLOR_MESSAGE.format(
+                                        color=WARNING_COLOR, message=str(error)
+                                    ),
                                     "room": room_id,
-                                    "receiver_id": user_id,
-                                }, 
+                                    "html": True,
+                                    "receiver_id": user_id
+                                },
                             )
                         self.set_boards(room_id)
                     else:
@@ -338,15 +336,13 @@ class CcbtsBot(TaskBot):
         # get boards from the robot interface
         interface = self.robot_interfaces[room_id]
         boards = interface.get_boards()
-        source_board = boards["s"].tolist()
-        target_board = boards["t"].tolist()
+        source_board = boards["s"].tolist()    
         
-        # for vertical target
-        # np.apply_along_axis(
-        #     lambda x: x.reshape(3, 3).T,
-        #     1,
-        #     a.get_boards()["s"]
-        # ).tolist()
+        target_board = np.apply_along_axis(
+            lambda x: np.flip(x.reshape(4, 4), axis=1).T,
+            arr=boards["t"],
+            axis=1
+        ).reshape(16, 4).tolist()
 
 
         # set source board
