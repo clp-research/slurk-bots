@@ -77,7 +77,7 @@ sleep 5
 for ((c=0; c<NUMBER_USERS; c++))
 do
     USER=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/$BOT_NAME/data/user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
-    echo "User $c Token: $USER"
+    echo "User ${c+1} Token: $USER"
 done
 
 cd ../slurk-bots
