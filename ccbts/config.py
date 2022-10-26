@@ -21,3 +21,8 @@ IMGS = [
     "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack_nuts_screws.jpg",
     "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack_nuts_washers_screws.jpg"
 ]
+
+
+COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
+STANDARD_COLOR = "Purple"
+WARNING_COLOR = "FireBrick"
