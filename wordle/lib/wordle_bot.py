@@ -357,11 +357,12 @@ class WordleBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            # do not prcess commands from itself
+            # do not process commands from itself
             if str(user_id) == self.user:
                 return
 
             if room_id in self.images_per_room:
+                # only accept commands from the javascript frontend (commands are dictionaries)
                 if isinstance(data["command"], dict):
                     if "guess" in data["command"]:
                         if data["command"]["guess"].strip() == "":
@@ -379,6 +380,8 @@ class WordleBot:
                             )
                         else:
                             self._command_guess(room_id, user_id, data["command"])
+
+                # bot has no user defined commands
                 else:
                     self.sio.emit(
                         "text",
