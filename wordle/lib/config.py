@@ -21,7 +21,7 @@ SHUFFLE = True
 # They indicate how long a situation has to persist for something to happen.
 
 TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
-TIME_ROUND = 15  # how many minutes users can pla on a single image
+TIME_ROUND = 15  # how many minutes users can play on a single image
 
 # colored messages
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
