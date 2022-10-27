@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+from threading import Timer
 from time import sleep
 
 import requests
@@ -11,6 +12,20 @@ from wizardinterface import WizardInterface
 from .config import *
 
 
+class RoomTimers:
+    """A number of timed events during the game.
+
+    :param alone_in_room: Closes a room if one player is alone in
+        the room for longer than 5 minutes
+
+    :param round_timer: After 15 minutes the image will change
+        and players get no points
+
+    """
+    def __init__(self):
+        self.left_room = dict()
+
+
 class CcbtsBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -18,6 +33,7 @@ class CcbtsBot(TaskBot):
         self.players_per_room = dict()
         self.images_per_room = dict()
         self.robot_interfaces = dict()
+        self.timers_per_room = dict()
         self.register_callbacks()
 
     def register_callbacks(self):
@@ -62,6 +78,9 @@ class CcbtsBot(TaskBot):
                     )
                     response.raise_for_status()
                 logging.debug("Sending wordle bot to new room was successful.")
+
+                # create new timer for this room
+                self.timers_per_room[room_id] = RoomTimers()
 
         @self.sio.event
         def joined_room(data):
@@ -148,6 +167,13 @@ class CcbtsBot(TaskBot):
                         if role == "player":
                             self.set_image(room_id, curr_usr)
 
+                    # cancel timer
+                    logging.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
+
+                    timer = self.timers_per_room[room_id].left_room.get(curr_usr["id"])
+                    if timer is not None:
+                        timer.cancel()
+
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
                     self.sio.emit(
@@ -159,6 +185,14 @@ class CcbtsBot(TaskBot):
                             "receiver_id": other_usr["id"],
                         },
                     )
+
+                    # start timer since user left the room
+                    logging.debug(f"Starting Timer: left room for user {curr_usr['name']}")
+                    self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
+                        TIME_LEFT*60,
+                        self.close_game, args=[room_id]
+                    )
+                    self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
 
         @self.sio.event
         def command(data):
@@ -381,6 +415,7 @@ class CcbtsBot(TaskBot):
         # remove any task room specific objects
         self.images_per_room.pop(room_id)
         self.robot_interfaces.pop(room_id)
+        self.timers_per_room.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
