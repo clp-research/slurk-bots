@@ -17,10 +17,8 @@ function initBoard() {
             box.className = "letter-box"
             row.appendChild(box)
         }
-
         board.appendChild(row)
     }
-
     for (const elem of document.getElementsByClassName("keyboard-button")) {
         elem.style.backgroundColor = "";
     }
@@ -59,7 +57,6 @@ function deleteLetter() {
 function checkGuess(guessString, rightWordString) {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let rightGuess = Array.from(rightWordString)
-
 
     let colors = ["", "", "", "", ""];
     let remaining = Array.from(rightWordString)
@@ -106,7 +103,6 @@ function checkGuess(guessString, rightWordString) {
             shadeKeyBoard(guessString[i], colors[i])
         }, delay)
     }
-
     // update game variables
     guessesRemaining -= 1;
     currentGuess = [];
@@ -146,7 +142,6 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
             node.classList.remove(`${prefix}animated`, animationName);
             resolve('Animation ended');
         }
-
         node.addEventListener('animationend', handleAnimationEnd, { once: true });
     });
 
@@ -200,11 +195,9 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     const target = e.target
     let key = target.textContent.trim()
 
-    // socket.emit("text_message", key);     
     if (!target.classList.contains("keyboard-button")) {
         return
     }
-
     getKeyPressed(key);
 })
 
