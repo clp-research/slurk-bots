@@ -1,8 +1,6 @@
 function display_grid(grid, grid_name) {
     // clear grid div
     $(`#${grid_name}-grid`).empty();
-    $(`#${grid_name}-top-header`).empty();
-    $(`#${grid_name}-left-header`).empty();
 
     color_mapping = {
         "red": "#f44336",
@@ -14,68 +12,54 @@ function display_grid(grid, grid_name) {
     // define elements for padding
     alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
     alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] 
-    alphabet.unshift("")
-
-    // create left header
-    for (let i = 0; i < grid.length + 1; i++) {
-        let item = document.createElement("div");
-        item.setAttribute("class", "grid-header");
-
-        if (alphabet[i] === "") {
-            item.innerHTML = "&nbsp;"
+  
+    // add coordinates on upper header        
+    var top_header = $("<tr>");
+    for (let i=0; i < grid[0].length + 1; i++) {
+        var item = $("<th>");
+        item.css({})
+        if (i === 0) {
+            item.text("");
+            item.css({ "border": "3px solid white" })
         } else {
-            item.innerHTML = alphabet[i]
+            item.text(i)
+        }
+        top_header.append(item)
+    }
+    $(`#${grid_name}-grid`).append(top_header);
+
+
+    // create target
+    for (let i = 0; i < grid.length; i++) {
+        var div = $("<tr>");
+
+        // header on the left
+        if (grid_name === "target"){
+            if ((i % 4) == 0) {
+                var header = $("<th rowspan='4'>");
+                header.text(alphabet[i / 4])
+                header.css({
+                    "background-color": "white"
+                })
+                div.append(header)
+            }
+        } else if (grid_name === "source"){
+            var header = $("<th rowspan='1'>");
+            header.text(alphabet[i])
+            div.append(header)
         }
 
-        $(`#${grid_name}-left-header`).append(item)
-    }
-
-    // add coordinates on upper header
-    numbers = Array.from(Array(26).keys(), n => n + 1); // [1..26] used         
-    if (grid_name === "target") {
-        reducing_factor = 4
-    } else {
-        reducing_factor = 3
-    }
-
-    for (let i = 0; i < reducing_factor; i++) {
-        let item = document.createElement("div");
-        item.setAttribute("class", "grid-header");
-        item.innerHTML = numbers[i]
-        $(`#${grid_name}-top-header`).append(item)
-    }
-
-    // create grid 
-    for (let i = 0; i < grid.length; i++) {
-        let div = document.createElement("div");
-        div.setAttribute("class", "grid-row");
-
+        // fill grid
         for (let j = 0; j < grid[i].length; j++) {
-            let item = document.createElement("div");
-
-            item.setAttribute("class", "grid-item");
-            item.style.backgroundColor = color_mapping[grid[i][j][0]]
-
-            // only add right border between big cells
-            if ((j + 1) % reducing_factor === 0) {
-                old = item.getAttribute("style")
-                item.setAttribute("style", old + " border-right: 1px solid rgba(0, 0, 0, 0.8);")
-            }
-
-            if ((j === 0) || (j % reducing_factor === 0)) {
-                old = item.getAttribute("style");
-                item.setAttribute("style", old + " border-left: 1px solid rgba(0, 0, 0, 0.8);");
-            }
-
-            // add content
-            if (grid[i][j][1] === "") {
-                item.innerHTML = "&nbsp;"
-            } else {
-                item.innerHTML = grid[i][j][1]
-            }
+            var item = $("<td>").css({
+                "background-color": color_mapping[grid[i][j][0]]
+            });
+            item.text(grid[i][j][1])
             div.append(item)
         }
+
         $(`#${grid_name}-grid`).append(div);
+
     }
 };
 
@@ -113,7 +97,7 @@ $(document).ready(() => {
         socket.emit("message_command",
             {
                 "command": "set_role_player",
-                "room": self_room
+                "room": self_room 
             }
         )
     });
@@ -128,10 +112,10 @@ $(document).ready(() => {
     });
 
     socket.on("command", (data) => {
-        if (typeof (data.command) === "object") {
-
-            if ("role" in data.command) {
-                if (data.command.role === "wizard") {
+        if (typeof(data.command) === "object"){
+            // assign role
+            if ("role" in data.command){
+                if (data.command.role === "wizard"){
                     set_wizard(data.command.instruction)
                 } else if (data.command.role === "player") {
                     set_player(data.command.instruction)
@@ -139,7 +123,7 @@ $(document).ready(() => {
                     reset_role(data.command.instruction)
                 }
 
-                // board update
+            // board update
             } else if ("board" in data.command) {
                 display_grid(data.command.board, data.command.name)
             }
