@@ -1,6 +1,8 @@
+import ast
 import argparse
 import logging
 import os
+from pathlib import Path
 import re
 
 import requests
@@ -8,6 +10,11 @@ import socketio
 
 
 LOG = logging.getLogger(__name__)
+
+
+TASK_TITLE = "Let's solve some math!"
+TASK_DESCR = Path("task_description.txt").read_text()
+IMG_LINK = "https://upload.wikimedia.org/wikipedia/commons/a/a2/Nuvola_Math_and_Inf.svg"
 
 
 class MathBot:
@@ -27,7 +34,7 @@ class MathBot:
             self.uri += f":{port}"
         self.uri += "/slurk/api"
 
-        self.questions = dict()
+        self.room_to_q = dict()
 
         LOG.info(f"Running math bot on {self.uri} with token {self.token}")
         # register all event handlers
@@ -67,98 +74,151 @@ class MathBot:
                     response.raise_for_status()
                 LOG.debug("Math bot joins new task room", data)
 
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr",
+                    json={"text": TASK_DESCR},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr_title",
+                    json={"text": TASK_TITLE},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": IMG_LINK},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+
         @self.sio.event
         def command(data):
             """Process question and answer turns for both parties."""
+
             room_id = data["room"]
             user_id = data["user"]["id"]
-            if data["command"].startswith("question"):
-                self.sio.emit(
-                    "text",
-                    {"message": "You have sent a question.",
-                     "room": room_id,
-                     "receiver_id": user_id},
-                    callback=self.message_callback
-                )
-                self._command_question(user_id, room_id, data["command"])
-            elif data["command"].startswith("answer"):
-                self.sio.emit(
-                    "text",
-                    {"message": "You have sent an answer.",
-                     "room": room_id,
-                     "receiver_id": user_id},
-                    callback=self.message_callback
-                )
-                self._command_answer(user_id, room_id, data["command"])
+            cmd = data["command"]
+
+            if cmd.startswith("question"):
+                self._set_question(room_id, user_id, cmd)
+            elif cmd.startswith("answer"):
+                self._give_answer(room_id, user_id, cmd)
             else:
+                # inform the user in case of an invalid command
                 self.sio.emit(
                     "text",
-                    {"message": f"`{data['command']}` is not a valid command.",
-                     "room": room_id,
-                     "receiver_id": user_id},
+                    {
+                        "message": f"`{cmd}` is not a valid command.",
+                        "room": room_id, "receiver_id": user_id
+                    },
                     callback=self.message_callback
                 )
 
-    def _command_question(self, user_id, room_id, command):
-        """Broadcast math question to the room."""
-        query = re.sub(r"^question\s*", "", command)
-        self.questions[room_id] = query
-        self.questions["sender"] = user_id
+    def _set_question(self, room_id, user_id, cmd):
+        question = re.sub(r"^question\s*", "", cmd)
+        solution = self._eval(question)
 
-        self.sio.emit(
-            "text",
-            {"message": "A math question has been created!",
-             "room": room_id},
-            callback=self.message_callback
-        )
-        self.sio.emit(
-            "text",
-            {"message": query,
-             "room": room_id},
-            callback=self.message_callback
-        )
-
-    def _command_answer(self, user_id, room_id, command):
-        """Check if the provided answer is correct."""
-        answer = re.sub(r"^answer\s*", "", command)
-        if room_id not in self.questions:
+        if solution is None:
             self.sio.emit(
                 "text",
-                {"message": "Ups, no question found that you could answer!",
-                 "room": room_id,
-                 "receiver_id": user_id},
+                {
+                    "message": "Questions must be mathematical expressions.",
+                    "room": room_id, "receiver_id": user_id
+                },
                 callback=self.message_callback
             )
-            return
-        if self.questions["sender"] != user_id:
+        else:
+            self.room_to_q[room_id] = {
+                "question": question, "solution": solution, "sender": user_id
+            }
             self.sio.emit(
                 "text",
-                {"message": f"The proposed answer is: {answer}",
-                 "room": room_id},
+                {
+                    "message": f"A new question has been created:\n{question}",
+                    "room": room_id
+                },
                 callback=self.message_callback
             )
-            if eval(self.questions[room_id]) == int(answer):
-                self.sio.emit(
-                    "text",
-                    {"message": "Turns out the answer is correct!",
-                     "room": room_id},
-                    callback=self.message_callback
-                )
-            else:
-                self.sio.emit(
-                    "text",
-                    {"message": "Unfortunately the answer is wrong, please try again!",
-                     "room": room_id},
-                    callback=self.message_callback
-                )
+
+    def _give_answer(self, room_id, user_id, cmd):
+        answer = re.sub(r"^answer\s*", "", cmd)
+        prop_solution = self._eval(answer, answer=True)
+
+        if room_id not in self.room_to_q:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "Oops, no question found you could answer!",
+                    "room": room_id, "receiver_id": user_id
+                },
+                callback=self.message_callback
+            )
+        elif self.room_to_q[room_id]["sender"] == user_id:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "Come on! Don't answer your own question.",
+                    "room": room_id, "receiver_id": user_id
+                },
+                callback=self.message_callback
+            )
+        elif prop_solution is None:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "What? Sure that's a number?",
+                    "room": room_id, "receiver_id": user_id
+                },
+                callback=self.message_callback
+            )
         else:
             self.sio.emit(
                 "text",
-                {"message": "Come on! Don't answer your own question.",
-                 "room": room_id,
-                 "receiver_id": user_id},
+                {
+                    "message": f"The proposed answer is: {answer}",
+                    "room": room_id
+                },
                 callback=self.message_callback
             )
+            if prop_solution == self.room_to_q[room_id]["solution"]:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": "Wow! That's indeed correct.",
+                        "room": room_id
+                    },
+                    callback=self.message_callback
+                )
+                self.room_to_q.pop(room_id)
+            else:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": "Naahh. Try again!",
+                        "room": room_id
+                    },
+                    callback=self.message_callback
+                )
+
+    @staticmethod
+    def _eval(expr, answer=False):
+        try:
+            tree = ast.parse(expr, mode='eval')
+        except SyntaxError:
+            return
+        # verify the expression
+        for node in ast.walk(tree.body):
+            if not isinstance(node, (
+                ast.Num, ast.Sub, ast.Add, ast.Mult,
+                ast.BinOp, ast.USub, ast.UnaryOp,
+                ast.Div, ast.FloorDiv, ast.Pow
+            )):
+                return
+            # an answer should not be a complex formula
+            if answer and not isinstance(node, (
+                ast.Num, ast.USub, ast.UnaryOp
+            )):
+                return
+        return eval(expr)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,12 @@
+Welcome to the Math-Bot! You have been matched to another user.
+
+With the command /question [your math expression here] you can send a math question to the room.
+
+The bot will forward it to all the users and once a question is in the room you and other users can answer it with the command /answer [your answer here].
+
+Once an answer will be accepted, the Bot will check if it is correct.
+
+Try some of these questions or create your own!
+/question (3*4)/2
+/question ((4**2)/3)*1.5 + 42
+/question 143 - 20*2
