@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+    <div id="grid" class="grid-container"></div>
+    <hr>
+    <div id="grid" class="grid-container"></div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+
+<script>
+    const cols = ["grey", "red", "red", "red", "blue", "blue", "blue", "green", "green", "green"]
+    
+    // data will come from the bot
+    data = [
+        [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        ["a", "b", "c", "d", "e", "f", "g", "h", "i"],
+        [9, 8, 7, 6, 5, 4, 3, 2, 1],
+        ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+    ]
+
+    // add coordinates to grid
+    x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    y = [" ", "A", "B", "C", "D"]
+    data.unshift(x)
+    for (let i=0; i<y.length; i++){
+        data[i].unshift(y[i])
+    }
+
+    console.log(data)
+
+    for (let i=0; i<5; i++){
+        const div = document.createElement("div");
+        div.setAttribute("class", "grid-row");
+        
+        for (let j=0; j<10; j++){
+            const item = document.createElement("div");
+            item.setAttribute("class", "grid-item");
+
+            if (i == 0){
+                item.style.backgroundColor = "grey";
+            } else {
+                item.style.backgroundColor = cols[j];
+            }
+
+            item.innerHTML = data[i][j]
+            div.append(item)
+        }
+
+        $("#grid").append(div);
+        
+    }
+</script>
