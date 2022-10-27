@@ -20,22 +20,13 @@ SHUFFLE = True
 # All below *TIME_* variables are in minutes.
 # They indicate how long a situation has to persist for something to happen.
 
-# Remind the player to send the /ready command if they have not done so until then.
-TIME_READY = 1.0
-# Reset the status 'done' to 'ready' of one player if the other does not agree
-# that they have found the difference.
-TIME_DONE = 0.5
-# A participant remaining in the waiting room will be remunerated with an AMT Token.
-TIME_WAITING = 5.0
-# One player did not answer their partner.
-# The game will be ended and only the partner receives an AMT Token.
-TIME_ANSWER = 2.0
-# The participants will be asked to come to an end.
-# Counted per game round and not per game.
-TIME_GAME = 5.5
-# The participants will be moved back to the waiting room after the game finished.
-TIME_CLOSE = 0.25
+TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
+TIME_ROUND = 15  # how many minutes users can play on a single image
 
+# colored messages
+COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
+STANDARD_COLOR = "Purple"
+WARNING_COLOR = "FireBrick"
 
 TASK_TITLE = "Find the word."
 

@@ -20,15 +20,13 @@
                         }
                     ],
                     "style": "color: #abb2b9;"
-                },
-                {
-                    "layout-type": "div",
-                    "style": "white-space: pre-wrap; margin:10px"
-                },
-                {
-                    "layout-type": "hr",
-                    "layout-content": ""
-                },
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content": [
                 {
                     "layout-type": "div",
                     "id": "instr",
@@ -66,15 +64,13 @@
                             "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
                         }
                     ]
-                },
-                {
-                    "layout-type": "hr",
-                    "layout-content": ""
-                },
-                {
-                    "layout-type": "div",
-                    "style": "white-space: pre-wrap; margin:10px"
-                },
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content": [
                 {
                     "layout-type": "div",
                     "id": "wrapper",
@@ -248,15 +244,13 @@
                             ]
                         }
                     ]
-                },
-                {
-                    "layout-type": "div",
-                    "style": "white-space: pre-wrap; margin:10px"
-                },
-                {
-                    "layout-type": "hr",
-                    "layout-content": ""
-                },
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content": [
                 {
                     "layout-type": "div",
                     "style": "white-space: pre-wrap; margin:10px"
@@ -268,7 +262,7 @@
                         {
                             "layout-type": "image",
                             "id": "current-image",
-                            "style": "width: 100%;"
+                            "style": "width: 100%; height: auto; object-fit: contain;"
                         }
                     ]
                 }
@@ -298,7 +292,9 @@
                 "content": "''"
             },
             "#image-area": {
-                "margin": "10 px"
+                "margin": "0 auto",
+                "align-items": "center",
+                "justify-content": "center"
             },
             "#game-board": {
                 "display": "flex",
