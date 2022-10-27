@@ -26,3 +26,6 @@ IMGS = [
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
 STANDARD_COLOR = "Purple"
 WARNING_COLOR = "FireBrick"
+
+
+TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
