@@ -448,15 +448,15 @@ class WordleBot:
         #     room_id : {user_id: guess, other_user_id: guess},
         #     ...
         # }
-        user_guess = self.guesses_per_room[room_id].get(curr_usr["id"])
-        if user_guess is not None:
+        old_guess = self.guesses_per_room[room_id].get(curr_usr["id"])
+        if old_guess is not None:
             self.sio.emit(
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
                         color=WARNING_COLOR,
                         message=(
-                            f"**You already entered the guess: {users_guess}, "
+                            f"**You already entered the guess: {old_guess}, "
                             "let's wait for your partner to also enter a guess.**"
                         )
                     ),
