@@ -146,21 +146,20 @@
     ],
     "css": {
         "table": {
-            "letter-spacing": "2px",
+            "letter-spacing": "0.5rem",
             "font-size": "0.8rem",
-            "border": "2px solid #CECDCD"
+            "border": "0.2rem solid #CECDCD"
         },
         "td, th": {
-            "padding": "10px 20px",
-            "margin-bottom": "20px",
-            "border": "2px solid #CECDCD"
-        },    
+            "padding": "0.6rem 1rem",
+            "border": "0.2rem solid #CECDCD"
+        },
         "td": {
           "text-align": "center",
-          "font-size": "2rem",
+          "font-size": "1.3rem",
           "font-weight": "900",
-          "border": "5px solid white"  
-        },       
+          "border": "0.2rem solid white"  
+        },
         ".card, .hidden_card": {
             "position": "relative",
             "display": "flex",
