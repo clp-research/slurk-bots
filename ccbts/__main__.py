@@ -370,7 +370,9 @@ class CcbtsBot(TaskBot):
         # get boards from the robot interface
         interface = self.robot_interfaces[room_id]
         boards = interface.get_boards()
-        source_board = boards["s"].tolist()    
+        source_board = boards["s"].tolist()
+
+        logging.debug(boards["t"].shape)
         
         target_board = np.apply_along_axis(
             lambda x: np.flip(x.reshape(4, 4), axis=1).T,
@@ -378,6 +380,7 @@ class CcbtsBot(TaskBot):
             axis=1
         ).reshape(16, 4).tolist()
 
+        logging.debug(target_board)
 
         # set source board
         self.sio.emit(
@@ -413,9 +416,11 @@ class CcbtsBot(TaskBot):
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
-        self.images_per_room.pop(room_id)
-        self.robot_interfaces.pop(room_id)
-        self.timers_per_room.pop(room_id)
+        for memory_dict in [self.images_per_room,
+                            self.robot_interfaces,
+                            self.timers_per_room]:
+            if room_id in memory_dict:
+                memory_dict.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
