@@ -438,29 +438,29 @@ class CcbtsBot(TaskBot):
             response.raise_for_status()
 
         # remove user from room
-        for usr in self.players_per_room[room_id]:
-            response = requests.get(
-                f"{self.uri}/users/{usr['id']}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-            etag = response.headers["ETag"]
-
-            response = requests.delete(
-                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(
-                    f"Could not remove user from task room: {response.status_code}"
-                )
-                response.raise_for_status()
-            logging.debug("Removing user from task room was successful.")
-
-        # remove users from room
         if room_id in self.players_per_room:
+            for usr in self.players_per_room[room_id]:
+                response = requests.get(
+                    f"{self.uri}/users/{usr['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                logging.debug("Removing user from task room was successful.")
+
+            # remove users from room
             self.players_per_room.pop(room_id)
 
 
