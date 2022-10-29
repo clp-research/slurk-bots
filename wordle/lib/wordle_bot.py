@@ -301,8 +301,9 @@ class WordleBot:
 
                     # cancel timer
                     LOG.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
-                    if curr_usr["id"] in self.timers_per_room[room_id].left_room:
-                        self.timers_per_room[room_id].left_room[curr_usr["id"]].cancel()
+                    timeout_timer = self.timers_per_room[room_id].left_room.get(curr_usr["id"])
+                    if timeout_timer is not None:
+                        timeout_timer.cancel()
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
@@ -447,8 +448,8 @@ class WordleBot:
         #     room_id : {user_id: guess, other_user_id: guess},
         #     ...
         # }
-        if curr_usr["id"] in self.guesses_per_room[room_id]:
-            users_guess = self.guesses_per_room[room_id][curr_usr["id"]]
+        user_guess = self.guesses_per_room[room_id].get(curr_usr["id"])
+        if user_guess is not None:
             self.sio.emit(
                 "text",
                 {
@@ -778,12 +779,14 @@ class WordleBot:
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
-        self.images_per_room.pop(room_id)
-        self.last_message_from.pop(room_id)
-        self.guesses_per_room.pop(room_id)
-        self.guesses_history.pop(room_id)
-        self.points_per_room.pop(room_id)
-        self.timers_per_room.pop(room_id)
+        for memory_dict in [self.images_per_room,
+                            self.last_message_from,
+                            self.guesses_per_room,
+                            self.guesses_history,
+                            self.points_per_room,
+                            self.timers_per_room,]:
+            if room_id in memory_dict:
+                memory_dict.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -806,29 +809,29 @@ class WordleBot:
             response.raise_for_status()
 
         # remove user from room
-        for usr in self.players_per_room[room_id]:
-            response = requests.get(
-                f"{self.uri}/users/{usr['id']}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-            etag = response.headers["ETag"]
-
-            response = requests.delete(
-                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not remove user from task room: {response.status_code}"
-                )
-                response.raise_for_status()
-            LOG.debug("Removing user from task room was successful.")
-
-        # remove users from room
         if room_id in self.players_per_room:
+            for usr in self.players_per_room[room_id]:
+                response = requests.get(
+                    f"{self.uri}/users/{usr['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                LOG.debug("Removing user from task room was successful.")
+
+            # remove users from room
             self.players_per_room.pop(room_id)
 
     def rename_users(self, user_id):
