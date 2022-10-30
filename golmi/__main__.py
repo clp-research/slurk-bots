@@ -8,6 +8,7 @@ import requests
 
 from templates import TaskBot
 from .config import *
+from .golmi_client import *
 
 
 def set_text_message(value):
@@ -27,7 +28,9 @@ class GolmiBot(TaskBot):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.players_per_room = dict()
+        self.golmi_client_per_room = dict()
         self.register_callbacks()
+
 
     def register_callbacks(self):
         @self.sio.event
@@ -50,7 +53,6 @@ class GolmiBot(TaskBot):
 
                 # create image items for this room
                 logging.debug("Create data for the new task room...")
-                self.images_per_room[room_id] = random.choice(IMGS)
 
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
@@ -69,12 +71,21 @@ class GolmiBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending wordle bot to new room was successful.")
 
+                # self.golmi_client_per_room[room_id] = GolmiClient(
+                #     "http://localhost:5001", self.sio, room_id
+                # )
+                # self.golmi_client_per_room[room_id].run(AUTH)
+                # self.golmi_client_per_room[room_id].random_init({"width": 30, "height": 30, "move_step": 0.5, "prevent_overlap": True})
+
+                
+
+
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
-            if room_id in self.images_per_room:
+            if room_id in self.players_per_room:
                 # add description title
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
@@ -117,7 +128,7 @@ class GolmiBot(TaskBot):
                     logging.debug("Waiting Timer restarted.")
 
             # some joined a task room
-            elif room_id in self.images_per_room:
+            elif room_id in self.players_per_room:
                 curr_usr, other_usr = self.players_per_room[room_id]
                 if curr_usr["id"] != data["user"]["id"]:
                     curr_usr, other_usr = other_usr, curr_usr
@@ -176,19 +187,26 @@ class GolmiBot(TaskBot):
             if user_id == self.user:
                 return
 
-            logging.debug(user_id)
-            logging.debug(type(user_id))
-            logging.debug(self.user)
-            logging.debug(type(self.user))
-
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            if room_id in self.images_per_room:
+            if room_id in self.players_per_room:
                 # set wizard
                 if data["command"] == "set_role_wizard":
                     self.set_wizard_role(room_id, user_id)
+
+                elif data["command"] == "start":
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": {
+                                "url": "http://localhost:5001",
+                                "room_id": room_id
+                            },
+                            "room": room_id,
+                        },
+                    )
 
                 # reset roles
                 elif data["command"] == "reset_roles":
@@ -330,9 +348,6 @@ class GolmiBot(TaskBot):
         )
         self.room_to_read_only(room_id)
 
-        # remove any task room specific objects
-        self.images_per_room.pop(room_id)
-        self.robot_interfaces.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
