@@ -174,6 +174,7 @@ class WordleBot:
                     }
                 )
 
+                # create data structure for this room
                 self.guesses_per_room[room_id] = dict()
                 self.guesses_history[room_id] = list()
                 self.points_per_room[room_id] = 0
@@ -273,6 +274,7 @@ class WordleBot:
                         },
                     )
 
+                    # reset the front-end of the user who just joined
                     word, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
@@ -285,6 +287,9 @@ class WordleBot:
                         }
                     )
                     self.show_item(room_id)
+
+                    # enter all the guesses that this user sent to the bot
+                    # to catch up with the other user
                     for guess in self.guesses_history[room_id]:
                         self.sio.emit(
                             "message_command", 
@@ -565,7 +570,10 @@ class WordleBot:
 
                 self.next_round(room_id)
 
-    def next_round(self, room_id):        
+    def next_round(self, room_id):
+        """
+        Load the next image and wordle and move to the next round if possible
+        """
         self.images_per_room[room_id].pop(0)
         self.guesses_history[room_id] = list()
         self.guesses_per_room[room_id] = dict()
@@ -667,6 +675,10 @@ class WordleBot:
             self.timers_per_room[room_id].round_timer.start()
 
     def time_out_round(self, room_id):
+        """
+        function called by the round timer once the time is over.
+        Inform the users that the time is up and move to the next round
+        """
         self.sio.emit(
             "text",
             {
