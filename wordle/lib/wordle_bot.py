@@ -833,32 +833,3 @@ class WordleBot:
 
             # remove users from room
             self.players_per_room.pop(room_id)
-
-    def rename_users(self, user_id):
-        """Give all users in a room a new random name."""
-        names_f = os.path.join(ROOT, "data", "names.txt")
-        with open(names_f, "r", encoding="utf-8") as f:
-            names = [line.rstrip() for line in f]
-
-            new_name = random.choice(names)
-
-            response = requests.get(
-                f"{self.uri}/users/{user_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-
-            response = requests.patch(
-                f"{self.uri}/users/{user_id}",
-                json={"name": new_name},
-                headers={
-                    "If-Match": response.headers["ETag"],
-                    "Authorization": f"Bearer {self.token}",
-                },
-            )
-            if not response.ok:
-                LOG.error(f"Could not rename user: {response.status_code}")
-                response.raise_for_status()
-            LOG.debug(f"Successfuly renamed user to '{new_name}'.")
