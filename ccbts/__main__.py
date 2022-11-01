@@ -371,16 +371,7 @@ class CcbtsBot(TaskBot):
         interface = self.robot_interfaces[room_id]
         boards = interface.get_boards()
         source_board = boards["s"].tolist()
-
-        logging.debug(boards["t"].shape)
-        
-        target_board = np.apply_along_axis(
-            lambda x: np.flip(x.reshape(4, 4), axis=1).T,
-            arr=boards["t"],
-            axis=1
-        ).reshape(16, 4).tolist()
-
-        logging.debug(target_board)
+        target_board = boards["t"].tolist()
 
         # set source board
         self.sio.emit(
