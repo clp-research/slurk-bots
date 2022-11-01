@@ -174,6 +174,7 @@ class WordleBot:
                     }
                 )
 
+                # create data structure for this room
                 self.guesses_per_room[room_id] = dict()
                 self.guesses_history[room_id] = list()
                 self.points_per_room[room_id] = 0
@@ -273,6 +274,7 @@ class WordleBot:
                         },
                     )
 
+                    # reset the front-end of the user who just joined
                     word, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
@@ -285,6 +287,9 @@ class WordleBot:
                         }
                     )
                     self.show_item(room_id)
+
+                    # enter all the guesses that this user sent to the bot
+                    # to catch up with the other user
                     for guess in self.guesses_history[room_id]:
                         self.sio.emit(
                             "message_command", 
@@ -301,8 +306,9 @@ class WordleBot:
 
                     # cancel timer
                     LOG.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
-                    if curr_usr["id"] in self.timers_per_room[room_id].left_room:
-                        self.timers_per_room[room_id].left_room[curr_usr["id"]].cancel()
+                    timeout_timer = self.timers_per_room[room_id].left_room.get(curr_usr["id"])
+                    if timeout_timer is not None:
+                        timeout_timer.cancel()
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
@@ -447,15 +453,15 @@ class WordleBot:
         #     room_id : {user_id: guess, other_user_id: guess},
         #     ...
         # }
-        if curr_usr["id"] in self.guesses_per_room[room_id]:
-            users_guess = self.guesses_per_room[room_id][curr_usr["id"]]
+        old_guess = self.guesses_per_room[room_id].get(curr_usr["id"])
+        if old_guess is not None:
             self.sio.emit(
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
                         color=WARNING_COLOR,
                         message=(
-                            f"**You already entered the guess: {users_guess}, "
+                            f"**You already entered the guess: {old_guess}, "
                             "let's wait for your partner to also enter a guess.**"
                         )
                     ),
@@ -564,7 +570,10 @@ class WordleBot:
 
                 self.next_round(room_id)
 
-    def next_round(self, room_id):        
+    def next_round(self, room_id):
+        """
+        Load the next image and wordle and move to the next round if possible
+        """
         self.images_per_room[room_id].pop(0)
         self.guesses_history[room_id] = list()
         self.guesses_per_room[room_id] = dict()
@@ -666,6 +675,10 @@ class WordleBot:
             self.timers_per_room[room_id].round_timer.start()
 
     def time_out_round(self, room_id):
+        """
+        function called by the round timer once the time is over.
+        Inform the users that the time is up and move to the next round
+        """
         self.sio.emit(
             "text",
             {
@@ -778,12 +791,14 @@ class WordleBot:
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
-        self.images_per_room.pop(room_id)
-        self.last_message_from.pop(room_id)
-        self.guesses_per_room.pop(room_id)
-        self.guesses_history.pop(room_id)
-        self.points_per_room.pop(room_id)
-        self.timers_per_room.pop(room_id)
+        for memory_dict in [self.images_per_room,
+                            self.last_message_from,
+                            self.guesses_per_room,
+                            self.guesses_history,
+                            self.points_per_room,
+                            self.timers_per_room,]:
+            if room_id in memory_dict:
+                memory_dict.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -806,56 +821,27 @@ class WordleBot:
             response.raise_for_status()
 
         # remove user from room
-        for usr in self.players_per_room[room_id]:
-            response = requests.get(
-                f"{self.uri}/users/{usr['id']}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-            etag = response.headers["ETag"]
-
-            response = requests.delete(
-                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not remove user from task room: {response.status_code}"
-                )
-                response.raise_for_status()
-            LOG.debug("Removing user from task room was successful.")
-
-        # remove users from room
         if room_id in self.players_per_room:
+            for usr in self.players_per_room[room_id]:
+                response = requests.get(
+                    f"{self.uri}/users/{usr['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                LOG.debug("Removing user from task room was successful.")
+
+            # remove users from room
             self.players_per_room.pop(room_id)
-
-    def rename_users(self, user_id):
-        """Give all users in a room a new random name."""
-        names_f = os.path.join(ROOT, "data", "names.txt")
-        with open(names_f, "r", encoding="utf-8") as f:
-            names = [line.rstrip() for line in f]
-
-            new_name = random.choice(names)
-
-            response = requests.get(
-                f"{self.uri}/users/{user_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-
-            response = requests.patch(
-                f"{self.uri}/users/{user_id}",
-                json={"name": new_name},
-                headers={
-                    "If-Match": response.headers["ETag"],
-                    "Authorization": f"Bearer {self.token}",
-                },
-            )
-            if not response.ok:
-                LOG.error(f"Could not rename user: {response.status_code}")
-                response.raise_for_status()
-            LOG.debug(f"Successfuly renamed user to '{new_name}'.")
