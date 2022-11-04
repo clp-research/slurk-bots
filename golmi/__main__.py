@@ -192,82 +192,85 @@ class GolmiBot(TaskBot):
             )
 
             if room_id in self.players_per_room:
-                # set wizard
-                if data["command"] == "set_role_wizard":
-                    self.set_wizard_role(room_id, user_id)
-
-                elif data["command"] == "start":
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": {
-                                "url": "http://localhost:5001",
-                                "room_id": room_id
-                            },
-                            "room": room_id,
-                        },
-                    )
-
-                # reset roles
-                elif data["command"] == "reset_roles":
-                    self.reset_roles(room_id)
-
-                elif data["command"] == "game_over":
-                    curr_usr, other_usr = self.players_per_room[room_id]
-                    if curr_usr["id"] != user_id:
-                        curr_usr, other_usr = other_usr, curr_usr
-                    
-                    if curr_usr["role"] == "player":
-                        self.close_game(room_id)
-                    else:
-                        self.sio.emit(
-                        "text",
-                        {
-                            "message": "You're not allowed to do that",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
-
-                elif (data["command"].startswith("pick") or data["command"].startswith("place")):
-                    curr_usr, other_usr = self.players_per_room[room_id]
-                    if curr_usr["id"] != user_id:
-                        curr_usr, other_usr = other_usr, curr_usr
-                    
-                    if curr_usr["role"] == "wizard":
-                        interface = self.robot_interfaces[room_id]
-                        try:
-                            interface.execute(data["command"])
-                        except (KeyError, TypeError, OverflowError) as error:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": str(error),
-                                    "room": room_id,
-                                    "receiver_id": user_id,
-                                }, 
-                            )
-                        self.set_boards(room_id)
-                    else:
-                        self.sio.emit(
-                        "text",
-                        {
-                            "message": "You're not allowed to do that",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
-
+                if isinstance(data["command"], dict):
+                    logging.debug(data["command"])
 
                 else:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "Sorry, but I do not understand this command.",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+                    # set wizard
+                    if data["command"] == "set_role_wizard":
+                        self.set_wizard_role(room_id, user_id)
+
+                    elif data["command"] == "start":
+                        self.sio.emit(
+                            "message_command",
+                            {
+                                "command": {
+                                    "url": "http://localhost:5001",
+                                    "room_id": room_id
+                                },
+                                "room": room_id,
+                            },
+                        )
+
+                    # reset roles
+                    elif data["command"] == "reset_roles":
+                        self.reset_roles(room_id)
+
+                    elif data["command"] == "game_over":
+                        curr_usr, other_usr = self.players_per_room[room_id]
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        
+                        if curr_usr["role"] == "player":
+                            self.close_game(room_id)
+                        else:
+                            self.sio.emit(
+                            "text",
+                            {
+                                "message": "You're not allowed to do that",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
+
+                    elif (data["command"].startswith("pick") or data["command"].startswith("place")):
+                        curr_usr, other_usr = self.players_per_room[room_id]
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        
+                        if curr_usr["role"] == "wizard":
+                            interface = self.robot_interfaces[room_id]
+                            try:
+                                interface.execute(data["command"])
+                            except (KeyError, TypeError, OverflowError) as error:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": str(error),
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                    }, 
+                                )
+                            self.set_boards(room_id)
+                        else:
+                            self.sio.emit(
+                            "text",
+                            {
+                                "message": "You're not allowed to do that",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
+
+                    else:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "Sorry, but I do not understand this command.",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
 
     def set_wizard_role(self, room_id, user_id):
         curr_usr, other_usr = self.players_per_room[room_id]
