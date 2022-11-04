@@ -1,4 +1,4 @@
-function start_golmi (url, room_id) {
+function start_golmi(url, room_id) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
     const MODEL = url;
     console.log("Connect to " + MODEL)
@@ -22,21 +22,37 @@ function start_golmi (url, room_id) {
     // debug: print any messages to the console
     localStorage.debug = 'golmi_socket.io-client:golmi_socket';
 
-    // --- controller --- //
-    // create a controller, we still need to attach a gripper in the model to it
-    const controller = new document.LocalKeyController();
-
     // --- view --- // 
     // Get references to the three canvas layers
-    let bgLayer     = document.getElementById("background");
-    let objLayer    = document.getElementById("objects");
-    let grLayer     = document.getElementById("gripper");
+    let bgLayer = document.getElementById("background");
+    let objLayer = document.getElementById("objects");
+    let grLayer = document.getElementById("gripper");
 
     // Set up the view js, this also sets up key listeners
     const layerView = new document.LayerView(golmi_socket, bgLayer, objLayer, grLayer);
 
-    // --- logger --- //
-    const logView = new document.LogView(golmi_socket);
+    function onMouseClick(event) {
+        console.log(event.x, event.y)
+        console.log(event.target)
+        console.log(socket)
+
+        socket.emit("message_command",
+            {
+                "command": {
+                    "target_id": event.target.id,
+                    "offset_x": event.offsetX,
+                    "offset_y": event.offsetY,
+                    "x": event.x,
+                    "y": event.y,
+                    "block_size": layerView.blockSize,
+                },
+                "room": self_room
+            }
+        )
+    }
+
+    grLayer.onclick = onMouseClick
+
 
     // --- golmi_socket communication --- //
     golmi_socket.on("connect", () => {
@@ -45,9 +61,6 @@ function start_golmi (url, room_id) {
 
     golmi_socket.on("disconnect", () => {
         console.log("Disconnected from model server");
-        // demo of the logView: send the logged data to the server
-        logView.addData("test", true);
-        logView.sendData();
     });
 
     golmi_socket.on("joined_room", (data) => {
@@ -59,13 +72,15 @@ function start_golmi (url, room_id) {
     golmi_socket.on("update_config", (config) => {
         // only do setup once (reconnections can occur, we don't want to reset the state every time)
         if (!setup_complete && custom_config_is_applied(CUSTOM_CONFIG,
-                                                        config)) {
+            config)) {
             // ask model to load a random state
-            golmi_socket.emit("random_init", {"n_objs": N_OBJECTS,
-                                        "n_grippers": N_GRIPPERS,
-                                        "random_gr_position":false,
-                                        "obj_area": "top",
-                                        "target_area": "bottom"});
+            golmi_socket.emit("random_init", {
+                "n_objs": N_OBJECTS,
+                "n_grippers": N_GRIPPERS,
+                "random_gr_position": false,
+                "obj_area": "top",
+                "target_area": "bottom"
+            });
             // manually add a gripper that will be assigned to the controller
             // TODO: Should this happen somewhere else?
             // Options:
@@ -92,10 +107,10 @@ function start_golmi (url, room_id) {
         });
     }
 
-    controller.resetKeys()
     golmi_socket.connect();
-    golmi_socket.emit("join", {"room_id": room_id});
-} 
+    golmi_socket.emit("join", { "room_id": room_id });
+}
+
 
 
 // --- stop and start drawing --- //
@@ -115,26 +130,15 @@ function stop() {
     golmi_socket.disconnect();
 }
 
-// --- buttons --- //
-$("#start").click(() => {
-    start();
-    // disable this button, otherwise it is now in focus and Space/Enter will trigger the click again
-    $("#start").prop("disabled", true);
-});
-$("#stop").click(() => {
-    stop();
-    // reactive the start button
-    $("#start").prop("disabled", false);
-});
 
 
-$(document).ready(function () {    
+$(document).ready(function () {
     console.log("starting")
     socket.on("command", (data) => {
-        if (typeof(data.command) === "object"){
+        if (typeof (data.command) === "object") {
             // assign role
-            if ("role" in data.command){
-                if (data.command.role === "wizard"){
+            if ("role" in data.command) {
+                if (data.command.role === "wizard") {
                     set_wizard(data.command.instruction)
                 } else if (data.command.role === "player") {
                     set_player(data.command.instruction)
@@ -142,7 +146,7 @@ $(document).ready(function () {
                     reset_role(data.command.instruction)
                 }
 
-            // board update
+                // board update
             } else if ("url" in data.command) {
                 console.log("received url")
                 console.log(data)
