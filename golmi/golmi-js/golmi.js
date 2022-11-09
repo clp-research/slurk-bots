@@ -1,7 +1,10 @@
+let golmi_socket = null
+let layerView = null
+let controller = null
+
 function start_golmi(url, room_id) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
-    const MODEL = url;
-    console.log("Connect to " + MODEL)
+    console.log(`Connect to ${url}`)
 
     // parameters for random initial state
     // (state is generated once the configuration is received)
@@ -16,7 +19,7 @@ function start_golmi(url, room_id) {
 
     // --- create a golmi_socket --- //
     // don't connect yet
-    var golmi_socket = io(MODEL, {
+    golmi_socket = io(url, {
         auth: { "password": "GiveMeTheBigBluePasswordOnTheLeft" }
     });
     // debug: print any messages to the console
@@ -27,11 +30,12 @@ function start_golmi(url, room_id) {
     let bgLayer = document.getElementById("background");
     let objLayer = document.getElementById("objects");
     let grLayer = document.getElementById("gripper");
-
+    
+    // set up controller
+    controller = new document.LocalKeyController();
     // Set up the view js, this also sets up key listeners
-    const layerView = new document.LayerView(golmi_socket, bgLayer, objLayer, grLayer);
-
-    function onMouseClick(event) {
+    layerView = new document.LayerView(golmi_socket, bgLayer, objLayer, grLayer);
+    grLayer.onclick = (event) => {
         console.log(event.x, event.y)
         console.log(event.target)
         console.log(socket)
@@ -50,9 +54,6 @@ function start_golmi(url, room_id) {
             }
         )
     }
-
-    grLayer.onclick = onMouseClick
-
 
     // --- golmi_socket communication --- //
     golmi_socket.on("connect", () => {
@@ -106,19 +107,21 @@ function start_golmi(url, room_id) {
             return config_update[key] == custom_config[key];
         });
     }
-
-    golmi_socket.connect();
-    golmi_socket.emit("join", { "room_id": room_id });
 }
 
 
 
 // --- stop and start drawing --- //
 function start() {
+    console.log("received url")
+    start_golmi(data.command.url, data.command.room_id)
+    
     // reset the controller in case any key is currently pressed
     controller.resetKeys()
+    controller.attachModel(golmi_socket);
     // manually establish a connection, connect the controller and load a state
     golmi_socket.connect();
+    golmi_socket.emit("join", { "room_id": room_id });
 }
 
 function stop() {
@@ -148,9 +151,7 @@ $(document).ready(function () {
 
                 // board update
             } else if ("url" in data.command) {
-                console.log("received url")
-                console.log(data)
-                start_golmi(data.command.url, data.command.room_id)
+                start()
             }
         }
     });
