@@ -146,6 +146,16 @@ class CcbtsBot(TaskBot):
                         },
                     )
 
+                    # greet the player with his name
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"Welcome {curr_usr['name']}!",
+                            "room": room_id,
+                            "receiver_id": curr_usr['name'],
+                        },
+                    )
+
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
                     if role is not None:
@@ -227,12 +237,15 @@ class CcbtsBot(TaskBot):
                     else:
                         self.sio.emit(
                         "text",
-                        {
-                            "message": "You're not allowed to do that",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+                            {
+                                "message": "You're not allowed to do that",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
+
+                elif data["command"] == "show_me":
+                    self.set_boards(room_id)
 
                 elif (data["command"].startswith("pick") or data["command"].startswith("place")):
                     curr_usr, other_usr = self.players_per_room[room_id]
@@ -242,7 +255,21 @@ class CcbtsBot(TaskBot):
                     if curr_usr["role"] == "wizard":
                         interface = self.robot_interfaces[room_id]
                         try:
+                            # execute command
                             interface.play(data["command"])
+
+                            # inform users a command was executed
+                            action = "picked from"
+                            if data["command"].startswith("place"):
+                                action = "placed on"
+                            self.sio.emit(
+                                "text",
+                                    {
+                                        "message": f"An object was {action} a board",
+                                        "room": room_id,
+                                    },
+                                )
+
                         except (KeyError, TypeError, OverflowError) as error:
                             self.sio.emit(
                                 "text",
@@ -251,11 +278,9 @@ class CcbtsBot(TaskBot):
                                         color=WARNING_COLOR, message=str(error)
                                     ),
                                     "room": room_id,
-                                    "html": True,
-                                    "receiver_id": user_id
+                                    "html": True
                                 },
                             )
-                        self.set_boards(room_id)
                     else:
                         self.sio.emit(
                         "text",

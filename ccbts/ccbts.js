@@ -9,13 +9,20 @@ function display_grid(grid, grid_name) {
         "white": "white"
     }
 
+    legend = {
+        "○": "screw",
+        "◊": "washer",
+        "˂": "bridge (occupies 2 locations)",
+        "□": "nut"
+    }
+
     // define elements for padding
     alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
     alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] 
-  
+
     // add coordinates on upper header        
     var top_header = $("<tr>");
-    for (let i=0; i < grid[0].length + 1; i++) {
+    for (let i = 0; i < grid[0].length + 1; i++) {
         var item = $("<th>");
         item.css({})
         if (i === 0) {
@@ -34,7 +41,7 @@ function display_grid(grid, grid_name) {
         var div = $("<tr>");
 
         // header on the left
-        if (grid_name === "target"){
+        if (grid_name === "target" || grid_name === "reference") {
             if ((i % 4) == 0) {
                 var header = $("<th rowspan='4'>");
                 header.text(alphabet[i / 4])
@@ -43,7 +50,7 @@ function display_grid(grid, grid_name) {
                 })
                 div.append(header)
             }
-        } else if (grid_name === "source"){
+        } else if (grid_name === "source") {
             var header = $("<th rowspan='1'>");
             header.text(alphabet[i])
             div.append(header)
@@ -55,6 +62,7 @@ function display_grid(grid, grid_name) {
                 "background-color": color_mapping[grid[i][j][0]]
             });
             item.text(grid[i][j][1])
+            item.attr("title", legend[grid[i][j][1]])
             div.append(item)
         }
 
@@ -97,7 +105,7 @@ $(document).ready(() => {
         socket.emit("message_command",
             {
                 "command": "set_role_player",
-                "room": self_room 
+                "room": self_room
             }
         )
     });
@@ -112,10 +120,10 @@ $(document).ready(() => {
     });
 
     socket.on("command", (data) => {
-        if (typeof(data.command) === "object"){
+        if (typeof (data.command) === "object") {
             // assign role
-            if ("role" in data.command){
-                if (data.command.role === "wizard"){
+            if ("role" in data.command) {
+                if (data.command.role === "wizard") {
                     set_wizard(data.command.instruction)
                 } else if (data.command.role === "player") {
                     set_player(data.command.instruction)
@@ -123,9 +131,12 @@ $(document).ready(() => {
                     reset_role(data.command.instruction)
                 }
 
-            // board update
+                // board update
             } else if ("board" in data.command) {
                 display_grid(data.command.board, data.command.name)
+                if (data.command.name === "target") {
+                    display_grid(data.command.board, "reference")
+                }
             }
         }
     });

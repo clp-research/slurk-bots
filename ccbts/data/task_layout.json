@@ -93,12 +93,18 @@
                     "style": "margin: 10px 2px; background-color: #abb2b9; opacity: .50;"
                 },
                 {
-                    "layout-type": "center",
+                    "layout-type": "div",
+                    "style": "display: flex",
                     "layout-content" :[
                         {
                             "layout-type": "table",
                             "style": "width: 100%;",
                             "id": "target-grid"
+                        },
+                        {
+                            "layout-type": "table",
+                            "style": "width: 100%;",
+                            "id": "reference-grid"
                         }
                     ]
                 }
@@ -190,6 +196,7 @@
             "incoming-image": "display-image",
             "submit-message": "send-message",
             "print-history": "plain-history",
+            "typing-users": "typing-users",
             "plain": "ccbts"
         },
         "show_latency": false
