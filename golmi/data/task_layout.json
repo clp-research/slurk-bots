@@ -4,29 +4,35 @@
     "html": [
         {
             "layout-type": "div",
-            "id": "viewport",
-            "style": "height: 600px; width: 600px; padding: 10px;",
+            "class": "card",
             "layout-content": [
                 {
-                    "layout-type": "canvas",
-                    "id": "background",
-                    "width": "600",
-                    "height": "600"
-                },
-                {
-                    "layout-type": "canvas",
-                    "id": "objects",
-                    "width": "600",
-                    "height": "600"
-                },
-                {
-                    "layout-type": "canvas",
-                    "id": "gripper",
-                    "width": "600",
-                    "height": "600"
+                    "layout-type": "div",
+                    "id": "viewport",
+                    "style": "height: 600px; width: 600px; padding: 10px;",
+                    "layout-content": [
+                        {
+                            "layout-type": "canvas",
+                            "id": "background",
+                            "width": "600",
+                            "height": "600"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "objects",
+                            "width": "600",
+                            "height": "600"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "gripper",
+                            "width": "600",
+                            "height": "600"
+                        }
+                    ]
                 }
             ]
-        }
+        }        
     ],
     "css": {
         "#viewport": {
@@ -38,6 +44,19 @@
         "canvas": {
             "background-color": "transparent;",
             "border": "1px solid #000000;"
+        },
+        ".card": {
+            "position": "relative",
+            "display": "flex",
+            "flex-direction": "column",
+            "min-width": "0",
+            "background-color": "#fff",
+            "background-clip": "border-box",
+            "border": "1px solid rgba(0,0,0,.125)",
+            "border-radius": ".25rem",
+            "height": "100%",
+            "margin": "0px 15px",
+            "padding": "20px"
         }
     },
     "scripts": {
@@ -48,7 +67,8 @@
         "plain": [
             "golmi-js/golmi",
             "golmi-js/view/View",
-            "golmi-js/view/LayerView",
+            "golmi-js/view/GiverLayerView",
+            "golmi-js/view/ReceiverLayerView",
             "golmi-js/view/LView",
             "golmi-js/controller/LocalKeyController"
         ]

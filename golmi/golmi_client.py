@@ -77,5 +77,8 @@ class GolmiClient:
         self.socket.emit("disconnect")
         self.socket.disconnect()
 
+    def load_state(self, state):
+        self.socket.emit("load_state", state)
+
     def emit(self, *args, **kwargs):
         self.socket.emit(*args, **kwargs)

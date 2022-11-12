@@ -23,7 +23,7 @@ $(document).ready(function () {
      * @param {reference to the canvas DOM element to draw grippers and
         gripped objects to} grCanvas
      */
-    this.LayerView = class LayerView extends document.View {
+    this.GiverLayerView = class GiverLayerView extends document.View {
         constructor(modelSocket, bgCanvas, objCanvas, grCanvas) {
             super(modelSocket);
             // Three overlapping canvas
@@ -98,6 +98,7 @@ $(document).ready(function () {
             // white rectangle for background
             ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+            /** no grid for now
             // horizontal lines
             for (let row = 0; row <= this.rows; row++) {
                 ctx.moveTo(0, row * this.blockSize);
@@ -110,6 +111,7 @@ $(document).ready(function () {
             }
             // draw to the screen
             ctx.stroke();
+            **/
 
             // add targets
             for (const target of Object.values(this.targets))	{
@@ -126,7 +128,11 @@ $(document).ready(function () {
                     y: target.y,
                     color: "Cornsilk"
                 }
+                // there should be only a single target (which is then overdrawn by the actual piece)
                 this._drawBlockObj(ctx, blockMatrix, params);
+
+                // draw bounding box around target (there should be only a single one in this experiment)
+                this._drawBB(ctx, blockMatrix, params, "red");
             }
         }
 
@@ -149,7 +155,6 @@ $(document).ready(function () {
             // draw each object
             for (const obj of Object.values(this.objs))	{
                 // skip any gripped object here
-                if (obj.gripped) { continue; }
 
                 let blockMatrix = obj.block_matrix;
 
@@ -157,7 +162,7 @@ $(document).ready(function () {
                 let params = {
                     x: obj.x,
                     y: obj.y,
-                    color: obj.color
+                    color: obj.color[1]
                 }
                 this._drawBlockObj(ctx, blockMatrix, params);
             }
@@ -186,36 +191,30 @@ $(document).ready(function () {
                     for (const [grippedId, grippedObj] of Object.entries(gripper.gripped)) {
                         let blockMatrix = grippedObj.block_matrix;
 
+                        if (grId == "init"){
+                            var highlight_color = "black";
+                        } else {
+                            var highlight_color = "green";
+                        }
+
                         let params = {
                             x: grippedObj.x,
                             y: grippedObj.y,
                             color: grippedObj.color,
-                            highlight: "black" // highlight a gripped object
+                            highlight: highlight_color // highlight a gripped object
                         }
                         this._drawBlockObj(ctx,
                                            blockMatrix,
                                            params);
+
+                        if (grId == "init"){
+                            this._drawBB(ctx, blockMatrix, params, "red");
+                        }
+                        else{
+                            this._drawBB(ctx, blockMatrix, params, "green");
+                        }
                     }
                 }
-
-                // modify style depending on whether an object is gripped
-                let grSize = gripper.gripped ? 0.2 : 0.5;
-
-                // draw the gripper itself
-                // --- config ---
-                ctx.lineStyle = "red";
-                ctx.lineWidth = 2;
-                // draw. The gripper is a simple cross
-                ctx.beginPath();
-                ctx.moveTo(this._toPxl(gripper.x-grSize),
-                           this._toPxl(gripper.y-grSize));
-                ctx.lineTo(this._toPxl(gripper.x+grSize),
-                           this._toPxl(gripper.y+grSize));
-                ctx.moveTo(this._toPxl(gripper.x-grSize),
-                           this._toPxl(gripper.y+grSize));
-                ctx.lineTo(this._toPxl(gripper.x+grSize),
-                           this._toPxl(gripper.y-grSize));
-                ctx.stroke();
             }
         }
 
@@ -230,6 +229,23 @@ $(document).ready(function () {
         }
 
         // --- draw helper functions ---
+
+        _drawBB(ctx, bMatrix, params, color) {
+            // Draw blocks       
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawUpperBorder(ctx, params.x + i, params.y, color);
+            }
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawLowerBorder(ctx, params.x + i, params.y + bMatrix.length -1, color);
+            }
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawLeftBorder(ctx, params.x, params.y + i, color);
+            }
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawRightBorder(ctx, params.x + bMatrix[0].length -1, params.y + i, color);
+            }
+
+        }
 
         _drawBlockObj(ctx, bMatrix, params) {
             // Draw blocks
@@ -260,35 +276,31 @@ $(document).ready(function () {
         _drawBlock(ctx, x, y, color, lineColor="grey", lineWidth=1) {
             // --- config ---
             ctx.fillStyle = color;
-
-            ctx.beginPath();
-            ctx.moveTo(this._toPxl(x), this._toPxl(y));
-            ctx.lineTo(this._toPxl(x+1), this._toPxl(y)); // top right
-            ctx.lineTo(this._toPxl(x+1), this._toPxl(y+1)); // bottom right
-            ctx.lineTo(this._toPxl(x), this._toPxl(y+1)); // bottom left
-            ctx.closePath(); // return to starting point
-            ctx.stroke(); // draw the returning line
-            ctx.fill(); // add color
+            let px = this._toPxl(x);
+            let py = this._toPxl(y);
+            let w = Math.abs(px - this._toPxl(x+1));
+            let h =  Math.abs(py - this._toPxl(y+1));
+            ctx.fillRect(px, py, w, h);
         }
 
         _drawUpperBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x+1, y, highlight);
+            this._drawBorder(ctx, x, y, x+1, y, highlight, borderColor, borderWidth);
         }
 
         _drawLowerBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight);
+            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight, borderColor, borderWidth);
         }
 
         _drawLeftBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x, y+1, highlight);
+            this._drawBorder(ctx, x, y, x, y+1, highlight, borderColor, borderWidth);
         }
 
         _drawRightBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight);
+            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight, borderColor, borderWidth);
         }
 
         _drawBorder(ctx, x1, y1, x2, y2, highlight=false, borderColor="black",
