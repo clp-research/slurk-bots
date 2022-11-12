@@ -17,6 +17,12 @@ function check_response {
 BOT_NAME="golmi"
 NUMBER_USERS=2
 
+# run golmi
+cd ../golmi
+docker build --tag "golmi_server" -f dockerfile .
+docker run --network host --restart unless-stopped -d -e GOLMI_HOST="127.0.0.1" -e GOLMI_PORT=5001 golmi_server
+sleep 5
+
 # build docker images for bots
 cd ../slurk-bots
 docker build --tag "slurk/$BOT_NAME-bot" -f $BOT_NAME/Dockerfile .

@@ -3,7 +3,7 @@ import logging
 import os
 import random
 from time import sleep
-
+import json
 import requests
 
 from templates import TaskBot
@@ -71,13 +71,39 @@ class GolmiBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending wordle bot to new room was successful.")
 
-                # self.golmi_client_per_room[room_id] = GolmiClient(
-                #     "http://localhost:5001", self.sio, room_id
-                # )
-                # self.golmi_client_per_room[room_id].run(AUTH)
-                # self.golmi_client_per_room[room_id].random_init({"width": 30, "height": 30, "move_step": 0.5, "prevent_overlap": True})
+                self.golmi_client_per_room[room_id] = GolmiClient(
+                    "http://localhost:5001", self.sio, room_id
+                )
+                self.golmi_client_per_room[room_id].run(AUTH)
 
-                
+                with BOARDS.open("r", encoding="utf-8") as infile:
+                    for line in infile:
+                        board = json.loads(line)
+                        break
+
+                logging.debug(board["config"])
+                logging.debug(board["state"])
+                # send a message to self to log config and board?
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": json.dumps(board),
+                        "room": room_id,
+                        "receiver_id": self.user,
+                    },
+                )
+
+                self.golmi_client_per_room[room_id].load_config(board["config"])
+
+                # select target
+                state = board["state"]
+                target_id = str(board["target"])
+                target_obj = state["objs"][target_id]
+                state["targets"][target_id] = target_obj
+
+
+                logging.debug(state)
+                self.golmi_client_per_room[room_id].load_state(state)
 
 
         @self.sio.event
@@ -201,14 +227,33 @@ class GolmiBot(TaskBot):
                         self.set_wizard_role(room_id, user_id)
 
                     elif data["command"] == "start":
+                        curr_usr, other_usr = self.players_per_room[room_id]
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        
                         self.sio.emit(
                             "message_command",
                             {
                                 "command": {
                                     "url": "http://localhost:5001",
-                                    "room_id": room_id
+                                    "room_id": room_id,
+                                    "role": "wizard"
                                 },
                                 "room": room_id,
+                                "receiver_id": curr_usr["id"]
+                            },
+                        )
+
+                        self.sio.emit(
+                            "message_command",
+                            {
+                                "command": {
+                                    "url": "http://localhost:5001",
+                                    "room_id": room_id,
+                                    "role": "player"
+                                },
+                                "room": room_id,
+                                "receiver_id": other_usr["id"]
                             },
                         )
 
@@ -225,13 +270,13 @@ class GolmiBot(TaskBot):
                             self.close_game(room_id)
                         else:
                             self.sio.emit(
-                            "text",
-                            {
-                                "message": "You're not allowed to do that",
-                                "room": room_id,
-                                "receiver_id": user_id,
-                            },
-                        )
+                                "text",
+                                {
+                                    "message": "You're not allowed to do that",
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                },
+                            )
 
                     elif (data["command"].startswith("pick") or data["command"].startswith("place")):
                         curr_usr, other_usr = self.players_per_room[room_id]

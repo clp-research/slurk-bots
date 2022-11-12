@@ -12,3 +12,5 @@ INSTRUCTIONS = dict(
     player=Path(f"{ROOT}/golmi/data/instruction_player.txt").read_text().strip(),
     wizard=Path(f"{ROOT}/golmi/data/instruction_wizard.txt").read_text().strip()
 )
+
+BOARDS = Path(f"{ROOT}/golmi/data/boards.jsonl")
