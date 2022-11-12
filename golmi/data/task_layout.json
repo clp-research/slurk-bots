@@ -9,7 +9,7 @@
                 {
                     "layout-type": "div",
                     "id": "viewport",
-                    "style": "height: 600px; width: 600px; padding: 10px;",
+                    "style": "height: 600px; width: 600px; padding: 10px; margin: 0px auto",
                     "layout-content": [
                         {
                             "layout-type": "canvas",
