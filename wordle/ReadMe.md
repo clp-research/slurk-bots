@@ -24,7 +24,7 @@ This repository contains the source code for a collaborative Image-Wordle game. 
     1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
     2. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash wordle/scripts/setup.sh``` 
     This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/wordle-bot```. At the end of the run there will be two tokens printed in the shell that you will need to paste to access the waiting rooms. 
-4. Save the generated tokens!
+5. Save the generated tokens!
 
 Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again. 
     
