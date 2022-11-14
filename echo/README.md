@@ -15,9 +15,9 @@ This bot parrots user messages. If a private message is sent to the bot by a use
     ```
     {
         "api": true,
-        "send_html_message": true,
-        "send_privately": true,
-        "send_command": true
+        "send_message": true,
+        "send_image": true,
+        "send_privately": true
     }
     ```
     **To skip all this setup above, you could run a [setup script](https://github.com/clp-research/slurk-bots/blob/master/echo/setup.sh).** 
