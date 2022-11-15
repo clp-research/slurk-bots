@@ -5,7 +5,7 @@ This bot parrots user messages. If a private message is sent to the bot by a use
 * `on_image_message`: triggered for messages containing images
 
 
-## Setting up and running the Echo bot
+## Setting up and running
 
 ### Setup 
 
