@@ -1,0 +1,106 @@
+{
+    "title": "Pentomino in GOLMI",
+    "subtitle": "Describe the highlighted piece on the board",
+    "html": [
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content": [
+                {
+                    "layout-type": "div",
+                    "id": "viewport",
+                    "style": "height: 600px; width: 600px; padding: 10px; margin: 0px auto",
+                    "layout-content": [
+                        {
+                            "layout-type": "canvas",
+                            "id": "background",
+                            "width": "600",
+                            "height": "600"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "objects",
+                            "width": "600",
+                            "height": "600"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "gripper",
+                            "width": "600",
+                            "height": "600"
+                        }
+                    ]
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                },
+                {
+                    "layout-type": "button",
+                    "class": "button",
+                    "role": "button",
+                    "layout-content": "Next",
+                    "id": "next"
+                }
+            ]
+        }        
+    ],
+    "css": {
+        "#viewport": {
+            "position": "relative;"
+        },
+        "#viewport canvas": {
+            "position": "absolute;"
+        },
+        "canvas": {
+            "background-color": "transparent;",
+            "border": "1px solid #000000;"
+        },
+        ".card": {
+            "position": "relative",
+            "display": "flex",
+            "flex-direction": "column",
+            "min-width": "0",
+            "background-color": "#fff",
+            "background-clip": "border-box",
+            "border": "1px solid rgba(0,0,0,.125)",
+            "border-radius": ".25rem",
+            "height": "100%",
+            "margin": "0px 15px",
+            "padding": "20px"
+        },
+        ".button": {
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+            "margin-top": "10px",
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
+        },
+        ".button:hover" : {
+            "content": "''",
+            "background": "#818BAC"
+        }
+    },
+    "scripts": {
+        "incoming-text": "markdown",
+        "incoming-image": "display-image",
+        "submit-message": "send-message",
+        "print-history": ["attribute-history", "markdown-history"],
+        "plain": [
+            "golmi-js/golmieval",
+            "golmi-js/view/View",
+            "golmi-js/view/GiverLayerView",
+            "golmi-js/view/ReceiverLayerView",
+            "golmi-js/view/LView",
+            "golmi-js/controller/LocalKeyController"
+        ]
+    }
+}
