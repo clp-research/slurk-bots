@@ -1,0 +1,1 @@
+Describe the highlighted piece on the board. Your description should be concise, but still allow someone else to uniquely identity the piece. Each board has one target, if the highlighted area contains more than one piece, describe the one that looks more centred. Press NEXT once you're happy with your description.

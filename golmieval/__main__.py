@@ -66,6 +66,18 @@ class GolmiEval(TaskBot):
                 )
                 self.golmi_client_per_room[room_id].run(self.golmi_password)
                 self.load_state(room_id)
+                
+                # add description
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr",
+                    json={"text": TASK_INSTR},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not set task instruction title: {response.status_code}"
+                    )
+                    response.raise_for_status()
 
 
         @self.sio.event
@@ -89,9 +101,29 @@ class GolmiEval(TaskBot):
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
-                        "text", {"message": line, "room": room_id, "html": True}
+                        "text", {
+                            "message": line.format(board_number=BOARDS_PER_ROOM),
+                            "room": room_id,
+                            "html": True
+                        }
                     )
                     sleep(0.5)
+                self.sio.emit(
+                        "text", {
+                            "message": "Here's a little help: you can reference pieces according to this legend",
+                            "room": room_id,
+                            "html": True
+                        }
+                    )
+                self.sio.emit(
+                    "image",
+                    {
+                        "room": room_id,
+                        "url": TYPES,
+                        "width": 600,
+                        "height": 300,
+                    }
+                )
 
         @self.sio.event
         def status(data):
@@ -162,7 +194,10 @@ class GolmiEval(TaskBot):
                                     "text",
                                     {
                                         "room": room_id,
-                                        "message": "You need to send at least one message before you can move on",
+                                        "message": COLOR_MESSAGE.format(
+                                            message="You need to send at least one message before you can move on",
+                                            color=WARNING_COLOR
+                                        ),
                                         "html": True
                                     },
                                 )
