@@ -8,6 +8,15 @@
             "layout-content": [
                 {
                     "layout-type": "div",
+                    "id": "instr"
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                },
+                {
+                    "layout-type": "div",
                     "id": "viewport",
                     "style": "height: 600px; width: 600px; padding: 10px; margin: 0px auto",
                     "layout-content": [

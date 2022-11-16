@@ -1,5 +1,5 @@
-**Welcome to Golmi**
+**Welcome to the GolmiEval Task**
 
-On the right side you will see a board with some pieces on it and your task is to describe the highlighted piece with a single sentence. Your description should be concise, but still allow someone else to uniquely identity the piece on a neutral board. Remember that you can only enter one message for each board. As soon as you press enter, a new board will be loaded. In total you will see 10 boards.
+Once you're ready you can simply start typing in chat on the bottom. You will see a total of {board_number} boards
 
 Thank you for your help!
