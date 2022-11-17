@@ -103,7 +103,13 @@ class CcbtsBot(TaskBot):
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
-                        "text", {"message": line, "room": room_id, "html": True}
+                        "text", {
+                            "message": COLOR_MESSAGE.format(
+                                message=line, color=STANDARD_COLOR
+                            ),
+                            "room": room_id,
+                            "html": True
+                        }
                     )
                     sleep(0.5)
 
@@ -140,9 +146,13 @@ class CcbtsBot(TaskBot):
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"{curr_usr['name']} has joined the game. ",
+                            "message": COLOR_MESSAGE.format(
+                                message=f"{curr_usr['name']} has joined the game.",
+                                color=STANDARD_COLOR
+                            ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
+                            "html": True
                         },
                     )
 
@@ -150,9 +160,13 @@ class CcbtsBot(TaskBot):
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"Welcome {curr_usr['name']}!",
+                            "message": COLOR_MESSAGE.format(
+                                message=f"Welcome {curr_usr['name']}!",
+                                color=STANDARD_COLOR
+                            ),
                             "room": room_id,
                             "receiver_id": curr_usr['name'],
+                            "html": True
                         },
                     )
 
@@ -189,10 +203,16 @@ class CcbtsBot(TaskBot):
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"{curr_usr['name']} has left the game. "
-                            "Please wait a bit, your partner may rejoin.",
+                            "message": COLOR_MESSAGE.format(
+                                message=(
+                                    f"{curr_usr['name']} has left the game. "
+                                    "Please wait a bit, your partner may rejoin.",
+                                ),
+                                color=STANDARD_COLOR
+                            ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
+                            "html": True
                         },
                     )
 
@@ -238,9 +258,13 @@ class CcbtsBot(TaskBot):
                         self.sio.emit(
                         "text",
                             {
-                                "message": "You're not allowed to do that",
+                                "message": COLOR_MESSAGE.format(
+                                    message="You're not allowed to do that",
+                                    color=WARNING_COLOR
+                                ),
                                 "room": room_id,
                                 "receiver_id": user_id,
+                                "html": True
                             },
                         )
 
@@ -265,8 +289,12 @@ class CcbtsBot(TaskBot):
                             self.sio.emit(
                                 "text",
                                     {
-                                        "message": f"An object was {action} a board",
+                                        "message": COLOR_MESSAGE.format(
+                                            message=f"An object was {action} a board",
+                                            color=STANDARD_COLOR
+                                        ),
                                         "room": room_id,
+                                        "html": True
                                     },
                                 )
 
@@ -283,22 +311,30 @@ class CcbtsBot(TaskBot):
                             )
                     else:
                         self.sio.emit(
-                        "text",
-                        {
-                            "message": "You're not allowed to do that",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="You're not allowed to do that",
+                                    color=WARNING_COLOR
+                                ),
+                                "room": room_id,
+                                "receiver_id": user_id,
+                                "html": True
+                            },
+                        )
 
 
                 else:
                     self.sio.emit(
                         "text",
                         {
-                            "message": "Sorry, but I do not understand this command.",
+                            "message": COLOR_MESSAGE.format(
+                                message="Sorry, but I do not understand this command.",
+                                color=STANDARD_COLOR
+                            ),
                             "room": room_id,
                             "receiver_id": user_id,
+                            "html": True
                         },
                     )
 
@@ -332,9 +368,13 @@ class CcbtsBot(TaskBot):
             self.sio.emit(
                 "text",
                 {
-                    "message": "Roles have already be assigned, please reset roles first",
+                    "message": COLOR_MESSAGE.format(
+                        message="Roles have already be assigned, please reset roles first",
+                        color=WARNING_COLOR
+                    ),
                     "room": room_id,
                     "receiver_id": user_id,
+                    "html": True
                 },
             )
 
@@ -342,8 +382,12 @@ class CcbtsBot(TaskBot):
         self.sio.emit(
             "text",
             {
-                "message": "Roles have been resetted, please wait for new roles to be assigned",
+                "message": COLOR_MESSAGE.format(
+                    message="Roles have been resetted, please wait for new roles to be assigned",
+                    color=STANDARD_COLOR
+                ),
                 "room": room_id,
+                "html": True
             },
         )
 
@@ -427,7 +471,14 @@ class CcbtsBot(TaskBot):
         sleep(2)
         self.sio.emit(
             "text",
-            {"message": "The room is closing, thanky you for plaing", "room": room_id},
+            {
+                "message": COLOR_MESSAGE.format(
+                    message="The room is closing, thanky you for plaing",
+                    color=STANDARD_COLOR
+                ),
+                "room": room_id,
+                "html": True
+            },
         )
         self.room_to_read_only(room_id)
 
