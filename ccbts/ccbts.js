@@ -83,7 +83,6 @@ function set_wizard(description) {
 
 function set_player(description) {
     $("#intro-image").hide();
-    $("#image_card").show();
     $("#target_card").show();
     $("#instr_title").html("Player");
     $("#instr").html(description);
@@ -92,7 +91,6 @@ function set_player(description) {
 
 function reset_role(description) {
     $("#intro-image").show();
-    $("#image_card").hide();
     $("#source_card").hide();
     $("#target_card").hide();
     $("#instr_title").html("");
