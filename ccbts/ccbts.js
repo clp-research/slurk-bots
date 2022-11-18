@@ -18,7 +18,10 @@ function display_grid(grid, grid_name) {
 
     // define elements for padding
     alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
-    alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z] 
+    alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z]
+
+    var table = $("<table>");
+    table.css({"style": "width: 100%"})
 
     // add coordinates on upper header        
     var top_header = $("<tr>");
@@ -33,7 +36,7 @@ function display_grid(grid, grid_name) {
         }
         top_header.append(item)
     }
-    $(`#${grid_name}-grid`).append(top_header);
+    table.append(top_header);
 
 
     // create target
@@ -66,9 +69,22 @@ function display_grid(grid, grid_name) {
             div.append(item)
         }
 
-        $(`#${grid_name}-grid`).append(div);
-
+        table.append(div)
     }
+
+  
+    card_header = $(`<div>${grid_name.toUpperCase()} BOARD</div>`);
+    card_header.css({"text-align": "center", "font-weight": "bold"})
+
+    hr = $("<hr>");
+    hr.css({"margin": "10px 2px", "background-color": "#abb2b9", "opacity": ".50;"})
+
+    center = $("<center>");
+    center.append(table)
+
+    $(`#${grid_name}-grid`).append(card_header);
+    $(`#${grid_name}-grid`).append(hr);
+    $(`#${grid_name}-grid`).append(center);
 };
 
 
@@ -131,10 +147,10 @@ $(document).ready(() => {
 
                 // board update
             } else if ("board" in data.command) {
-                display_grid(data.command.board, data.command.name)
-                if (data.command.name === "target") {
-                    display_grid(data.command.board, "reference")
+                if (data.command.name === "reference"){
+                    $("#reference-grid").show();
                 }
+                display_grid(data.command.board, data.command.name)
             }
         }
     });

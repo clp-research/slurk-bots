@@ -466,6 +466,22 @@ class CcbtsBot(TaskBot):
             },
         )
 
+        # set reference board (only player)
+        curr_usr, other_usr = self.players_per_room[room_id]
+        if curr_usr["role"] != "player":
+            curr_usr, other_usr = other_usr, curr_usr
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "board": target_board,
+                    "name": "reference",
+                },
+                "room": room_id,
+                "receiver_id": curr_usr["id"],
+            },
+        )
+
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
         sleep(2)
