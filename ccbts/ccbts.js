@@ -21,7 +21,7 @@ function display_grid(grid, grid_name) {
     alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z]
 
     var table = $("<table>");
-    table.css({"style": "width: 100%"})
+    table.css({ "style": "width: 100%" })
 
     // add coordinates on upper header        
     var top_header = $("<tr>");
@@ -72,12 +72,12 @@ function display_grid(grid, grid_name) {
         table.append(div)
     }
 
-  
+
     card_header = $(`<div>${grid_name.toUpperCase()} BOARD</div>`);
-    card_header.css({"text-align": "center", "font-weight": "bold"})
+    card_header.css({ "text-align": "center", "font-weight": "bold" })
 
     hr = $("<hr>");
-    hr.css({"margin": "10px 2px", "background-color": "#abb2b9", "opacity": ".50;"})
+    hr.css({ "margin": "10px 2px", "background-color": "#abb2b9", "opacity": ".50;" })
 
     center = $("<center>");
     center.append(table)
@@ -147,7 +147,7 @@ $(document).ready(() => {
 
                 // board update
             } else if ("board" in data.command) {
-                if (data.command.name === "reference"){
+                if (data.command.name === "reference") {
                     $("#reference-grid").show();
                 }
                 display_grid(data.command.board, data.command.name)
