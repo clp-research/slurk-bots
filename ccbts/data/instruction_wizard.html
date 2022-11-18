@@ -1,32 +1,37 @@
-<b>Naming Legend for objects</b>
-<ul>
-    <li>screw: &#9675;</li>
-    <li>washer: &#9674;</li>
-    <li>bridge: &#706; (Occupies two locations)</li>
-    <li>nut: &#9633;</li>
-</ul>
+<div style="display: flex">
+    <div style="margin: 5px; width: 50%; height: 100%;">
+        <div style="border-style: rounded;  border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%;">
+            <div style="margin: 5px; width: 100%;">
+                <b style="color: #00305E">Naming Legend for objects</b>
+                <p>&#8259; screw: &#9675;</p>
+                <p>&#8259; washer: &#9674;</p>
+                <p>&#8259; nut: &#9633;</p>
+                <p>&#8259; bridge: &#706; (Occupies two locations)</p>
+            </div>
+        </div>
+        <div style="border-style: rounded;  border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%">
+            <div style="margin: 5px; width: 100%;">
+                <b style="color: #00305E">Supported commands</b>
+                <p>&#8259; pick (picking an object)</p>
+                <p>&#8259; place (placing an object)</p>
+            </div>
+        </div>
+    </div>
+    <div style="margin: 5px; width: 50%; height: 100%;">
+        <div style="border-style: rounded;  border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%;">
+            <div style="margin: 5px; width: 100%;">
+                <b style="color: #00305E">Command Syntax</b>
+                <p> <code> /&lt;command&gt; (&lt;board_name&gt;, &lt;location&gt;) </code> </p>
 
-<b>Supported commands</b>
-<ul>
-    <li>pick (picking an object)</li>
-    <li>place (placing an object)</li>
-</ul>
-
-
-<b>Command Syntax</b>
-<ul>
-    <li> /command_name (board_name, location) </li>
-    <li>
-        <ul> <b>Examples for pick command</b>
-            <li>/pick(s,a1)</li>
-            <li>/pick(t,b4)</li>
-        </ul>
-    </li>
-    <li>
-        <ul> <b>Examples for place command</b>
-            <li>/place(s,a1)</li>
-            <li>/place(t,b4)</li>
-            <li>/place(t,c3,c4) -- For bridges, both starting and ending locations are required</li>
-        </ul>
-    </li>
-</ul>
+                <b style="color: #00305E">Examples for pick command</b>
+                <p><code> /pick(s,a1) </code></p>
+                <p><code> /pick(t,b4) </code></p>
+    
+                <b style="color: #00305E">Examples for place command</b>
+                <p><code>/place(s,a1)</code></p>
+                <p><code>/place(t,b4)</code></p>
+                <p><code>/place(t,c3,c4) </code> For bridges, both starting and ending locations are required</p>
+            </div>
+        </div>
+    </div>
+</div>
