@@ -1,5 +1,5 @@
 {
-    "title": "Room",
+    "title": "CoCoBots",
     "html": [
         {
             "layout-type": "div",
@@ -56,7 +56,7 @@
             "id": "source_card",
             "layout-content":[
                 {
-                    "layout-type": "center",
+                    "layout-type": "div",
                     "id": "source-grid"
                 }
             ]
