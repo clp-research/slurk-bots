@@ -79,6 +79,90 @@
                             "layout-type": "div",
                             "style": "width: 100%; display: none",
                             "id": "reference-grid"
+                        },
+                        {
+                            "layout-type": "div",
+                            "style": "width: 100%",
+                            "id": "terminal_card",
+                            "layout-content": [
+                                {
+                                    "layout-type": "div",
+                                    "layout-content": "TERMINAL",
+                                    "style": "text-align: center; font-weight: bold"
+                                },
+                                {
+                                    "layout-type": "hr",
+                                    "layout-content": "",
+                                    "style": "margin: 10px 2px; background-color: #abb2b9;"
+                                },
+                                {
+                                    "layout-type": "center",
+                                    "style": "height: 100%",
+                                    "layout-content": [
+                                        {
+                                            "layout-type": "div",
+                                            "style": "height: 55%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "div",
+                                                    "class": "terminal",
+                                                    "layout-content": [
+                                                        {
+                                                            "layout-type": "div",
+                                                            "id": "terminal_history"
+                                                        },
+                                                        {
+                                                            "layout-type": "div",
+                                                            "id": "terminal_buffer"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "layout-type": "div",
+                                                    "class": "terminal-line",
+                                                    "layout-content": [
+                                                        {
+                                                            "layout-type": "span",
+                                                            "layout-content": "$&nbsp;>&nbsp;"
+                                                        },
+                                                        {
+                                                            "layout-type": "input",
+                                                            "type": "text",
+                                                            "id": "terminal_input"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "layout-type": "hr",
+                                            "layout-content": "",
+                                            "style": "margin: 10px 2px; background-color: #abb2b9"
+                                        },
+                                        {
+                                            "layout-type": "button",
+                                            "class": "button",
+                                            "role": "button",
+                                            "layout-content": "Clear",
+                                            "id": "next"
+                                        },
+                                        {
+                                            "layout-type": "button",
+                                            "class": "button",
+                                            "role": "button",
+                                            "layout-content": "Revert",
+                                            "id": "next"
+                                        },
+                                        {
+                                            "layout-type": "button",
+                                            "class": "button",
+                                            "role": "button",
+                                            "layout-content": "Run",
+                                            "id": "next"
+                                        }
+                                    ]
+                                }        
+                            ]
                         }
                     ]
                 }
@@ -135,6 +219,47 @@
         },            
         ".hidden_card": {
             "display": "none"
+        },
+        ".terminal, .terminal-line": {
+            "background": "black",
+            "color": "white",
+            "font": "courier",
+            "padding": "10px",
+            "height": "70%",
+            "overflow-y": "scroll",
+            "width": "auto"
+        },
+        ".terminal-line": {
+            "display": "flex",
+            "height": "auto"
+        },
+        ".terminal-line span": {
+            "width": "30px"
+        },
+        ".terminal-line input": {
+            "width": "100%",
+            "border": "none",
+            "background": "black",
+            "color": "white",
+            "outline": "none"
+        },
+        ".button": {
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+            "margin-top": "10px",
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
+        },
+        ".button:hover" : {
+            "content": "''",
+            "background": "#818BAC"
         }
     },
     "scripts": {
