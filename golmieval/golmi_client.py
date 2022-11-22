@@ -23,7 +23,6 @@ class GolmiClient:
         self.address = address
         self.room_id = room_id
         self.slurk_socket = slurk_socket
-        self.history = list()
 
     # def call_backs(self):
     #     @self.socket.on("joined_room")

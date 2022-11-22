@@ -1,5 +1,3 @@
 **Welcome to the GolmiEval Task**
 
 Once you're ready you can simply start typing in chat on the bottom. You will see a total of {board_number} boards
-
-Thank you for your help!

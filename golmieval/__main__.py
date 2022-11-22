@@ -66,18 +66,6 @@ class GolmiEval(TaskBot):
                 )
                 self.golmi_client_per_room[room_id].run(self.golmi_password)
                 self.load_state(room_id)
-                
-                # add description
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr",
-                    json={"text": TASK_INSTR},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
 
 
         @self.sio.event
@@ -219,11 +207,12 @@ class GolmiEval(TaskBot):
                             else:
                                 self.can_load_next_state[room_id] = False
                                 self.load_state(room_id)
+                                boards_left = len(self.boards_per_room[room_id])
                                 self.sio.emit(
                                     "text",
                                     {
                                         "room": room_id,
-                                        "message": "Let's get you on the next board",
+                                        "message": f"Let's get you on the next board, still {boards_left} to go",
                                     },
                                 )
 
