@@ -1,13 +1,34 @@
 import logging
 import os
-from time import sleep
 import json
-import requests
+from time import sleep
+from threading import Timer
 
+import requests
 from templates import TaskBot
 from .config import *
 from .golmi_client import *
 from .dataloader import Dataloader
+
+
+class RoomTimer:
+    def __init__(self, time, function, room_id):
+        self.function = function
+        self.time = time
+        self.room_id = room_id
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer.start()
+
+    def snooze(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.debug("snooze")
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class GolmiEval(TaskBot):
@@ -18,6 +39,7 @@ class GolmiEval(TaskBot):
         self.golmi_client_per_room = dict()
         self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.can_load_next_state = dict()
+        self.timers_per_room = dict()
         self.register_callbacks()
 
     def register_callbacks(self):
@@ -45,6 +67,7 @@ class GolmiEval(TaskBot):
                 self.boards_per_room.get_boards(room_id)
                 self.can_load_next_state[room_id] = False
                 self.players_per_room[room_id] = []
+                self.timers_per_room[room_id] = RoomTimer(TIMEOUT_TIMER, self.close_game, room_id)
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
                         {**usr, "role": None, "status": "joined"}
@@ -157,6 +180,7 @@ class GolmiEval(TaskBot):
             room_id = data["room"]
             # user sent at least one message, he can load the next state
             self.can_load_next_state[room_id] = True
+            self.timers_per_room[room_id].snooze()
 
         @self.sio.event
         def command(data):
@@ -282,9 +306,14 @@ class GolmiEval(TaskBot):
         )
         self.room_to_read_only(room_id)
 
+        # disconnect golmi client
+        golmi_client = self.golmi_client_per_room[room_id]
+        golmi_client.disconnect()
+
         for memory_dict in [self.players_per_room,
                             self.golmi_client_per_room,
-                            self.boards_per_room]:
+                            self.boards_per_room,
+                            self.timers_per_room]:
             if room_id in memory_dict:
                 memory_dict.pop(room_id)
 
