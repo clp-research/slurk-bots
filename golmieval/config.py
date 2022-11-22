@@ -11,7 +11,7 @@ TASK_INSTR = Path(f"{ROOT}/golmieval/data/instruction.txt").read_text().strip()
 
 
 BOARDS = Path(f"{ROOT}/golmieval/data/boards.jsonl")
-BOARDS_PER_ROOM = 9
+BOARDS_PER_ROOM = 15
 
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'

@@ -30,7 +30,7 @@ class Dataloader(dict):
         with self._path.open('r', encoding="utf-8") as infile:
             for line in infile:
                 board = json.loads(line)
-                level = board["difficoulty"]
+                level = board["board_info"]["difficoulty"]
 
                 # select target
                 state = board["state"]
