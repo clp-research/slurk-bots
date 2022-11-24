@@ -207,7 +207,10 @@ class GolmiEval(TaskBot):
                                     {
                                         "room": room_id,
                                         "message": COLOR_MESSAGE.format(
-                                            message="You need to send at least one message before you can move on",
+                                            message=(
+                                                "**You need to send at least one message before you can move on.** "
+                                                "Remember to press enter to send your description"
+                                            ),
                                             color=WARNING_COLOR
                                         ),
                                         "html": True
