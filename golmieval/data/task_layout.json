@@ -8,59 +8,26 @@
             "layout-content": [
                 {
                     "layout-type": "div",
-                    "id": "instr",
-                    "layout-content": [
-                        {
-                            "layout-type": "p",
-                            "layout-content": "Describe the highlighted piece on the board so that another person could uniquely identify it. Your description should be:"
-                        },
-                        {
-                            "layout-type": "p",
-                            "layout-content": "&nbsp; &#8259; concise"
-                        },
-                        {
-                            "layout-type": "p",
-                            "style": "padding-bottom: 5px",
-                            "layout-content": "&nbsp; &#8259; specific enough to only identify one single piece"
-                        },
-                        {
-                            "layout-type": "p",
-                            "style": "padding-bottom: 5px",
-                            "layout-content": "Each board has one target, if the highlighted area contains more than one piece, describe the one that looks more centred within the red marking."
-                        },
-                        {
-                            "layout-type": "p",
-                            "layout-content": "Press NEXT (scroll down) once you're happy with your description."
-                        }
-                    ]
-                },
-                {
-                    "layout-type": "hr",
-                    "layout-content": "",
-                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
-                },
-                {
-                    "layout-type": "div",
                     "id": "viewport",
-                    "style": "height: 600px; width: 600px; padding: 10px; margin: 0px auto",
+                    "style": "height: 500px; width: 500px; padding: 10px; margin: 0px auto",
                     "layout-content": [
                         {
                             "layout-type": "canvas",
                             "id": "background",
-                            "width": "600",
-                            "height": "600"
+                            "width": "500px",
+                            "height": "500px"
                         },
                         {
                             "layout-type": "canvas",
                             "id": "objects",
-                            "width": "600",
-                            "height": "600"
+                            "width": "500px",
+                            "height": "500px"
                         },
                         {
                             "layout-type": "canvas",
                             "id": "gripper",
-                            "width": "600",
-                            "height": "600"
+                            "width": "500px",
+                            "height": "500px"
                         }
                     ]
                 },
