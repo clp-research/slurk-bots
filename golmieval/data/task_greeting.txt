@@ -1,3 +1,5 @@
 **Welcome to the GolmiEval Task!** Describe the highlighted piece on the board so that another person could uniquely identify it.
 
 Once you're ready you can simply send your description with the chat on the bottom. You will see a total of {board_number} boards
+
+If you're not sure which piece is the target, just click on it! If that's your target, I'll tell you so.

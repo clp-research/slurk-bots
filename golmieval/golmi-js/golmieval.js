@@ -25,25 +25,24 @@ function start_golmi(url, password) {
 
     // Set up the view js, this also sets up key listeners
     layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
-    // grLayer.onclick = (event) => {
-    //     console.log(event.x, event.y)
-    //     console.log(event.target)
-    //     console.log(socket)
-
-    //     socket.emit("message_command",
-    //         {
-    //             "command": {
-    //                 "target_id": event.target.id,
-    //                 "offset_x": event.offsetX,
-    //                 "offset_y": event.offsetY,
-    //                 "x": event.x,
-    //                 "y": event.y,
-    //                 "block_size": layerView.blockSize,
-    //             },
-    //             "room": self_room
-    //         }
-    //     )
-    // }
+    function onMouseClick(event) {
+        console.log(event)
+        socket.emit("message_command",
+            {
+                "command": {
+                    "event": "mouse_click",
+                    "target_id": event.target.id,
+                    "offset_x": event.offsetX,
+                    "offset_y": event.offsetY,
+                    "x": event.x,
+                    "y": event.y,
+                    "block_size": layerView.blockSize,
+                },
+                "room": self_room
+            }
+        )
+    }
+    grLayer.onclick = onMouseClick
 
     // --- golmi_socket communication --- //
     golmi_socket.on("connect", () => {
@@ -93,7 +92,7 @@ $(document).ready(function () {
         socket.emit("message_command",
             {
                 "command": {
-                    "command": "next"
+                    "event": "next"
                 },
                 "room": self_room
             }

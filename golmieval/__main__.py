@@ -84,10 +84,12 @@ class GolmiEval(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending wordle bot to new room was successful.")
 
-                self.golmi_client_per_room[room_id] = GolmiClient(
-                    self.golmi_server, self.sio, room_id
+                self.golmi_client_per_room[room_id] = GolmiClient(self.sio)
+                self.golmi_client_per_room[room_id].run(
+                    self.golmi_server,
+                    str(room_id),
+                    self.golmi_password
                 )
-                self.golmi_client_per_room[room_id].run(self.golmi_password)
                 self.load_state(room_id)
 
 
@@ -163,7 +165,7 @@ class GolmiEval(TaskBot):
                         {
                             "command": {
                                 "url": self.golmi_server,
-                                "room_id": room_id,
+                                "room_id": str(room_id),
                                 "password": self.golmi_password
                             },
                             "room": room_id,
@@ -199,8 +201,8 @@ class GolmiEval(TaskBot):
             if room_id in self.players_per_room:
                 if isinstance(data["command"], dict):
                     logging.debug(data["command"])
-                    if "command" in data["command"]:
-                        if data["command"]["command"] == "next":
+                    if "event" in data["command"]:
+                        if data["command"]["event"] == "next":
                             if self.can_load_next_state[room_id] is False:
                                 self.sio.emit(
                                     "text",
@@ -243,31 +245,26 @@ class GolmiEval(TaskBot):
                                     },
                                 )
 
-                    # else:
-                    #     x, y = self.__translate(
-                    #         data["command"]["offset_x"],
-                    #         data["command"]["offset_y"],
-                    #         data["command"]["block_size"]
-                    #     )
+                        elif data["command"]["event"] == "mouse_click":
+                            x = data["command"]["offset_x"]
+                            y = data["command"]["offset_y"]
+                            block_size = data["command"]["block_size"]
 
-                    #     logging.debug(f"{x}\t{y}")
+                            req = requests.get(f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}")
+                            if req.ok is not True:
+                                logging.error("Could not retrieve gripped piece")
 
-                    #     if x > 5:
-                    #         on_target = True
-                    #     else:
-                    #         on_target = False
+                            piece = req.json()
+                            target = self.boards_per_room[room_id][0]["state"]["targets"]
 
-                    #     self.sio.emit(
-                    #         "message_command",
-                    #         {
-                    #             "command": {
-                    #                 "on_target": on_target,
-                    #             },
-                    #             "room": room_id,
-                    #             "receiver_id": data["user"]["id"]
-                    #         },
-                    #     )
-
+                            if piece.keys() == target.keys():
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "room": room_id,
+                                        "message": "That is your target",
+                                    },
+                                )
 
                 else:
                     self.sio.emit(
