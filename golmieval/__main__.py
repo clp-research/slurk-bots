@@ -92,18 +92,6 @@ class GolmiEval(TaskBot):
                 )
                 self.load_state(room_id)
                 sleep(1)
-                self.sio.emit(
-                    "message_command",
-                    {
-                        "command": {
-                            "url": self.golmi_server,
-                            "room_id": str(room_id),
-                            "password": self.golmi_password
-                        },
-                        "room": room_id,
-                        "receiver_id": data["user"]["id"]
-                    },
-                )
 
 
         @self.sio.event
@@ -399,7 +387,6 @@ if __name__ == "__main__":
        golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
     else:
         golmi_password = {"required": True}
-
 
     parser.add_argument(
         "--golmi-server",
