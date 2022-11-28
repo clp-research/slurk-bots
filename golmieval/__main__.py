@@ -112,6 +112,7 @@ class GolmiEval(TaskBot):
                     )
                     response.raise_for_status()
 
+                sleep(1)
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
@@ -161,7 +162,7 @@ class GolmiEval(TaskBot):
             if room_id in self.players_per_room:
                 if data["type"] == "join":
                     # connect view
-                    sleep(1)
+                    sleep(0.5)
                     self.sio.emit(
                         "message_command",
                         {
