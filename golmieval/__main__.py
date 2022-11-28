@@ -240,7 +240,6 @@ class GolmiEval(TaskBot):
                                 boards_left = len(self.boards_per_room[room_id])
 
                                 if boards_left % 5 == 0:
-
                                     message = f"Still {boards_left} boards to go"
                                     if boards_left < 10:
                                         message = f"{message}. You almost made it!"
