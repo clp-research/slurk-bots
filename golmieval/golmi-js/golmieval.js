@@ -65,22 +65,12 @@ function start_golmi(url, password) {
 function start(url, password, room_id) {
     console.log("received url")
     start_golmi(url, password)
-
-    // reset the controller in case any key is currently pressed
-    controller.resetKeys()
-    controller.attachModel(golmi_socket);
-    // manually establish a connection, connect the controller and load a state
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
 }
 
 
 function stop() {
-    // reset the controller in case any key is currently pressed
-    controller.resetKeys();
-    // disconnect the controller
-    controller.detachModel(golmi_socket, "0");
-    // manually disconnect
     golmi_socket.disconnect();
 }
 
