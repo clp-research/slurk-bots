@@ -160,6 +160,7 @@ class GolmiEval(TaskBot):
             if room_id in self.players_per_room:
                 if data["type"] == "join":
                     # connect view
+                    sleep(1)
                     self.sio.emit(
                         "message_command",
                         {
