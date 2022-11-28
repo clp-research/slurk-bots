@@ -1,6 +1,6 @@
 let golmi_socket = null
 let layerView = null
-let controller = null
+
 
 function start_golmi(url, password) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
@@ -19,9 +19,6 @@ function start_golmi(url, password) {
     let bgLayer = document.getElementById("background");
     let objLayer = document.getElementById("objects");
     let grLayer = document.getElementById("gripper");
-
-    // set up controller
-    controller = new document.LocalKeyController();
 
     // Set up the view js, this also sets up key listeners
     layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
@@ -77,6 +74,7 @@ function start(url, password, room_id) {
     golmi_socket.emit("join", { "room_id": room_id });
 }
 
+
 function stop() {
     // reset the controller in case any key is currently pressed
     controller.resetKeys();
@@ -102,33 +100,13 @@ $(document).ready(function () {
 
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
-            // assign role
-            // if ("role" in data.command) {
-            //     if (data.command.role === "wizard") {
-            //         set_wizard(data.command.instruction)
-            //     } else if (data.command.role === "player") {
-            //         set_player(data.command.instruction)
-            //     } else if (data.command.role === "reset") {
-            //         reset_role(data.command.instruction)
-            //     }
-
-            // board update
-            // } else 
             if ("url" in data.command) {
                 start(
                     data.command.url,
                     data.command.password,
                     data.command.room_id
                 )
-            } 
-            // else if ("on_target" in data.command){
-            //     if (data.command.on_target === true){
-            //         $("#gripper").attr("title", "TARGET");
-            //         $("#gripper").tooltip();
-            //     } else{
-            //         $("#gripper").attr("title", "");
-            //     }
-            // }
+            }
         }
     });
-}); // on document ready end
+});
