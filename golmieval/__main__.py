@@ -91,6 +91,19 @@ class GolmiEval(TaskBot):
                     self.golmi_password
                 )
                 self.load_state(room_id)
+                sleep(1)
+                self.sio.emit(
+                    "message_command",
+                    {
+                        "command": {
+                            "url": self.golmi_server,
+                            "room_id": str(room_id),
+                            "password": self.golmi_password
+                        },
+                        "room": room_id,
+                        "receiver_id": data["user"]["id"]
+                    },
+                )
 
 
         @self.sio.event
