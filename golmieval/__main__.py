@@ -228,7 +228,7 @@ class GolmiEval(TaskBot):
                                     "text",
                                     {
                                         "room": room_id,
-                                        "message": "That was the last one, thank you very much for your help &hearts;",
+                                        "message": "That was the last one, thank you very much for your help",
                                         "html": True
                                     },
                                 )
@@ -238,13 +238,20 @@ class GolmiEval(TaskBot):
                                 self.can_load_next_state[room_id] = False
                                 self.load_state(room_id)
                                 boards_left = len(self.boards_per_room[room_id])
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "room": room_id,
-                                        "message": f"Let's get you on the next board, still {boards_left} to go",
-                                    },
-                                )
+
+                                if boards_left % 5 == 0:
+
+                                    message = f"Still {boards_left} boards to go"
+                                    if boards_left < 10:
+                                        message = f"{message}. You almost made it!"
+
+                                    self.sio.emit(
+                                        "text",
+                                        {
+                                            "room": room_id,
+                                            "message": message,
+                                        },
+                                    )
 
                         elif data["command"]["event"] == "mouse_click":
                             x = data["command"]["offset_x"]
