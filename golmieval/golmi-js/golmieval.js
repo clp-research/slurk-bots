@@ -86,6 +86,7 @@ function stop() {
 
 
 $(document).ready(function () {
+    console.log("document ready")
     $("#next").on('click', function () {
         socket.emit("message_command",
             {
@@ -99,6 +100,7 @@ $(document).ready(function () {
 
 
     socket.on("command", (data) => {
+        console.log("receiving data")
         if (typeof (data.command) === "object") {
             if ("url" in data.command) {
                 start(
