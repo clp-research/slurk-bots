@@ -71,7 +71,7 @@ class BoxBot:
         # establish a connection to the server
         self.sio.connect(
             self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         # wait until the connection with the server ends
@@ -135,7 +135,7 @@ class BoxBot:
             game = self.game_per_room.get(room_id)
 
             # snooze if the command does not coome from the bot
-            if self.user != str(data["user"]["id"]):
+            if self.user != data["user"]["id"]:
                 self.timers_per_room[room_id].snooze()
 
             if game is None:
@@ -310,7 +310,7 @@ class BoxBot:
 
         users = response.json()
         for user in users:
-            if str(user["id"])!= self.user:
+            if user["id"] != self.user:
                 response = requests.get(
                     f"{self.uri}/users/{user['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
@@ -374,7 +374,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--token", help="token for logging in as bot", **token
     )
-    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )

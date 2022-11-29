@@ -4,6 +4,7 @@ import logging
 import os
 from pathlib import Path
 import re
+from threading import Timer
 
 import requests
 import socketio
@@ -15,6 +16,27 @@ LOG = logging.getLogger(__name__)
 TASK_TITLE = "Let's solve some math!"
 TASK_DESCR = Path("task_description.txt").read_text()
 IMG_LINK = "https://upload.wikimedia.org/wikipedia/commons/a/a2/Nuvola_Math_and_Inf.svg"
+TIMEOUT_TIMER = 60  # minutes
+
+
+class RoomTimer:
+    def __init__(self, time, function, room_id):
+        self.function = function
+        self.time = time
+        self.room_id = room_id
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer.start()
+
+    def snooze(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.debug("snooze")
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class MathBot:
@@ -35,6 +57,7 @@ class MathBot:
         self.uri += "/slurk/api"
 
         self.room_to_q = dict()
+        self.timers_per_room = dict()
 
         LOG.info(f"Running math bot on {self.uri} with token {self.token}")
         # register all event handlers
@@ -44,7 +67,7 @@ class MathBot:
         """Establish a connection to the server."""
         self.sio.connect(
             self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         # wait until the connection with the server ends
@@ -89,6 +112,18 @@ class MathBot:
                     json={"attribute": "src", "value": IMG_LINK},
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
+                self.timers_per_room[room_id] = RoomTimer(
+                    TIMEOUT_TIMER, self.close_game, room_id
+                )
+
+        @self.sio.event
+        def text_message(data):
+            """load next state after the user enters a description"""
+            if self.user == data["user"]["id"]:
+                return
+
+            room_id = data["room"]
+            self.timers_per_room[room_id].snooze()
 
         @self.sio.event
         def command(data):
@@ -97,6 +132,10 @@ class MathBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
             cmd = data["command"]
+
+            # snooze timer
+            if self.user != data["user"]["id"]:
+                self.timers_per_room[room_id].snooze()
 
             if cmd.startswith("question"):
                 self._set_question(room_id, user_id, cmd)
@@ -220,6 +259,61 @@ class MathBot:
                 return
         return eval(expr)
 
+    def close_game(self, room_id):
+        self.room_to_read_only(room_id)
+        self.timers_per_room.pop(room_id)
+        if room_id in self.room_to_q:
+            self.room_to_q.pop(room_id)
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.get(
+            f"{self.uri}/rooms/{room_id}/users",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+
+        users = response.json()
+        for user in users:
+            response = requests.get(
+                f"{self.uri}/users/{user['id']}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(f"Could not get user: {response.status_code}")
+                response.raise_for_status()
+            etag = response.headers["ETag"]
+
+            response = requests.delete(
+                f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Removing user from task room was successful.")
+
 
 if __name__ == "__main__":
     # set up logging configuration
@@ -245,7 +339,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--token", help="token for logging in as bot", **token
     )
-    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )

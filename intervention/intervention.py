@@ -56,7 +56,7 @@ class InterventionBot:
         # establish a connection to the server
         self.sio.connect(
             self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         # wait until the connection with the server ends
@@ -164,13 +164,6 @@ class InterventionBot:
             logging.error(f"Could not set room to read_only: {response.status_code}")
             response.raise_for_status()
 
-        response = requests.get(
-            f"{self.uri}/rooms/{room_id}/users",
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            logging.error(f"Could not get user: {response.status_code}")
-
         for user in self.players_per_room[room_id]:
             response = requests.get(
                 f"{self.uri}/users/{user['id']}",
@@ -217,7 +210,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--token", help="token for logging in as bot", **token
     )
-    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )
