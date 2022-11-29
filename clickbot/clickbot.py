@@ -3,13 +3,36 @@ import json
 import logging
 import os
 import random
+from threading import Timer
 
 import requests
 import socketio
 
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+TIMEOUT_TIMER = 60  # minutes
 LOG = logging.getLogger(__name__)
+
+
+class RoomTimer:
+    def __init__(self, time, function, room_id, game):
+        self.function = function
+        self.time = time
+        self.room_id = room_id
+        self.game = game
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer = Timer(self.time*60, self.function, args=[self.room_id, self.game])
+        self.timer.start()
+
+    def snooze(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.debug("snooze")
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class Game:
@@ -40,6 +63,7 @@ class ClickBot:
             self.all_items = json.load(f)
 
         LOG.info(f"Running click bot on {self.uri} with token {self.token}")
+        self.timers_per_room = dict()
         # register all event handlers
         self.register_callbacks()
 
@@ -82,6 +106,10 @@ class ClickBot:
                 item_ids = list(self.all_items.keys())
                 random.shuffle(item_ids)
                 self.game_per_room[room_id] = Game(item_ids)
+                game = self.game_per_room.get(room_id)
+                self.timers_per_room[room_id] = RoomTimer(
+                    TIMEOUT_TIMER, self.close_game, room_id, game
+                )
 
                 # greet user
                 for usr in data['users']:
@@ -104,6 +132,10 @@ class ClickBot:
         def command(data):
             room_id = data["room"]
             game = self.game_per_room.get(room_id)
+
+            # snooze if the command does not coome from the bot
+            if self.user != str(data["user"]["id"]):
+                self.timers_per_room[room_id].snooze()
 
             if game is None:
                 return
@@ -244,6 +276,59 @@ class ClickBot:
             headers={"Authorization": f"Bearer {self.token}"}
         )
         self.request_feedback(response, "hide button")
+        self.room_to_read_only(room_id)
+        self.timers_per_room.pop(room_id)
+        self.game_per_room.pop(room_id)
+
+        def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.get(
+            f"{self.uri}/rooms/{room_id}/users",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+
+        users = response.json()
+        for user in users:
+            if str(user["id"])!= self.user:
+                response = requests.get(
+                    f"{self.uri}/users/{user['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                logging.debug("Removing user from task room was successful.")
 
     def is_click_on_target(self, item, pos):
         left, top, right, bottom = item["bb"]
