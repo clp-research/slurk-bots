@@ -1,12 +1,34 @@
 import argparse
 import logging
 import os
+from threading import Timer
 
 import requests
 import socketio
 
 
 LOG = logging.getLogger(__name__)
+TIMEOUT_TIMER = 60  # minutes
+
+
+class RoomTimer:
+    def __init__(self, time, function, room_id):
+        self.function = function
+        self.time = time
+        self.room_id = room_id
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer.start()
+
+    def snooze(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.debug("snooze")
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class InterventionBot:
@@ -23,10 +45,12 @@ class InterventionBot:
         self.uri += "/slurk/api"
 
         LOG.info(f"Running intervention bot on {self.uri} with token {self.token}")
-        # register all event handlers
-        self.register_callbacks()
 
         self.players_per_room = dict()
+        self.timers_per_room = dict()
+
+        # register all event handlers
+        self.register_callbacks()
 
     def run(self):
         # establish a connection to the server
@@ -73,6 +97,10 @@ class InterventionBot:
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
 
+                self.timers_per_room[room_id] = RoomTimer(
+                    TIMEOUT_TIMER, self.close_game, room_id
+                )
+
         @self.sio.event
         def command(data):
             """Intercepts the user messages
@@ -84,6 +112,10 @@ class InterventionBot:
 
             room_id = data["room"]
             user_id = data["user"]["id"]
+
+            if user_id != self.user:
+                timer = self.timers_per_room.get(room_id)
+                timer.snooze()
 
             message = data["command"]
             for user in self.players_per_room[room_id]:
@@ -108,6 +140,59 @@ class InterventionBot:
                         },
                         callback=self.message_callback,
                     )
+
+    def close_game(self, room_id):
+        self.room_to_read_only(room_id)
+        self.timers_per_room.pop(room_id)
+        self.players_per_room.pop(room_id)
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.get(
+            f"{self.uri}/rooms/{room_id}/users",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+
+        for user in self.players_per_room[room_id]:
+            response = requests.get(
+                f"{self.uri}/users/{user['id']}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(f"Could not get user: {response.status_code}")
+                response.raise_for_status()
+            etag = response.headers["ETag"]
+
+            response = requests.delete(
+                f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Removing user from task room was successful.")
 
 
 if __name__ == "__main__":
