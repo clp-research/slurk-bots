@@ -21,7 +21,7 @@ function display_grid(grid, grid_name) {
     alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z]
 
     var table = $("<table>");
-    table.css({ "style": "width: 100%" })
+    table.css({ "style": "width: 100%", "height": "100%" })
 
     // add coordinates on upper header        
     var top_header = $("<tr>");
@@ -64,11 +64,19 @@ function display_grid(grid, grid_name) {
             var item = $("<td>").css({
                 "background-color": color_mapping[grid[i][j][0]]
             });
-            item.text(grid[i][j][1])
+
+            txt = grid[i][j][1]
+
+            // replace empty cells to preserve dimensions
+            if (txt === ""){
+                txt = "|"
+                item.css({"color": "white"})
+            }
+
+            item.text(txt)
             item.attr("title", legend[grid[i][j][1]])
             div.append(item)
         }
-
         table.append(div)
     }
 
@@ -79,11 +87,16 @@ function display_grid(grid, grid_name) {
     hr = $("<hr>");
     hr.css({ "margin": "10px 2px", "background-color": "#abb2b9", "opacity": ".50;" })
 
+    header_div = $("<div>");
+    header_div.css({ "style": "width: 100%", "height": "7%" })
+    header_div.append(card_header)
+    header_div.append(hr)
+
     center = $("<center>");
+    center.css({ "style": "width: 100%", "height": "93%" })
     center.append(table)
 
-    $(`#${grid_name}-grid`).append(card_header);
-    $(`#${grid_name}-grid`).append(hr);
+    $(`#${grid_name}-grid`).append(header_div);
     $(`#${grid_name}-grid`).append(center);
 };
 
@@ -102,6 +115,8 @@ function set_player(description) {
     $("#target_card").show();
     $("#instr_title").html("Player");
     $("#instr").html(description);
+    $("#reference-grid").show();
+    $("#terminal_card").hide();
 };
 
 

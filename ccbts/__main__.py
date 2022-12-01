@@ -206,7 +206,7 @@ class CcbtsBot(TaskBot):
                             "message": COLOR_MESSAGE.format(
                                 message=(
                                     f"{curr_usr['name']} has left the game. "
-                                    "Please wait a bit, your partner may rejoin.",
+                                    "Please wait a bit, your partner may rejoin."
                                 ),
                                 color=STANDARD_COLOR
                             ),
@@ -416,25 +416,6 @@ class CcbtsBot(TaskBot):
             )
             response.raise_for_status()
 
-    # def set_image(self, room_id, user):
-    #     # set image
-    #     # imagepath = self.images_per_room[room_id]
-    #     # with imagepath.open("rb") as infile:
-    #     #     img_byte = infile.read()
-
-    #     # image = f"data:image/jpg;base64, {base64.b64encode(img_byte).decode('utf-8')}"
-
-    #     image = self.images_per_room[room_id]
-
-    #     response = requests.patch(
-    #         f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-    #         json={"attribute": "src", "value": image, "receiver_id": user["id"]},
-    #         headers={"Authorization": f"Bearer {self.token}"},
-    #     )
-    #     if not response.ok:
-    #         logging.error(f"Could not set image: {response.status_code}")
-    #         response.raise_for_status()
-
     def set_boards(self, room_id):
         # get boards from the robot interface
         interface = self.robot_interfaces[room_id]
@@ -470,11 +451,15 @@ class CcbtsBot(TaskBot):
         curr_usr, other_usr = self.players_per_room[room_id]
         if curr_usr["role"] != "player":
             curr_usr, other_usr = other_usr, curr_usr
+
+        reference_board = interface.get_reference_boards()["references"]["game_id_1"]
+        logging.debug(target_board)
+        logging.debug(reference_board)
         self.sio.emit(
             "message_command",
             {
                 "command": {
-                    "board": target_board,
+                    "board": reference_board,
                     "name": "reference",
                 },
                 "room": room_id,

@@ -101,64 +101,84 @@
                                     "layout-content": [
                                         {
                                             "layout-type": "div",
-                                            "style": "height: 55%",
+                                            "style": "height: 60%",
+                                            "class": "editor",
                                             "layout-content": [
                                                 {
                                                     "layout-type": "div",
-                                                    "class": "terminal",
+                                                    "class": "text_cont",
                                                     "layout-content": [
                                                         {
                                                             "layout-type": "div",
-                                                            "id": "terminal_history"
+                                                            "style": "height: 10%; padding-bottom: 10px; text-align: center",
+                                                            "layout-content": "COMMAND HISTORY"
+                                                        }, 
+                                                        {
+                                                            "layout-type": "hr",
+                                                            "layout-content": "",
+                                                            "style": "margin: 10px 2px; background-color: #abb2b9;"
                                                         },
                                                         {
                                                             "layout-type": "div",
-                                                            "id": "terminal_buffer"
+                                                            "id": "history",
+                                                            "style": "width: 100%; height: 90%; overflow-y:scroll"
                                                         }
                                                     ]
                                                 },
                                                 {
                                                     "layout-type": "div",
-                                                    "class": "terminal-line",
+                                                    "class": "text_cont",
                                                     "layout-content": [
                                                         {
-                                                            "layout-type": "span",
-                                                            "layout-content": "$&nbsp;>&nbsp;"
+                                                            "layout-type": "div",
+                                                            "style": "height: 10%; padding-bottom: 10px; text-align: center",
+                                                            "layout-content": "COMMAND EDITOR"
+                                                        },   
+                                                        {
+                                                            "layout-type": "hr",
+                                                            "layout-content": "",
+                                                            "style": "margin: 10px 2px; background-color: #abb2b9;"
                                                         },
                                                         {
-                                                            "layout-type": "input",
-                                                            "type": "text",
-                                                            "id": "terminal_input"
+                                                            "layout-type": "textarea",
+                                                            "id": "input",
+                                                            "style": "width: 100%; height: 75%; border: 0px; resize:none"
                                                         }
                                                     ]
                                                 }
                                             ]
                                         },
                                         {
-                                            "layout-type": "hr",
-                                            "layout-content": "",
-                                            "style": "margin: 10px 2px; background-color: #abb2b9"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "button",
-                                            "role": "button",
-                                            "layout-content": "Clear",
-                                            "id": "next"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "button",
-                                            "role": "button",
-                                            "layout-content": "Revert",
-                                            "id": "next"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "button",
-                                            "role": "button",
-                                            "layout-content": "Run",
-                                            "id": "next"
+                                            "layout-type": "div",
+                                            "style": "height: 40%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "hr",
+                                                    "layout-content": "",
+                                                    "style": "margin: 10px 2px; background-color: #abb2b9"
+                                                },
+                                                {
+                                                    "layout-type": "button",
+                                                    "class": "button",
+                                                    "role": "button",
+                                                    "layout-content": "Clear",
+                                                    "id": "next"
+                                                },
+                                                {
+                                                    "layout-type": "button",
+                                                    "class": "button",
+                                                    "role": "button",
+                                                    "layout-content": "Revert",
+                                                    "id": "next"
+                                                },
+                                                {
+                                                    "layout-type": "button",
+                                                    "class": "button",
+                                                    "role": "button",
+                                                    "layout-content": "Run",
+                                                    "id": "next"
+                                                }
+                                            ]
                                         }
                                     ]
                                 }        
@@ -187,7 +207,7 @@
             "border": "0.2rem solid #CECDCD"
         },
         "td, th": {
-            "padding": "0.6rem 1rem",
+            "padding": "0.1rem 1rem",
             "border": "0.2rem solid #CECDCD"
         },
         "td": {
@@ -220,28 +240,19 @@
         ".hidden_card": {
             "display": "none"
         },
-        ".terminal, .terminal-line": {
-            "background": "black",
-            "color": "white",
-            "font": "courier",
+        ".text_cont": {
+            "border": "1px solid #CECDCD",
+            "border-radius": "10px",
+            "padding": "5px",
+            "width": "50%",
+            "margin": "5px"
+        },
+        ".editor": {
+            "border": "1px solid #CECDCD",
+            "border-radius": "10px",
             "padding": "10px",
-            "height": "70%",
-            "overflow-y": "scroll",
-            "width": "auto"
-        },
-        ".terminal-line": {
-            "display": "flex",
-            "height": "auto"
-        },
-        ".terminal-line span": {
-            "width": "30px"
-        },
-        ".terminal-line input": {
-            "width": "100%",
-            "border": "none",
-            "background": "black",
-            "color": "white",
-            "outline": "none"
+            "height": "50%",
+            "display": "flex"
         },
         ".button": {
             "text-transform": "uppercase",
@@ -266,7 +277,7 @@
             "incoming-text": "markdown",
             "incoming-image": "display-image",
             "submit-message": "send-message",
-            "print-history": "plain-history",
+            "print-history": "markdown-history",
             "typing-users": "typing-users",
             "plain": "ccbts"
         },
