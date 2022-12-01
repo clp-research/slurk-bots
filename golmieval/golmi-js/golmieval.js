@@ -22,7 +22,7 @@ function start_golmi(url, password) {
 
     // Set up the view js, this also sets up key listeners
     layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
-    function onMouseClick(event) {
+    grLayer.onclick = (event) => {
         console.log(event)
         socket.emit("message_command",
             {
@@ -39,7 +39,6 @@ function start_golmi(url, password) {
             }
         )
     }
-    grLayer.onclick = onMouseClick
 
     // --- golmi_socket communication --- //
     golmi_socket.on("connect", () => {
@@ -92,7 +91,7 @@ $(document).ready(function () {
     socket.on("command", (data) => {
         console.log("receiving data")
         if (typeof (data.command) === "object") {
-            if ("url" in data.command) {
+            if (data.command.event === "init") {
                 start(
                     data.command.url,
                     data.command.password,

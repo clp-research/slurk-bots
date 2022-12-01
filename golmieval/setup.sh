@@ -26,7 +26,7 @@ GOLMI_PASSWORD="GiveMeTheBigBluePasswordOnTheLeft"
 cd ../golmi
 docker build --tag "golmi_server" -f dockerfile .
 docker run --network host --restart unless-stopped -d -e GOLMI_HOST=$GOLMI_HOST -e GOLMI_PORT=$GOLMI_PORT golmi_server
-sleep 5
+sleep 1
 
 # build docker images for bots
 cd ../slurk-bots
@@ -38,7 +38,7 @@ cd ../slurk
 docker build --tag="slurk/server" -f Dockerfile .
 export SLURK_DOCKER=slurk
 scripts/start_server.sh
-sleep 5
+sleep 1
 
 # create admin token
 SLURK_TOKEN=$(check_response scripts/read_admin_token.sh)
@@ -71,7 +71,7 @@ CONCIERGE_BOT=$(check_response scripts/create_user.sh "ConciergeBot" $CONCIERGE_
 echo "Concierge Bot Id:"
 echo $CONCIERGE_BOT
 docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e SLURK_PORT=5000 --net="host" slurk/concierge-bot &
-sleep 5
+sleep 1
 
 # create math bot
 THIS_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/$BOT_NAME/data/bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
@@ -82,7 +82,7 @@ echo "$BOT_NAME Bot Id:"
 echo $THIS_BOT
 echo $GOLMI_SERVER
 docker run -e ${BOT_NAME^^}_TOKEN=$THIS_BOT_TOKEN -e ${BOT_NAME^^}_USER=$THIS_BOT -e ${BOT_NAME^^}_TASK_ID=$TASK_ID -e SLURK_WAITING_ROOM=$WAITING_ROOM -e SLURK_PORT=5000 -e GOLMI_SERVER=$GOLMI_SERVER -e GOLMI_PASSWORD=$GOLMI_PASSWORD --net="host" slurk/$BOT_NAME-bot &
-sleep 5
+sleep 1
 
 # create users
 for ((c=0; c<NUMBER_USERS; c++))
