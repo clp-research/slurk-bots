@@ -66,7 +66,7 @@ class GolmiEval(TaskBot):
 
                 self.boards_per_room.get_boards(room_id)
                 self.can_load_next_state[room_id] = False
-                self.players_per_room[room_id] = []
+                self.players_per_room[room_id] = list()
                 self.timers_per_room[room_id] = RoomTimer(TIMEOUT_TIMER, self.close_game, room_id)
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
@@ -157,7 +157,6 @@ class GolmiEval(TaskBot):
                 return
 
             room_id = data["room"]
-
             # some joined a task room
             if room_id in self.players_per_room:
                 if data["type"] == "join":
@@ -167,6 +166,7 @@ class GolmiEval(TaskBot):
                         "message_command",
                         {
                             "command": {
+                                "event": "init",
                                 "url": self.golmi_server,
                                 "room_id": str(room_id),
                                 "password": self.golmi_password
@@ -285,10 +285,6 @@ class GolmiEval(TaskBot):
                         },
                     )
 
-    @staticmethod
-    def __translate(x, y, granularity):
-        return x // granularity, y // granularity
-
     def load_state(self, room_id):
         """load the current board on the golmi server"""
         board = self.boards_per_room[room_id][0]
@@ -311,13 +307,14 @@ class GolmiEval(TaskBot):
         sleep(2)
         self.sio.emit(
             "text",
-            {"message": "The room is closing, thanky you for plaing", "room": room_id},
+            {"message": "The room is closing, see you next time", "room": room_id},
         )
         self.room_to_read_only(room_id)
 
         # disconnect golmi client
-        golmi_client = self.golmi_client_per_room[room_id]
-        golmi_client.disconnect()
+        golmi_client = self.golmi_client_per_room.get(room_id)
+        if golmi_client is not None:
+            golmi_client.disconnect()
 
         for memory_dict in [self.players_per_room,
                             self.golmi_client_per_room,
