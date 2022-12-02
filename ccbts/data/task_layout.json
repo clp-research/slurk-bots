@@ -161,7 +161,7 @@
                                                     "layout-type": "button",
                                                     "class": "button",
                                                     "role": "button",
-                                                    "layout-content": "Clear",
+                                                    "layout-content": "Clear Target Board",
                                                     "id": "next"
                                                 },
                                                 {

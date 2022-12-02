@@ -282,22 +282,6 @@ class CcbtsBot(TaskBot):
                             # execute command
                             interface.play(data["command"])
 
-                            # inform users a command was executed
-                            action = "picked from"
-                            if data["command"].startswith("place"):
-                                action = "placed on"
-                            self.sio.emit(
-                                "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            message=f"An object was {action} a board",
-                                            color=STANDARD_COLOR
-                                        ),
-                                        "room": room_id,
-                                        "html": True
-                                    },
-                                )
-
                         except (KeyError, TypeError, OverflowError) as error:
                             self.sio.emit(
                                 "text",
