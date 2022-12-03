@@ -74,7 +74,7 @@ class CcbtsBot(TaskBot):
                 )
                 if not response.ok:
                     logging.error(
-                        f"Could not let wordle bot join room: {response.status_code}"
+                        f"Could not let coco bot join room: {response.status_code}"
                     )
                     response.raise_for_status()
                 logging.debug("Sending wordle bot to new room was successful.")
@@ -154,21 +154,7 @@ class CcbtsBot(TaskBot):
                             "receiver_id": other_usr["id"],
                             "html": True
                         },
-                    )
-
-                    # greet the player with his name
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                message=f"Welcome {curr_usr['name']}!",
-                                color=STANDARD_COLOR
-                            ),
-                            "room": room_id,
-                            "receiver_id": curr_usr['name'],
-                            "html": True
-                        },
-                    )
+                    )               
 
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
@@ -187,9 +173,6 @@ class CcbtsBot(TaskBot):
 
                         # send board again
                         self.set_boards(room_id)
-
-                        # if role == "player":
-                        #     self.set_image(room_id, curr_usr)
 
                     # cancel timer
                     logging.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
@@ -239,88 +222,99 @@ class CcbtsBot(TaskBot):
             )
 
             if room_id in self.images_per_room:
-                # set wizard
-                if data["command"] == "set_role_wizard":
-                    self.set_wizard_role(room_id, user_id)
-
-                # reset roles
-                elif data["command"] == "reset_roles":
-                    self.reset_roles(room_id)
-
-                elif data["command"] == "game_over":
-                    curr_usr, other_usr = self.players_per_room[room_id]
-                    if curr_usr["id"] != user_id:
-                        curr_usr, other_usr = other_usr, curr_usr
-                    
-                    if curr_usr["role"] == "player":
-                        self.close_game(room_id)
-                    else:
-                        self.sio.emit(
-                        "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message="You're not allowed to do that",
-                                    color=WARNING_COLOR
-                                ),
-                                "room": room_id,
-                                "receiver_id": user_id,
-                                "html": True
-                            },
-                        )
-
-                elif data["command"] == "show_me":
-                    self.set_boards(room_id)
-
-                elif (data["command"].startswith("pick") or data["command"].startswith("place")):
-                    curr_usr, other_usr = self.players_per_room[room_id]
-                    if curr_usr["id"] != user_id:
-                        curr_usr, other_usr = other_usr, curr_usr
-                    
-                    if curr_usr["role"] == "wizard":
+                if isinstance(data["command"], dict):
+                    # front end commands
+                    if data["command"]["event"] == "clear_board":
                         interface = self.robot_interfaces[room_id]
-                        try:
-                            # execute command
-                            interface.play(data["command"])
+                        interface.clear_board(data["command"]["board"])
 
-                        except (KeyError, TypeError, OverflowError) as error:
+                else:
+                    # user command
+                    # set wizard
+                    if data["command"] == "set_role_wizard":
+                        self.set_wizard_role(room_id, user_id)
+
+                    # reset roles
+                    elif data["command"] == "reset_roles":
+                        self.reset_roles(room_id)
+
+                    elif data["command"] == "game_over":
+                        curr_usr, other_usr = self.players_per_room[room_id]
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        
+                        if curr_usr["role"] == "player":
+                            self.close_game(room_id)
+                        else:
+                            self.sio.emit(
+                            "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message="You're not allowed to do that",
+                                        color=WARNING_COLOR
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                    "html": True
+                                },
+                            )
+
+                    elif data["command"] == "show_me":
+                        self.set_boards(room_id)
+
+                    elif (data["command"].startswith("pick") or data["command"].startswith("place")):
+                        curr_usr, other_usr = self.players_per_room[room_id]
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        
+                        if curr_usr["role"] == "wizard":
+                            interface = self.robot_interfaces[room_id]
+                            try:
+                                # execute command
+                                interface.play(data["command"])
+
+                            except (KeyError, TypeError, OverflowError) as error:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            color=WARNING_COLOR, message=str(error)
+                                        ),
+                                        "room": room_id,
+                                        "html": True
+                                    },
+                                )
+                            # update board for wizard
+                            self.set_boards(room_id, wizard_only=True)
+
+                        else:
                             self.sio.emit(
                                 "text",
                                 {
                                     "message": COLOR_MESSAGE.format(
-                                        color=WARNING_COLOR, message=str(error)
+                                        message="You're not allowed to do that",
+                                        color=WARNING_COLOR
                                     ),
                                     "room": room_id,
+                                    "receiver_id": user_id,
                                     "html": True
                                 },
                             )
+
+
                     else:
                         self.sio.emit(
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
-                                    message="You're not allowed to do that",
-                                    color=WARNING_COLOR
+                                    message="Sorry, but I do not understand this command.",
+                                    color=STANDARD_COLOR
                                 ),
                                 "room": room_id,
                                 "receiver_id": user_id,
                                 "html": True
                             },
                         )
-
-
-                else:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                message="Sorry, but I do not understand this command.",
-                                color=STANDARD_COLOR
-                            ),
-                            "room": room_id,
-                            "receiver_id": user_id,
-                            "html": True
-                        },
-                    )
 
     def set_wizard_role(self, room_id, user_id):
         curr_usr, other_usr = self.players_per_room[room_id]
@@ -400,56 +394,50 @@ class CcbtsBot(TaskBot):
             )
             response.raise_for_status()
 
-    def set_boards(self, room_id):
+    def set_boards(self, room_id, wizard_only=False):
         # get boards from the robot interface
         interface = self.robot_interfaces[room_id]
         boards = interface.get_boards()
         source_board = boards["s"].tolist()
         target_board = boards["t"].tolist()
 
-        # set source board
-        self.sio.emit(
-            "message_command",
-            {
-                "command": {
-                    "board": source_board,
-                    "name": "source",
-                },
-                "room": room_id
-            },
-        )
+        # get player information
+        player_usr, wizard_usr = self.players_per_room[room_id]
+        if player_usr["role"] != "player":
+            player_usr, wizard_usr = wizard_usr, player_usr
 
-        # set target board
-        self.sio.emit(
-            "message_command",
-            {
+        # send board update
+        for name, board in zip(["source", "target"], [source_board, target_board]):
+            command_dict = {
                 "command": {
-                    "board": target_board,
-                    "name": "target",
+                    "board": board,
+                    "name": name,
                 },
                 "room": room_id
-            },
-        )
+            }
+
+            if wizard_only is True:
+                command_dict["receiver_id"] = wizard_usr["id"]
+
+            # set source board
+            self.sio.emit("message_command", command_dict)
+
 
         # set reference board (only player)
-        curr_usr, other_usr = self.players_per_room[room_id]
-        if curr_usr["role"] != "player":
-            curr_usr, other_usr = other_usr, curr_usr
-
-        reference_board = interface.get_reference_boards()["references"]["game_id_1"]
-        logging.debug(target_board)
-        logging.debug(reference_board)
-        self.sio.emit(
-            "message_command",
-            {
-                "command": {
-                    "board": reference_board,
-                    "name": "reference",
+        if wizard_only is False:
+            # TODO wizard interface should return numpy array
+            reference_board = interface.get_reference_boards()["references"]["game_id_1"]
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "board": reference_board,
+                        "name": "reference",
+                    },
+                    "room": room_id,
+                    "receiver_id": player_usr["id"],
                 },
-                "room": room_id,
-                "receiver_id": curr_usr["id"],
-            },
-        )
+            )
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""

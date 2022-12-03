@@ -130,23 +130,48 @@ function reset_role(description) {
 
 
 $(document).ready(() => {
-    $("#player_button").on('click', function () {
+    // $("#player_button").on('click', function () {
+    //     socket.emit("message_command",
+    //         {
+    //             "command": "set_role_player",
+    //             "room": self_room
+    //         }
+    //     )
+    // });
+
+    // $("#wizard_button").on('click', function () {
+    //     socket.emit("message_command",
+    //         {
+    //             "command": "set_role_wizard",
+    //             "room": self_room
+    //         }
+    //     )
+    // });
+
+    $('#clear_button').click(function(){
         socket.emit("message_command",
             {
-                "command": "set_role_player",
+                "command": {
+                    "event": "clear_board",
+                    "board": "target"
+                },
                 "room": self_room
             }
         )
     });
 
-    $("#wizard_button").on('click', function () {
-        socket.emit("message_command",
-            {
-                "command": "set_role_wizard",
-                "room": self_room
-            }
-        )
+    $('#run_button').click(function(){
+        command_list = $("#input").val().trim().split("\n")
+        
+        
+        command_list.forEach(element => {
+            $('#history').append(`<b><code>${element}<br/></code></b>`);
+            $("#history").scrollTop($("#history")[0].scrollHeight);
+        });
+
+
     });
+    
 
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
