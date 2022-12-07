@@ -27,12 +27,8 @@ class EchoBot(TaskBot):
 
             self.sio.emit(
                 "text",
-                {
-                    "room": data["room"],
-                    "message": message,
-                    **options
-                },
-                callback=self.message_callback
+                {"room": data["room"], "message": message, **options},
+                callback=self.message_callback,
             )
 
         @self.sio.event
@@ -54,9 +50,9 @@ class EchoBot(TaskBot):
                     "url": data["url"],
                     "width": data["width"],
                     "height": data["height"],
-                    **options
+                    **options,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
 
 

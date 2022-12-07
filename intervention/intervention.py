@@ -57,10 +57,12 @@ class InterventionBot:
             if self.task_id is None or task_id == self.task_id:
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
-                    LOG.error(f"Could not let intervention bot join room: {response.status_code}")
+                    LOG.error(
+                        f"Could not let intervention bot join room: {response.status_code}"
+                    )
                     response.raise_for_status()
                 LOG.debug("Intervention bot joins new task room", data)
 
@@ -85,26 +87,26 @@ class InterventionBot:
 
             message = data["command"]
             for user in self.players_per_room[room_id]:
-                if user['id'] == user_id:
-                    user['msg_n'] += 1
+                if user["id"] == user_id:
+                    user["msg_n"] += 1
                     # Let's do some message mangling, but only to every second message
-                    if user['msg_n'] % 2 == 0:
+                    if user["msg_n"] % 2 == 0:
                         message = message[::-1]
                         message = message.upper()
 
             # emit the message to all other users
             # (the user who sent will see the original; has already seen it)
             for user in self.players_per_room[room_id]:
-                if user['id'] != user_id:
+                if user["id"] != user_id:
                     self.sio.emit(
                         "text",
                         {
                             "room": data["room"],
-                            "receiver_id": user['id'],
+                            "receiver_id": user["id"],
                             "message": message,
                             "impersonate": user_id,
                         },
-                        callback=self.message_callback
+                        callback=self.message_callback,
                     )
 
 
@@ -129,9 +131,7 @@ if __name__ == "__main__":
     task_id = {"default": os.environ.get("TASK_ID")}
 
     # register commandline arguments
-    parser.add_argument(
-        "-t", "--token", help="token for logging in as bot", **token
-    )
+    parser.add_argument("-t", "--token", help="token for logging in as bot", **token)
     parser.add_argument("-u", "--user", help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
