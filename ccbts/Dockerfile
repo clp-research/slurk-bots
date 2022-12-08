@@ -6,8 +6,7 @@ WORKDIR /usr/src
 COPY templates.py /usr/src/
 COPY ccbts /usr/src/ccbts
 
-COPY ccbts/90_cocobots_blockworld/ver3.1 /usr/src
-COPY ccbts/90_cocobots_blockworld/sample_images_to_showin_slurk /usr/src/ccbts/data/images
+COPY ccbts/90_cocobots_blockworld/ver4 /usr/src
 
 RUN pip install --no-cache-dir -r ccbts/requirements.txt
 

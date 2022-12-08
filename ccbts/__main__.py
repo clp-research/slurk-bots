@@ -163,6 +163,7 @@ class CcbtsBot(TaskBot):
                             "message_command",
                             {
                                 "command": {
+                                    "event": "assign_role",
                                     "role": role,
                                     "instruction": INSTRUCTIONS[role],
                                 },
@@ -223,10 +224,37 @@ class CcbtsBot(TaskBot):
 
             if room_id in self.images_per_room:
                 if isinstance(data["command"], dict):
-                    # front end commands
-                    if data["command"]["event"] == "clear_board":
-                        interface = self.robot_interfaces[room_id]
-                        interface.clear_board(data["command"]["board"])
+                    event = data["command"]["event"]
+                    interface = self.robot_interfaces[room_id]
+                    # front end commands (wizard only)
+                    right_user = self.check_role(user_id, "wizard", room_id)
+                    if right_user is True:
+                        # clear board
+                        if event == "clear_board":
+                            interface.clear_board()
+                            self.set_boards(room_id, wizard_only=True)
+
+                        # run command
+                        elif event == "run":
+                            command_string  = data["command"]["command_string"]
+                            result = self.run_command(command_string, room_id)
+                            if all(result):
+                                self.sio.emit(
+                                    "message_command",
+                                    {
+                                        "command": {
+                                            "event": "end_session"
+                                        },
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                    },
+                                )
+
+                        # revert session
+                        elif event == "revert_session":
+                            history = data["command"]["command_list"]
+                            status = interface.revert_session(history)
+                            self.set_boards(room_id, wizard_only=True)
 
                 else:
                     # user command
@@ -239,68 +267,14 @@ class CcbtsBot(TaskBot):
                         self.reset_roles(room_id)
 
                     elif data["command"] == "game_over":
-                        curr_usr, other_usr = self.players_per_room[room_id]
-                        if curr_usr["id"] != user_id:
-                            curr_usr, other_usr = other_usr, curr_usr
-                        
-                        if curr_usr["role"] == "player":
+                        right_user = self.check_role(user_id, "player", room_id)
+                        if right_user is True:
                             self.close_game(room_id)
-                        else:
-                            self.sio.emit(
-                            "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message="You're not allowed to do that",
-                                        color=WARNING_COLOR
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": user_id,
-                                    "html": True
-                                },
-                            )
 
                     elif data["command"] == "show_me":
-                        self.set_boards(room_id)
-
-                    elif (data["command"].startswith("pick") or data["command"].startswith("place")):
-                        curr_usr, other_usr = self.players_per_room[room_id]
-                        if curr_usr["id"] != user_id:
-                            curr_usr, other_usr = other_usr, curr_usr
-                        
-                        if curr_usr["role"] == "wizard":
-                            interface = self.robot_interfaces[room_id]
-                            try:
-                                # execute command
-                                interface.play(data["command"])
-
-                            except (KeyError, TypeError, OverflowError) as error:
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            color=WARNING_COLOR, message=str(error)
-                                        ),
-                                        "room": room_id,
-                                        "html": True
-                                    },
-                                )
-                            # update board for wizard
-                            self.set_boards(room_id, wizard_only=True)
-
-                        else:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message="You're not allowed to do that",
-                                        color=WARNING_COLOR
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": user_id,
-                                    "html": True
-                                },
-                            )
-
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is True:
+                            self.set_boards(room_id)
 
                     else:
                         self.sio.emit(
@@ -315,6 +289,57 @@ class CcbtsBot(TaskBot):
                                 "html": True
                             },
                         )
+
+    def check_role(self, user_id, wanted_role, room_id):
+        curr_usr, other_usr = self.players_per_room[room_id]
+        if curr_usr["id"] != user_id:
+            curr_usr, other_usr = other_usr, curr_usr
+
+        if curr_usr["role"] == wanted_role:
+            return True
+
+        else:
+            # inform user
+            self.sio.emit(
+            "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        message="You're not allowed to do that",
+                        color=WARNING_COLOR
+                    ),
+                    "room": room_id,
+                    "receiver_id": user_id,
+                    "html": True
+                },
+            )
+
+            return False
+
+    def run_command(self, command, room_id):
+        """
+        pass a command list to the backend
+        """
+        interface = self.robot_interfaces[room_id]
+        try:
+            # execute command
+            result = interface.play(command)
+
+        except (KeyError, TypeError, OverflowError) as error:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=WARNING_COLOR, message=str(error)
+                    ),
+                    "room": room_id,
+                    "html": True
+                },
+            )
+            result = list()
+        
+        # update board for wizard and send feedback
+        self.set_boards(room_id, wizard_only=True)
+        return result
 
     def set_wizard_role(self, room_id, user_id):
         curr_usr, other_usr = self.players_per_room[room_id]
@@ -331,6 +356,7 @@ class CcbtsBot(TaskBot):
                     "message_command",
                     {
                         "command": {
+                            "event": "assign_role",
                             "role": role,
                             "instruction": INSTRUCTIONS[role],
                         },
@@ -375,7 +401,7 @@ class CcbtsBot(TaskBot):
                 "message_command",
                 {
                     "command": {
-                        "role": "reset",
+                        "event": "reset_roles",
                         "instruction": "",
                     },
                     "room": room_id,
@@ -410,6 +436,7 @@ class CcbtsBot(TaskBot):
         for name, board in zip(["source", "target"], [source_board, target_board]):
             command_dict = {
                 "command": {
+                    "event": "set_board",
                     "board": board,
                     "name": name,
                 },
@@ -431,6 +458,7 @@ class CcbtsBot(TaskBot):
                 "message_command",
                 {
                     "command": {
+                        "event": "set_board",
                         "board": reference_board,
                         "name": "reference",
                     },

@@ -130,24 +130,6 @@ function reset_role(description) {
 
 
 $(document).ready(() => {
-    // $("#player_button").on('click', function () {
-    //     socket.emit("message_command",
-    //         {
-    //             "command": "set_role_player",
-    //             "room": self_room
-    //         }
-    //     )
-    // });
-
-    // $("#wizard_button").on('click', function () {
-    //     socket.emit("message_command",
-    //         {
-    //             "command": "set_role_wizard",
-    //             "room": self_room
-    //         }
-    //     )
-    // });
-
     $('#clear_button').click(function(){
         socket.emit("message_command",
             {
@@ -161,36 +143,66 @@ $(document).ready(() => {
     });
 
     $('#run_button').click(function(){
-        command_list = $("#input").val().trim().split("\n")
-        
-        
-        command_list.forEach(element => {
-            $('#history').append(`<b><code>${element}<br/></code></b>`);
-            $("#history").scrollTop($("#history")[0].scrollHeight);
-        });
+        commands = $("#input").val().trim()
+        socket.emit("message_command",
+            {
+                "command": {
+                    "event": "run",
+                    "command_string": commands
+                },
+                "room": self_room
+            }
+        )
+    });
 
-
+    $('#revert_button').click(function(){
+        commands = $("#history").children().text()
+        console.log(commands)
+        socket.emit("message_command",
+            {
+                "command": {
+                    "event": "revert_session",
+                    "command_list": commands
+                },
+                "room": self_room
+            }
+        )
+        $("#input").val(commands.split(";").join(";\n"))
+        $("#history").text("")
     });
     
 
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             // assign role
-            if ("role" in data.command) {
+            this_event = data.command.event
+            if (this_event === "assign_role"){
                 if (data.command.role === "wizard") {
                     set_wizard(data.command.instruction)
-                } else if (data.command.role === "player") {
+                } else if (data.command.role === "player"){
                     set_player(data.command.instruction)
-                } else if (data.command.role === "reset") {
-                    reset_role(data.command.instruction)
                 }
 
-                // board update
-            } else if ("board" in data.command) {
-                if (data.command.name === "reference") {
+            // reset roles
+            } else if (this_event === "reset_roles") {
+                reset_role(data.command.instruction)
+
+            // board update
+            } else if (this_event === "set_board") {
+                if (data.command.name === "reference"){
                     $("#reference-grid").show();
                 }
                 display_grid(data.command.board, data.command.name)
+
+            // commands were successfull, clear session
+            } else if (this_event === "end_session"){
+                $("#history").text("")
+                commands = $("#input").val().trim().split("\n")
+                commands.forEach(element => {
+                    $('#history').append(`<b><code>${element}<br/></code></b>`);
+                    $("#history").scrollTop($("#history")[0].scrollHeight);
+                });
+                $("#input").val("")
             }
         }
     });
