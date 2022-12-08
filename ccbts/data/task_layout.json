@@ -73,13 +73,13 @@
                     "layout-content" :[
                         {
                             "layout-type": "div",
-                            "style": "width: 100%;",
-                            "id": "target-grid"
+                            "style": "width: 100%; display: none",
+                            "id": "reference-grid"
                         },
                         {
                             "layout-type": "div",
-                            "style": "width: 100%; display: none",
-                            "id": "reference-grid"
+                            "style": "width: 100%;",
+                            "id": "target-grid"
                         },
                         {
                             "layout-type": "div",

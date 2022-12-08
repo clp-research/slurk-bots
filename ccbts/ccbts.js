@@ -171,7 +171,6 @@ $(document).ready(() => {
         $("#history").text("")
     });
     
-
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             // assign role

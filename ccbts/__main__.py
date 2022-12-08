@@ -449,11 +449,16 @@ class CcbtsBot(TaskBot):
             # set source board
             self.sio.emit("message_command", command_dict)
 
-
         # set reference board (only player)
         if wizard_only is False:
             # TODO wizard interface should return numpy array
-            reference_board = interface.get_reference_boards()["references"]["game_id_1"]
+            if not hasattr(interface, "ref_board"):
+                reference_json = interface.get_reference_boards()
+                reference_board = random.choice(list(reference_json["references"].values()))
+                interface.ref_board = reference_board
+
+            reference_board = interface.ref_board
+
             self.sio.emit(
                 "message_command",
                 {
