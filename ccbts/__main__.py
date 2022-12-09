@@ -232,29 +232,40 @@ class CcbtsBot(TaskBot):
                         # clear board
                         if event == "clear_board":
                             interface.clear_board()
-                            self.set_boards(room_id, wizard_only=True)
+                            self.set_boards(room_id)
 
                         # run command
                         elif event == "run":
-                            command_string  = data["command"]["command_string"]
-                            result = self.run_command(command_string, room_id)
-                            if all(result):
-                                self.sio.emit(
-                                    "message_command",
-                                    {
-                                        "command": {
-                                            "event": "end_session"
-                                        },
-                                        "room": room_id,
-                                        "receiver_id": user_id,
-                                    },
-                                )
+                            commands = data["command"]["commands"]
+                            to_run = commands.copy()
+                            executed = list()
+
+                            for command in commands:
+                                result = self.run_command(command, room_id, user_id)
+                                if result[0] is True:
+                                    executed.append(to_run.pop(0))
+
+                                    self.sio.emit(
+                                        "message_command",
+                                        {
+                                            "command": {
+                                                "event": "success_run",
+                                                "executed": executed,
+                                                "to_run": to_run 
+                                            },
+                                            "room": room_id,
+                                            "receiver_id": user_id,
+                                        }
+                                    )
+                                else:
+                                    return
+
 
                         # revert session
                         elif event == "revert_session":
                             history = data["command"]["command_list"]
                             status = interface.revert_session(history)
-                            self.set_boards(room_id, wizard_only=True)
+                            self.set_boards(room_id)
 
                 else:
                     # user command
@@ -315,13 +326,12 @@ class CcbtsBot(TaskBot):
 
             return False
 
-    def run_command(self, command, room_id):
+    def run_command(self, command, room_id, user_id):
         """
         pass a command list to the backend
         """
         interface = self.robot_interfaces[room_id]
         try:
-            # execute command
             result = interface.play(command)
 
         except (KeyError, TypeError, OverflowError) as error:
@@ -332,13 +342,14 @@ class CcbtsBot(TaskBot):
                         color=WARNING_COLOR, message=str(error)
                     ),
                     "room": room_id,
+                    "receiver_id": user_id,
                     "html": True
                 },
             )
-            result = list()
+            result = [False]
         
         # update board for wizard and send feedback
-        self.set_boards(room_id, wizard_only=True)
+        self.set_boards(room_id)
         return result
 
     def set_wizard_role(self, room_id, user_id):

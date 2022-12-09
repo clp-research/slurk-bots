@@ -143,12 +143,12 @@ $(document).ready(() => {
     });
 
     $('#run_button').click(function(){
-        commands = $("#input").val().trim()
+        commands = $("#input").val().trim().split("\n")
         socket.emit("message_command",
             {
                 "command": {
                     "event": "run",
-                    "command_string": commands
+                    "commands": commands
                 },
                 "room": self_room
             }
@@ -156,7 +156,7 @@ $(document).ready(() => {
     });
 
     $('#revert_button').click(function(){
-        commands = $("#history").children().text()
+        commands = $("#history")[0].innerText.trim().split("\n")
         console.log(commands)
         socket.emit("message_command",
             {
@@ -167,10 +167,15 @@ $(document).ready(() => {
                 "room": self_room
             }
         )
-        $("#input").val(commands.split(";").join(";\n"))
+        input = $("#input").val().trim().split("\n")
+        input.forEach(element => {
+            commands.push(element)
+        })
+        
+        $("#input").val(commands.join("\n"))
         $("#history").text("")
     });
-    
+
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             // assign role
@@ -194,14 +199,16 @@ $(document).ready(() => {
                 display_grid(data.command.board, data.command.name)
 
             // commands were successfull, clear session
-            } else if (this_event === "end_session"){
+            } else if (this_event === "success_run"){
                 $("#history").text("")
-                commands = $("#input").val().trim().split("\n")
-                commands.forEach(element => {
+                $("#input").val("")
+                executed = data.command.executed
+                to_run = data.command.to_run
+                executed.forEach(element => {
                     $('#history').append(`<b><code>${element}<br/></code></b>`);
                     $("#history").scrollTop($("#history")[0].scrollHeight);
                 });
-                $("#input").val("")
+                $("#input").val(to_run.join("\n"))
             }
         }
     });
