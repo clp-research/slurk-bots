@@ -5,7 +5,6 @@ from threading import Timer
 from time import sleep
 
 import requests
-import numpy as np
 
 from templates import TaskBot
 from wizardinterface import WizardInterface
@@ -260,7 +259,6 @@ class CcbtsBot(TaskBot):
                                 else:
                                     return
 
-
                         # revert session
                         elif event == "revert_session":
                             history = data["command"]["command_list"]
@@ -279,7 +277,6 @@ class CcbtsBot(TaskBot):
                                         "html": True
                                     },
                                 )
-                            
                             self.set_boards(room_id)
 
                 else:
@@ -296,11 +293,6 @@ class CcbtsBot(TaskBot):
                         right_user = self.check_role(user_id, "player", room_id)
                         if right_user is True:
                             self.close_game(room_id)
-
-                    elif data["command"] == "show_me":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is True:
-                            self.set_boards(room_id)
 
                     else:
                         self.sio.emit(
