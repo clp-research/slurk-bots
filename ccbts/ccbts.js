@@ -2,6 +2,7 @@ function display_grid(grid, grid_name) {
     // clear grid div
     $(`#${grid_name}-grid`).empty();
 
+    // adjist colours
     color_mapping = {
         "red": "#f44336",
         "blue": "#0080ff",
@@ -9,6 +10,7 @@ function display_grid(grid, grid_name) {
         "white": "white"
     }
 
+    // add text box when hoovering
     legend = {
         "○": "screw",
         "◊": "washer",
@@ -130,6 +132,7 @@ function reset_role(description) {
 
 
 $(document).ready(() => {
+    // send clear command and clear history box
     $('#clear_button').click(function(){
         socket.emit("message_command",
             {
@@ -140,9 +143,11 @@ $(document).ready(() => {
                 "room": self_room
             }
         )
+        $("#history").text("")
     });
 
     $('#run_button').click(function(){
+        // read input box and run commands one by one
         commands = $("#input").val().trim().split("\n")
         socket.emit("message_command",
             {
@@ -156,24 +161,34 @@ $(document).ready(() => {
     });
 
     $('#revert_button').click(function(){
+        // make sure the history in not empty
         commands = $("#history")[0].innerText.trim().split("\n")
-        console.log(commands)
-        socket.emit("message_command",
-            {
-                "command": {
-                    "event": "revert_session",
-                    "command_list": commands
-                },
-                "room": self_room
-            }
+        empty_array = [""]
+        is_empty = (
+            commands.length === empty_array.length &&
+            commands.every((item, idx) => item === empty_array[idx])
         )
-        input = $("#input").val().trim().split("\n")
-        input.forEach(element => {
-            commands.push(element)
-        })
-        
-        $("#input").val(commands.join("\n"))
-        $("#history").text("")
+
+        if (is_empty === false){
+            socket.emit("message_command",
+                {
+                    "command": {
+                        "event": "revert_session",
+                        "command_list": commands
+                    },
+                    "room": self_room
+                }
+            )
+
+            // move every command from history to the input field
+            input = $("#input").val().trim().split("\n")
+            input.forEach(element => {
+                commands.push(element)
+            })
+            
+            $("#input").val(commands.join("\n"))
+            $("#history").text("")
+        }
     });
 
     socket.on("command", (data) => {

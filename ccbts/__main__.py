@@ -264,7 +264,22 @@ class CcbtsBot(TaskBot):
                         # revert session
                         elif event == "revert_session":
                             history = data["command"]["command_list"]
-                            status = interface.revert_session(history)
+                            try:
+                                status = interface.revert_session(history)
+
+                            except (KeyError, TypeError, OverflowError) as error:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            color=WARNING_COLOR, message=str(error)
+                                        ),
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                        "html": True
+                                    },
+                                )
+                            
                             self.set_boards(room_id)
 
                 else:
