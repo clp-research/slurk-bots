@@ -3,12 +3,14 @@ import logging
 import os
 import random
 from time import sleep
+from threading import Timer
 import json
 import requests
 
 from templates import TaskBot
 from .config import *
 from .golmi_client import *
+from .dataloader import Dataloader
 
 
 class RoomTimer:
@@ -29,7 +31,6 @@ class RoomTimer:
 
     def cancel(self):
         self.timer.cancel()
-
 
 
 def set_text_message(value):
@@ -413,10 +414,34 @@ if __name__ == "__main__":
         help="room where users await their partner",
         **waiting_room,
     )
+    if "GOLMI_SERVER" in os.environ:
+       golmi_server = {"default": os.environ["GOLMI_SERVER"]}
+    else:
+        golmi_server = {"required": True}
+
+    if "GOLMI_PASSWORD" in os.environ:
+       golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
+    else:
+        golmi_password = {"required": True}
+
+    parser.add_argument(
+        "--golmi-server",
+        type=str,
+        help="ip address to the golmi server",
+        **golmi_server,
+    )
+    parser.add_argument(
+        "--golmi-password",
+        type=str,
+        help="password to connect to the golmi server",
+        **golmi_password,
+    )
     args = parser.parse_args()
 
     # create bot instance
     bot = GolmiBot(args.token, args.user, args.task, args.host, args.port)
     bot.waiting_room = args.waiting_room
+    bot.golmi_server = args.golmi_server
+    bot.golmi_password = args.golmi_password
     # connect to chat server
     bot.run()
