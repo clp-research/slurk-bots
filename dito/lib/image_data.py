@@ -25,6 +25,7 @@ class ImageData(dict):
         seed (int): Use together with shuffle to
             make the image presentation process reproducible.
     """
+
     def __init__(self, path=None, n=1, shuffle=False, seed=None):
         self._path = path
         self._n = n
@@ -81,7 +82,7 @@ class ImageData(dict):
 
     def _image_gen(self):
         """Generate one image pair at a time."""
-        with open(self._path, 'r', newline='') as csv_file:
+        with open(self._path, "r", newline="") as csv_file:
             csv_reader = csv.reader(csv_file)
             for pair in csv_reader:
                 yield pair

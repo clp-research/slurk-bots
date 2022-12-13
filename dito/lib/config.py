@@ -37,8 +37,10 @@ TIME_CLOSE = 0.25
 
 TASK_TITLE = "Identify the difference."
 
-with open(os.path.join(ROOT, "data", "task_description.txt"), 'r', encoding="utf-8") as f:
+with open(
+    os.path.join(ROOT, "data", "task_description.txt"), "r", encoding="utf-8"
+) as f:
     TASK_DESCR = f.read()
 
-with open(os.path.join(ROOT, "data", "task_greeting.txt"), 'r', encoding="utf-8") as f:
+with open(os.path.join(ROOT, "data", "task_greeting.txt"), "r", encoding="utf-8") as f:
     TASK_GREETING = f.read().split("\n\n\n")

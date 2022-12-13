@@ -39,6 +39,7 @@ class RoomTimers:
         did not answer for a prolonged time.
     :type last_answer_timer: Timer
     """
+
     def __init__(self):
         self.ready_timer = None
         self.game_timer = None
@@ -134,8 +135,8 @@ class DiToBot:
             LOG.debug(f"This bot is looking for task id: {self.task_id}")
 
             if task_id is not None and task_id == self.task_id:
-                for usr in data['users']:
-                    self.received_waiting_token.discard(usr['id'])
+                for usr in data["users"]:
+                    self.received_waiting_token.discard(usr["id"])
 
                 # create image items for this room
                 LOG.debug("Create data for the new task room...")
@@ -151,23 +152,28 @@ class DiToBot:
                 # register ready timer for this room
                 self.timers_per_room[room_id] = RoomTimers()
                 self.timers_per_room[room_id].ready_timer = Timer(
-                    TIME_READY*60,
-                    self.sio.emit, args=[
+                    TIME_READY * 60,
+                    self.sio.emit,
+                    args=[
                         "text",
-                        {"message": "Are you ready? "
-                                    "Please type **/ready** to begin the game.",
-                         "room": room_id,
-                         "html": True}
-                    ]
+                        {
+                            "message": "Are you ready? "
+                            "Please type **/ready** to begin the game.",
+                            "room": room_id,
+                            "html": True,
+                        },
+                    ],
                 )
                 self.timers_per_room[room_id].ready_timer.start()
 
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
-                    LOG.error(f"Could not let dito bot join room: {response.status_code}")
+                    LOG.error(
+                        f"Could not let dito bot join room: {response.status_code}"
+                    )
                     response.raise_for_status()
                 LOG.debug("Sending dito bot to new room was successful.")
 
@@ -180,20 +186,19 @@ class DiToBot:
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
-                        "text",
-                        {"message": line,
-                         "room": room_id,
-                         "html": True}
+                        "text", {"message": line, "room": room_id, "html": True}
                     )
-                    sleep(.5)
+                    sleep(0.5)
                 # ask players to send \ready
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
                     json={"text": line},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
-                    LOG.error(f"Could not set task instruction title: {response.status_code}")
+                    LOG.error(
+                        f"Could not set task instruction title: {response.status_code}"
+                    )
                     response.raise_for_status()
 
         @self.sio.event
@@ -202,7 +207,7 @@ class DiToBot:
             # check whether the user is eligible to join this task
             task = requests.get(
                 f"{self.uri}/users/{data['user']['id']}/task",
-                headers={"Authorization": f"Bearer {self.token}"}
+                headers={"Authorization": f"Bearer {self.token}"},
             )
             if not task.ok:
                 LOG.error(f"Could not set task instruction title: {task.status_code}")
@@ -219,12 +224,9 @@ class DiToBot:
                 if data["type"] == "join":
                     LOG.debug("Waiting Timer restarted.")
                     self.waiting_timer = Timer(
-                        TIME_WAITING*60,
+                        TIME_WAITING * 60,
                         self._no_partner,
-                        args=[
-                            room_id,
-                            data["user"]["id"]
-                        ]
+                        args=[room_id, data["user"]["id"]],
                     )
                     self.waiting_timer.start()
             # some joined a task room
@@ -237,18 +239,22 @@ class DiToBot:
                     # inform game partner about the rejoin event
                     self.sio.emit(
                         "text",
-                        {"message": f"{curr_usr['name']} has joined the game. ",
-                         "room": room_id,
-                         "receiver_id": other_usr["id"]}
+                        {
+                            "message": f"{curr_usr['name']} has joined the game. ",
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                        },
                     )
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
                     self.sio.emit(
                         "text",
-                        {"message": f"{curr_usr['name']} has left the game. "
-                                    "Please wait a bit, your partner may rejoin.",
-                         "room": room_id,
-                         "receiver_id": other_usr["id"]}
+                        {
+                            "message": f"{curr_usr['name']} has left the game. "
+                            "Please wait a bit, your partner may rejoin.",
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                        },
                     )
 
         @self.sio.event
@@ -279,9 +285,7 @@ class DiToBot:
                 if self.last_message_from[room_id] is not None:
                     self.timers_per_room[room_id].last_answer_timer.cancel()
                 self.timers_per_room[room_id].last_answer_timer = Timer(
-                    TIME_ANSWER*60,
-                    self._noreply,
-                    args=[room_id, user_id]
+                    TIME_ANSWER * 60, self._noreply, args=[room_id, user_id]
                 )
                 self.timers_per_room[room_id].last_answer_timer.start()
                 # save the person that last left a message
@@ -290,7 +294,9 @@ class DiToBot:
         @self.sio.event
         def command(data):
             """Parse user commands."""
-            LOG.debug(f"Received a command from {data['user']['name']}: {data['command']}")
+            LOG.debug(
+                f"Received a command from {data['user']['name']}: {data['command']}"
+            )
 
             room_id = data["room"]
             user_id = data["user"]["id"]
@@ -298,11 +304,13 @@ class DiToBot:
             if room_id in self.images_per_room:
                 if data["command"] == "difference":
                     self.sio.emit(
-                         "text",
-                         {"message": "You need to provide a difference description!",
-                          "room": room_id,
-                          "receiver_id": user_id}
-                    )  
+                        "text",
+                        {
+                            "message": "You need to provide a difference description!",
+                            "room": room_id,
+                            "receiver_id": user_id,
+                        },
+                    )
                 elif data["command"].startswith("difference"):
                     self._command_difference(room_id, user_id)
                 elif data["command"].startswith("ready"):
@@ -310,16 +318,20 @@ class DiToBot:
                 elif data["command"] in {"noreply", "no reply"}:
                     self.sio.emit(
                         "text",
-                        {"message": "Please wait some more for an answer.",
-                         "room": room_id,
-                         "receiver_id": user_id}
+                        {
+                            "message": "Please wait some more for an answer.",
+                            "room": room_id,
+                            "receiver_id": user_id,
+                        },
                     )
                 else:
                     self.sio.emit(
                         "text",
-                        {"message": "Sorry, but I do not understand this command.",
-                         "room": room_id,
-                         "receiver_id": user_id}
+                        {
+                            "message": "Sorry, but I do not understand this command.",
+                            "room": room_id,
+                            "receiver_id": user_id,
+                        },
                     )
 
     def _command_ready(self, room_id, user_id):
@@ -331,12 +343,14 @@ class DiToBot:
 
         # only one user has sent /ready repetitively
         if curr_usr["status"] in {"ready", "done"}:
-            sleep(.5)
+            sleep(0.5)
             self.sio.emit(
                 "text",
-                {"message": "You have already typed /ready.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
+                {
+                    "message": "You have already typed /ready.",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                },
             )
             return
         curr_usr["status"] = "ready"
@@ -344,24 +358,28 @@ class DiToBot:
         self.timers_per_room[room_id].ready_timer.cancel()
         # a first ready command was sent
         if other_usr["status"] == "joined":
-            sleep(.5)
+            sleep(0.5)
             # give the user feedback that his command arrived
             self.sio.emit(
                 "text",
-                {"message": "Now, waiting for your partner to type /ready.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
+                {
+                    "message": "Now, waiting for your partner to type /ready.",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                },
             )
             # give the other user time before reminding him
             self.timers_per_room[room_id].ready_timer = Timer(
-                (TIME_READY/2)*60,
+                (TIME_READY / 2) * 60,
                 self.sio.emit,
                 args=[
                     "text",
-                    {"message": "Your partner is ready. Please, type /ready!",
-                     "room": room_id,
-                     "receiver_id": other_usr["id"]}
-                ]
+                    {
+                        "message": "Your partner is ready. Please, type /ready!",
+                        "room": room_id,
+                        "receiver_id": other_usr["id"],
+                    },
+                ],
             )
             self.timers_per_room[room_id].ready_timer.start()
         # the other player was already ready
@@ -369,21 +387,22 @@ class DiToBot:
             # both users are ready and the game begins
             self.sio.emit(
                 "text",
-                {"message": "Woo-Hoo! The game will begin now.",
-                 "room": room_id}
+                {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
             )
             self.show_item(room_id)
             # kindly ask the users to come to an end after a certain time
             self.timers_per_room[room_id].game_timer = Timer(
-                TIME_GAME*60,
+                TIME_GAME * 60,
                 self.sio.emit,
                 args=[
                     "text",
-                    {"message": "You both seem to be having a discussion "
-                                "for a long time. Could you reach an "
-                                "agreement and provide an answer?",
-                     "room": room_id}
-                ]
+                    {
+                        "message": "You both seem to be having a discussion "
+                        "for a long time. Could you reach an "
+                        "agreement and provide an answer?",
+                        "room": room_id,
+                    },
+                ],
             )
             self.timers_per_room[room_id].game_timer.start()
 
@@ -398,27 +417,33 @@ class DiToBot:
         if "joined" in {curr_usr["status"], other_usr["status"]}:
             self.sio.emit(
                 "text",
-                {"message": "The game has not started yet.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
+                {
+                    "message": "The game has not started yet.",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                },
             )
         # we expect at least 3 messages of each player
         elif curr_usr["msg_n"] < 3 or other_usr["msg_n"] < 3:
             self.sio.emit(
                 "text",
-                {"message": "Are you sure? Please discuss some more!",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id}
+                {
+                    "message": "Are you sure? Please discuss some more!",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                },
             )
         # this user has already recently typed /difference
         elif curr_usr["status"] == "done":
-            sleep(.5)
+            sleep(0.5)
             self.sio.emit(
                 "text",
-                {"message": "You have already typed **/difference**.",
-                 "receiver_id": curr_usr["id"],
-                 "room": room_id,
-                 "html": True}
+                {
+                    "message": "You have already typed **/difference**.",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                    "html": True,
+                },
             )
         else:
             curr_usr["status"] = "done"
@@ -427,27 +452,29 @@ class DiToBot:
             if other_usr["status"] != "done":
                 # await for the other user to agree
                 self.timers_per_room[room_id].done_timer = Timer(
-                    TIME_DONE*60,
-                    self._not_done,
-                    args=[room_id, user_id]
+                    TIME_DONE * 60, self._not_done, args=[room_id, user_id]
                 )
                 self.timers_per_room[room_id].done_timer.start()
                 self.sio.emit(
                     "text",
-                    {"message": "Let's wait for your partner "
-                                "to also type **/difference**.",
-                     "receiver_id": curr_usr["id"],
-                     "room": room_id,
-                     "html": True}
+                    {
+                        "message": "Let's wait for your partner "
+                        "to also type **/difference**.",
+                        "receiver_id": curr_usr["id"],
+                        "room": room_id,
+                        "html": True,
+                    },
                 )
                 self.sio.emit(
                     "text",
-                    {"message": "Your partner thinks that you "
-                                "have found the difference. "
-                                "Type **/difference** and a **brief description** if you agree.",
-                     "receiver_id": other_usr["id"],
-                     "room": room_id,
-                     "html": True}
+                    {
+                        "message": "Your partner thinks that you "
+                        "have found the difference. "
+                        "Type **/difference** and a **brief description** if you agree.",
+                        "receiver_id": other_usr["id"],
+                        "room": room_id,
+                        "html": True,
+                    },
                 )
             # both users think they are done with the game
             else:
@@ -457,8 +484,10 @@ class DiToBot:
                 if not self.images_per_room[room_id]:
                     self.sio.emit(
                         "text",
-                        {"message": "The game is over! Thank you for participating!",
-                         "room": room_id}
+                        {
+                            "message": "The game is over! Thank you for participating!",
+                            "room": room_id,
+                        },
                     )
                     sleep(1)
                     self.confirmation_code(room_id, "success")
@@ -467,9 +496,11 @@ class DiToBot:
                 else:
                     self.sio.emit(
                         "text",
-                        {"message": "Ok, let's get both of you the next image. "
-                                    f"{len(self.images_per_room[room_id])} to go!",
-                         "room": room_id}
+                        {
+                            "message": "Ok, let's get both of you the next image. "
+                            f"{len(self.images_per_room[room_id])} to go!",
+                            "room": room_id,
+                        },
                     )
                     # reset attributes for the new round
                     for usr in self.players_per_room[room_id]:
@@ -477,15 +508,17 @@ class DiToBot:
                         usr["msg_n"] = 0
                     self.timers_per_room[room_id].game_timer.cancel()
                     self.timers_per_room[room_id].game_timer = Timer(
-                        TIME_GAME*60,
+                        TIME_GAME * 60,
                         self.sio.emit,
                         args=[
                             "text",
-                            {"message": "You both seem to be having a discussion "
-                                    "for a long time. Could you reach an "
-                                    "agreement and provide an answer?",
-                             "room": room_id}
-                        ]
+                            {
+                                "message": "You both seem to be having a discussion "
+                                "for a long time. Could you reach an "
+                                "agreement and provide an answer?",
+                                "room": room_id,
+                            },
+                        ],
                     )
                     self.timers_per_room[room_id].game_timer.start()
                     self.show_item(room_id)
@@ -497,10 +530,12 @@ class DiToBot:
                 usr["status"] = "ready"
         self.sio.emit(
             "text",
-            {"message": "Your partner seems to still want to discuss some more. "
-                        "Send /difference again once you two are really finished.",
-             "receiver_id": user_id,
-             "room": room_id}
+            {
+                "message": "Your partner seems to still want to discuss some more. "
+                "Send /difference again once you two are really finished.",
+                "receiver_id": user_id,
+                "room": room_id,
+            },
         )
 
     def show_item(self, room_id):
@@ -516,7 +551,7 @@ class DiToBot:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
                     json={"attribute": "src", "value": img, "receiver_id": usr["id"]},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
                     LOG.error(f"Could not set image: {response.status_code}")
@@ -526,16 +561,18 @@ class DiToBot:
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr_title",
                 json={"text": TASK_TITLE},
-                headers={"Authorization": f"Bearer {self.token}"}
+                headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:
-                LOG.error(f"Could not set task instruction title: {response.status_code}")
+                LOG.error(
+                    f"Could not set task instruction title: {response.status_code}"
+                )
                 response.raise_for_status()
 
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr",
                 json={"text": TASK_DESCR},
-                headers={"Authorization": f"Bearer {self.token}"}
+                headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:
                 LOG.error(f"Could not set task instruction: {response.status_code}")
@@ -546,37 +583,47 @@ class DiToBot:
         if user_id not in self.received_waiting_token:
             self.sio.emit(
                 "text",
-                {"message": "Unfortunately we could not find a partner for you!",
-                 "room": room_id, "receiver_id": user_id}
+                {
+                    "message": "Unfortunately we could not find a partner for you!",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
             )
             # create token and send it to user
             self.confirmation_code(room_id, "no_partner", receiver_id=user_id)
             sleep(5)
             self.sio.emit(
                 "text",
-                {"message": "You may also wait some more :)",
-                 "room": room_id, "receiver_id": user_id}
-             )
+                {
+                    "message": "You may also wait some more :)",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
             # no need to cancel
             # the running out of this timer triggered this event
             self.waiting_timer = Timer(
-                TIME_WAITING*60,
-                self._no_partner,
-                args=[room_id, user_id]
+                TIME_WAITING * 60, self._no_partner, args=[room_id, user_id]
             )
             self.waiting_timer.start()
             self.received_waiting_token.add(user_id)
         else:
             self.sio.emit(
                 "text",
-                {"message": "You won't be remunerated for further waiting time.",
-                 "room": room_id, "receiver_id": user_id}
+                {
+                    "message": "You won't be remunerated for further waiting time.",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
             )
             sleep(2)
             self.sio.emit(
                 "text",
-                {"message": "Please check back at another time of the day.",
-                 "room": room_id, "receiver_id": user_id}
+                {
+                    "message": "Please check back at another time of the day.",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
             )
 
     def _noreply(self, room_id, user_id):
@@ -587,15 +634,19 @@ class DiToBot:
 
         self.sio.emit(
             "text",
-            {"message": "The game ended because you were gone for too long!",
-             "room": room_id,
-             "receiver_id": other_usr["id"]}
+            {
+                "message": "The game ended because you were gone for too long!",
+                "room": room_id,
+                "receiver_id": other_usr["id"],
+            },
         )
         self.sio.emit(
             "text",
-            {"message": "Your partner seems to be away for a long time!",
-             "room": room_id,
-             "receiver_id": curr_usr["id"]}
+            {
+                "message": "Your partner seems to be away for a long time!",
+                "room": room_id,
+                "receiver_id": curr_usr["id"],
+            },
         )
         # create token and send it to user
         self.confirmation_code(room_id, "no_reply", receiver_id=curr_usr["id"])
@@ -608,34 +659,34 @@ class DiToBot:
         if receiver_id is not None:
             kwargs["receiver_id"] = receiver_id
 
-        amt_token = ''.join(random.choices(
-            string.ascii_uppercase + string.digits, k=6
-        ))
+        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
         # post AMT token to logs
         response = requests.post(
             f"{self.uri}/logs",
-            json={"event": "confirmation_log",
-                  "room_id": room_id,
-                  "data": {"status_txt": status, "amt_token": amt_token},
-                  **kwargs},
-            headers={"Authorization": f"Bearer {self.token}"}
+            json={
+                "event": "confirmation_log",
+                "room_id": room_id,
+                "data": {"status_txt": status, "amt_token": amt_token},
+                **kwargs,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
-            LOG.error(
-                f"Could not post AMT token to logs: {response.status_code}"
-            )
+            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
             response.raise_for_status()
 
         self.sio.emit(
             "text",
-            {"message": "Please enter the following token into the field on "
-                        "the HIT webpage, and close this browser window. ",
-             "room": room_id, **kwargs}
+            {
+                "message": "Please enter the following token into the field on "
+                "the HIT webpage, and close this browser window. ",
+                "room": room_id,
+                **kwargs,
+            },
         )
         self.sio.emit(
             "text",
-            {"message": f"Here is your token: {amt_token}",
-             "room": room_id, **kwargs}
+            {"message": f"Here is your token: {amt_token}", "room": room_id, **kwargs},
         )
         return amt_token
 
@@ -643,37 +694,40 @@ class DiToBot:
         """Erase any data structures no longer necessary."""
         self.sio.emit(
             "text",
-            {"message": "You will be moved out of this room "
-                        f"in {TIME_CLOSE*2*60}-{TIME_CLOSE*3*60}s.",
-             "room": room_id}
+            {
+                "message": "You will be moved out of this room "
+                f"in {TIME_CLOSE*2*60}-{TIME_CLOSE*3*60}s.",
+                "room": room_id,
+            },
         )
         sleep(2)
         self.sio.emit(
             "text",
-            {"message": "Make sure to save your token before that.",
-             "room": room_id}
+            {"message": "Make sure to save your token before that.", "room": room_id},
         )
         self.room_to_read_only(room_id)
 
         # disable all timers
-        for timer_id in {"ready_timer",
-                         "game_timer",
-                         "done_timer",
-                         "last_answer_timer"}:
+        for timer_id in {
+            "ready_timer",
+            "game_timer",
+            "done_timer",
+            "last_answer_timer",
+        }:
             timer = getattr(self.timers_per_room[room_id], timer_id)
             if timer is not None:
                 timer.cancel()
 
         # send users back to the waiting room
-        sleep(TIME_CLOSE*60)
+        sleep(TIME_CLOSE * 60)
         for usr in self.players_per_room[room_id]:
-            sleep(TIME_CLOSE*60)
+            sleep(TIME_CLOSE * 60)
 
             self.rename_users(usr["id"])
 
             response = requests.post(
                 f"{self.uri}/users/{usr['id']}/rooms/{self.waiting_room}",
-                headers={"Authorization": f"Bearer {self.token}"}
+                headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:
                 LOG.error(
@@ -684,8 +738,10 @@ class DiToBot:
 
             response = requests.delete(
                 f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={"If-Match": response.headers["ETag"],
-                         "Authorization": f"Bearer {self.token}"}
+                headers={
+                    "If-Match": response.headers["ETag"],
+                    "Authorization": f"Bearer {self.token}",
+                },
             )
             if not response.ok:
                 LOG.error(
@@ -705,7 +761,7 @@ class DiToBot:
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "readonly", "value": "True"},
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
             LOG.error(f"Could not set room to read_only: {response.status_code}")
@@ -713,7 +769,7 @@ class DiToBot:
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "placeholder", "value": "This room is read-only"},
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
             LOG.error(f"Could not set room to read_only: {response.status_code}")
@@ -722,30 +778,28 @@ class DiToBot:
     def rename_users(self, user_id):
         """Give all users in a room a new random name."""
         names_f = os.path.join(ROOT, "data", "names.txt")
-        with open(names_f, 'r', encoding="utf-8") as f:
+        with open(names_f, "r", encoding="utf-8") as f:
             names = [line.rstrip() for line in f]
 
             new_name = random.choice(names)
 
             response = requests.get(
                 f"{self.uri}/users/{user_id}",
-                headers={"Authorization": f"Bearer {self.token}"}
+                headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:
-                LOG.error(
-                    f"Could not get user: {response.status_code}"
-                )
+                LOG.error(f"Could not get user: {response.status_code}")
                 response.raise_for_status()
 
             response = requests.patch(
                 f"{self.uri}/users/{user_id}",
                 json={"name": new_name},
-                headers={"If-Match": response.headers["ETag"],
-                         "Authorization": f"Bearer {self.token}"}
+                headers={
+                    "If-Match": response.headers["ETag"],
+                    "Authorization": f"Bearer {self.token}",
+                },
             )
             if not response.ok:
-                LOG.error(
-                    f"Could not rename user: {response.status_code}"
-                )
+                LOG.error(f"Could not rename user: {response.status_code}")
                 response.raise_for_status()
             LOG.debug(f"Successfuly renamed user to '{new_name}'.")

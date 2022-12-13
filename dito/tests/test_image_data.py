@@ -19,12 +19,15 @@ from lib.image_data import ImageData
 
 def file_mock(func):
     """Create pseudo file object."""
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        content = '\n'.join(f"{i},{i}" for i in range(6))
-        with mock.patch('lib.image_data.open',
-                        mock.mock_open(read_data=content)) as f_mock:
+        content = "\n".join(f"{i},{i}" for i in range(6))
+        with mock.patch(
+            "lib.image_data.open", mock.mock_open(read_data=content)
+        ) as f_mock:
             func(*args, **kwargs)
+
     return wrapper
 
 
@@ -42,8 +45,8 @@ class TestImageData(unittest.TestCase):
         self.shuffled.get_image_pairs("shuffled_mock_room")
 
     def test_not_shuffled_correct_order(self):
-        expected_first_sample = [('0', '0'), ('1', '1'), ('2', '2')]
-        expected_second_sample = [('3', '3'), ('4', '4'), ('5', '5')]
+        expected_first_sample = [("0", "0"), ("1", "1"), ("2", "2")]
+        expected_second_sample = [("3", "3"), ("4", "4"), ("5", "5")]
         actual_first_sample = self.not_shuffled["mock_room"]
         actual_second_sample = self.not_shuffled["other_mock_room"]
 
@@ -52,7 +55,7 @@ class TestImageData(unittest.TestCase):
 
     def test_not_shuffled_sum_of_sample_sizes_exceeds_file_lines(self):
         # algorithm should start again from the beginning of the file
-        expected = [('0', '0'), ('1', '1'), ('2', '2')]
+        expected = [("0", "0"), ("1", "1"), ("2", "2")]
         actual = self.not_shuffled["another_mock_room"]
 
         self.assertEqual(actual, expected)
@@ -67,9 +70,11 @@ class TestImageData(unittest.TestCase):
     def test_shuffled_reproducible(self):
         self.other_shuffled = ImageData(path="", n=3, shuffle=True, seed=24)
         self.other_shuffled.get_image_pairs("other_shuffled_mock_room")
-        
-        self.assertEqual(self.shuffled["shuffled_mock_room"],
-                         self.other_shuffled["other_shuffled_mock_room"])
+
+        self.assertEqual(
+            self.shuffled["shuffled_mock_room"],
+            self.other_shuffled["other_shuffled_mock_room"],
+        )
 
     @file_mock
     def test_shuffled_uniform_distribution(self):
@@ -87,5 +92,5 @@ class TestImageData(unittest.TestCase):
         self.assertGreater(likelihood_under_H0, 0.50)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

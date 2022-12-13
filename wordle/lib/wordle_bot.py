@@ -31,6 +31,7 @@ class RoomTimers:
         and players get no points
 
     """
+
     def __init__(self):
         self.left_room = dict()
         self.round_timer = None
@@ -166,12 +167,7 @@ class WordleBot:
                 logging.info(room_id)
                 self.sio.emit(
                     "message_command",
-                    {
-                        "command": {
-                            "command": "wordle_init"
-                        },
-                        "room": room_id
-                    }
+                    {"command": {"command": "wordle_init"}, "room": room_id},
                 )
 
                 # create data structure for this room
@@ -183,11 +179,9 @@ class WordleBot:
                 # begin timers
                 self.timers_per_room[room_id] = RoomTimers()
                 self.timers_per_room[room_id].round_timer = Timer(
-                    TIME_ROUND*60,
-                    self.time_out_round, args=[room_id]
+                    TIME_ROUND * 60, self.time_out_round, args=[room_id]
                 )
                 self.timers_per_room[room_id].round_timer.start()
-
 
         @self.sio.event
         def joined_room(data):
@@ -284,7 +278,7 @@ class WordleBot:
                             },
                             "room": room_id,
                             "receiver_id": curr_usr["id"],
-                        }
+                        },
                     )
                     self.show_item(room_id)
 
@@ -292,21 +286,25 @@ class WordleBot:
                     # to catch up with the other user
                     for guess in self.guesses_history[room_id]:
                         self.sio.emit(
-                            "message_command", 
+                            "message_command",
                             {
                                 "command": {
                                     "command": "wordle_guess",
                                     "guess": guess,
-                                    "correct_word": word
+                                    "correct_word": word,
                                 },
                                 "room": room_id,
                                 "receiver_id": curr_usr["id"],
-                            }
+                            },
                         )
 
                     # cancel timer
-                    LOG.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
-                    timeout_timer = self.timers_per_room[room_id].left_room.get(curr_usr["id"])
+                    LOG.debug(
+                        f"Cancelling Timer: left room for user {curr_usr['name']}"
+                    )
+                    timeout_timer = self.timers_per_room[room_id].left_room.get(
+                        curr_usr["id"]
+                    )
                     if timeout_timer is not None:
                         timeout_timer.cancel()
 
@@ -327,8 +325,7 @@ class WordleBot:
 
                     LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
                     self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
-                        TIME_LEFT*60,
-                        self.close_game, args=[room_id]
+                        TIME_LEFT * 60, self.close_game, args=[room_id]
                     )
                     self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
 
@@ -413,7 +410,7 @@ class WordleBot:
 
         # get the wordle for this room and the guess from the user
         word, _ = self.images_per_room[room_id][0]
-        guess = command["guess"] 
+        guess = command["guess"]
         remaining_guesses = command["remaining"]
 
         # make sure it's a good guess
@@ -463,7 +460,7 @@ class WordleBot:
                         message=(
                             f"**You already entered the guess: {old_guess}, "
                             "let's wait for your partner to also enter a guess.**"
-                        )
+                        ),
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -529,15 +526,15 @@ class WordleBot:
             self.guesses_per_room[room_id] = dict()
             self.guesses_history[room_id].append(guess)
             self.sio.emit(
-                "message_command", 
+                "message_command",
                 {
                     "command": {
                         "command": "wordle_guess",
                         "guess": guess,
-                        "correct_word": word
+                        "correct_word": word,
                     },
-                    "room": room_id
-                }
+                    "room": room_id,
+                },
             )
 
             if (word == guess) or (remaining_guesses == 1):
@@ -561,7 +558,8 @@ class WordleBot:
                             color=STANDARD_COLOR,
                             message=(
                                 f"**YOU {result}! For this round you get {points} points. "
-                                f"Your total score is: {self.points_per_room[room_id]}**"),
+                                f"Your total score is: {self.points_per_room[room_id]}**"
+                            ),
                         ),
                         "room": room_id,
                         "html": True,
@@ -632,7 +630,7 @@ class WordleBot:
                 },
             )
 
-            #self.confirmation_code(room_id, "success")
+            # self.confirmation_code(room_id, "success")
             sleep(1)
             self.close_game(room_id)
         else:
@@ -653,12 +651,7 @@ class WordleBot:
 
             self.sio.emit(
                 "message_command",
-                {
-                    "command": {
-                        "command": "wordle_init"
-                    },
-                    "room": room_id
-                }
+                {"command": {"command": "wordle_init"}, "room": room_id},
             )
 
             # reset attributes for the new round
@@ -669,8 +662,7 @@ class WordleBot:
             self.show_item(room_id)
 
             self.timers_per_room[room_id].round_timer = Timer(
-                TIME_ROUND*60,
-                self.time_out_round, args=[room_id]
+                TIME_ROUND * 60, self.time_out_round, args=[room_id]
             )
             self.timers_per_room[room_id].round_timer.start()
 
@@ -684,8 +676,8 @@ class WordleBot:
             {
                 "message": COLOR_MESSAGE.format(
                     color=WARNING_COLOR,
-                    message="**Your time is up! Unfortunately you get no points for this round.**"
-                   ),
+                    message="**Your time is up! Unfortunately you get no points for this round.**",
+                ),
                 "room": room_id,
                 "html": True,
             },
@@ -791,12 +783,14 @@ class WordleBot:
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
-        for memory_dict in [self.images_per_room,
-                            self.last_message_from,
-                            self.guesses_per_room,
-                            self.guesses_history,
-                            self.points_per_room,
-                            self.timers_per_room,]:
+        for memory_dict in [
+            self.images_per_room,
+            self.last_message_from,
+            self.guesses_per_room,
+            self.guesses_history,
+            self.points_per_room,
+            self.timers_per_room,
+        ]:
             if room_id in memory_dict:
                 memory_dict.pop(room_id)
 

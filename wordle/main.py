@@ -34,15 +34,16 @@ if __name__ == "__main__":
     task_id = {"default": os.environ.get("WORDLE_TASK_ID")}
 
     # register commandline arguments
-    parser.add_argument(
-        "-t", "--token", help="token for logging in as bot", **token
-    )
+    parser.add_argument("-t", "--token", help="token for logging in as bot", **token)
     parser.add_argument("-u", "--user", help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )
     parser.add_argument(
-        "--waiting_room", type=int, help="room where users await their partner", **waiting_room
+        "--waiting_room",
+        type=int,
+        help="room where users await their partner",
+        **waiting_room
     )
     parser.add_argument("-p", "--port", type=int, help="port of chat server", **port)
     parser.add_argument("--task_id", type=int, help="task to join", **task_id)

@@ -67,27 +67,29 @@ class MathBot:
             if self.task_id is None or task_id == self.task_id:
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
-                    LOG.error(f"Could not let math bot join room: {response.status_code}")
+                    LOG.error(
+                        f"Could not let math bot join room: {response.status_code}"
+                    )
                     response.raise_for_status()
                 LOG.debug("Math bot joins new task room", data)
 
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr",
                     json={"text": TASK_DESCR},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
                     json={"text": TASK_TITLE},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
                     json={"attribute": "src", "value": IMG_LINK},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
 
         @self.sio.event
@@ -108,9 +110,10 @@ class MathBot:
                     "text",
                     {
                         "message": f"`{cmd}` is not a valid command.",
-                        "room": room_id, "receiver_id": user_id
+                        "room": room_id,
+                        "receiver_id": user_id,
                     },
-                    callback=self.message_callback
+                    callback=self.message_callback,
                 )
 
     def _set_question(self, room_id, user_id, cmd):
@@ -122,21 +125,24 @@ class MathBot:
                 "text",
                 {
                     "message": "Questions must be mathematical expressions.",
-                    "room": room_id, "receiver_id": user_id
+                    "room": room_id,
+                    "receiver_id": user_id,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
         else:
             self.room_to_q[room_id] = {
-                "question": question, "solution": solution, "sender": user_id
+                "question": question,
+                "solution": solution,
+                "sender": user_id,
             }
             self.sio.emit(
                 "text",
                 {
                     "message": f"A new question has been created:\n{question}",
-                    "room": room_id
+                    "room": room_id,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
 
     def _give_answer(self, room_id, user_id, cmd):
@@ -148,75 +154,77 @@ class MathBot:
                 "text",
                 {
                     "message": "Oops, no question found you could answer!",
-                    "room": room_id, "receiver_id": user_id
+                    "room": room_id,
+                    "receiver_id": user_id,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
         elif self.room_to_q[room_id]["sender"] == user_id:
             self.sio.emit(
                 "text",
                 {
                     "message": "Come on! Don't answer your own question.",
-                    "room": room_id, "receiver_id": user_id
+                    "room": room_id,
+                    "receiver_id": user_id,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
         elif prop_solution is None:
             self.sio.emit(
                 "text",
                 {
                     "message": "What? Sure that's a number?",
-                    "room": room_id, "receiver_id": user_id
+                    "room": room_id,
+                    "receiver_id": user_id,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
         else:
             self.sio.emit(
                 "text",
-                {
-                    "message": f"The proposed answer is: {answer}",
-                    "room": room_id
-                },
-                callback=self.message_callback
+                {"message": f"The proposed answer is: {answer}", "room": room_id},
+                callback=self.message_callback,
             )
             if prop_solution == self.room_to_q[room_id]["solution"]:
                 self.sio.emit(
                     "text",
-                    {
-                        "message": "Wow! That's indeed correct.",
-                        "room": room_id
-                    },
-                    callback=self.message_callback
+                    {"message": "Wow! That's indeed correct.", "room": room_id},
+                    callback=self.message_callback,
                 )
                 self.room_to_q.pop(room_id)
             else:
                 self.sio.emit(
                     "text",
-                    {
-                        "message": "Naahh. Try again!",
-                        "room": room_id
-                    },
-                    callback=self.message_callback
+                    {"message": "Naahh. Try again!", "room": room_id},
+                    callback=self.message_callback,
                 )
 
     @staticmethod
     def _eval(expr, answer=False):
         try:
-            tree = ast.parse(expr, mode='eval')
+            tree = ast.parse(expr, mode="eval")
         except SyntaxError:
             return
         # verify the expression
         for node in ast.walk(tree.body):
-            if not isinstance(node, (
-                ast.Num, ast.Sub, ast.Add, ast.Mult,
-                ast.BinOp, ast.USub, ast.UnaryOp,
-                ast.Div, ast.FloorDiv, ast.Pow
-            )):
+            if not isinstance(
+                node,
+                (
+                    ast.Num,
+                    ast.Sub,
+                    ast.Add,
+                    ast.Mult,
+                    ast.BinOp,
+                    ast.USub,
+                    ast.UnaryOp,
+                    ast.Div,
+                    ast.FloorDiv,
+                    ast.Pow,
+                ),
+            ):
                 return
             # an answer should not be a complex formula
-            if answer and not isinstance(node, (
-                ast.Num, ast.USub, ast.UnaryOp
-            )):
+            if answer and not isinstance(node, (ast.Num, ast.USub, ast.UnaryOp)):
                 return
         return eval(expr)
 
@@ -242,9 +250,7 @@ if __name__ == "__main__":
     task_id = {"default": os.environ.get("MATH_TASK_ID")}
 
     # register commandline arguments
-    parser.add_argument(
-        "-t", "--token", help="token for logging in as bot", **token
-    )
+    parser.add_argument("-t", "--token", help="token for logging in as bot", **token)
     parser.add_argument("-u", "--user", help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host

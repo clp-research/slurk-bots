@@ -97,7 +97,7 @@ class ConciergeBot:
         """
         task = requests.get(
             f'{self.uri}/users/{user["id"]}/task',
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         if not task.ok:
             LOG.error(f"Could not get task: {task.status_code}")
@@ -131,7 +131,7 @@ class ConciergeBot:
         room = requests.post(
             f"{self.uri}/rooms",
             headers={"Authorization": f"Bearer {self.token}"},
-            json=json
+            json=json,
         )
         if not room.ok:
             LOG.error(f"Could not create task room: {room.status_code}")
@@ -161,7 +161,7 @@ class ConciergeBot:
         """
         response = requests.post(
             f"{self.uri}/users/{user_id}/rooms/{room_id}",
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
             LOG.error(f"Could not let user join room: {response.status_code}")
@@ -181,8 +181,7 @@ class ConciergeBot:
         """
         response = requests.delete(
             f"{self.uri}/users/{user_id}/rooms/{room_id}",
-            headers={"Authorization": f"Bearer {self.token}",
-                     "If-Match": etag}
+            headers={"Authorization": f"Bearer {self.token}", "If-Match": etag},
         )
         if not response.ok:
             LOG.error(f"Could not remove user from room: {response.status_code}")
@@ -233,15 +232,14 @@ class ConciergeBot:
             self.sio.emit(
                 "text",
                 {
-                    "message":
-                        f"### Hello, {user_name}!\n\n"
-                        "I am looking for a partner for you, it might take "
-                        "some time, so be patient, please...",
+                    "message": f"### Hello, {user_name}!\n\n"
+                    "I am looking for a partner for you, it might take "
+                    "some time, so be patient, please...",
                     "receiver_id": user_id,
                     "room": room,
-                    "html": True
+                    "html": True,
                 },
-                callback=self.message_callback
+                callback=self.message_callback,
             )
 
     def user_task_leave(self, user, task):
