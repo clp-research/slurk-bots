@@ -17,6 +17,11 @@ function check_response {
 BOT_NAME="golmi"
 NUMBER_USERS=2
 
+GOLMI_HOST="127.0.0.1"
+GOLMI_PORT=5001
+GOLMI_SERVER="http://$GOLMI_HOST:$GOLMI_PORT"
+GOLMI_PASSWORD="GiveMeTheBigBluePasswordOnTheLeft"
+
 # run golmi
 cd ../golmi
 docker build --tag "golmi_server" -f dockerfile .
@@ -75,7 +80,7 @@ echo $THIS_BOT_TOKEN
 THIS_BOT=$(check_response scripts/create_user.sh "${BOT_NAME^}Bot" "$THIS_BOT_TOKEN" | jq .id)
 echo "$BOT_NAME Bot Id:"
 echo $THIS_BOT
-docker run -e ${BOT_NAME^^}_TOKEN=$THIS_BOT_TOKEN -e ${BOT_NAME^^}_USER=$THIS_BOT -e ${BOT_NAME^^}_TASK_ID=$TASK_ID -e SLURK_WAITING_ROOM=$WAITING_ROOM -e SLURK_PORT=5000 --net="host" slurk/$BOT_NAME-bot &
+docker run -e ${BOT_NAME^^}_TOKEN=$THIS_BOT_TOKEN -e ${BOT_NAME^^}_USER=$THIS_BOT -e ${BOT_NAME^^}_TASK_ID=$TASK_ID -e SLURK_WAITING_ROOM=$WAITING_ROOM -e SLURK_PORT=5000 -e GOLMI_SERVER=$GOLMI_SERVER -e GOLMI_PASSWORD=$GOLMI_PASSWORD --net="host" slurk/$BOT_NAME-bot &
 sleep 1
 
 # create users
