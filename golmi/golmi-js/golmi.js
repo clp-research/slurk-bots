@@ -2,7 +2,7 @@ let golmi_socket = null
 let layerView = null
 let controller = null
 
-function start_golmi(url, role) {
+function start_golmi(url, password, role) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
     console.log(`Connect to ${url}`)
 
@@ -59,7 +59,6 @@ function start_golmi(url, role) {
         console.log(`Joined room ${data.room_id} as client ${data.client_id}`);
     })
 
-
     // for debugging: log all events
     golmi_socket.onAny((eventName, ...args) => {
         console.log(eventName, args);
@@ -68,11 +67,16 @@ function start_golmi(url, role) {
 
 
 // --- stop and start drawing --- //
-function start(url, password, room_id) {
+function start(url, room_id, role, password) {
     console.log("received url")
-    start_golmi(url, password)
+    start_golmi(url, password, role)
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
+
+    // add warn user butto to wizard interface
+    if (role === "wizard"){
+        $("#wizard_interface").show();
+    }
 }
 
 
@@ -89,7 +93,8 @@ $(document).ready(function () {
                 start(
                     data.command.url,
                     data.command.room_id,
-                    data.command.role
+                    data.command.role,
+                    data.command.password
                 )
             }
         }

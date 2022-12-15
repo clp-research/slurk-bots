@@ -5,6 +5,7 @@
         {
             "layout-type": "div",
             "class": "card",
+            "id": "content_card",
             "layout-content": [
                 {
                     "layout-type": "div",
@@ -32,7 +33,21 @@
                     ]
                 }
             ]
-        }        
+        },
+        {
+            "layout-type": "div",
+            "class": "hidden_card",
+            "id": "wizard_interface",
+            "layout-content":[
+                {
+                    "layout-type": "button",
+                    "class": "button",
+                    "role": "button",
+                    "layout-content": "Send Warning",
+                    "id": "warn_button"
+                }
+            ]
+        }
     ],
     "css": {
         "#viewport": {
@@ -45,7 +60,7 @@
             "background-color": "transparent;",
             "border": "1px solid #000000;"
         },
-        ".card": {
+        ".card, .hidden_card": {
             "position": "relative",
             "display": "flex",
             "flex-direction": "column",
@@ -57,6 +72,27 @@
             "height": "100%",
             "margin": "0px 15px",
             "padding": "20px"
+        },
+        ".hidden_card": {
+            "display": "none"
+        },
+        ".button": {
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+            "margin-top": "10px",
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
+        },
+        ".button:hover" : {
+            "content": "''",
+            "background": "#818BAC"
         }
     },
     "scripts": {
