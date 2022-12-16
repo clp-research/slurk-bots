@@ -2,6 +2,7 @@ let golmi_socket = null
 let layerView = null
 let controller = null
 
+
 function start_golmi(url, password, role) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
     console.log(`Connect to ${url}`)
@@ -67,8 +68,7 @@ function start_golmi(url, password, role) {
 
 
 // --- stop and start drawing --- //
-function start(url, room_id, role, password) {
-    console.log("received url")
+function start(url, room_id, role, password){
     start_golmi(url, password, role)
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
@@ -80,13 +80,12 @@ function start(url, room_id, role, password) {
 }
 
 
-function stop() {
+function stop(){
     golmi_socket.disconnect();
 }
 
 
-$(document).ready(function () {
-    console.log("starting")
+$(document).ready(function (){
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             if (data.command.event === "init") {
