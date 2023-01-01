@@ -20,10 +20,10 @@ class RoomTimer:
         self.timer = Timer(self.time*60, self.function, args=[self.room_id])
         self.timer.start()
 
-    def snooze(self):
+    def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("snooze")
+        logging.debug("reset timer")
 
     def cancel(self):
         self.timer.cancel()
@@ -106,7 +106,7 @@ class EchoBot(TaskBot):
             else:
                 room_id = data["room"]
                 timer = self.timers_per_room.get(room_id)
-                timer.snooze()
+                timer.reset()
 
             logging.debug(f"I got a message, let's send it back!: {data}")
 
@@ -134,7 +134,7 @@ class EchoBot(TaskBot):
             else:
                 room_id = data["room"]
                 timer = self.timers_per_room.get(room_id)
-                timer.snooze()
+                timer.reset()
 
             logging.debug(f"I got an image, let's send it back!: {data}")
 

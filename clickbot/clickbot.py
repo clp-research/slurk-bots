@@ -26,10 +26,10 @@ class RoomTimer:
         self.timer = Timer(self.time*60, self.function, args=[self.room_id, self.game])
         self.timer.start()
 
-    def snooze(self):
+    def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("snooze")
+        logging.debug("reset timer")
 
     def cancel(self):
         self.timer.cancel()
@@ -137,9 +137,9 @@ class ClickBot:
             room_id = data["room"]
             game = self.game_per_room.get(room_id)
 
-            # snooze if the command does not coome from the bot
+            # reset if the command does not coome from the bot
             if self.user != data["user"]["id"]:
-                self.timers_per_room[room_id].snooze()
+                self.timers_per_room[room_id].reset()
 
             if game is None:
                 return

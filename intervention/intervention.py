@@ -22,10 +22,10 @@ class RoomTimer:
         self.timer = Timer(self.time*60, self.function, args=[self.room_id])
         self.timer.start()
 
-    def snooze(self):
+    def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("snooze")
+        logging.debug("reset timer")
 
     def cancel(self):
         self.timer.cancel()
@@ -115,7 +115,7 @@ class InterventionBot:
 
             if user_id != self.user:
                 timer = self.timers_per_room.get(room_id)
-                timer.snooze()
+                timer.reset()
 
             message = data["command"]
             for user in self.players_per_room[room_id]:

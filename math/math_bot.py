@@ -30,10 +30,10 @@ class RoomTimer:
         self.timer = Timer(self.time*60, self.function, args=[self.room_id])
         self.timer.start()
 
-    def snooze(self):
+    def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("snooze")
+        logging.debug("reset timer")
 
     def cancel(self):
         self.timer.cancel()
@@ -125,7 +125,7 @@ class MathBot:
                 return
 
             room_id = data["room"]
-            self.timers_per_room[room_id].snooze()
+            self.timers_per_room[room_id].reset()
 
         @self.sio.event
         def command(data):
@@ -135,9 +135,9 @@ class MathBot:
             user_id = data["user"]["id"]
             cmd = data["command"]
 
-            # snooze timer
+            # reset timer
             if self.user != data["user"]["id"]:
-                self.timers_per_room[room_id].snooze()
+                self.timers_per_room[room_id].reset()
 
             if cmd.startswith("question"):
                 self._set_question(room_id, user_id, cmd)
