@@ -9,17 +9,23 @@ import socketio
 
 LOG = logging.getLogger(__name__)
 TIMEOUT_TIMER = 60  # minutes
+LEAVE_TIMER = 5  # minutes
 
 
 class RoomTimer:
-    def __init__(self, time, function, room_id):
+    def __init__(self, function, room_id, game):
         self.function = function
-        self.time = time
         self.room_id = room_id
+        self.game = game
         self.start_timer()
+        self.left_room = dict()
 
     def start_timer(self):
-        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer = Timer(
+            TIMEOUT_TIMER*60,
+            self.function,
+            args=[self.room_id, self.game]
+        )
         self.timer.start()
 
     def reset(self):
@@ -29,6 +35,19 @@ class RoomTimer:
 
     def cancel(self):
         self.timer.cancel()
+
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER*60,
+            self.function,
+            args=[self.room_id, self.game]
+        )
+        self.left_room[user].start()
 
 
 class InterventionBot:
@@ -71,6 +90,24 @@ class InterventionBot:
 
     def register_callbacks(self):
         @self.sio.event
+        def status(data):
+            room_id = data["room"]
+            if room_id in self.players_per_room:
+                curr_usr, other_usr = self.players_per_room[room_id]
+                if curr_usr["id"] != data["user"]["id"]:
+                    curr_usr, other_usr = other_usr, curr_usr
+
+                if data["type"] == "join":
+                    # cancel timer
+                    LOG.debug(
+                        f"Cancelling Timer: left room for user {curr_usr['name']}"
+                    )
+                    self.timers_per_room[room_id].user_joined(curr_usr["id"])
+
+                elif data["type"] == "leave":
+                    self.timers_per_room[room_id].user_left(curr_usr["id"])
+
+        @self.sio.event
         def joined_room(data):
             self.user = data["user"]
 
@@ -98,7 +135,7 @@ class InterventionBot:
                     )
 
                 self.timers_per_room[room_id] = RoomTimer(
-                    TIMEOUT_TIMER, self.close_game, room_id
+                    self.close_game, room_id
                 )
 
         @self.sio.event
