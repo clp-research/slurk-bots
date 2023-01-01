@@ -15,7 +15,7 @@ LOG = logging.getLogger(__name__)
 
 
 class RoomTimer:
-    def __init__(self, time, function, room_id, game):
+    def __init__(self, function, room_id, game):
         self.function = function
         self.time = time
         self.room_id = room_id
@@ -23,7 +23,11 @@ class RoomTimer:
         self.start_timer()
 
     def start_timer(self):
-        self.timer = Timer(self.time*60, self.function, args=[self.room_id, self.game])
+        self.timer = Timer(
+            TIMEOUT_TIMER*60,
+            self.function,
+            args=[self.room_id, self.game]
+        )
         self.timer.start()
 
     def reset(self):
@@ -108,7 +112,7 @@ class ClickBot:
                 self.game_per_room[room_id] = Game(item_ids)
                 game = self.game_per_room.get(room_id)
                 self.timers_per_room[room_id] = RoomTimer(
-                    TIMEOUT_TIMER, self.close_game, room_id, game
+                    self.close_game, room_id, game
                 )
 
                 # greet user

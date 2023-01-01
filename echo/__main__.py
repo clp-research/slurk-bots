@@ -10,14 +10,17 @@ TIMEOUT_TIMER = 60  # minutes
 
 
 class RoomTimer:
-    def __init__(self, time, function, room_id):
+    def __init__(self, function, room_id):
         self.function = function
-        self.time = time
         self.room_id = room_id
         self.start_timer()
 
     def start_timer(self):
-        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer = Timer(
+            TIMEOUT_TIMER*60,
+            self.function,
+            args=[self.room_id]
+        )
         self.timer.start()
 
     def reset(self):
@@ -96,7 +99,7 @@ class EchoBot(TaskBot):
             room_id = data["room"]
             self.join_task_room()
             self.timers_per_room[room_id] = RoomTimer(
-                TIMEOUT_TIMER, self.close_room, room_id
+                self.close_room, room_id
             )
 
         @self.sio.event

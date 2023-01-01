@@ -21,10 +21,9 @@ LEAVE_TIMER = 5  # minutes
 
 
 class RoomTimer:
-    def __init__(self, function, room_id, game):
+    def __init__(self, function, room_id):
         self.function = function
         self.room_id = room_id
-        self.game = game
         self.start_timer()
         self.left_room = dict()
 
@@ -32,7 +31,7 @@ class RoomTimer:
         self.timer = Timer(
             TIMEOUT_TIMER*60,
             self.function,
-            args=[self.room_id, self.game]
+            args=[self.room_id]
         )
         self.timer.start()
 
@@ -53,7 +52,7 @@ class RoomTimer:
         self.left_room[user] = Timer(
             LEAVE_TIMER*60,
             self.function,
-            args=[self.room_id, self.game]
+            args=[self.room_id]
         )
         self.left_room[user].start()
 
