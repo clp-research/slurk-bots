@@ -141,7 +141,7 @@ class ClickBot:
             room_id = data["room"]
             game = self.game_per_room.get(room_id)
 
-            # reset if the command does not coome from the bot
+            # reset if the command does not come from the bot
             if self.user != data["user"]["id"]:
                 self.timers_per_room[room_id].reset()
 
