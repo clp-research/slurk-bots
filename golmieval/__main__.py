@@ -19,7 +19,7 @@ class RoomTimer:
         self.start_timer()
 
     def start_timer(self):
-        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer = Timer(self.time * 60, self.function, args=[self.room_id])
         self.timer.start()
 
     def snooze(self):
@@ -67,7 +67,9 @@ class GolmiEval(TaskBot):
                 self.boards_per_room.get_boards(room_id)
                 self.can_load_next_state[room_id] = False
                 self.players_per_room[room_id] = list()
-                self.timers_per_room[room_id] = RoomTimer(TIMEOUT_TIMER, self.close_game, room_id)
+                self.timers_per_room[room_id] = RoomTimer(
+                    TIMEOUT_TIMER, self.close_game, room_id
+                )
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
                         {**usr, "role": None, "status": "joined"}
@@ -79,20 +81,17 @@ class GolmiEval(TaskBot):
                 )
                 if not response.ok:
                     logging.error(
-                        f"Could not let wordle bot join room: {response.status_code}"
+                        f"Could not let golmieval bot join room: {response.status_code}"
                     )
                     response.raise_for_status()
-                logging.debug("Sending wordle bot to new room was successful.")
+                logging.debug("Sending golmieval bot to new room was successful.")
 
                 self.golmi_client_per_room[room_id] = GolmiClient(self.sio)
                 self.golmi_client_per_room[room_id].run(
-                    self.golmi_server,
-                    str(room_id),
-                    self.golmi_password
+                    self.golmi_server, str(room_id), self.golmi_password
                 )
                 self.load_state(room_id)
                 sleep(1)
-
 
         @self.sio.event
         def joined_room(data):
@@ -116,20 +115,22 @@ class GolmiEval(TaskBot):
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
-                        "text", {
+                        "text",
+                        {
                             "message": line.format(board_number=BOARDS_PER_ROOM),
                             "room": room_id,
-                            "html": True
-                        }
+                            "html": True,
+                        },
                     )
                     sleep(0.5)
                 self.sio.emit(
-                        "text", {
-                            "message": "Here's a little help: you can reference pieces according to this legend",
-                            "room": room_id,
-                            "html": True
-                        }
-                    )
+                    "text",
+                    {
+                        "message": "Here's a little help: you can reference pieces according to this legend",
+                        "room": room_id,
+                        "html": True,
+                    },
+                )
                 self.sio.emit(
                     "image",
                     {
@@ -137,7 +138,7 @@ class GolmiEval(TaskBot):
                         "url": TYPES,
                         "width": 600,
                         "height": 300,
-                    }
+                    },
                 )
 
         @self.sio.event
@@ -169,10 +170,10 @@ class GolmiEval(TaskBot):
                                 "event": "init",
                                 "url": self.golmi_server,
                                 "room_id": str(room_id),
-                                "password": self.golmi_password
+                                "password": self.golmi_password,
                             },
                             "room": room_id,
-                            "receiver_id": data["user"]["id"]
+                            "receiver_id": data["user"]["id"],
                         },
                     )
 
@@ -202,80 +203,92 @@ class GolmiEval(TaskBot):
             )
 
             if room_id in self.players_per_room:
+
+                # command comes from front end
                 if isinstance(data["command"], dict):
-                    logging.debug(data["command"])
-                    if "event" in data["command"]:
-                        if data["command"]["event"] == "next":
-                            if self.can_load_next_state[room_id] is False:
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "room": room_id,
-                                        "message": COLOR_MESSAGE.format(
-                                            message=(
-                                                "**You need to send at least one message before you can move on.** "
-                                                "Remember to press enter to send your description"
-                                            ),
-                                            color=WARNING_COLOR
+                    if "event" not in data["command"]:
+                        return 
+                    event = data["command"]["event"]
+                    
+                    if event == "next":
+                        if self.can_load_next_state[room_id] is False:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "room": room_id,
+                                    "message": COLOR_MESSAGE.format(
+                                        message=(
+                                            "**You need to send at least one message before you can move on.** "
+                                            "Remember to press enter to send your description"
                                         ),
-                                        "html": True
-                                    },
-                                )
-                                return
+                                        color=WARNING_COLOR,
+                                    ),
+                                    "html": True,
+                                },
+                            )
+                            return
 
-                            self.boards_per_room[room_id].pop(0)
-                            # no more image, close room
-                            if not self.boards_per_room[room_id]:
+                        self.boards_per_room[room_id].pop(0)
+                        # no more image, close room
+                        if not self.boards_per_room[room_id]:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "room": room_id,
+                                    "message": (
+                                        "That was the last one, thank you very much for your time! "
+                                        "I really appreciate your help."
+                                    ),
+                                    "html": True,
+                                },
+                            )
+                            self.close_game(room_id)
+
+                        else:
+                            self.can_load_next_state[room_id] = False
+                            self.load_state(room_id)
+                            boards_left = len(self.boards_per_room[room_id])
+
+                            if boards_left % 5 == 0:
+                                message = f"Still {boards_left} boards to go"
+                                if boards_left < 10:
+                                    message = f"{message}. You almost made it!"
+
                                 self.sio.emit(
                                     "text",
                                     {
                                         "room": room_id,
-                                        "message": "That was the last one, thank you very much for your help",
-                                        "html": True
+                                        "message": message,
                                     },
                                 )
-                                self.close_game(room_id)
 
-                            else:
-                                self.can_load_next_state[room_id] = False
-                                self.load_state(room_id)
-                                boards_left = len(self.boards_per_room[room_id])
+                    elif event == "mouse_click":
+                        x = data["command"]["offset_x"]
+                        y = data["command"]["offset_y"]
+                        block_size = data["command"]["block_size"]
 
-                                if boards_left % 5 == 0:
-                                    message = f"Still {boards_left} boards to go"
-                                    if boards_left < 10:
-                                        message = f"{message}. You almost made it!"
+                        req = requests.get(
+                            f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}"
+                        )
+                        if req.ok is not True:
+                            logging.error("Could not retrieve gripped piece")
 
-                                    self.sio.emit(
-                                        "text",
-                                        {
-                                            "room": room_id,
-                                            "message": message,
-                                        },
-                                    )
+                        piece = req.json()
+                        target = self.boards_per_room[room_id][0]["state"][
+                            "targets"
+                        ]
 
-                        elif data["command"]["event"] == "mouse_click":
-                            x = data["command"]["offset_x"]
-                            y = data["command"]["offset_y"]
-                            block_size = data["command"]["block_size"]
-
-                            req = requests.get(f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}")
-                            if req.ok is not True:
-                                logging.error("Could not retrieve gripped piece")
-
-                            piece = req.json()
-                            target = self.boards_per_room[room_id][0]["state"]["targets"]
-
-                            if piece.keys() == target.keys():
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "room": room_id,
-                                        "message": "That is your target",
-                                    },
-                                )
+                        if piece.keys() == target.keys():
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "room": room_id,
+                                    "message": "That is your target",
+                                },
+                            )
 
                 else:
+                    # no user defined commands
                     self.sio.emit(
                         "text",
                         {
@@ -316,13 +329,14 @@ class GolmiEval(TaskBot):
         if golmi_client is not None:
             golmi_client.disconnect()
 
-        for memory_dict in [self.players_per_room,
-                            self.golmi_client_per_room,
-                            self.boards_per_room,
-                            self.timers_per_room]:
+        for memory_dict in [
+            self.players_per_room,
+            self.golmi_client_per_room,
+            self.boards_per_room,
+            self.timers_per_room,
+        ]:
             if room_id in memory_dict:
                 memory_dict.pop(room_id)
-
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -377,12 +391,12 @@ if __name__ == "__main__":
     # create commandline parser
     parser = GolmiEval.create_argparser()
     if "GOLMI_SERVER" in os.environ:
-       golmi_server = {"default": os.environ["GOLMI_SERVER"]}
+        golmi_server = {"default": os.environ["GOLMI_SERVER"]}
     else:
         golmi_server = {"required": True}
 
     if "GOLMI_PASSWORD" in os.environ:
-       golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
+        golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
     else:
         golmi_password = {"required": True}
 

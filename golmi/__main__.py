@@ -21,7 +21,7 @@ class RoomTimer:
         self.start_timer()
 
     def start_timer(self):
-        self.timer = Timer(self.time*60, self.function, args=[self.room_id])
+        self.timer = Timer(self.time * 60, self.function, args=[self.room_id])
         self.timer.start()
 
     def snooze(self):
@@ -37,11 +37,16 @@ def set_text_message(value):
     """
     change user's permission to send messages
     """
-    response = requests.get(f"{uri}/permissions/4", headers={"Authorization": f"Bearer {token}"})
+    response = requests.get(
+        f"{uri}/permissions/4", headers={"Authorization": f"Bearer {token}"}
+    )
     requests.patch(
         f"{uri}/permissions/4",
-        json={"send_message":value},
-        headers={"If-Match": response.headers["ETag"], "Authorization": f"Bearer {token}"}
+        json={"send_message": value},
+        headers={
+            "If-Match": response.headers["ETag"],
+            "Authorization": f"Bearer {token}",
+        },
     )
 
 
@@ -54,7 +59,6 @@ class GolmiBot(TaskBot):
         self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.timers_per_room = dict()
         self.register_callbacks()
-
 
     def register_callbacks(self):
         @self.sio.event
@@ -78,7 +82,9 @@ class GolmiBot(TaskBot):
                 # create image items for this room
                 self.boards_per_room.get_boards(room_id)
                 self.players_per_room[room_id] = list()
-                self.timers_per_room[room_id] = RoomTimer(TIMEOUT_TIMER, self.close_game, room_id)
+                self.timers_per_room[room_id] = RoomTimer(
+                    TIMEOUT_TIMER, self.close_game, room_id
+                )
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
                         {**usr, "role": None, "status": "joined"}
@@ -90,20 +96,17 @@ class GolmiBot(TaskBot):
                 )
                 if not response.ok:
                     logging.error(
-                        f"Could not let wordle bot join room: {response.status_code}"
+                        f"Could not let golmi bot join room: {response.status_code}"
                     )
                     response.raise_for_status()
-                logging.debug("Sending wordle bot to new room was successful.")
+                logging.debug("Sending golmi bot to new room was successful.")
 
                 self.golmi_client_per_room[room_id] = GolmiClient(self.sio)
                 self.golmi_client_per_room[room_id].run(
-                    self.golmi_server,
-                    str(room_id),
-                    self.golmi_password
+                    self.golmi_server, str(room_id), self.golmi_password
                 )
                 self.load_state(room_id)
                 sleep(1)
-
 
         @self.sio.event
         def joined_room(data):
@@ -126,11 +129,12 @@ class GolmiBot(TaskBot):
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
-                        "text", {
+                        "text",
+                        {
                             "message": line.format(board_number=BOARDS_PER_ROOM),
                             "room": room_id,
-                            "html": True
-                        }
+                            "html": True,
+                        },
                     )
                     sleep(0.5)
 
@@ -184,10 +188,10 @@ class GolmiBot(TaskBot):
                                     "url": self.golmi_server,
                                     "room_id": str(room_id),
                                     "password": self.golmi_password,
-                                    "role": role
+                                    "role": role,
                                 },
                                 "room": room_id,
-                                "receiver_id": data["user"]["id"]
+                                "receiver_id": data["user"]["id"],
                             },
                         )
 
@@ -209,7 +213,7 @@ class GolmiBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            # do not prcess commands from itself
+            # do not process commands from itself
             if user_id == self.user:
                 return
 
@@ -247,9 +251,7 @@ class GolmiBot(TaskBot):
 
         # users have no roles so we can assign them
         if not all([curr_usr["role"], other_usr["role"]]):
-            for role, user in zip(
-                ["wizard", "player"], [curr_usr, other_usr]
-            ):
+            for role, user in zip(["wizard", "player"], [curr_usr, other_usr]):
                 self.sio.emit(
                     "message_command",
                     {
@@ -258,10 +260,10 @@ class GolmiBot(TaskBot):
                             "url": self.golmi_server,
                             "room_id": str(room_id),
                             "password": self.golmi_password,
-                            "role": "wizard"
+                            "role": "wizard",
                         },
                         "room": room_id,
-                        "receiver_id": curr_usr["id"]
+                        "receiver_id": curr_usr["id"],
                     },
                 )
 
@@ -273,10 +275,10 @@ class GolmiBot(TaskBot):
                             "url": self.golmi_server,
                             "room_id": str(room_id),
                             "password": self.golmi_password,
-                            "role": "player"
+                            "role": "player",
                         },
                         "room": room_id,
-                        "receiver_id": other_usr["id"]
+                        "receiver_id": other_usr["id"],
                     },
                 )
 
@@ -294,7 +296,7 @@ class GolmiBot(TaskBot):
         self.sio.emit(
             "text",
             {
-                "message": "Roles have been resetted, please wait for new roles to be assigned",
+                "message": "Roles have been reset, please wait for new roles to be assigned",
                 "room": room_id,
             },
         )
@@ -349,7 +351,6 @@ class GolmiBot(TaskBot):
             {"message": "The room is closing, thanky you for plaing", "room": room_id},
         )
         self.room_to_read_only(room_id)
-
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -415,12 +416,12 @@ if __name__ == "__main__":
         **waiting_room,
     )
     if "GOLMI_SERVER" in os.environ:
-       golmi_server = {"default": os.environ["GOLMI_SERVER"]}
+        golmi_server = {"default": os.environ["GOLMI_SERVER"]}
     else:
         golmi_server = {"required": True}
 
     if "GOLMI_PASSWORD" in os.environ:
-       golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
+        golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
     else:
         golmi_password = {"required": True}
 
