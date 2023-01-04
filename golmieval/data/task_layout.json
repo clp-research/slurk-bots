@@ -1,6 +1,6 @@
 {
     "title": "Pentomino in GOLMI",
-    "subtitle": "Describe the highlighted piece on the board",
+    "subtitle": "Find a unique description for the highlighted piece",
     "html": [
         {
             "layout-type": "div",

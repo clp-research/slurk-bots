@@ -14,11 +14,11 @@ class Dataloader(dict):
         images_per_level = self._n // 3
         sample = list()
         for level in cycle(["easy", "medium", "hard"]):
-            for board in random.sample(baords[level], images_per_level):
-                sample.append(board)
+            for index in random.sample(baords[level], images_per_level):
+                sample.append(index)
 
                 if len(sample) == self._n:
-                    return sample            
+                    return set(sample)            
 
     def _read_board_file(self):
         """read boards and divide by level"""
@@ -28,21 +28,29 @@ class Dataloader(dict):
             hard=list()
         )
         with self._path.open('r', encoding="utf-8") as infile:
-            for line in infile:
+            for i, line in enumerate(infile):
                 board = json.loads(line)
                 level = board["board_info"]["difficoulty"]
 
-                # select target
-                state = board["state"]
-                target_id = str(board["target"])
-                target_obj = state["objs"][target_id]
-                state["targets"][target_id] = target_obj
+                boards[level].append(i)
 
-                boards[level].append(board)
         return boards
 
     def get_boards(self, room_id):
         """sample random boards for a room"""
-        room_boards = self._sample_boards()
+        indeces = self._sample_boards()
+        room_boards = list()
+        with self._path.open('r', encoding="utf-8") as infile:
+            for i, line in enumerate(infile):
+                if i in indeces:
+                    board = json.loads(line)
+                    # select target
+                    state = board["state"]
+                    target_id = str(board["target"])
+                    target_obj = state["objs"][target_id]
+                    state["targets"][target_id] = target_obj
+
+                    room_boards.append(board)
+
         random.shuffle(room_boards)
         self[room_id] = room_boards

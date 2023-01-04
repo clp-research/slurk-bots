@@ -91,7 +91,6 @@ class GolmiEval(TaskBot):
                     self.golmi_server, str(room_id), self.golmi_password
                 )
                 self.load_state(room_id)
-                sleep(1)
 
         @self.sio.event
         def joined_room(data):
@@ -111,7 +110,7 @@ class GolmiEval(TaskBot):
                     )
                     response.raise_for_status()
 
-                sleep(1)
+                sleep(0.5)
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
@@ -207,9 +206,9 @@ class GolmiEval(TaskBot):
                 # command comes from front end
                 if isinstance(data["command"], dict):
                     if "event" not in data["command"]:
-                        return 
+                        return
                     event = data["command"]["event"]
-                    
+
                     if event == "next":
                         if self.can_load_next_state[room_id] is False:
                             self.sio.emit(
@@ -236,7 +235,7 @@ class GolmiEval(TaskBot):
                                 {
                                     "room": room_id,
                                     "message": (
-                                        "That was the last one, thank you very much for your time! "
+                                        "That was the last one 🎉 🎉 thank you very much for your time! "
                                         "I really appreciate your help."
                                     ),
                                     "html": True,
@@ -274,9 +273,7 @@ class GolmiEval(TaskBot):
                             logging.error("Could not retrieve gripped piece")
 
                         piece = req.json()
-                        target = self.boards_per_room[room_id][0]["state"][
-                            "targets"
-                        ]
+                        target = self.boards_per_room[room_id][0]["state"]["targets"]
 
                         if piece.keys() == target.keys():
                             self.sio.emit(
@@ -320,7 +317,7 @@ class GolmiEval(TaskBot):
         sleep(2)
         self.sio.emit(
             "text",
-            {"message": "The room is closing, see you next time", "room": room_id},
+            {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
         self.room_to_read_only(room_id)
 
