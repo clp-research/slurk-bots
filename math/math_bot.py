@@ -38,7 +38,7 @@ class RoomTimer:
     def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("reset timer")
+        LOG.info("reset timer")
 
     def cancel(self):
         self.timer.cancel()
@@ -370,7 +370,7 @@ class MathBot:
     def close_game(self, room_id):
         self.room_to_read_only(room_id)
         self.timers_per_room.pop(room_id)
-        for game_dict in [self.room_to_q, self.players_per_room]
+        for game_dict in [self.room_to_q, self.players_per_room]:
             if room_id in game_dict:
                 game_dict.pop(room_id)
 
@@ -448,7 +448,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--token", help="token for logging in as bot", **token
     )
-    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host

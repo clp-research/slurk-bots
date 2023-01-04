@@ -97,7 +97,12 @@ class EchoBot(TaskBot):
         @self.sio.event
         def new_task_room(data):
             room_id = data["room"]
-            self.join_task_room()
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "let echo bot join room")
+            logging.debug("############################")
             self.timers_per_room[room_id] = RoomTimer(
                 self.close_room, room_id
             )
@@ -137,7 +142,8 @@ class EchoBot(TaskBot):
             else:
                 room_id = data["room"]
                 timer = self.timers_per_room.get(room_id)
-                timer.reset()
+                if timer is not None:
+                    timer.reset()
 
             logging.debug(f"I got an image, let's send it back!: {data}")
 

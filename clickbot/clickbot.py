@@ -17,7 +17,6 @@ LOG = logging.getLogger(__name__)
 class RoomTimer:
     def __init__(self, function, room_id, game):
         self.function = function
-        self.time = time
         self.room_id = room_id
         self.game = game
         self.start_timer()
@@ -33,7 +32,7 @@ class RoomTimer:
     def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("reset timer")
+        LOG.info("reset timer")
 
     def cancel(self):
         self.timer.cancel()

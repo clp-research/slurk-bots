@@ -30,7 +30,7 @@ class RoomTimer:
     def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("reset timer")
+        LOG.info("reset timer")
 
     def cancel(self):
         self.timer.cancel()
