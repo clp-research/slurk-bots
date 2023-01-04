@@ -3,13 +3,39 @@ import json
 import logging
 import os
 import random
+from threading import Timer
 
 import requests
 import socketio
 
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+TIMEOUT_TIMER = 60  # minutes
 LOG = logging.getLogger(__name__)
+
+
+class RoomTimer:
+    def __init__(self, function, room_id, game):
+        self.function = function
+        self.room_id = room_id
+        self.game = game
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER*60,
+            self.function,
+            args=[self.room_id, self.game]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        LOG.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class Game:
@@ -40,6 +66,7 @@ class BoxBot:
             self.all_items = json.load(f)
 
         LOG.info(f"Running box bot on {self.uri} with token {self.token}")
+        self.timers_per_room = dict()
         # register all event handlers
         self.register_callbacks()
 
@@ -47,7 +74,7 @@ class BoxBot:
         # establish a connection to the server
         self.sio.connect(
             self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         # wait until the connection with the server ends
@@ -82,6 +109,10 @@ class BoxBot:
                 item_ids = list(self.all_items.keys())
                 random.shuffle(item_ids)
                 self.game_per_room[room_id] = Game(item_ids)
+                game = self.game_per_room.get(room_id)
+                self.timers_per_room[room_id] = RoomTimer(
+                    self.close_game, room_id, game
+                )
 
                 # greet user
                 for usr in data["users"]:
@@ -109,6 +140,10 @@ class BoxBot:
         def command(data):
             room_id = data["room"]
             game = self.game_per_room.get(room_id)
+
+            # reset if the command does not come from the bot
+            if self.user != data["user"]["id"]:
+                self.timers_per_room[room_id].reset()
 
             if game is None:
                 return
@@ -240,6 +275,59 @@ class BoxBot:
             headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "hide button")
+        self.room_to_read_only(room_id)
+        self.timers_per_room.pop(room_id)
+        self.game_per_room.pop(room_id)
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.get(
+            f"{self.uri}/rooms/{room_id}/users",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+
+        users = response.json()
+        for user in users:
+            if user["id"] != self.user:
+                response = requests.get(
+                    f"{self.uri}/users/{user['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                logging.debug("Removing user from task room was successful.")
 
     def is_box_around_target(self, item, box):
         left_item, top_item, right_item, bottom_item = item["bb"]
@@ -282,8 +370,10 @@ if __name__ == "__main__":
     task_id = {"default": os.environ.get("BOX_TASK_ID")}
 
     # register commandline arguments
-    parser.add_argument("-t", "--token", help="token for logging in as bot", **token)
-    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument(
+        "-t", "--token", help="token for logging in as bot", **token
+    )
+    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )
