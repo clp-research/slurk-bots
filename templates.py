@@ -46,10 +46,7 @@ class Bot(ABC):
         """Establish a connection to the slurk chat server."""
         self.sio.connect(
             self.uri,
-            headers={
-                "Authorization": f"Bearer {self.token}",
-                "user": str(self.user)
-            },
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         self.sio.wait()
@@ -90,11 +87,9 @@ class Bot(ABC):
         :return: Created commandline argument parser
         :rtype: argparse.ArgumentParser
         """
-        parser = argparse.ArgumentParser(
-            description=f"Run {cls.__name__}."
-        )
+        parser = argparse.ArgumentParser(description=f"Run {cls.__name__}.")
         task_bot_name = cls.__name__.upper().replace("BOT", "")
-        
+
         # collect environment variables as defaults
         if f"{task_bot_name}_TOKEN" in os.environ:
             token = {"default": os.environ[f"{task_bot_name}_TOKEN"]}
@@ -106,23 +101,22 @@ class Bot(ABC):
             user = {"required": True}
 
         # register commandline arguments
+        parser.add_argument("-t", "--token", **token, help="slurk token for the bot")
         parser.add_argument(
-            "-t", "--token", **token,
-            help="slurk token for the bot"
+            "-u", "--user", type=int, **user, help="slurk user ID for the bot"
         )
         parser.add_argument(
-            "-u", "--user", type=int, **user,
-            help="slurk user ID for the bot"
-        )
-        parser.add_argument(
-            "-c", "--host",
+            "-c",
+            "--host",
             default=os.environ.get("SLURK_HOST", "http://localhost"),
-            help="full URL of chat server (protocol and hostname) "
+            help="full URL of chat server (protocol and hostname) ",
         )
         parser.add_argument(
-            "-p", "--port", type=int,
+            "-p",
+            "--port",
+            type=int,
             default=os.environ.get("SLURK_PORT"),
-            help="port of chat server"
+            help="port of chat server",
         )
         return parser
 
@@ -135,21 +129,21 @@ class TaskBot(Bot):
         """
         super().__init__(token, user, host, port)
         self.task_id = task
-        self.sio.on('new_task_room', self.join_task_room())
+        self.sio.on("new_task_room", self.join_task_room())
 
     def join_task_room(self):
         """Let the bot join an assigned task room."""
+
         def join(data):
             if self.task_id is None or data["task"] != self.task_id:
                 return
 
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{data['room']}",
-                headers={"Authorization": f"Bearer {self.token}"}
+                headers={"Authorization": f"Bearer {self.token}"},
             )
-            self.request_feedback(
-                response, f"let {self.__class__.__name__}  join room"
-            )
+            self.request_feedback(response, f"let {self.__class__.__name__}  join room")
+
         return join
 
     @classmethod
@@ -158,13 +152,14 @@ class TaskBot(Bot):
         parser = argparse.ArgumentParser(
             description=f"Run {cls.__name__}.",
             parents=[super().create_argparser()],
-            add_help=False
+            add_help=False,
         )
         task_bot_name = cls.__name__.upper().replace("BOT", "")
 
         parser.add_argument(
-            "--task", type=int,
+            "--task",
+            type=int,
             default=os.environ.get(f"{task_bot_name}_TASK_ID"),
-            help="slurk task ID the bot should moderate"
+            help="slurk task ID the bot should moderate",
         )
         return parser

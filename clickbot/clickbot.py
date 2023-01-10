@@ -3,13 +3,39 @@ import json
 import logging
 import os
 import random
+from threading import Timer
 
 import requests
 import socketio
 
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+TIMEOUT_TIMER = 60  # minutes
 LOG = logging.getLogger(__name__)
+
+
+class RoomTimer:
+    def __init__(self, function, room_id, game):
+        self.function = function
+        self.room_id = room_id
+        self.game = game
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER*60,
+            self.function,
+            args=[self.room_id, self.game]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        LOG.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class Game:
@@ -40,6 +66,7 @@ class ClickBot:
             self.all_items = json.load(f)
 
         LOG.info(f"Running click bot on {self.uri} with token {self.token}")
+        self.timers_per_room = dict()
         # register all event handlers
         self.register_callbacks()
 
@@ -47,7 +74,7 @@ class ClickBot:
         # establish a connection to the server
         self.sio.connect(
             self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         # wait until the connection with the server ends
@@ -74,7 +101,7 @@ class ClickBot:
             if self.task_id is None or data["task"] == self.task_id:
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "let click bot join room")
 
@@ -82,22 +109,30 @@ class ClickBot:
                 item_ids = list(self.all_items.keys())
                 random.shuffle(item_ids)
                 self.game_per_room[room_id] = Game(item_ids)
+                game = self.game_per_room.get(room_id)
+                self.timers_per_room[room_id] = RoomTimer(
+                    self.close_game, room_id, game
+                )
 
                 # greet user
-                for usr in data['users']:
+                for usr in data["users"]:
                     self.sio.emit(
                         "text",
-                        {"message": f"Hello {usr['name']}. Please click "
-                                    "on <Start> once you are ready!",
-                         "room": room_id},
-                        callback=self.message_callback
+                        {
+                            "message": f"Hello {usr['name']}. Please click "
+                            "on <Start> once you are ready!",
+                            "room": room_id,
+                        },
+                        callback=self.message_callback,
                     )
                     self.sio.emit(
                         "text",
-                        {"message": "Your task will be to click on the object "
-                                    "that matches the audio description.",
-                         "room": room_id},
-                        callback=self.message_callback
+                        {
+                            "message": "Your task will be to click on the object "
+                            "that matches the audio description.",
+                            "room": room_id,
+                        },
+                        callback=self.message_callback,
                     )
 
         @self.sio.event
@@ -105,22 +140,24 @@ class ClickBot:
             room_id = data["room"]
             game = self.game_per_room.get(room_id)
 
+            # reset if the command does not come from the bot
+            if self.user != data["user"]["id"]:
+                self.timers_per_room[room_id].reset()
+
             if game is None:
                 return
             if data["command"] not in {"start", "next"}:
                 self.sio.emit(
                     "text",
-                    {"message": "I do not understand this command.",
-                     "room": room_id},
-                    callback=self.message_callback
+                    {"message": "I do not understand this command.", "room": room_id},
+                    callback=self.message_callback,
                 )
                 return
             if data["command"] == "next" and not game.running:
                 self.sio.emit(
                     "text",
-                    {"message": "You should start the game first",
-                     "room": room_id},
-                    callback=self.message_callback
+                    {"message": "You should start the game first", "room": room_id},
+                    callback=self.message_callback,
                 )
                 return
 
@@ -130,7 +167,7 @@ class ClickBot:
                 response = requests.post(
                     f"{self.uri}/rooms/{room_id}/class/start-button",
                     json={"class": "dis-button"},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "hide start button")
 
@@ -138,7 +175,7 @@ class ClickBot:
                 response = requests.delete(
                     f"{self.uri}/rooms/{room_id}/class/next-button",
                     json={"class": "dis-button"},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "enable next button")
 
@@ -150,7 +187,7 @@ class ClickBot:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/next-button",
                     json={"text": "Skip>"},
-                    headers={"Authorization": f"Bearer {self.token}"}
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "set text of button")
             else:
@@ -171,22 +208,20 @@ class ClickBot:
                     game.current_item = None
                     self.sio.emit(
                         "text",
-                        {"message": "That was correct!",
-                         "room": room_id},
-                        callback=self.message_callback
+                        {"message": "That was correct!", "room": room_id},
+                        callback=self.message_callback,
                     )
                     response = requests.patch(
                         f"{self.uri}/rooms/{room_id}/text/next-button",
                         json={"text": "Next>"},
-                        headers={"Authorization": f"Bearer {self.token}"}
+                        headers={"Authorization": f"Bearer {self.token}"},
                     )
                     self.request_feedback(response, "set text of button")
                 else:
                     self.sio.emit(
                         "text",
-                        {"message": "Try again!",
-                         "room": room_id},
-                        callback=self.message_callback
+                        {"message": "Try again!", "room": room_id},
+                        callback=self.message_callback,
                     )
 
     def get_new_item(self, room_id, game):
@@ -202,21 +237,15 @@ class ClickBot:
         # set image
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/tracking-area",
-            json={
-                "attribute": "src",
-                "value": item.get("image_filename", "")
-            },
-            headers={"Authorization": f"Bearer {self.token}"}
+            json={"attribute": "src", "value": item.get("image_filename", "")},
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "set image")
         # set audio
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/audio-file",
-            json={
-                "attribute": "src",
-                "value": item.get("audio_filename", "")
-            },
-            headers={"Authorization": f"Bearer {self.token}"}
+            json={"attribute": "src", "value": item.get("audio_filename", "")},
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "set audio")
 
@@ -225,25 +254,79 @@ class ClickBot:
         # clear display area
         self.sio.emit(
             "text",
-            {"message": "You have answered all items.",
-             "room": room_id},
-            callback=self.message_callback
+            {"message": "You have answered all items.", "room": room_id},
+            callback=self.message_callback,
         )
         self.sio.emit(
             "text",
-            {"message": f"You got {game.correct_answers} "
-                        f"out of {game.total_answers} correct.",
-             "room": room_id},
-            callback=self.message_callback
+            {
+                "message": f"You got {game.correct_answers} "
+                f"out of {game.total_answers} correct.",
+                "room": room_id,
+            },
+            callback=self.message_callback,
         )
         self.display_item(room_id, {})
         # hide button
         response = requests.post(
             f"{self.uri}/rooms/{room_id}/class/next-button",
             json={"class": "dis-button"},
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "hide button")
+        self.room_to_read_only(room_id)
+        self.timers_per_room.pop(room_id)
+        self.game_per_room.pop(room_id)
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.get(
+            f"{self.uri}/rooms/{room_id}/users",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+
+        users = response.json()
+        for user in users:
+            if user["id"] != self.user:
+                response = requests.get(
+                    f"{self.uri}/users/{user['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                logging.debug("Removing user from task room was successful.")
 
     def is_click_on_target(self, item, pos):
         left, top, right, bottom = item["bb"]
@@ -281,7 +364,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--token", help="token for logging in as bot", **token
     )
-    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )
