@@ -249,7 +249,7 @@ class CcbtsBot(TaskBot):
                                         {
                                             "command": {
                                                 "event": "success_run",
-                                                "executed": executed,
+                                                "executed": command,
                                                 "to_run": to_run 
                                             },
                                             "room": room_id,

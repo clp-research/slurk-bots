@@ -1,3 +1,5 @@
+let session = [];
+
 function display_grid(grid, grid_name) {
     // clear grid div
     $(`#${grid_name}-grid`).empty();
@@ -149,6 +151,8 @@ $(document).ready(() => {
     $('#run_button').click(function(){
         // read input box and run commands one by one
         commands = $("#input").val().trim().split("\n")
+        session = []
+        console.log(commands)
         socket.emit("message_command",
             {
                 "command": {
@@ -162,7 +166,7 @@ $(document).ready(() => {
 
     $('#revert_button').click(function(){
         // make sure the history in not empty
-        commands = $("#history")[0].innerText.trim().split("\n")
+        commands = [...session]
         empty_array = [""]
         is_empty = (
             commands.length === empty_array.length &&
@@ -183,11 +187,23 @@ $(document).ready(() => {
             // move every command from history to the input field
             input = $("#input").val().trim().split("\n")
             input.forEach(element => {
-                commands.push(element)
+                if(element !== ""){
+                    commands.push(element)
+                }
             })
             
             $("#input").val(commands.join("\n"))
+            
+            all_history = $("#history")[0].innerText.trim().split("\n")
             $("#history").text("")
+
+            console.log(all_history)
+            console.log(commands)
+            for (let index = 0; index < all_history.length - commands.length; index++) {
+                console.log(index)
+                $('#history').append(`<b><code>${all_history[index]}<br/></code></b>`);
+                $("#history").scrollTop($("#history")[0].scrollHeight);
+            }
         }
     });
 
@@ -215,16 +231,18 @@ $(document).ready(() => {
 
             // commands were successfull, clear session
             } else if (this_event === "success_run"){
-                $("#history").text("")
+                // $("#history").text("")
                 $("#input").val("")
                 executed = data.command.executed
                 to_run = data.command.to_run
-                executed.forEach(element => {
-                    $('#history').append(`<b><code>${element}<br/></code></b>`);
-                    $("#history").scrollTop($("#history")[0].scrollHeight);
-                });
+                session.push(executed)
+                
+                $('#history').append(`<b><code>${executed}<br/></code></b>`);
+                $("#history").scrollTop($("#history")[0].scrollHeight);
+                
                 $("#input").val(to_run.join("\n"))
             }
         }
     });
 });
+
