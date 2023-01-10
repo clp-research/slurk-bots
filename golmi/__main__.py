@@ -14,20 +14,23 @@ from .dataloader import Dataloader
 
 
 class RoomTimer:
-    def __init__(self, time, function, room_id):
+    def __init__(self, function, room_id):
         self.function = function
-        self.time = time
         self.room_id = room_id
         self.start_timer()
 
     def start_timer(self):
-        self.timer = Timer(self.time * 60, self.function, args=[self.room_id])
+        self.timer = Timer(
+            TIMEOUT_TIMER * 60,
+            self.function,
+            args=[self.room_id]
+        )
         self.timer.start()
 
-    def snooze(self):
+    def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("snooze")
+        logging.debug("timer reset")
 
     def cancel(self):
         self.timer.cancel()
@@ -83,7 +86,7 @@ class GolmiBot(TaskBot):
                 self.boards_per_room.get_boards(room_id)
                 self.players_per_room[room_id] = list()
                 self.timers_per_room[room_id] = RoomTimer(
-                    TIMEOUT_TIMER, self.close_game, room_id
+                    self.close_game, room_id
                 )
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
