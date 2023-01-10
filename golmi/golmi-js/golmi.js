@@ -25,6 +25,19 @@ function start_golmi(url, password, role) {
 
     if (role === "wizard"){
         layerView = new document.ReceiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
+        $("#warning_button").show()
+        $('#warning_button').click(function(){
+            console.log("emitting warning")
+            socket.emit("message_command",
+                {
+                    "command": {
+                        "event": "warning"
+                    },
+                    "room": self_room
+                }
+            )
+        });
+
     } else {
         layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
     }
@@ -68,7 +81,8 @@ function start_golmi(url, password, role) {
 
 
 // --- stop and start drawing --- //
-function start(url, room_id, role, password){
+function start(url, room_id, role, password) {
+    console.log("received url")
     start_golmi(url, password, role)
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
@@ -80,12 +94,12 @@ function start(url, room_id, role, password){
 }
 
 
-function stop(){
+function stop() {
     golmi_socket.disconnect();
 }
 
 
-$(document).ready(function (){
+$(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             if (data.command.event === "init") {

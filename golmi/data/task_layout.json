@@ -1,53 +1,51 @@
 {
-    "title": "Pentomino in GOLM",
-    "subtitle": "Demo of a Pentomino interface build using the GOLM framework",
+    "title": "Pentomino in GOLMI",
+    "subtitle": "Work together with your partner to solve the task",
     "html": [
         {
             "layout-type": "div",
             "class": "card",
-            "id": "content_card",
             "layout-content": [
                 {
                     "layout-type": "div",
                     "id": "viewport",
-                    "style": "height: 600px; width: 600px; padding: 10px; margin: 0px auto",
+                    "style": "height: 500px; width: 500px; padding: 10px; margin: 0px auto",
                     "layout-content": [
                         {
                             "layout-type": "canvas",
                             "id": "background",
-                            "width": "600",
-                            "height": "600"
+                            "width": "500px",
+                            "height": "500px"
                         },
                         {
                             "layout-type": "canvas",
                             "id": "objects",
-                            "width": "600",
-                            "height": "600"
+                            "width": "500px",
+                            "height": "500px"
                         },
                         {
                             "layout-type": "canvas",
                             "id": "gripper",
-                            "width": "600",
-                            "height": "600"
+                            "width": "500px",
+                            "height": "500px"
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "layout-type": "div",
-            "class": "hidden_card",
-            "id": "wizard_interface",
-            "layout-content":[
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                },
                 {
                     "layout-type": "button",
                     "class": "button",
                     "role": "button",
                     "layout-content": "Send Warning",
-                    "id": "warn_button"
+                    "style": "display: none",
+                    "id": "warning_button"
                 }
             ]
-        }
+        }        
     ],
     "css": {
         "#viewport": {
@@ -60,7 +58,7 @@
             "background-color": "transparent;",
             "border": "1px solid #000000;"
         },
-        ".card, .hidden_card": {
+        ".card": {
             "position": "relative",
             "display": "flex",
             "flex-direction": "column",
@@ -72,9 +70,6 @@
             "height": "100%",
             "margin": "0px 15px",
             "padding": "20px"
-        },
-        ".hidden_card": {
-            "display": "none"
         },
         ".button": {
             "text-transform": "uppercase",
@@ -96,10 +91,10 @@
         }
     },
     "scripts": {
-        "incoming-text": "display-text",
+        "incoming-text": "markdown",
         "incoming-image": "display-image",
         "submit-message": "send-message",
-        "print-history": "plain-history",
+        "print-history": ["attribute-history", "markdown-history"],
         "plain": [
             "golmi-js/golmi",
             "golmi-js/view/View",

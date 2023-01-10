@@ -226,9 +226,34 @@ class GolmiBot(TaskBot):
 
             if room_id in self.players_per_room:
                 if isinstance(data["command"], dict):
-                    logging.debug(data["command"])
+                    # commands from interface
+                    event = data["command"]["event"]
+
+                    # wizard sends a warning
+                    if event == "warning":
+                        logging.debug("emitting WARNING")
+                        curr_usr, other_usr = self.players_per_room[room_id]
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    color=WARNING_COLOR,
+                                    message=(
+                                        "WARNING: your partner thinks that you "
+                                        "are not doint the task correctly"
+                                    )
+                                ),
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                                "html": True,
+                            },
+                        )
 
                 else:
+                    # commands from user
                     # set wizard
                     if data["command"] == "set_role_wizard":
                         self.set_wizard_role(room_id, user_id)
@@ -254,36 +279,35 @@ class GolmiBot(TaskBot):
 
         # users have no roles so we can assign them
         if not all([curr_usr["role"], other_usr["role"]]):
-            for role, user in zip(["wizard", "player"], [curr_usr, other_usr]):
-                self.sio.emit(
-                    "message_command",
-                    {
-                        "command": {
-                            "event": "init",
-                            "url": self.golmi_server,
-                            "room_id": str(room_id),
-                            "password": self.golmi_password,
-                            "role": "wizard",
-                        },
-                        "room": room_id,
-                        "receiver_id": curr_usr["id"],
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "init",
+                        "url": self.golmi_server,
+                        "room_id": str(room_id),
+                        "password": self.golmi_password,
+                        "role": "wizard",
                     },
-                )
+                    "room": room_id,
+                    "receiver_id": curr_usr["id"],
+                },
+            )
 
-                self.sio.emit(
-                    "message_command",
-                    {
-                        "command": {
-                            "event": "init",
-                            "url": self.golmi_server,
-                            "room_id": str(room_id),
-                            "password": self.golmi_password,
-                            "role": "player",
-                        },
-                        "room": room_id,
-                        "receiver_id": other_usr["id"],
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "init",
+                        "url": self.golmi_server,
+                        "room_id": str(room_id),
+                        "password": self.golmi_password,
+                        "role": "player",
                     },
-                )
+                    "room": room_id,
+                    "receiver_id": other_usr["id"],
+                },
+            )
 
         else:
             self.sio.emit(
