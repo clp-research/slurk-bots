@@ -1,12 +1,52 @@
 import argparse
 import logging
 import os
+from threading import Timer
 
 import requests
 import socketio
 
 
 LOG = logging.getLogger(__name__)
+TIMEOUT_TIMER = 60  # minutes
+LEAVE_TIMER = 5  # minutes
+
+
+class RoomTimer:
+    def __init__(self, function, room_id):
+        self.function = function
+        self.room_id = room_id
+        self.start_timer()
+        self.left_room = dict()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER*60,
+            self.function,
+            args=[self.room_id]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        LOG.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
+
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER*60,
+            self.function,
+            args=[self.room_id, self.game]
+        )
+        self.left_room[user].start()
 
 
 class InterventionBot:
@@ -23,16 +63,18 @@ class InterventionBot:
         self.uri += "/slurk/api"
 
         LOG.info(f"Running intervention bot on {self.uri} with token {self.token}")
-        # register all event handlers
-        self.register_callbacks()
 
         self.players_per_room = dict()
+        self.timers_per_room = dict()
+
+        # register all event handlers
+        self.register_callbacks()
 
     def run(self):
         # establish a connection to the server
         self.sio.connect(
             self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
+            headers={"Authorization": f"Bearer {self.token}", "user": str(self.user)},
             namespaces="/",
         )
         # wait until the connection with the server ends
@@ -46,6 +88,24 @@ class InterventionBot:
         LOG.debug("Sent message successfully.")
 
     def register_callbacks(self):
+        @self.sio.event
+        def status(data):
+            room_id = data["room"]
+            if room_id in self.players_per_room:
+                curr_usr, other_usr = self.players_per_room[room_id]
+                if curr_usr["id"] != data["user"]["id"]:
+                    curr_usr, other_usr = other_usr, curr_usr
+
+                if data["type"] == "join":
+                    # cancel timer
+                    LOG.debug(
+                        f"Cancelling Timer: left room for user {curr_usr['name']}"
+                    )
+                    self.timers_per_room[room_id].user_joined(curr_usr["id"])
+
+                elif data["type"] == "leave":
+                    self.timers_per_room[room_id].user_left(curr_usr["id"])
+
         @self.sio.event
         def joined_room(data):
             self.user = data["user"]
@@ -73,6 +133,10 @@ class InterventionBot:
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
 
+                self.timers_per_room[room_id] = RoomTimer(
+                    self.close_game, room_id
+                )
+
         @self.sio.event
         def command(data):
             """Intercepts the user messages
@@ -84,6 +148,10 @@ class InterventionBot:
 
             room_id = data["room"]
             user_id = data["user"]["id"]
+
+            if user_id != self.user:
+                timer = self.timers_per_room.get(room_id)
+                timer.reset()
 
             message = data["command"]
             for user in self.players_per_room[room_id]:
@@ -109,6 +177,52 @@ class InterventionBot:
                         callback=self.message_callback,
                     )
 
+    def close_game(self, room_id):
+        self.room_to_read_only(room_id)
+        self.timers_per_room.pop(room_id)
+        self.players_per_room.pop(room_id)
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+        for user in self.players_per_room[room_id]:
+            response = requests.get(
+                f"{self.uri}/users/{user['id']}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(f"Could not get user: {response.status_code}")
+                response.raise_for_status()
+            etag = response.headers["ETag"]
+
+            response = requests.delete(
+                f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Removing user from task room was successful.")
+
 
 if __name__ == "__main__":
     # set up logging configuration
@@ -131,8 +245,10 @@ if __name__ == "__main__":
     task_id = {"default": os.environ.get("TASK_ID")}
 
     # register commandline arguments
-    parser.add_argument("-t", "--token", help="token for logging in as bot", **token)
-    parser.add_argument("-u", "--user", help="user id for the bot", **user)
+    parser.add_argument(
+        "-t", "--token", help="token for logging in as bot", **token
+    )
+    parser.add_argument("-u", "--user", type=int, help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
     )
