@@ -36,31 +36,16 @@ class RoomTimer:
         self.timer.cancel()
 
 
-def set_text_message(value):
-    """
-    change user's permission to send messages
-    """
-    response = requests.get(
-        f"{uri}/permissions/4", headers={"Authorization": f"Bearer {token}"}
-    )
-    requests.patch(
-        f"{uri}/permissions/4",
-        json={"send_message": value},
-        headers={
-            "If-Match": response.headers["ETag"],
-            "Authorization": f"Bearer {token}",
-        },
-    )
-
-
 class GolmiBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.players_per_room = dict()
         self.golmi_client_per_room = dict()
-        self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.timers_per_room = dict()
+        self.description_per_room = dict()
+        self.points_per_room = dict()
+        self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.register_callbacks()
 
     def register_callbacks(self):
@@ -85,6 +70,8 @@ class GolmiBot(TaskBot):
                 # create image items for this room
                 self.boards_per_room.get_boards(room_id)
                 self.players_per_room[room_id] = list()
+                self.description_per_room[room_id] = False
+                self.points_per_room[room_id] = 0
                 self.timers_per_room[room_id] = RoomTimer(
                     self.close_game, room_id
                 )
@@ -209,6 +196,26 @@ class GolmiBot(TaskBot):
                             "receiver_id": other_usr["id"],
                         },
                     )
+        
+        @self.sio.event
+        def text_message(data):
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            # get user
+            curr_usr, other_usr = self.players_per_room[room_id]
+            if curr_usr["id"] != user_id:
+                curr_usr, other_usr = other_usr, curr_usr
+
+            # roles have not been assigned yet, don't do anything
+            if not all([curr_usr["role"], other_usr["role"]]):
+                return
+
+            # we have a message from the player
+            # revoke user's text privilege
+            if curr_usr["role"] == "player":
+                self.description_per_room[room_id] = True
+                self.set_message_privilege(user_id, False)
 
         @self.sio.event
         def command(data):
@@ -252,6 +259,44 @@ class GolmiBot(TaskBot):
                             },
                         )
 
+                    elif event == "mouse_click":
+                        x = data["command"]["offset_x"]
+                        y = data["command"]["offset_y"]
+                        block_size = data["command"]["block_size"]
+
+                        req = requests.get(
+                            f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}"
+                        )
+                        if req.ok is not True:
+                            logging.error("Could not retrieve gripped piece")
+
+                        piece = req.json()
+                        if piece:
+                            # no description yet, warn the user
+                            if self.description_per_room[room_id] is False:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            color=WARNING_COLOR,
+                                            message=(
+                                                "WARNING: wait for your partner "
+                                                "to send a description first"
+                                            )
+                                        ),
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                        "html": True,
+                                    },
+                                )
+                                return
+
+                            target = self.boards_per_room[room_id][0]["state"]["targets"]
+                            result = "right" if piece.keys() == target.keys() else "wrong"
+                        
+                            # load next state
+                            self.load_next_state(room_id, result)
+
                 else:
                     # commands from user
                     # set wizard
@@ -272,6 +317,81 @@ class GolmiBot(TaskBot):
                             },
                         )
 
+    def load_next_state(self, room_id, result):
+        if result == "right":
+            self.points_per_room[room_id] += POSITIVE_REWARD
+        else:
+            self.points_per_room[room_id] += NEGATIVE_REWARD
+        
+        player, wizard = self.players_per_room[room_id]
+        if player["role"] != "player":
+            player, wizard = wizard, player
+        
+        self.boards_per_room[room_id].pop(0)
+        
+        self.description_per_room[room_id] = False
+        self.set_message_privilege(player["id"], True)
+
+        if not self.boards_per_room[room_id]:
+            # no more boards, close the room
+            score = self.points_per_room[room_id]
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": (
+                        "That was the last one 🎉 🎉 thank you very much for your time! "
+                        f"Your score was: {score}."
+                    ),
+                    "html": True,
+                },
+            )
+            self.close_game(room_id)
+
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": (
+                        f"That was the {result} piece. "
+                        "Let's get you to the next board"
+                    ),
+                    "html": True,
+                },
+            )
+            self.load_state(room_id)
+
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
+        if not response.ok:
+            logging.error(
+                f"Could not retrieve user's permission: {response.status_code}"
+            )
+            response.raise_for_status()
+
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        if not response.ok:
+            logging.error(
+                f"Could not change user's message permission: {response.status_code}"
+            )
+            response.raise_for_status()
+
     def set_wizard_role(self, room_id, user_id):
         curr_usr, other_usr = self.players_per_room[room_id]
         if curr_usr["id"] != user_id:
@@ -279,6 +399,7 @@ class GolmiBot(TaskBot):
 
         # users have no roles so we can assign them
         if not all([curr_usr["role"], other_usr["role"]]):
+            curr_usr["role"] = "wizard"
             self.sio.emit(
                 "message_command",
                 {
@@ -293,7 +414,9 @@ class GolmiBot(TaskBot):
                     "receiver_id": curr_usr["id"],
                 },
             )
+            self.set_message_privilege(curr_usr["id"], False)
 
+            other_usr["role"] = "player"
             self.sio.emit(
                 "message_command",
                 {
@@ -329,6 +452,7 @@ class GolmiBot(TaskBot):
         )
 
         for user in self.players_per_room[room_id]:
+            self.set_message_privilege(user["id"], True)
             user["role"] = None
             self.sio.emit(
                 "message_command",
@@ -375,9 +499,25 @@ class GolmiBot(TaskBot):
         sleep(2)
         self.sio.emit(
             "text",
-            {"message": "The room is closing, thanky you for plaing", "room": room_id},
+            {
+                "message": "The room is closing, see you next time 👋"  ,
+                "room": room_id
+            },
         )
         self.room_to_read_only(room_id)
+
+        # remove any task room specific objects
+        memory_dicts = [
+            self.golmi_client_per_room,
+            self.players_per_room,
+            self.timers_per_room,
+            self.description_per_room,
+            self.boards_per_room,
+            self.points_per_room,
+        ]
+        for memory_dict in memory_dicts:
+            if room_id in memory_dict:
+                memory_dict.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -420,10 +560,6 @@ class GolmiBot(TaskBot):
                 )
                 response.raise_for_status()
             logging.debug("Removing user from task room was successful.")
-
-        # remove users from room
-        if room_id in self.players_per_room:
-            self.players_per_room.pop(room_id)
 
 
 if __name__ == "__main__":

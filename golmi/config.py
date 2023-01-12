@@ -11,7 +11,7 @@ WIZARD_INSTR = Path(f"{ROOT}/golmi/data/instruction_wizard.txt").read_text().str
 PLAYER_INSTR = Path(f"{ROOT}/golmi/data/instruction_player.txt").read_text().strip()
 
 BOARDS = Path(f"{ROOT}/golmi/data/boards.jsonl")
-BOARDS_PER_ROOM = 15
+BOARDS_PER_ROOM = 10
 
 
 TIMEOUT_TIMER = 60  # minutes of inactivity before the room is closed automatically
@@ -23,3 +23,7 @@ WARNING_COLOR = "FireBrick"
 
 
 TYPES = "https://raw.githubusercontent.com/clp-research/golmi/exp-descrimage/app/descrimage/static/types.png"
+
+# points to give to the users
+POSITIVE_REWARD = 10  # right piece selected
+NEGATIVE_REWARD = 0  # wrong piece selected

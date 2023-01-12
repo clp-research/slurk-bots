@@ -37,27 +37,27 @@ function start_golmi(url, password, role) {
                 }
             )
         });
+        // only the wizard can click on the board
+        grLayer.onclick = (event) => {
+            console.log(event)
+            socket.emit("message_command",
+                {
+                    "command": {
+                        "event": "mouse_click",
+                        "target_id": event.target.id,
+                        "offset_x": event.offsetX,
+                        "offset_y": event.offsetY,
+                        "x": event.x,
+                        "y": event.y,
+                        "block_size": layerView.blockSize,
+                    },
+                    "room": self_room
+                }
+            )
+        }
 
     } else {
         layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
-    }
-
-    grLayer.onclick = (event) => {
-        console.log(event)
-        socket.emit("message_command",
-            {
-                "command": {
-                    "event": "mouse_click",
-                    "target_id": event.target.id,
-                    "offset_x": event.offsetX,
-                    "offset_y": event.offsetY,
-                    "x": event.x,
-                    "y": event.y,
-                    "block_size": layerView.blockSize,
-                },
-                "room": self_room
-            }
-        )
     }
 
     // --- golmi_socket communication --- //
