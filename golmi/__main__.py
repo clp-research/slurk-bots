@@ -259,6 +259,12 @@ class GolmiBot(TaskBot):
                             },
                         )
 
+                        # give user possibility to send another message
+                        self.description_per_room[room_id] = False
+                        self.set_message_privilege(other_usr["id"], True)
+
+                        # TODO: should players lose points?
+
                     elif event == "mouse_click":
                         x = data["command"]["offset_x"]
                         y = data["command"]["offset_y"]
