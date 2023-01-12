@@ -14,11 +14,15 @@ class ImageData(dict):
     Mapping from room id to items left for this room.
 
     Args:
-        path (str): Path to a valid csv file with two columns
-            per row, containing the url of two paired up
-            images.
+        path (str): Path to a valid tsv file with at least
+            two columns per row, containing the image/word
+            pairs. Images aer represented as urls.
         n (int): Number of images presented per
-            participant per room.
+            participant per room (one at a time).
+        game_mode: one of 'same', 'one_blind', 'different',
+            specifying whether both players see the same image,
+            whether they see different images, or whether one
+            player is blind, i.e. does not see any image
         shuffle (bool): Whether to randomly sample images or
             select them one by one as present in the file.
             If more images are present than required per room
@@ -28,9 +32,15 @@ class ImageData(dict):
             make the image presentation process reproducible.
     """
 
-    def __init__(self, path=None, n=1, shuffle=False, seed=None):
+    def __init__(self,
+                 path=None,
+                 n=1,
+                 game_mode='same',
+                 shuffle=False,
+                 seed=None):
         self._path = path
         self._n = n
+        self._mode = game_mode
         self._shuffle = shuffle
 
         self._images = None
@@ -41,15 +51,19 @@ class ImageData(dict):
     def n(self):
         return self._n
 
-    def get_image_pairs(self, room_id):
-        """Create a collection of image pair items.
+    @property
+    def mode(self):
+        return self._mode
 
-        Each pair holds two url each to one image
-        ressource. The image will be loaded from there.
+    def get_word_image_pairs(self, room_id):
+        """Create a collection of word/image pair items.
+
+        Each item holds a word and 1 or 2 urls each to one image
+        resource. The images will be loaded from there.
         For local testing, you can host the images with python:
         ```python -m SimpleHTTPServer 8000```
 
-        This functions remembers previous calls to itself,
+        This function remembers previous calls to itself,
         which makes it possible to split a file of items over
         several participants even for not random sampling.
 
@@ -63,16 +77,17 @@ class ImageData(dict):
             # first time accessing the file
             # or a new access for each random sample
             self._images = self._image_gen()
+
         sample = []
         while len(sample) < self._n:
             try:
-                word, image = next(self._images)
+                pair = next(self._images)
             except StopIteration:
                 # we reached the end of the file
                 # and start again from the top
                 self._images = self._image_gen()
             else:
-                sample.append((word, image))
+                sample.append(pair)
         if self._shuffle:
             # implements reservoir sampling
             for img_line, img in enumerate(self._images, self._n):
@@ -86,8 +101,39 @@ class ImageData(dict):
         """Generate one image pair at a time."""
         with open(self._path, "r") as infile:
             for line in infile:
-                word, link = line.strip().split("\t")
-                yield word, link
+                data = line.strip().split("\t")
+                if len(data) == 2:
+                    if self.mode == 'one_blind':
+                        if self._switch_image_order() == 0:
+                            yield data[0], data[1], None
+                        else:
+                            yield data[0], None, data[1]
+                    elif self.mode == 'same':
+                        yield data[0], data[1], data[1]
+                    else:
+                        raise KeyError("No second image available in data file.")
+                elif len(data) > 2:
+                    if self.mode == 'one_blind':
+                        if self._switch_image_order() == 0:
+                            yield data[0], data[1], None
+                        else:
+                            yield data[0], None, data[1]
+
+                    elif self.mode == 'same':
+                        yield data[0], data[1], data[1]
+                    else:
+                        yield data[0], data[1], data[2]
+
+    def _switch_image_order(self):
+        """For the mode one_blind, switch who sees an image"""
+        last = 0
+        while True:
+            if last == 0:
+                last = 1
+                yield 1
+            else:
+                last = 0
+                yield 0
 
 
 if __name__ == "__main__":
