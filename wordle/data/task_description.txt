@@ -1,4 +1,4 @@
-Together with your partner, guess the secret 5 letter word. The picture gives you a hint, but the connection may be indirect.
+Together with your partner, guess the secret 5-letter word. The image gives you a hint, but the connection may be indirect.
 You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints: 
 Green means that the letter is in the right position.
 Yellow means that the letter is in the wrong position.
