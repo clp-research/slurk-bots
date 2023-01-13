@@ -122,23 +122,23 @@ class GolmiEval(TaskBot):
                         },
                     )
                     sleep(0.5)
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": "Here's a little help: you can reference pieces according to this legend",
-                        "room": room_id,
-                        "html": True,
-                    },
-                )
-                self.sio.emit(
-                    "image",
-                    {
-                        "room": room_id,
-                        "url": TYPES,
-                        "width": 600,
-                        "height": 300,
-                    },
-                )
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": "Here's a little help: you can reference pieces according to this legend",
+                #         "room": room_id,
+                #         "html": True,
+                #     },
+                # )
+                # self.sio.emit(
+                #     "image",
+                #     {
+                #         "room": room_id,
+                #         "url": TYPES,
+                #         "width": 600,
+                #         "height": 300,
+                #     },
+                # )
 
         @self.sio.event
         def status(data):
