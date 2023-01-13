@@ -47,6 +47,8 @@ class ImageData(dict):
         if seed is not None:
             random.seed(seed)
 
+        self._switch_order = self._switch_image_order()
+
     @property
     def n(self):
         return self._n
@@ -102,9 +104,10 @@ class ImageData(dict):
         with open(self._path, "r") as infile:
             for line in infile:
                 data = line.strip().split("\t")
+                order = next(self._switch_order)
                 if len(data) == 2:
                     if self.mode == 'one_blind':
-                        if self._switch_image_order() == 0:
+                        if order == 0:
                             yield data[0], data[1], None
                         else:
                             yield data[0], None, data[1]
@@ -114,11 +117,10 @@ class ImageData(dict):
                         raise KeyError("No second image available in data file.")
                 elif len(data) > 2:
                     if self.mode == 'one_blind':
-                        if self._switch_image_order() == 0:
+                        if order == 0:
                             yield data[0], data[1], None
                         else:
                             yield data[0], None, data[1]
-
                     elif self.mode == 'same':
                         yield data[0], data[1], data[1]
                     else:
@@ -130,11 +132,9 @@ class ImageData(dict):
         while True:
             if last == 0:
                 last = 1
-                yield 1
-            else:
+            elif last == 1:
                 last = 0
-                yield 0
-
+            yield last
 
 if __name__ == "__main__":
     import os

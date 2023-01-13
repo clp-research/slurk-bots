@@ -90,7 +90,7 @@ class WordleBot:
         self.url = self.uri
         self.uri += "/slurk/api"
 
-        self.images_per_room = ImageData(DATA_PATH, 3, SHUFFLE, SEED)
+        self.images_per_room = ImageData(DATA_PATH, 3, GAME_MODE, SHUFFLE, SEED)
         self.players_per_room = dict()
         self.last_message_from = dict()
         self.guesses_per_room = dict()
@@ -145,13 +145,15 @@ class WordleBot:
                 LOG.debug("Create data for the new task room...")
                 LOG.debug(data)
 
-                self.images_per_room.get_image_pairs(room_id)
+                self.images_per_room.get_word_image_pairs(room_id)
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
                 self.last_message_from[room_id] = None
+
+                self.move_divider(room_id, 35, 65)
 
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
@@ -269,7 +271,7 @@ class WordleBot:
                     )
 
                     # reset the front-end of the user who just joined
-                    word, _ = self.images_per_room[room_id][0]
+                    word, _, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
                         {
@@ -399,6 +401,27 @@ class WordleBot:
                         },
                     )
 
+
+    def move_divider(self, room_id, chat_area=50, task_area=50):
+        """move the central divider and resize chat and task area
+        the sum of char_area and task_area must sum up to 100
+        """
+        if chat_area + task_area != 100:
+            logging.error("could not resize chat and task area: invalid parameters")
+            raise ValueError("chat_area and task_area must sum up to 100")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {task_area}%"}
+        )
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/content",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {chat_area}%"}
+        )
+
     def _command_guess(self, room_id, user_id, command):
         """Must be sent to end a game round."""
         # identify the user that has not sent this event
@@ -409,7 +432,7 @@ class WordleBot:
         LOG.debug(command)
 
         # get the wordle for this room and the guess from the user
-        word, _ = self.images_per_room[room_id][0]
+        word, _, _ = self.images_per_room[room_id][0]
         guess = command["guess"]
         remaining_guesses = command["remaining"]
 
@@ -689,14 +712,51 @@ class WordleBot:
         LOG.debug("Update the image and task description of the players.")
         # guarantee fixed user order - necessary for update due to rejoin
         users = sorted(self.players_per_room[room_id], key=lambda x: x["id"])
+        user_1 = users[0]
+        user_2 = users[1]
 
         if self.images_per_room[room_id]:
-            word, image = self.images_per_room[room_id][0]
-            # show a different image to each user
-            for usr in users:
+            word, image_1, image_2 = self.images_per_room[room_id][0]
+
+            LOG.debug(f"WORD: {word}")
+            LOG.debug(f"IMAGE_1: {image_1}")
+            LOG.debug(f"IMAGE_2: {image_2}")
+
+            # show a different image to each user. one image can be None
+            if image_1:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": image, "receiver_id": usr["id"]},
+                    json={"attribute": "src", "value": image_1, "receiver_id": user_1["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(f"Could not set image: {response.status_code}")
+                    response.raise_for_status()
+            else:
+                # remove previous image
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": "", "receiver_id": user_1["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(f"Could not set image: {response.status_code}")
+                    response.raise_for_status()
+
+            if image_2:
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": image_2, "receiver_id": user_2["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(f"Could not set image: {response.status_code}")
+                    response.raise_for_status()
+            else:
+                # remove previous image
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": "", "receiver_id": user_1["id"]},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
