@@ -40,6 +40,12 @@ class TestImageData(unittest.TestCase):
         self.not_shuffled.get_word_image_pairs("mock_room")
         self.not_shuffled.get_word_image_pairs("other_mock_room")
         self.not_shuffled.get_word_image_pairs("another_mock_room")
+
+        self.blind_mode = ImageData(path="", n=3, game_mode='one_blind')
+        self.blind_mode.get_word_image_pairs("mock_room")
+        self.blind_mode.get_word_image_pairs("other_mock_room")
+        self.blind_mode.get_word_image_pairs("another_mock_room")
+
         # shuffled image data access
         self.shuffled = ImageData(path="", n=3, game_mode='same', shuffle=True, seed=24)
         self.shuffled.get_word_image_pairs("shuffled_mock_room")
@@ -57,6 +63,22 @@ class TestImageData(unittest.TestCase):
         # algorithm should start again from the beginning of the file
         expected = [("0", "0", "0"), ("1", "1", "1"), ("2", "2", "2")]
         actual = self.not_shuffled["another_mock_room"]
+
+        self.assertEqual(actual, expected)
+
+    def test_not_shuffled_correct_order_blind_mode(self):
+        expected_first_sample = [("0", None, "0"), ("1", "1", None), ("2", None, "2")]
+        expected_second_sample = [("3", "3", None), ("4", None, "4"), ("5", "5", None)]
+        actual_first_sample = self.blind_mode["mock_room"]
+        actual_second_sample = self.blind_mode["other_mock_room"]
+
+        self.assertEqual(actual_first_sample, expected_first_sample)
+        self.assertEqual(actual_second_sample, expected_second_sample)
+
+    def test_not_shuffled_sum_of_sample_sizes_exceeds_file_lines_blind_mode(self):
+        # algorithm should start again from the beginning of the file
+        expected = [("0", None, "0"), ("1", "1", None), ("2", None, "2")]
+        actual = self.blind_mode["another_mock_room"]
 
         self.assertEqual(actual, expected)
 
