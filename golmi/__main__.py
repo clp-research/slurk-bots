@@ -128,6 +128,18 @@ class GolmiBot(TaskBot):
                     )
                     sleep(0.5)
 
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr",
+                    json={"text": "Please wait for the roles to be assigned"},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(
+                        f"Could not set task instruction title: {response.status_code}"
+                    )
+                    response.raise_for_status()
+
+
         @self.sio.event
         def status(data):
             """Triggered if a user enters or leaves a room."""
