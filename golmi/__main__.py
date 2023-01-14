@@ -421,6 +421,16 @@ class GolmiBot(TaskBot):
                 },
             )
             self.set_message_privilege(curr_usr["id"], False)
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/instr",
+                json={"text": WIZARD_INSTR, "receiver_id": curr_usr["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not set task instruction title: {response.status_code}"
+                )
+                response.raise_for_status()
 
             other_usr["role"] = "player"
             self.sio.emit(
@@ -437,6 +447,16 @@ class GolmiBot(TaskBot):
                     "receiver_id": other_usr["id"],
                 },
             )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/instr",
+                json={"text": PLAYER_INSTR, "receiver_id": other_usr["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not set task instruction title: {response.status_code}"
+                )
+                response.raise_for_status()
 
         else:
             self.sio.emit(
