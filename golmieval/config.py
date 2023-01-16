@@ -6,8 +6,14 @@ from pathlib import Path
 ROOT = Path().resolve() #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-TASK_GREETING = Path(f"{ROOT}/golmieval/data/task_greeting.txt").read_text().strip().split("\n\n")
-TASK_INSTR = Path(f"{ROOT}/golmieval/data/instruction.txt").read_text().strip()
+def task_greeting():
+    greeting = Path(f"{ROOT}/golmieval/data/task_greeting.txt")
+    return greeting.read_text().strip().split("\n\n")
+
+
+def task_instr():
+    instr = Path(f"{ROOT}/golmieval/data/instruction.txt")
+    return instr.read_text().strip()
 
 
 BOARDS = Path(f"{ROOT}/golmieval/data/boards.jsonl")

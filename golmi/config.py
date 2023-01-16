@@ -6,9 +6,20 @@ from pathlib import Path
 ROOT = Path().resolve() #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-TASK_GREETING = Path(f"{ROOT}/golmi/data/task_greeting.txt").read_text().strip().split("\n\n")
-WIZARD_INSTR = Path(f"{ROOT}/golmi/data/instruction_wizard.txt").read_text().strip()
-PLAYER_INSTR = Path(f"{ROOT}/golmi/data/instruction_player.txt").read_text().strip()
+def task_greeting():
+    greeting = Path(f"{ROOT}/golmi/data/task_greeting.txt")
+    return greeting.read_text().strip().split("\n\n")
+
+
+def wizard_instr():
+    instr = Path(f"{ROOT}/golmi/data/instruction_wizard.txt")
+    return instr.read_text().strip()
+
+
+def player_instr():
+    instr = Path(f"{ROOT}/golmi/data/instruction_player.txt")
+    return instr.read_text().strip()
+
 
 BOARDS = Path(f"{ROOT}/golmi/data/boards.jsonl")
 BOARDS_PER_ROOM = 10

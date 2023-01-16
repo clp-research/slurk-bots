@@ -117,7 +117,7 @@ class GolmiBot(TaskBot):
                     response.raise_for_status()
 
                 # read out task greeting
-                for line in TASK_GREETING:
+                for line in task_greeting():
                     self.sio.emit(
                         "text",
                         {
@@ -435,7 +435,7 @@ class GolmiBot(TaskBot):
             self.set_message_privilege(curr_usr["id"], False)
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": WIZARD_INSTR, "receiver_id": curr_usr["id"]},
+                json={"text": wizard_instr(), "receiver_id": curr_usr["id"]},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:
@@ -461,7 +461,7 @@ class GolmiBot(TaskBot):
             )
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": PLAYER_INSTR, "receiver_id": other_usr["id"]},
+                json={"text": player_instr(), "receiver_id": other_usr["id"]},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:

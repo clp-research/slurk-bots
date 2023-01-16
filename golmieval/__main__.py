@@ -112,7 +112,7 @@ class GolmiEval(TaskBot):
 
                 sleep(0.5)
                 # read out task greeting
-                for line in TASK_GREETING:
+                for line in task_greeting():
                     self.sio.emit(
                         "text",
                         {
@@ -122,6 +122,15 @@ class GolmiEval(TaskBot):
                         },
                     )
                     sleep(0.5)
+
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": task_instr(),
+                        "room": room_id,
+                        "html": True,
+                    },
+                )
                 # self.sio.emit(
                 #     "text",
                 #     {
@@ -202,7 +211,6 @@ class GolmiEval(TaskBot):
             )
 
             if room_id in self.players_per_room:
-
                 # command comes from front end
                 if isinstance(data["command"], dict):
                     if "event" not in data["command"]:
@@ -210,56 +218,7 @@ class GolmiEval(TaskBot):
                     event = data["command"]["event"]
 
                     if event == "next":
-                        if self.can_load_next_state[room_id] is False:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "room": room_id,
-                                    "message": COLOR_MESSAGE.format(
-                                        message=(
-                                            "**You need to send at least one message before you can move on.** "
-                                            "Remember to press enter to send your description"
-                                        ),
-                                        color=WARNING_COLOR,
-                                    ),
-                                    "html": True,
-                                },
-                            )
-                            return
-
-                        self.boards_per_room[room_id].pop(0)
-                        # no more image, close room
-                        if not self.boards_per_room[room_id]:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "room": room_id,
-                                    "message": (
-                                        "That was the last one 🎉 🎉 thank you very much for your time! "
-                                        "I really appreciate your help."
-                                    ),
-                                    "html": True,
-                                },
-                            )
-                            self.close_game(room_id)
-
-                        else:
-                            self.can_load_next_state[room_id] = False
-                            self.load_state(room_id)
-                            boards_left = len(self.boards_per_room[room_id])
-
-                            if boards_left % 5 == 0:
-                                message = f"Still {boards_left} boards to go"
-                                if boards_left < 10:
-                                    message = f"{message}. You almost made it!"
-
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "room": room_id,
-                                        "message": message,
-                                    },
-                                )
+                        self.load_next_state(room_id)
 
                     elif event == "mouse_click":
                         x = data["command"]["offset_x"]
@@ -285,15 +244,71 @@ class GolmiEval(TaskBot):
                             )
 
                 else:
-                    # no user defined commands
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "Sorry, but I do not understand this command.",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+                    if data["command"] == "next":
+                        self.load_next_state(room_id)
+
+                    else:
+                        # unknown command
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "Sorry, but I do not understand this command.",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
+
+    def load_next_state(self, room_id):
+        if self.can_load_next_state[room_id] is False:
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": COLOR_MESSAGE.format(
+                        message=(
+                            "**You need to send at least one message before you can move on.** "
+                            "Remember to press enter to send your description"
+                        ),
+                        color=WARNING_COLOR,
+                    ),
+                    "html": True,
+                },
+            )
+            return
+
+        self.boards_per_room[room_id].pop(0)
+        # no more image, close room
+        if not self.boards_per_room[room_id]:
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": (
+                        "That was the last one 🎉 🎉 thank you very much for your time! "
+                        "I really appreciate your help."
+                    ),
+                    "html": True,
+                },
+            )
+            self.close_game(room_id)
+
+        else:
+            self.can_load_next_state[room_id] = False
+            self.load_state(room_id)
+            boards_left = len(self.boards_per_room[room_id])
+
+            if boards_left % 5 == 0:
+                message = f"Still {boards_left} boards to go"
+                if boards_left < 10:
+                    message = f"{message}. You almost made it!"
+
+                self.sio.emit(
+                    "text",
+                    {
+                        "room": room_id,
+                        "message": message,
+                    },
+                )
 
     def load_state(self, room_id):
         """load the current board on the golmi server"""

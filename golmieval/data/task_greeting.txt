@@ -1,3 +1,1 @@
-**Welcome to the GolmiEval Task!** Describe the highlighted piece on the board on the 
-right so that another person could **uniquely** identify it. 
-When in doubt, click on a piece to find out if that's your target.
+**Welcome to the GolmiEval Task!**
