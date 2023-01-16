@@ -147,12 +147,13 @@ $(document).ready(function () {
         }
     });
 
+    // listen for mouse events to plot mouse movements
     socket.on("mouse", (data) => {
         if (data.type == "move"){ 
             canvas = $("#gripper")[0]
             ctx = canvas.getContext("2d")
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillRect(data.command.x, data.command.y,10,10);
+            ctx.fillRect(data.coordinates.x, data.coordinates.y,10,10);
         }
     })
 });
