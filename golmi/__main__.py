@@ -230,6 +230,53 @@ class GolmiBot(TaskBot):
                 self.set_message_privilege(user_id, False)
 
         @self.sio.event
+        def mouse(data):
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            if room_id not in self.players_per_room:
+                return
+
+            # check if player selected the correct area
+            if data["type"] == "click":
+                x = data["coordinates"]["x"]
+                y = data["coordinates"]["y"]
+                block_size = data["coordinates"]["block_size"]
+
+                req = requests.get(
+                    f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}"
+                )
+                if req.ok is not True:
+                    logging.error("Could not retrieve gripped piece")
+
+                piece = req.json()
+                if piece:
+                    # no description yet, warn the user
+                    if self.description_per_room[room_id] is False:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    color=WARNING_COLOR,
+                                    message=(
+                                        "WARNING: wait for your partner "
+                                        "to send a description first"
+                                    )
+                                ),
+                                "room": room_id,
+                                "receiver_id": user_id,
+                                "html": True,
+                            },
+                        )
+                        return
+
+                    target = self.boards_per_room[room_id][0]["state"]["targets"]
+                    result = "right" if piece.keys() == target.keys() else "wrong"
+                
+                    # load next state
+                    self.load_next_state(room_id, result)
+
+        @self.sio.event
         def command(data):
             """Parse user commands."""
             room_id = data["room"]
@@ -276,44 +323,6 @@ class GolmiBot(TaskBot):
                         self.set_message_privilege(other_usr["id"], True)
 
                         # TODO: should players lose points?
-
-                    elif event == "mouse_click":
-                        x = data["command"]["offset_x"]
-                        y = data["command"]["offset_y"]
-                        block_size = data["command"]["block_size"]
-
-                        req = requests.get(
-                            f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}"
-                        )
-                        if req.ok is not True:
-                            logging.error("Could not retrieve gripped piece")
-
-                        piece = req.json()
-                        if piece:
-                            # no description yet, warn the user
-                            if self.description_per_room[room_id] is False:
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            color=WARNING_COLOR,
-                                            message=(
-                                                "WARNING: wait for your partner "
-                                                "to send a description first"
-                                            )
-                                        ),
-                                        "room": room_id,
-                                        "receiver_id": user_id,
-                                        "html": True,
-                                    },
-                                )
-                                return
-
-                            target = self.boards_per_room[room_id][0]["state"]["targets"]
-                            result = "right" if piece.keys() == target.keys() else "wrong"
-                        
-                            # load next state
-                            self.load_next_state(room_id, result)
 
                 else:
                     # commands from user

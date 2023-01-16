@@ -2,6 +2,48 @@ let golmi_socket = null
 let layerView = null
 let controller = null
 
+// copy some parts of the mouse tracking plugin
+let trackingArea = "gripper"
+
+let trackMousePointer = {
+    isMoving: false,
+    pos: {x: undefined, y: undefined}
+};
+
+function trackGetPosition (evt, area) {
+    let elem = document.getElementById(area);
+    let position = elem.getBoundingClientRect();
+    trackMousePointer.pos.x = evt.offsetX
+    trackMousePointer.pos.y = evt.offsetY
+}
+
+function emitPosition(area) {
+    if (trackMousePointer.isMoving) {
+        socket.emit("mouse", {
+           type: "move",
+           coordinates: trackMousePointer.pos,
+           element_id: area,
+           room: self_room
+	});
+        trackMousePointer.isMoving = false;
+    }
+}
+
+function trackMovement(area, interval) {
+    $("#" + area).mousemove(function(e) {
+        trackGetPosition(e, area);
+        trackMousePointer.isMoving = true;
+    });
+    setInterval(emitPosition, interval, area);
+}
+
+function trackClicks(area) {
+    $("#" + area).click(function(e) {
+        trackGetPosition(e, area);
+        
+    });
+}
+
 
 function start_golmi(url, password, role) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
@@ -37,23 +79,15 @@ function start_golmi(url, password, role) {
                 }
             )
         });
-        // only the wizard can click on the board
+
         grLayer.onclick = (event) => {
             console.log(event)
-            socket.emit("message_command",
-                {
-                    "command": {
-                        "event": "mouse_click",
-                        "target_id": event.target.id,
-                        "offset_x": event.offsetX,
-                        "offset_y": event.offsetY,
-                        "x": event.x,
-                        "y": event.y,
-                        "block_size": layerView.blockSize,
-                    },
-                    "room": self_room
-                }
-            )
+            socket.emit("mouse", {
+                type: "click",
+                coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": layerView.blockSize},
+                element_id: "gripper",
+                room: self_room
+            });
         }
 
     } else {
@@ -112,4 +146,13 @@ $(document).ready(function () {
             }
         }
     });
+
+    socket.on("mouse", (data) => {
+        if (data.type == "move"){ 
+            canvas = $("#gripper")[0]
+            ctx = canvas.getContext("2d")
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(data.command.x, data.command.y,10,10);
+        }
+    })
 });
