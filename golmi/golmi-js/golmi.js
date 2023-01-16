@@ -1,10 +1,10 @@
 let golmi_socket = null
 let layerView = null
 let controller = null
+let my_role = null
+
 
 // copy some parts of the mouse tracking plugin
-let trackingArea = "gripper"
-
 let trackMousePointer = {
     isMoving: false,
     pos: {x: undefined, y: undefined}
@@ -49,6 +49,7 @@ function start_golmi(url, password, role) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
     console.log(`Connect to ${url}`)
 
+
     // --- create a golmi_socket --- //
     // don't connect yet
     golmi_socket = io(url, {
@@ -89,6 +90,9 @@ function start_golmi(url, password, role) {
                 room: self_room
             });
         }
+
+        //track mouse movements
+        // trackMovement("gripper", 200);
 
     } else {
         layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
@@ -137,6 +141,7 @@ $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             if (data.command.event === "init") {
+                my_role = data.command.role,
                 start(
                     data.command.url,
                     data.command.room_id,
@@ -149,11 +154,13 @@ $(document).ready(function () {
 
     // listen for mouse events to plot mouse movements
     socket.on("mouse", (data) => {
-        if (data.type == "move"){ 
-            canvas = $("#gripper")[0]
-            ctx = canvas.getContext("2d")
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillRect(data.coordinates.x, data.coordinates.y,10,10);
+        if (my_role === "player"){
+            if (data.type == "move"){ 
+                canvas = $("#gripper")[0]
+                ctx = canvas.getContext("2d")
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillRect(data.coordinates.x, data.coordinates.y, 5, 5);
+            }
         }
     })
 });
