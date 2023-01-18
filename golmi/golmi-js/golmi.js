@@ -91,7 +91,7 @@ function start_golmi(url, password, role) {
             });
         }
 
-        //track mouse movements
+        // activate mouse tracking
         // trackMovement("gripper", 200);
 
     } else {
@@ -137,6 +137,23 @@ function stop() {
 }
 
 
+function drawCircle(ctx, x, y, radius, fill, stroke, strokeWidth) {
+    ctx.beginPath()
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false)
+
+    if (fill) {
+      ctx.fillStyle = fill
+      ctx.fill()
+    }
+
+    if (stroke) {
+      ctx.lineWidth = strokeWidth
+      ctx.strokeStyle = stroke
+      ctx.stroke()
+    }
+}
+
+
 $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
@@ -159,7 +176,7 @@ $(document).ready(function () {
                 canvas = $("#gripper")[0]
                 ctx = canvas.getContext("2d")
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillRect(data.coordinates.x, data.coordinates.y, 5, 5);
+                drawCircle(ctx, data.coordinates.x, data.coordinates.y, 5, 'red', 'red', 2)
             }
         }
     })
