@@ -254,6 +254,9 @@
     }
   ],
   "css": {
+    ".dis-area": {
+      "display": "none;"
+    },
     ".card": {
       "position": "relative",
       "display": "flex",

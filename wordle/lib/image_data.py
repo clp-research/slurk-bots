@@ -97,30 +97,37 @@ class ImageData(dict):
                 if rand_line < self._n:
                     sample[rand_line] = tuple(img)
             self._images = None
-        self[room_id] = sample
+
+        # make sure that for the one_blind mode, the game alternates
+        # between who sees the image
+        if self._mode == 'one_blind':
+            new_sample = []
+            for item in sample:
+                order = next(self._switch_order)
+                if order:
+                    # switch the order of images
+                    new_sample.append((item[0], item[2], item[1]))
+                else:
+                    new_sample.append(item)
+            self[room_id] = new_sample
+        else:
+            self[room_id] = sample
 
     def _image_gen(self):
         """Generate one image pair at a time."""
         with open(self._path, "r") as infile:
             for line in infile:
                 data = line.strip().split("\t")
-                order = next(self._switch_order)
                 if len(data) == 2:
                     if self.mode == 'one_blind':
-                        if order == 0:
-                            yield data[0], data[1], None
-                        else:
-                            yield data[0], None, data[1]
+                        yield data[0], data[1], None
                     elif self.mode == 'same':
                         yield data[0], data[1], data[1]
                     else:
                         raise KeyError("No second image available in data file.")
                 elif len(data) > 2:
                     if self.mode == 'one_blind':
-                        if order == 0:
-                            yield data[0], data[1], None
-                        else:
-                            yield data[0], None, data[1]
+                        yield data[0], data[1], None
                     elif self.mode == 'same':
                         yield data[0], data[1], data[1]
                     else:

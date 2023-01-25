@@ -122,6 +122,14 @@ class WordleBot:
         # wait until the connection with the server ends
         self.sio.wait()
 
+    @staticmethod
+    def request_feedback(response, action):
+        if not response.ok:
+            LOG.error(f"Could not {action}: {response.status_code}")
+            response.raise_for_status()
+        else:
+            LOG.debug(f'Successfully did {action}.')
+
     def register_callbacks(self):
         @self.sio.event
         def new_task_room(data):
@@ -145,15 +153,16 @@ class WordleBot:
                 LOG.debug("Create data for the new task room...")
                 LOG.debug(data)
 
+                self.move_divider(room_id, 35, 65)
+
                 self.images_per_room.get_word_image_pairs(room_id)
+                LOG.debug(self.images_per_room[room_id])
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
                 self.last_message_from[room_id] = None
-
-                self.move_divider(room_id, 35, 65)
 
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
@@ -717,51 +726,49 @@ class WordleBot:
 
         if self.images_per_room[room_id]:
             word, image_1, image_2 = self.images_per_room[room_id][0]
-
-            LOG.debug(f"WORD: {word}")
-            LOG.debug(f"IMAGE_1: {image_1}")
-            LOG.debug(f"IMAGE_2: {image_2}")
+            LOG.debug(f'{image_1}\n{image_2}')
 
             # show a different image to each user. one image can be None
+
+            # remove image for both
+            response = requests.post(
+                f"{self.uri}/rooms/{room_id}/class/image-area",
+                json={"class": "dis-area"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "hide image")
+
+            # Player 1
             if image_1:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
                     json={"attribute": "src", "value": image_1, "receiver_id": user_1["id"]},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not set image: {response.status_code}")
-                    response.raise_for_status()
-            else:
-                # remove previous image
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": "", "receiver_id": user_1["id"]},
+                self.request_feedback(response, "set image 1")
+                # enable the image
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-area",
+                    json={"class": "dis-area", "receiver_id": user_1["id"]},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not set image: {response.status_code}")
-                    response.raise_for_status()
+                self.request_feedback(response, "enable image 1")
 
+            # Player 2
             if image_2:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
                     json={"attribute": "src", "value": image_2, "receiver_id": user_2["id"]},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not set image: {response.status_code}")
-                    response.raise_for_status()
-            else:
-                # remove previous image
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": "", "receiver_id": user_1["id"]},
+                self.request_feedback(response, "set image 2")
+                # enable the image
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-area",
+                    json={"class": "dis-area", "receiver_id": user_2["id"]},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not set image: {response.status_code}")
-                    response.raise_for_status()
+                self.request_feedback(response, "enable image 2")
 
             # the task for both users is the same - no special receiver
             response = requests.patch(
