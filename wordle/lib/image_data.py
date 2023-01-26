@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """Manage access to image data."""
 
-import configparser
-import csv
 import random
-
-from lib.config import *
 
 
 class ImageData(dict):
@@ -124,7 +120,7 @@ class ImageData(dict):
                     elif self.mode == 'same':
                         yield data[0], data[1], data[1]
                     else:
-                        raise KeyError("No second image available in data file.")
+                        raise KeyError("No second image available.")
                 elif len(data) > 2:
                     if self.mode == 'one_blind':
                         yield data[0], data[1], None
@@ -142,6 +138,7 @@ class ImageData(dict):
             elif last == 1:
                 last = 0
             yield last
+
 
 if __name__ == "__main__":
     import os

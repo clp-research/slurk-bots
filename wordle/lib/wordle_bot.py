@@ -14,7 +14,20 @@ import requests
 import socketio
 
 from lib.image_data import ImageData
-from lib.config import *
+from lib.config import (
+    COLOR_MESSAGE,
+    DATA_PATH,
+    GAME_MODE,
+    SEED,
+    SHUFFLE,
+    STANDARD_COLOR,
+    TASK_GREETING,
+    TASK_TITLE,
+    TIME_LEFT,
+    TIME_ROUND,
+    WARNING_COLOR,
+    WORD_LIST
+)
 
 
 LOG = logging.getLogger(__name__)
@@ -219,7 +232,8 @@ class WordleBot:
                     {
                         "message": COLOR_MESSAGE.format(
                             color=STANDARD_COLOR,
-                            message=f"Let's start with the first of {self.images_per_room.n} images",
+                            message=f"Let's start with the first "
+                                    f"of {self.images_per_room.n} images",
                         ),
                         "room": room_id,
                         "html": True,
@@ -326,7 +340,8 @@ class WordleBot:
                         {
                             "message": COLOR_MESSAGE.format(
                                 color=STANDARD_COLOR,
-                                message=f"{curr_usr['name']} has left the game. Please wait a bit, your partner may rejoin.",
+                                message=f"{curr_usr['name']} has left the game."
+                                        f" Please wait a bit, your partner may rejoin.",
                             ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
@@ -376,7 +391,8 @@ class WordleBot:
                 return
 
             if room_id in self.images_per_room:
-                # only accept commands from the javascript frontend (commands are dictionaries)
+                # only accept commands from the javascript
+                # frontend (commands are dictionaries)
                 if isinstance(data["command"], dict):
                     if "guess" in data["command"]:
                         if data["command"]["guess"].strip() == "":
@@ -410,13 +426,12 @@ class WordleBot:
                         },
                     )
 
-
     def move_divider(self, room_id, chat_area=50, task_area=50):
         """move the central divider and resize chat and task area
         the sum of char_area and task_area must sum up to 100
         """
         if chat_area + task_area != 100:
-            logging.error("could not resize chat and task area: invalid parameters")
+            LOG.error("Could not resize chat and task area: invalid parameters.")
             raise ValueError("chat_area and task_area must sum up to 100")
 
         response = requests.patch(
@@ -424,12 +439,14 @@ class WordleBot:
             headers={"Authorization": f"Bearer {self.token}"},
             json={"attribute": "style", "value": f"width: {task_area}%"}
         )
+        self.request_feedback(response, "resize sidebar")
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/content",
             headers={"Authorization": f"Bearer {self.token}"},
             json={"attribute": "style", "value": f"width: {chat_area}%"}
         )
+        self.request_feedback(response, "resize content area")
 
     def _command_guess(self, room_id, user_id, command):
         """Must be sent to end a game round."""
@@ -452,7 +469,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=WARNING_COLOR,
-                        message="**Unfortunately this word is not valid. Make sure that there aren't any typos**",
+                        message="**Unfortunately this word is not valid. "
+                                "Make sure that there aren't any typos**",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -468,7 +486,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Unfortunately this word is not valid. Your guess needs to have {len(word)} letters.",
+                        message=f"Unfortunately this word is not valid. "
+                                f"Your guess needs to have {len(word)} letters.",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -522,7 +541,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message="Your partner thinks that you have found the right word. Enter your guess.",
+                        message="Your partner thinks that you have "
+                                "found the right word. Enter your guess.",
                     ),
                     "receiver_id": other_usr["id"],
                     "room": room_id,
@@ -540,7 +560,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message="You and your partner sent a different word, please discuss and enter the same guess.",
+                        message="You and your partner sent a different word, "
+                                "please discuss and enter the same guess.",
                     ),
                     "room": room_id,
                     "html": True,
@@ -633,7 +654,8 @@ class WordleBot:
                         message=(
                             "Please share the following text on social media: "
                             "I played slurdle and helped science! "
-                            f"Together with {other_usr['name']}, I got {self.points_per_room[room_id]} "
+                            f"Together with {other_usr['name']}, "
+                            f"I got {self.points_per_room[room_id]} "
                             f"points for {self.images_per_room.n} puzzle(s). "
                             f"Play here: {self.url}. #slurdle"
                         ),
@@ -651,7 +673,8 @@ class WordleBot:
                         message=(
                             "Please share the following text on social media: "
                             "I played slurdle and helped science! "
-                            f"Together with {curr_usr['name']}, I got {self.points_per_room[room_id]} "
+                            f"Together with {curr_usr['name']}, "
+                            f"I got {self.points_per_room[room_id]} "
                             f"points for {self.images_per_room.n} puzzle(s). "
                             f"Play here: {self.url}. #slurdle"
                         ),
@@ -672,7 +695,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Ok, let's get both of you the next image. {len(self.images_per_room[room_id])} to go!",
+                        message=f"Ok, let's get both of you the next image. "
+                                f"{len(self.images_per_room[room_id])} to go!",
                     ),
                     "room": room_id,
                     "html": True,
@@ -810,7 +834,9 @@ class WordleBot:
             {
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
-                    message="Please enter the following token into the field on the HIT webpage, and close this browser window.",
+                    message="Please enter the following token into "
+                            "the field on the HIT webpage, and close "
+                            "this browser window.",
                 ),
                 "room": room_id,
                 "html": True,
