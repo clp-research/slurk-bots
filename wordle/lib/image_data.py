@@ -12,13 +12,13 @@ class ImageData(dict):
     Args:
         path (str): Path to a valid tsv file with at least
             two columns per row, containing the image/word
-            pairs. Images aer represented as urls.
+            pairs. Images are represented as urls.
         n (int): Number of images presented per
             participant per room (one at a time).
         game_mode: one of 'same', 'one_blind', 'different',
             specifying whether both players see the same image,
             whether they see different images, or whether one
-            player is blind, i.e. does not see any image
+            player is blind, i.e. does not see any image.
         shuffle (bool): Whether to randomly sample images or
             select them one by one as present in the file.
             If more images are present than required per room
