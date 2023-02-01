@@ -17,7 +17,7 @@ SEED = None
 # Whether to randomly sample images or present them in linear order.
 SHUFFLE = True
 # What mode the game uses for showing images. one of "same", "different", "one_blind"
-GAME_MODE = "same"
+GAME_MODE = "one_blind"
 
 # All below *TIME_* variables are in minutes.
 # They indicate how long a situation has to persist for something to happen.

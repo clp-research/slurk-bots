@@ -207,6 +207,23 @@ class WordleBot:
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
+            mode_message = "In this game mode, "
+            if GAME_MODE == 'same':
+                mode_message += "both of you see the same image."
+            elif GAME_MODE == 'different':
+                mode_message += "each of you sees a different image. " \
+                                "Both images are connected to the same word."
+            else:
+                mode_message += "only one of you sees the image and " \
+                                "needs to describe it to the other person."
+
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/mode",
+                json={"text": mode_message},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "add mode explanation")
+
             if room_id in self.images_per_room:
                 # read out task greeting
                 for line in TASK_GREETING:

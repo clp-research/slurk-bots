@@ -13,7 +13,13 @@
             {
               "layout-type": "p",
               "style": "padding-bottom: 5px",
-              "layout-content": "Together with your partner, guess the secret 5 letter word. The picture gives you a hint, but the connection may be indirect."
+              "layout-content": "Together with your partner, guess the secret 5-letter word. The image gives you a hint, but the connection may be indirect."
+            },
+            {
+              "layout-type": "p",
+              "id": "mode",
+              "style": "padding-bottom: 5px",
+              "layout-content": ""
             },
             {
               "layout-type": "p",
@@ -38,16 +44,16 @@
                     },
                     {
                       "layout-type": "p",
-                      "layout-content": "<span style='color:green;'>Green</span> means that the letter is in the right position."
+                      "layout-content": "<span style='color:green;'><b>Green</b></span> means that the letter is in the right position."
                     },
                     {
                       "layout-type": "p",
-                      "layout-content": "<span style='color:orange;'>Yellow</span> means that the letter is in the wrong position."
+                      "layout-content": "<span style='color:orange;'><b>Yellow</b></span> means that the letter is in the wrong position."
                     },
                     {
                       "layout-type": "p",
                       "style": "padding-bottom: 5px",
-                      "layout-content": "<span style='color:grey;'>Grey</span> means that the word does not contain this letter."
+                      "layout-content": "<span style='color:grey;'><b>Grey</b></span> means that the word does not contain this letter."
                     }
                   ]
                 },
@@ -287,6 +293,9 @@
       "display": "flex",
       "align-items": "center",
       "flex-direction": "column"
+    },
+    "#mode": {
+      "font-weight": "bold"
     },
     "#wrapper": {
       "display": "flex",
