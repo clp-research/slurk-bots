@@ -683,8 +683,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Ok, let's get both of you the next image. "
-                                f"{len(self.images_per_room[room_id])} to go!",
+                        message=f"Ok, let's move on to the next round. "
+                                f"{len(self.images_per_room[room_id])} rounds to go!",
                     ),
                     "room": room_id,
                     "html": True,
