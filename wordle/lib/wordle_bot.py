@@ -181,12 +181,7 @@ class WordleBot:
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not let wordle bot join room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                LOG.debug("Sending wordle bot to new room was successful.")
+                self.request_feedback(response, "let wordle bot join room")
 
                 logging.info(room_id)
                 self.sio.emit(
@@ -240,17 +235,12 @@ class WordleBot:
                     },
                 )
 
-                # ask players to send \ready
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
                     json={"text": line},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
+                self.request_feedback(response, "set task instruction title")
 
         @self.sio.event
         def status(data):
@@ -260,9 +250,7 @@ class WordleBot:
                 f"{self.uri}/users/{data['user']['id']}/task",
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            if not task.ok:
-                LOG.error(f"Could not set task instruction title: {task.status_code}")
-                task.raise_for_status()
+            self.request_feedback(task, "set task instruction title")
             if not task.json() or task.json()["id"] != int(self.task_id):
                 return
 
@@ -800,11 +788,7 @@ class WordleBot:
                 json={"text": TASK_TITLE},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            if not response.ok:
-                LOG.error(
-                    f"Could not set task instruction title: {response.status_code}"
-                )
-                response.raise_for_status()
+            self.request_feedback(response, "set task instruction title")
 
     def confirmation_code(self, room_id, status, receiver_id=None):
         """Generate AMT token that will be sent to each player."""
@@ -825,9 +809,7 @@ class WordleBot:
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "post AMT token to logs")
 
         self.sio.emit(
             "text",
@@ -895,17 +877,14 @@ class WordleBot:
             json={"attribute": "readonly", "value": "True"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            LOG.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "set room to read_only")
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "placeholder", "value": "This room is read-only"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            LOG.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "set room to read_only")
 
         # remove user from room
         if room_id in self.players_per_room:
@@ -914,21 +893,14 @@ class WordleBot:
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not get user: {response.status_code}")
-                    response.raise_for_status()
+                self.request_feedback(response, "get user")
                 etag = response.headers["ETag"]
 
                 response = requests.delete(
                     f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
                     headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not remove user from task room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                LOG.debug("Removing user from task room was successful.")
+                self.request_feedback(response, "remove user from task room")
 
             # remove users from room
             self.players_per_room.pop(room_id)
