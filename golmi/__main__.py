@@ -45,6 +45,7 @@ class GolmiBot(TaskBot):
         self.timers_per_room = dict()
         self.description_per_room = dict()
         self.points_per_room = dict()
+        self.selected_object_per_room = dict()
         self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.register_callbacks()
 
@@ -71,6 +72,7 @@ class GolmiBot(TaskBot):
                 self.boards_per_room.get_boards(room_id)
                 self.players_per_room[room_id] = list()
                 self.description_per_room[room_id] = False
+                self.selected_object_per_room[room_id] = False
                 self.points_per_room[room_id] = 0
                 self.timers_per_room[room_id] = RoomTimer(
                     self.close_game, room_id
@@ -191,6 +193,8 @@ class GolmiBot(TaskBot):
                                     "room_id": str(room_id),
                                     "password": self.golmi_password,
                                     "role": role,
+                                    "tracking": self.version == "mouse_tracking",
+                                    "show_gripped_objects": self.version == "confirm_selection"
                                 },
                                 "room": room_id,
                                 "receiver_id": data["user"]["id"],
@@ -237,6 +241,27 @@ class GolmiBot(TaskBot):
             if room_id not in self.players_per_room:
                 return
 
+            if data["type"] != "click":
+                return
+
+            if self.selected_object_per_room[room_id] is True:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": COLOR_MESSAGE.format(
+                            color=WARNING_COLOR,
+                            message=(
+                                "WARNING: you already selected an object, "
+                                "wait for your partner to confirm your selection"
+                            )
+                        ),
+                        "room": room_id,
+                        "receiver_id": user_id,
+                        "html": True,
+                    },
+                )
+                return
+
             # no description yet, warn the user
             if self.description_per_room[room_id] is False:
                 self.sio.emit(
@@ -256,25 +281,41 @@ class GolmiBot(TaskBot):
                 )
                 return
 
+            curr_usr, other_usr = self.players_per_room[room_id]
+            if curr_usr["id"] != user_id:
+                curr_usr, other_usr = other_usr, curr_usr
+
             # check if player selected the correct area
-            if data["type"] == "click":
-                x = data["coordinates"]["x"]
-                y = data["coordinates"]["y"]
-                block_size = data["coordinates"]["block_size"]
+            x = data["coordinates"]["x"]
+            y = data["coordinates"]["y"]
+            block_size = data["coordinates"]["block_size"]
 
-                req = requests.get(
-                    f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
-                )
-                if req.ok is not True:
-                    logging.error("Could not retrieve gripped piece")
+            req = requests.get(
+                f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
+            )
+            if req.ok is not True:
+                logging.error("Could not retrieve gripped piece")
 
-                piece = req.json()
-                if piece:
-                    target = self.boards_per_room[room_id][0]["state"]["targets"]
-                    result = "right" if piece.keys() == target.keys() else "wrong"
-                
-                    # load next state
+            piece = req.json()
+            if piece:
+                target = self.boards_per_room[room_id][0]["state"]["targets"]
+                result = "right" if piece.keys() == target.keys() else "wrong"
+            
+                # load next state
+                if self.version != "confirm_selection":
                     self.load_next_state(room_id, result)
+                else:
+                    self.selected_object_per_room[room_id] = True
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": "Your partner selected an object, is it correct? <button onclick=\"confirm_selection('yes')\">YES</button> <button onclick=\"confirm_selection('no')\">NO</button>.",
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                            "html": True,
+                        },
+                    )
+
 
         @self.sio.event
         def command(data):
@@ -291,16 +332,55 @@ class GolmiBot(TaskBot):
             )
 
             if room_id in self.players_per_room:
+                # get users
+                curr_usr, other_usr = self.players_per_room[room_id]
+                if curr_usr["id"] != user_id:
+                    curr_usr, other_usr = other_usr, curr_usr
+                
                 if isinstance(data["command"], dict):
                     # commands from interface
                     event = data["command"]["event"]
 
+                    if event == "confirm_selection":
+                        self.selected_object_per_room[room_id] = False
+                        logging.debug(data)
+                        if data["command"]["answer"] == "no":
+                            # TODO: remove points?
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "Your partner thinks you selected the wrong piece, try again",
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                    "html": True,
+                                },
+                            )
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "Your partner will shortly try again",
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True,
+                                },
+                            )
+                        else:
+                            req = requests.get(
+                                f"{self.golmi_server}/slurk/{room_id}/gripped/mouse"
+                            )
+                            if req.ok is not True:
+                                logging.error("Could not retrieve gripped piece")
+
+                            piece = req.json()
+                            if piece:
+                                target = self.boards_per_room[room_id][0]["state"]["targets"]
+                                result = "right" if piece.keys() == target.keys() else "wrong"
+                                self.load_next_state(room_id, result)
+
+
                     # wizard sends a warning
                     if event == "warning":
                         logging.debug("emitting WARNING")
-                        curr_usr, other_usr = self.players_per_room[room_id]
-                        if curr_usr["id"] != user_id:
-                            curr_usr, other_usr = other_usr, curr_usr
                         
                         self.sio.emit(
                             "text",
@@ -425,60 +505,45 @@ class GolmiBot(TaskBot):
 
         # users have no roles so we can assign them
         if not all([curr_usr["role"], other_usr["role"]]):
-            curr_usr["role"] = "wizard"
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "init",
-                        "url": self.golmi_server,
-                        "room_id": str(room_id),
-                        "password": self.golmi_password,
-                        "role": "wizard",
-                        "tracking": self.version == "mouse_tracking",
-                        "show_gripped_objects": self.version == "confirm_selection"
-                    },
-                    "room": room_id,
-                    "receiver_id": curr_usr["id"],
-                },
-            )
-            self.set_message_privilege(curr_usr["id"], False)
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": wizard_instr(), "receiver_id": curr_usr["id"]},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not set task instruction title: {response.status_code}"
-                )
-                response.raise_for_status()
+            instruction_functions = {
+                "player": player_instr,
+                "wizard": wizard_instr
+            }
+            for user, role in zip([curr_usr, other_usr], ["wizard", "player"]):
+                user["role"] = role
 
-            other_usr["role"] = "player"
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "init",
-                        "url": self.golmi_server,
-                        "room_id": str(room_id),
-                        "password": self.golmi_password,
-                        "role": "player",
+                self.sio.emit(
+                    "message_command",
+                    {
+                        "command": {
+                            "event": "init",
+                            "url": self.golmi_server,
+                            "room_id": str(room_id),
+                            "password": self.golmi_password,
+                            "role": role,
+                            "tracking": self.version == "mouse_tracking",
+                            "show_gripped_objects": self.version == "confirm_selection"
+                        },
+                        "room": room_id,
+                        "receiver_id": user["id"],
                     },
-                    "room": room_id,
-                    "receiver_id": other_usr["id"],
-                },
-            )
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": player_instr(), "receiver_id": other_usr["id"]},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not set task instruction title: {response.status_code}"
                 )
-                response.raise_for_status()
+
+                if role == "wizard":
+                    self.set_message_privilege(curr_usr["id"], False)
+
+                instr = instruction_functions.get(role)
+
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr",
+                    json={"text": instr(), "receiver_id": user["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(
+                        f"Could not set task instruction title: {response.status_code}"
+                    )
+                    response.raise_for_status()
 
         else:
             self.sio.emit(
@@ -562,6 +627,7 @@ class GolmiBot(TaskBot):
             self.description_per_room,
             self.boards_per_room,
             self.points_per_room,
+            self.selected_object_per_room
         ]
         for memory_dict in memory_dicts:
             if room_id in memory_dict:

@@ -94,7 +94,7 @@ docker run --net="host" \
     -e SLURK_PORT=5000 \
     -e GOLMI_SERVER=$GOLMI_SERVER \
     -e GOLMI_PASSWORD=$GOLMI_PASSWORD \
-    -e BOT_VERSION="no_feedback" \
+    -e BOT_VERSION="confirm_selection" \
     slurk/$BOT_NAME-bot &
 sleep 1
 
