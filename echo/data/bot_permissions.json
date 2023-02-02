@@ -1,6 +1,6 @@
 {
-    "api": true,
-    "send_message": true,
-    "send_image": true,
-    "send_privately": true
+  "api": true,
+  "send_message": true,
+  "send_image": true,
+  "send_privately": true
 }

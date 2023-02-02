@@ -1,6 +1,6 @@
 {
-    "api": true,
-    "send_html_message": true,
-    "send_privately": true,
-    "send_command": true
+  "api": true,
+  "send_html_message": true,
+  "send_privately": true,
+  "send_command": true
 }

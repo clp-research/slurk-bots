@@ -1,5 +1,5 @@
 {
-    "api": true,
-    "send_html_message": true,
-    "send_privately": true
+  "api": true,
+  "send_html_message": true,
+  "send_privately": true
 }

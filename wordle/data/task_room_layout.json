@@ -1,365 +1,367 @@
 {
-    "title": "Wordle Task Room",
-    "html": [
+  "title": "Wordle Task Room",
+  "html": [
+    {
+      "layout-type": "div",
+      "class": "card",
+      "layout-content": [
         {
-            "layout-type": "div",
-            "class": "card",
-            "layout-content": [
+          "layout-type": "div",
+          "layout-content": [
+            {
+              "layout-type": "b",
+              "layout-content": [
                 {
-                    "layout-type": "div",
-                    "layout-content": [
-                        {
-                            "layout-type": "b",
-                            "layout-content": [
-                                {
-                                    "layout-type": "lighter",
-                                    "id": "instr_title",
-                                    "style": "min-height: 20px; text-align: justify; text-justify: inter-word;"
-                                }
-                            ]
-                        }
-                    ],
-                    "style": "color: #abb2b9;"
+                  "layout-type": "lighter",
+                  "id": "instr_title",
+                  "style": "min-height: 20px; text-align: justify; text-justify: inter-word;"
                 }
-            ]
-        },
+              ]
+            }
+          ],
+          "style": "color: #abb2b9;"
+        }
+      ]
+    },
+    {
+      "layout-type": "div",
+      "class": "card",
+      "layout-content": [
         {
-            "layout-type": "div",
-            "class": "card",
-            "layout-content": [
-                {
-                    "layout-type": "div",
-                    "id": "instr",
-                    "layout-content": [
-                        {
-                            "layout-type": "p",
-                            "style": "padding-bottom: 5px",
-                            "layout-content": "Together with your partner, guess the secret 5 letter word. The picture gives you a hint, but the connection may be indirect."
-                        },
-                        {
-                            "layout-type": "p",
-                            "style": "padding-bottom: 5px",
-                            "layout-content": "You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints: "
-                        },
-                        {
-                            "layout-type": "p",
-                            "style": "padding-bottom: 5px"
-                        },
-                        {
-                            "layout-type": "p",
-                            "layout-content": "<span style='color:green;'>Green</span> means that the letter is in the right position."
-                        },
-                        {
-                            "layout-type": "p",
-                            "layout-content": "<span style='color:orange;'>Yellow</span> means that the letter is in the wrong position."
-                        },
-                        {
-                            "layout-type": "p",
-                            "style": "padding-bottom: 5px",
-                            "layout-content": "<span style='color:grey;'>Grey</span> means that the word does not contain this letter."
-                        
-                        },
-                        {
-                            "layout-type": "p",
-                            "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
-                        }
-                    ]
-                }
-            ]
-        },
+          "layout-type": "div",
+          "id": "instr",
+          "layout-content": [
+            {
+              "layout-type": "p",
+              "style": "padding-bottom: 5px",
+              "layout-content": "Together with your partner, guess the secret 5 letter word. The picture gives you a hint, but the connection may be indirect."
+            },
+            {
+              "layout-type": "p",
+              "style": "padding-bottom: 5px",
+              "layout-content": "You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints: "
+            },
+            {
+              "layout-type": "p",
+              "style": "padding-bottom: 5px"
+            },
+            {
+              "layout-type": "p",
+              "layout-content": "<span style='color:green;'>Green</span> means that the letter is in the right position."
+            },
+            {
+              "layout-type": "p",
+              "layout-content": "<span style='color:orange;'>Yellow</span> means that the letter is in the wrong position."
+            },
+            {
+              "layout-type": "p",
+              "style": "padding-bottom: 5px",
+              "layout-content": "<span style='color:grey;'>Grey</span> means that the word does not contain this letter."
+            },
+            {
+              "layout-type": "p",
+              "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "layout-type": "div",
+      "class": "card",
+      "layout-content": [
         {
-            "layout-type": "div",
-            "class": "card",
-            "layout-content": [
+          "layout-type": "div",
+          "id": "wrapper",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "id": "game-board"
+            },
+            {
+              "layout-type": "div",
+              "id": "keyboard-cont",
+              "layout-content": [
                 {
-                    "layout-type": "div",
-                    "id": "wrapper",
-                    "layout-content": [
-                        {
-                            "layout-type": "div",
-                            "id": "game-board"
-                        },
-                        {
-                            "layout-type": "div",
-                            "id": "keyboard-cont",
-                            "layout-content": [
-                                {
-                                    "layout-type": "div",
-                                    "class": "first-row",
-                                    "layout-content": [
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "q"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "w"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "e"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "r"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "t"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "y"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "u"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "i"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "o"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "p"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "layout-type": "div",
-                                    "class": "second-row",
-                                    "layout-content": [
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "a"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "s"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "d"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "f"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "g"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "h"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "j"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "k"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "l"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "layout-type": "div",
-                                    "class": "third-row",
-                                    "layout-content": [
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "DEL"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "z"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "x"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "c"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "v"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "b"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "n"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "m"
-                                        },
-                                        {
-                                            "layout-type": "button",
-                                            "class": "keyboard-button",
-                                            "layout-content": "ENTER"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "layout-type": "div",
-            "class": "card",
-            "layout-content": [
-                {
-                    "layout-type": "div",
-                    "style": "white-space: pre-wrap; margin:10px"
+                  "layout-type": "div",
+                  "class": "first-row",
+                  "layout-content": [
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "q"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "w"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "e"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "r"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "t"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "y"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "u"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "i"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "o"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "p"
+                    }
+                  ]
                 },
                 {
-                    "layout-type": "div",
-                    "id": "image-area",
-                    "layout-content": [
-                        {
-                            "layout-type": "image",
-                            "id": "current-image",
-                            "style": "width: 100%; height: auto; object-fit: contain;"
-                        }
-                    ]
+                  "layout-type": "div",
+                  "class": "second-row",
+                  "layout-content": [
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "a"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "s"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "d"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "f"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "g"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "h"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "j"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "k"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "l"
+                    }
+                  ]
+                },
+                {
+                  "layout-type": "div",
+                  "class": "third-row",
+                  "layout-content": [
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "DEL"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "z"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "x"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "c"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "v"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "b"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "n"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "m"
+                    },
+                    {
+                      "layout-type": "button",
+                      "class": "keyboard-button",
+                      "layout-content": "ENTER"
+                    }
+                  ]
                 }
-            ]
-        }
-    ],
-    "css": {
-            ".card": {
-                "position": "relative",
-                "display": "flex",
-                "flex-direction": "column",
-                "min-width": "0",
-                "background-color": "#fff",
-                "background-clip": "border-box",
-                "border": "1px solid rgba(0,0,0,.125)",
-                "border-radius": ".25rem",
-                "height": "100%",
-                "margin": "0px 15px",
-                "padding": "20px"
-            },
-            ".hr": {
-                "margin": "10px",
-                "background-color": "#abb2b9",
-                "opacity": ".50"
-            },
-            "time:before": {
-                "content": "''"
-            },
-            "#image-area": {
-                "margin": "0 auto",
-                "align-items": "center",
-                "justify-content": "center"
-            },
-            "#game-board": {
-                "display": "flex",
-                "align-items": "center",
-                "flex-direction": "column"
-            },
-            "#wrapper": {
-                "display": "flex",
-                "align-items":"center",
-                "justify-content": "center",
-                "column-gap": "2rem"
-            },
-            ".letter-box": {
-                "padding-top": "0.5rem",
-                "border": "2px solid gray",
-                "border-radius": "3px",
-                "margin": "2px",
-                "font-size": "2.5rem",
-                "font-weight": "700",
-                "height": "2rem",
-                "width": "2rem",
-                "display": "flex",
-                "justify-content": "center",
-                "align-items": "center",
-                "text-transform": "uppercase"
-            },
-            ".filled-box": {
-                "border": "2px solid black"
-            },
-            ".letter-row": {
-                "display": "flex"
-            },
-            "#keyboard-cont": {
-                "margin": "1rem 0",
-                "display": "flex",
-                "flex-direction": "column",
-                "align-items": "center",
-                "justify-content":"center"
-            },
-            "#keyboard-cont div": {
-                "display": "flex"
-            },              
-            ".second-row": {
-                "margin": "0.5rem 0"
-            },
-            ".keyboard-button":{
-                "font-size": "1rem",
-                "font-weight": "700",
-                "padding": "0.5rem",
-                "margin": "0 2px",
-                "cursor": "pointer",
-                "text-transform": "uppercase"
-            },
-            "#instr": {
-                "text-align": "justify",
-                "text-justify": "inter-word",
-                "margin": "10px"
+              ]
             }
+          ]
+        }
+      ]
     },
-    "scripts": {
-        "incoming-text": "markdown",
-        "incoming-image": "display-image",
-        "submit-message": "send-message",
-        "print-history": ["attribute-history", "markdown-history"],
-        "typing-users": "typing-users",
-        "plain": "wordle"
+    {
+      "layout-type": "div",
+      "class": "card",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "style": "white-space: pre-wrap; margin:10px"
+        },
+        {
+          "layout-type": "div",
+          "id": "image-area",
+          "layout-content": [
+            {
+              "layout-type": "image",
+              "id": "current-image",
+              "style": "width: 100%; height: auto; object-fit: contain;"
+            }
+          ]
+        }
+      ]
     }
+  ],
+  "css": {
+    ".card": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "min-width": "0",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "1px solid rgba(0,0,0,.125)",
+      "border-radius": ".25rem",
+      "height": "100%",
+      "margin": "0px 15px",
+      "padding": "20px"
+    },
+    ".hr": {
+      "margin": "10px",
+      "background-color": "#abb2b9",
+      "opacity": ".50"
+    },
+    "time:before": {
+      "content": "''"
+    },
+    "#image-area": {
+      "margin": "0 auto",
+      "align-items": "center",
+      "justify-content": "center"
+    },
+    "#game-board": {
+      "display": "flex",
+      "align-items": "center",
+      "flex-direction": "column"
+    },
+    "#wrapper": {
+      "display": "flex",
+      "align-items": "center",
+      "justify-content": "center",
+      "column-gap": "2rem"
+    },
+    ".letter-box": {
+      "padding-top": "0.5rem",
+      "border": "2px solid gray",
+      "border-radius": "3px",
+      "margin": "2px",
+      "font-size": "2.5rem",
+      "font-weight": "700",
+      "height": "2rem",
+      "width": "2rem",
+      "display": "flex",
+      "justify-content": "center",
+      "align-items": "center",
+      "text-transform": "uppercase"
+    },
+    ".filled-box": {
+      "border": "2px solid black"
+    },
+    ".letter-row": {
+      "display": "flex"
+    },
+    "#keyboard-cont": {
+      "margin": "1rem 0",
+      "display": "flex",
+      "flex-direction": "column",
+      "align-items": "center",
+      "justify-content": "center"
+    },
+    "#keyboard-cont div": {
+      "display": "flex"
+    },
+    ".second-row": {
+      "margin": "0.5rem 0"
+    },
+    ".keyboard-button": {
+      "font-size": "1rem",
+      "font-weight": "700",
+      "padding": "0.5rem",
+      "margin": "0 2px",
+      "cursor": "pointer",
+      "text-transform": "uppercase"
+    },
+    "#instr": {
+      "text-align": "justify",
+      "text-justify": "inter-word",
+      "margin": "10px"
+    }
+  },
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": [
+      "attribute-history",
+      "markdown-history"
+    ],
+    "typing-users": "typing-users",
+    "plain": "wordle"
+  }
 }
