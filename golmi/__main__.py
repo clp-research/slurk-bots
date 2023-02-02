@@ -6,6 +6,7 @@ from time import sleep
 from threading import Timer
 import json
 import requests
+import string
 
 from templates import TaskBot
 from .config import *
@@ -73,7 +74,7 @@ class GolmiBot(TaskBot):
                 self.players_per_room[room_id] = list()
                 self.description_per_room[room_id] = False
                 self.selected_object_per_room[room_id] = False
-                self.points_per_room[room_id] = 0
+                self.points_per_room[room_id] = STARTING_POINTS
                 self.timers_per_room[room_id] = RoomTimer(
                     self.close_game, room_id
                 )
@@ -346,6 +347,7 @@ class GolmiBot(TaskBot):
                         logging.debug(data)
                         if data["command"]["answer"] == "no":
                             # TODO: remove points?
+                            self.points_per_room[room_id] += NEGATIVE_REWARD
                             self.sio.emit(
                                 "text",
                                 {
@@ -377,11 +379,9 @@ class GolmiBot(TaskBot):
                                 result = "right" if piece.keys() == target.keys() else "wrong"
                                 self.load_next_state(room_id, result)
 
-
                     # wizard sends a warning
                     if event == "warning":
                         logging.debug("emitting WARNING")
-                        
                         self.sio.emit(
                             "text",
                             {
@@ -403,6 +403,7 @@ class GolmiBot(TaskBot):
                         self.set_message_privilege(other_usr["id"], True)
 
                         # TODO: should players lose points?
+                        self.points_per_room[room_id] += NEGATIVE_REWARD
 
                 else:
                     # commands from user
@@ -447,15 +448,17 @@ class GolmiBot(TaskBot):
                     "room": room_id,
                     "message": (
                         "That was the last one 🎉 🎉 thank you very much for your time! "
-                        f"Your score was: {score}."
+                        f"Your total score is: {score} points."
                     ),
                     "html": True,
                 },
             )
+            self.confirmation_code(room_id, "sucess")
             self.close_game(room_id)
 
         else:
-            message = "Let's get you to the next board"
+            points = self.points_per_room[room_id]
+            message = f"Your currently have {points} points. Let's get you to the next board"
             if self.version != "no_feedback":
                 message = f"That was the {result} piece. {message}"
             self.sio.emit(
@@ -594,18 +597,69 @@ class GolmiBot(TaskBot):
         """load the current board on the golmi server"""
         board = self.boards_per_room[room_id][0]
 
-        # send a message to self to log config and board?
-        self.sio.emit(
-            "text",
-            {
-                "message": json.dumps(board),
-                "room": room_id,
-                "receiver_id": self.user,
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": "board_log",
+                "room_id": room_id,
+                "data": {
+                    "board": json.dumps(board),
+                },
             },
+            headers={"Authorization": f"Bearer {self.token}"},
         )
+        if not response.ok:
+            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
+            response.raise_for_status()
 
         self.golmi_client_per_room[room_id].load_config(board["config"])
         self.golmi_client_per_room[room_id].load_state(board["state"])
+
+    def confirmation_code(self, room_id, status, receiver_id=None):
+        """Generate AMT token that will be sent to each player."""
+        kwargs = dict()
+        # either only for one user or for both
+        if receiver_id is not None:
+            kwargs["receiver_id"] = receiver_id
+
+        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+        points = self.points_per_room[room_id]
+        # post AMT token to logs
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": "confirmation_log",
+                "room_id": room_id,
+                "data": {
+                    "status_txt": status,
+                    "amt_token": amt_token,
+                    "points": points
+                },
+                **kwargs,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
+            response.raise_for_status()
+
+        self.sio.emit(
+            "text",
+            {
+                "message": COLOR_MESSAGE.format(
+                    color=STANDARD_COLOR,
+                    message=(
+                        "Please enter the following token into the field on "
+                        "the HIT webpage, and close this browser window. "
+                        f"Your token: {amt_token}"
+                    )
+                ),
+                "room": room_id,
+                "html": True,
+                **kwargs,
+            },
+        )
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""

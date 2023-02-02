@@ -36,5 +36,6 @@ WARNING_COLOR = "FireBrick"
 TYPES = "https://raw.githubusercontent.com/clp-research/golmi/exp-descrimage/app/descrimage/static/types.png"
 
 # points to give to the users
-POSITIVE_REWARD = 10  # right piece selected
-NEGATIVE_REWARD = 0  # wrong piece selected
+STARTING_POINTS = 100
+POSITIVE_REWARD = 50  # right piece selected
+NEGATIVE_REWARD = -25  # wrong piece selected

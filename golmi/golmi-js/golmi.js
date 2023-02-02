@@ -156,6 +156,7 @@ function drawCircle(ctx, x, y, radius, fill, stroke, strokeWidth) {
     }
 }
 
+
 function confirm_selection(answer){
     socket.emit("message_command",
         {
