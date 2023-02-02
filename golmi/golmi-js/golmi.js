@@ -156,6 +156,18 @@ function drawCircle(ctx, x, y, radius, fill, stroke, strokeWidth) {
     }
 }
 
+function confirm_selection(answer){
+    socket.emit("message_command",
+        {
+            "command": {
+                "event": "confirm_selection",
+                "answer": answer
+            },
+            "room": self_room
+        }
+    )
+}
+
 
 $(document).ready(function () {
     socket.on("command", (data) => {
