@@ -237,6 +237,25 @@ class GolmiBot(TaskBot):
             if room_id not in self.players_per_room:
                 return
 
+            # no description yet, warn the user
+            if self.description_per_room[room_id] is False:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": COLOR_MESSAGE.format(
+                            color=WARNING_COLOR,
+                            message=(
+                                "WARNING: wait for your partner "
+                                "to send a description first"
+                            )
+                        ),
+                        "room": room_id,
+                        "receiver_id": user_id,
+                        "html": True,
+                    },
+                )
+                return
+
             # check if player selected the correct area
             if data["type"] == "click":
                 x = data["coordinates"]["x"]
@@ -251,25 +270,6 @@ class GolmiBot(TaskBot):
 
                 piece = req.json()
                 if piece:
-                    # no description yet, warn the user
-                    if self.description_per_room[room_id] is False:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    color=WARNING_COLOR,
-                                    message=(
-                                        "WARNING: wait for your partner "
-                                        "to send a description first"
-                                    )
-                                ),
-                                "room": room_id,
-                                "receiver_id": user_id,
-                                "html": True,
-                            },
-                        )
-                        return
-
                     target = self.boards_per_room[room_id][0]["state"]["targets"]
                     result = "right" if piece.keys() == target.keys() else "wrong"
                 
@@ -349,13 +349,12 @@ class GolmiBot(TaskBot):
             self.points_per_room[room_id] += POSITIVE_REWARD
         else:
             self.points_per_room[room_id] += NEGATIVE_REWARD
-        
+
         player, wizard = self.players_per_room[room_id]
         if player["role"] != "player":
             player, wizard = wizard, player
-        
+
         self.boards_per_room[room_id].pop(0)
-        
         self.description_per_room[room_id] = False
         self.set_message_privilege(player["id"], True)
 

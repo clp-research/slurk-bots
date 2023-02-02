@@ -95,7 +95,7 @@ docker run --net="host" \
     -e GOLMI_SERVER=$GOLMI_SERVER \
     -e GOLMI_PASSWORD=$GOLMI_PASSWORD \
     -e BOT_VERSION="no_feedback" \
-    -d slurk/$BOT_NAME-bot
+    slurk/$BOT_NAME-bot &
 sleep 1
 
 # create users
