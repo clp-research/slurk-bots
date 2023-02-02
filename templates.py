@@ -146,6 +146,26 @@ class TaskBot(Bot):
 
         return join
 
+    def move_divider(self, room_id, chat_area=50, task_area=50):
+        """move the central divider and resize chat and task area
+        the sum of char_area and task_area must sum up to 100
+        """
+        if chat_area + task_area != 100:
+            logging.error("could not resize chat and task area: invalid parameters")
+            raise ValueError("chat_area and task_area must sum up to 100")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {task_area}%"}
+        )
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/content",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {chat_area}%"}
+        )
+
     @classmethod
     def create_argparser(cls):
         # inherit from parent's argparser
