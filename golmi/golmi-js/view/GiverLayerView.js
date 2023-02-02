@@ -24,12 +24,15 @@ $(document).ready(function () {
         gripped objects to} grCanvas
      */
     this.GiverLayerView = class GiverLayerView extends document.View {
-        constructor(modelSocket, bgCanvas, objCanvas, grCanvas) {
+        constructor(modelSocket, bgCanvas, objCanvas, grCanvas, show_gripped) {
             super(modelSocket);
             // Three overlapping canvas
             this.bgCanvas	= bgCanvas;
             this.objCanvas	= objCanvas;
             this.grCanvas	= grCanvas;
+            
+            // save mode variable
+            this.show_gripped = show_gripped
 
             // array holding the currently gripped objects
             this.grippedObjs = new Array();
@@ -197,21 +200,24 @@ $(document).ready(function () {
                             var highlight_color = "green";
                         }
 
-                        let params = {
-                            x: grippedObj.x,
-                            y: grippedObj.y,
-                            color: grippedObj.color,
-                            highlight: highlight_color // highlight a gripped object
-                        }
-                        this._drawBlockObj(ctx,
-                                           blockMatrix,
-                                           params);
-
-                        if (grId == "init"){
-                            this._drawBB(ctx, blockMatrix, params, "red");
-                        }
-                        else{
-                            this._drawBB(ctx, blockMatrix, params, "green");
+                        console.log(this.show_gripped)
+                        if (this.show_gripped === true){
+                            let params = {
+                                x: grippedObj.x,
+                                y: grippedObj.y,
+                                color: grippedObj.color,
+                                highlight: highlight_color // highlight a gripped object
+                            }
+                            this._drawBlockObj(ctx,
+                                               blockMatrix,
+                                               params);
+    
+                            if (grId == "init"){
+                                this._drawBB(ctx, blockMatrix, params, "red");
+                            }
+                            else{
+                                this._drawBB(ctx, blockMatrix, params, "green");
+                            }
                         }
                     }
                 }

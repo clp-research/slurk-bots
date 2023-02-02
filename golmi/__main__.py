@@ -263,7 +263,7 @@ class GolmiBot(TaskBot):
                 block_size = data["coordinates"]["block_size"]
 
                 req = requests.get(
-                    f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}"
+                    f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
                 )
                 if req.ok is not True:
                     logging.error("Could not retrieve gripped piece")
@@ -435,7 +435,8 @@ class GolmiBot(TaskBot):
                         "room_id": str(room_id),
                         "password": self.golmi_password,
                         "role": "wizard",
-                        "tracking": self.version == "mouse_tracking"
+                        "tracking": self.version == "mouse_tracking",
+                        "show_gripped_objects": self.version == "confirm_selection"
                     },
                     "room": room_id,
                     "receiver_id": curr_usr["id"],

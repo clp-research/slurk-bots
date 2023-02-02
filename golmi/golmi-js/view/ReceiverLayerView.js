@@ -209,27 +209,6 @@ $(document).ready(function () {
                         }
                     }
                 }
-
-                if (grId != "init"){
-                    // modify style depending on whether an object is gripped
-                    let grSize = gripper.gripped ? 0.2 : 0.5;
-
-                    // draw the gripper itself
-                    // --- config ---
-                    ctx.lineStyle = "red";
-                    ctx.lineWidth = 2;
-                    // draw. The gripper is a simple cross
-                    ctx.beginPath();
-                    ctx.moveTo(this._toPxl(gripper.x-grSize),
-                            this._toPxl(gripper.y-grSize));
-                    ctx.lineTo(this._toPxl(gripper.x+grSize),
-                            this._toPxl(gripper.y+grSize));
-                    ctx.moveTo(this._toPxl(gripper.x-grSize),
-                            this._toPxl(gripper.y+grSize));
-                    ctx.lineTo(this._toPxl(gripper.x+grSize),
-                            this._toPxl(gripper.y-grSize));
-                    ctx.stroke();
-                }
             }
         }
 

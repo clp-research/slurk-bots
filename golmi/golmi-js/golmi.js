@@ -45,11 +45,7 @@ function trackClicks(area) {
 }
 
 
-function start_golmi(url, password, role, tracking) {
-    // expect same as backend e.g. the default "http://127.0.0.1:5000";
-    console.log(`Connect to ${url}`)
-
-
+function start_golmi(url, password, role, tracking, show_gripped_objects) {
     // --- create a golmi_socket --- //
     // don't connect yet
     golmi_socket = io(url, {
@@ -96,7 +92,13 @@ function start_golmi(url, password, role, tracking) {
         }
 
     } else {
-        layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
+        layerView = new document.GiverLayerView(
+            golmi_socket,
+            bgLayer,
+            objLayer,
+            grLayer,
+            show_gripped_objects
+        );
     }
 
     // --- golmi_socket communication --- //
@@ -120,9 +122,9 @@ function start_golmi(url, password, role, tracking) {
 
 
 // --- stop and start drawing --- //
-function start(url, room_id, role, password, tracking) {
+function start(url, room_id, role, password, tracking, show_gripped_objects) {
     console.log("received url")
-    start_golmi(url, password, role, tracking)
+    start_golmi(url, password, role, tracking, show_gripped_objects)
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
 
@@ -165,7 +167,8 @@ $(document).ready(function () {
                     data.command.room_id,
                     data.command.role,
                     data.command.password,
-                    data.command.tracking
+                    data.command.tracking,
+                    data.command.show_gripped_objects
                 )
             }
         }
