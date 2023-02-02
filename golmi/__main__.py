@@ -309,7 +309,7 @@ class GolmiBot(TaskBot):
                                     color=WARNING_COLOR,
                                     message=(
                                         "WARNING: your partner thinks that you "
-                                        "are not doint the task correctly"
+                                        "are not doing the task correctly"
                                     )
                                 ),
                                 "room": room_id,
@@ -376,14 +376,14 @@ class GolmiBot(TaskBot):
             self.close_game(room_id)
 
         else:
+            message = "Let's get you to the next board"
+            if self.version != "no_feedback":
+                message = f"That was the {result} piece. {message}"
             self.sio.emit(
                 "text",
                 {
                     "room": room_id,
-                    "message": (
-                        f"That was the {result} piece. "
-                        "Let's get you to the next board"
-                    ),
+                    "message": message,
                     "html": True,
                 },
             )
@@ -436,6 +436,7 @@ class GolmiBot(TaskBot):
                         "room_id": str(room_id),
                         "password": self.golmi_password,
                         "role": "wizard",
+                        "tracking": self.version == "mouse_tracking"
                     },
                     "room": room_id,
                     "receiver_id": curr_usr["id"],
@@ -647,6 +648,23 @@ if __name__ == "__main__":
         help="password to connect to the golmi server",
         **golmi_password,
     )
+
+    # versions:
+    #  no_feedback: player can only send one message, does not know if the wizard selected the correct object
+    #  feedback: player can only send one message, is informed if the wizard selected the correct object
+    #  confirm_selection: player needs to confirm the wizard's selection
+    #  mouse_tracking: player can see the mouse movements of the wizard
+    if "BOT_VERSION" in os.environ:
+        bot_version = {"default": os.environ["BOT_VERSION"]}
+    else:
+        bot_version = {"required": True}
+    parser.add_argument(
+        "--bot_version",
+        type=str,
+        help="version of the golmi bot",
+        **bot_version,
+    )
+    
     args = parser.parse_args()
 
     # create bot instance
@@ -654,5 +672,6 @@ if __name__ == "__main__":
     bot.waiting_room = args.waiting_room
     bot.golmi_server = args.golmi_server
     bot.golmi_password = args.golmi_password
+    bot.version = args.bot_version
     # connect to chat server
     bot.run()
