@@ -45,7 +45,7 @@ function trackClicks(area) {
 }
 
 
-function start_golmi(url, password, role) {
+function start_golmi(url, password, role, tracking) {
     // expect same as backend e.g. the default "http://127.0.0.1:5000";
     console.log(`Connect to ${url}`)
 
@@ -91,8 +91,9 @@ function start_golmi(url, password, role) {
             });
         }
 
-        // activate mouse tracking
-        // trackMovement("gripper", 200);
+        if (tracking === true){
+            trackMovement("gripper", 200);
+        }
 
     } else {
         layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
@@ -119,9 +120,9 @@ function start_golmi(url, password, role) {
 
 
 // --- stop and start drawing --- //
-function start(url, room_id, role, password) {
+function start(url, room_id, role, password, tracking) {
     console.log("received url")
-    start_golmi(url, password, role)
+    start_golmi(url, password, role, tracking)
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
 
@@ -163,7 +164,8 @@ $(document).ready(function () {
                     data.command.url,
                     data.command.room_id,
                     data.command.role,
-                    data.command.password
+                    data.command.password,
+                    data.command.tracking
                 )
             }
         }
@@ -174,6 +176,7 @@ $(document).ready(function () {
         if (my_role === "player"){
             if (data.type == "move"){ 
                 canvas = $("#gripper")[0]
+                console.log(data.coordinates)
                 ctx = canvas.getContext("2d")
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawCircle(ctx, data.coordinates.x, data.coordinates.y, 5, 'red', 'red', 2)
