@@ -19,22 +19,41 @@ class RoomTimer:
         self.function = function
         self.room_id = room_id
         self.start_timer()
+        self.left_room = dict()
 
     def start_timer(self):
         self.timer = Timer(
             TIMEOUT_TIMER * 60,
             self.function,
-            args=[self.room_id]
+            args=[self.room_id, "timeout"]
         )
         self.timer.start()
 
     def reset(self):
         self.timer.cancel()
         self.start_timer()
-        logging.debug("timer reset")
+        logging.info("reset timer")
 
     def cancel(self):
         self.timer.cancel()
+
+    def cancel_all_timers(self):
+        self.timer.cancel()
+        for timer in self.left_room.values():
+            timer.cancel()
+
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER * 60,
+            self.function,
+            args=[self.room_id, "user_left"]
+        )
+        self.left_room[user].start()
 
 
 class GolmiBot(TaskBot):
@@ -76,7 +95,7 @@ class GolmiBot(TaskBot):
                 self.selected_object_per_room[room_id] = False
                 self.points_per_room[room_id] = STARTING_POINTS
                 self.timers_per_room[room_id] = RoomTimer(
-                    self.close_game, room_id
+                    self.timeout_close_game, room_id
                 )
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
@@ -182,6 +201,9 @@ class GolmiBot(TaskBot):
                         },
                     )
 
+                    # cancel leave timers if any
+                    self.timers_per_room[room_id].user_joined(curr_usr["id"])
+
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
                     if role is not None:
@@ -213,6 +235,9 @@ class GolmiBot(TaskBot):
                             "receiver_id": other_usr["id"],
                         },
                     )
+
+                    # start a timer
+                    self.timers_per_room[room_id].user_left(curr_usr["id"])
         
         @self.sio.event
         def text_message(data):
@@ -228,6 +253,8 @@ class GolmiBot(TaskBot):
             if not all([curr_usr["role"], other_usr["role"]]):
                 return
 
+            self.timers_per_room[room_id].reset()
+
             # we have a message from the player
             # revoke user's text privilege
             if curr_usr["role"] == "player":
@@ -242,8 +269,11 @@ class GolmiBot(TaskBot):
             if room_id not in self.players_per_room:
                 return
 
+            # don't react to mouse movements
             if data["type"] != "click":
                 return
+
+            self.timers_per_room[room_id].reset()
 
             if self.selected_object_per_room[room_id] is True:
                 self.sio.emit(
@@ -327,6 +357,8 @@ class GolmiBot(TaskBot):
             # do not process commands from itself
             if user_id == self.user:
                 return
+
+            self.timers_per_room[room_id].reset()
 
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
@@ -426,6 +458,8 @@ class GolmiBot(TaskBot):
                         )
 
     def load_next_state(self, room_id, result):
+        self.timers_per_room[room_id].reset()
+
         if result == "right":
             self.points_per_room[room_id] += POSITIVE_REWARD
         else:
@@ -502,6 +536,8 @@ class GolmiBot(TaskBot):
             response.raise_for_status()
 
     def set_wizard_role(self, room_id, user_id):
+        self.timers_per_room[room_id].reset()
+
         curr_usr, other_usr = self.players_per_room[room_id]
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
@@ -548,6 +584,14 @@ class GolmiBot(TaskBot):
                     )
                     response.raise_for_status()
 
+            self.sio.emit(
+                "text",
+                {
+                    "message": "You're all set to go, have fun!",
+                    "room": room_id,
+                },
+            )
+
         else:
             self.sio.emit(
                 "text",
@@ -559,6 +603,8 @@ class GolmiBot(TaskBot):
             )
 
     def reset_roles(self, room_id):
+        self.timers_per_room[room_id].reset()
+
         self.sio.emit(
             "text",
             {
@@ -673,6 +719,9 @@ class GolmiBot(TaskBot):
         )
         self.room_to_read_only(room_id)
 
+        # cancel all timers
+        self.timers_per_room[room_id].cancel_all_timers()
+
         # remove any task room specific objects
         memory_dicts = [
             self.golmi_client_per_room,
@@ -728,6 +777,10 @@ class GolmiBot(TaskBot):
                 )
                 response.raise_for_status()
             logging.debug("Removing user from task room was successful.")
+
+    def timeout_close_game(self, room_id, status):
+        self.confirmation_code(room_id, status)
+        self.close_game(room_id)
 
 
 if __name__ == "__main__":

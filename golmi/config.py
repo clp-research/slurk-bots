@@ -25,7 +25,8 @@ BOARDS = Path(f"{ROOT}/golmi/data/boards.jsonl")
 BOARDS_PER_ROOM = 10
 
 
-TIMEOUT_TIMER = 60  # minutes of inactivity before the room is closed automatically
+TIMEOUT_TIMER = 10  # minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 5  # minutes if a user is alone in a room
 
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
