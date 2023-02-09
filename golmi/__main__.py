@@ -492,9 +492,12 @@ class GolmiBot(TaskBot):
 
         else:
             points = self.points_per_room[room_id]
-            message = f"Your currently have {points} points. Let's get you to the next board"
+            message = "Let's get you to the next board"
             if self.version != "no_feedback":
-                message = f"That was the {result} piece. {message}"
+                message = (
+                    f"That was the {result} piece, you currently have {points} points. "
+                    f"{message}"
+                )
             self.sio.emit(
                 "text",
                 {
