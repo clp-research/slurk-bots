@@ -259,7 +259,8 @@ class GolmiBot(TaskBot):
             # revoke user's text privilege
             if curr_usr["role"] == "player":
                 self.description_per_room[room_id] = True
-                self.set_message_privilege(user_id, False)
+                if self.version != "mouse_tracking":
+                    self.set_message_privilege(user_id, False)
 
         @self.sio.event
         def mouse(data):
