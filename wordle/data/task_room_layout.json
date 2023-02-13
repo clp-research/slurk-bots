@@ -47,16 +47,16 @@
                         },
                         {
                           "layout-type": "p",
-                          "layout-content": "<span style='color:green;'><b>Green</b></span> means that the letter is in the right position."
+                          "layout-content": "<span style='color:green;'><u><b>Green:</b></u></span> the letter is in the right position."
                         },
                         {
                           "layout-type": "p",
-                          "layout-content": "<span style='color:orange;'><b>Yellow</b></span> means that the letter is in the wrong position."
+                          "layout-content": "<span style='color:orange;'><u><b>Yellow:</b></u></span> the letter is in the wrong position."
                         },
                         {
                           "layout-type": "p",
                           "style": "padding-bottom: 5px",
-                          "layout-content": "<span style='color:grey;'><b>Grey</b></span> means that the word does not contain this letter."
+                          "layout-content": "<span style='color:grey;'><u><b>Grey:</b></u></span> the word does not contain this letter."
                         }
                       ]
                     },
@@ -314,12 +314,12 @@
     },
     "#game": {
       "display": "flex",
-      "flex-direction": "row",
-      "column-gap": "2rem"
+      "flex-direction": "row"
     },
     "#colorsexplained": {
       "display": "flex",
       "flex-direction": "column",
+      "font-size": "0.9rem",
       "column-gap": "2rem"
     },
     ".letter-box": {
@@ -364,7 +364,6 @@
       "text-transform": "uppercase"
     },
     "#instr": {
-      "text-align": "justify",
       "text-justify": "inter-word",
       "margin": "10px"
     }
