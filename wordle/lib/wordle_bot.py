@@ -166,7 +166,7 @@ class WordleBot:
                 LOG.debug("Create data for the new task room...")
                 LOG.debug(data)
 
-                self.move_divider(room_id, 35, 65)
+                self.move_divider(room_id, 20, 80)
 
                 self.images_per_room.get_word_image_pairs(room_id)
                 LOG.debug(self.images_per_room[room_id])
