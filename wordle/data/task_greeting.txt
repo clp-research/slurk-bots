@@ -1,11 +1,7 @@
 **Welcome to Wordle with Images**
 
 
-In this game you will play the classic wordle game, but with a twist: not only will you see an image related to
-the mysterious word, but you will also play together with another person.
+Be sure to read the task instructions to the right &rarr;
 
-You will be able to enter your guess using the wordle keyboard on the right side of the window,
-but make sure to coordinate your guesses with your partner: only if you enter the same word you will
-be able to advance in the game.
 
 Have fun!
