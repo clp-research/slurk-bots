@@ -1,7 +1,6 @@
 let golmi_socket = null
 let layerView = null
 let controller = null
-let my_role = null
 let show_mouse = null
 
 
@@ -170,8 +169,6 @@ $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             if (data.command.event === "init") {
-                console.log(data)
-                my_role = data.command.role,
                 start(
                     data.command.url,
                     data.command.room_id,
