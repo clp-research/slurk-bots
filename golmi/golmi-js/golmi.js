@@ -2,6 +2,7 @@ let golmi_socket = null
 let layerView = null
 let controller = null
 let my_role = null
+let show_mouse = null
 
 
 // copy some parts of the mouse tracking plugin
@@ -72,10 +73,9 @@ function start_golmi(url, password, role, tracking, show_gripped_objects) {
             });
         }
 
-        if (tracking === true){
-            trackMovement("gripper", 200);
-        }
-
+        // track mouse movements of the wizard on canvas
+        trackMovement("gripper", 200);
+        
     } else {
         layerView = new document.GiverLayerView(
             golmi_socket,
@@ -186,15 +186,15 @@ $(document).ready(function () {
     });
 
     // listen for mouse events to plot mouse movements
-    socket.on("mouse", (data) => {
-        if (my_role === "player"){
-            if (data.type == "move"){ 
-                canvas = $("#gripper")[0]
-                console.log(data.coordinates)
-                ctx = canvas.getContext("2d")
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawCircle(ctx, data.coordinates.x, data.coordinates.y, 5, 'red', 'red', 2)
-            }
-        }
-    })
+    // socket.on("mouse", (data) => {
+    //     if (my_role === "player"){
+    //         if (data.type == "move"){ 
+    //             canvas = $("#gripper")[0]
+    //             console.log(data.coordinates)
+    //             ctx = canvas.getContext("2d")
+    //             ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //             drawCircle(ctx, data.coordinates.x, data.coordinates.y, 5, 'red', 'red', 2)
+    //         }
+    //     }
+    // })
 });
