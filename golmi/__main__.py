@@ -70,17 +70,22 @@ class GolmiBot(TaskBot):
         self.register_callbacks()
 
     def post_init(self, waiting_room, golmi_server, golmi_password, version):
+        """
+        save extra variables after the __init__() method has been called
+        and create the init_base_dict: a dictionary containing
+        needed arguments for the init event to send to the JS frontend
+        """
         self.waiting_room = waiting_room
         self.golmi_server = golmi_server
         self.golmi_password = golmi_password
         self.version = version
         self.base_init_dict = {
             "event": "init",
-            "url": self.golmi_server,
-            "password": self.golmi_password,
-            "tracking": self.version == "mouse_tracking",
-            "show_gripped_objects": self.version == "confirm_selection",
-            "warning": self.version != "no_feedback"
+            "url": golmi_server,
+            "password": golmi_password,
+            "tracking": version == "mouse_tracking",
+            "show_gripped_objects": version == "confirm_selection",
+            "warning": version != "no_feedback"
         }
 
     def register_callbacks(self):
