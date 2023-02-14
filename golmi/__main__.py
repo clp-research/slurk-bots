@@ -415,28 +415,62 @@ class GolmiBot(TaskBot):
                     # wizard sends a warning
                     if event == "warning":
                         logging.debug("emitting WARNING")
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    color=WARNING_COLOR,
-                                    message=(
-                                        "WARNING: your partner thinks that you "
-                                        "are not doing the task correctly"
-                                    )
-                                ),
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                                "html": True,
-                            },
-                        )
 
-                        # give user possibility to send another message
-                        self.description_per_room[room_id] = False
-                        self.set_message_privilege(other_usr["id"], True)
+                        if self.description_per_room.get(room_id) is True:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        color=WARNING_COLOR,
+                                        message=(
+                                            "You sent a warning to your partner"
+                                        )
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True,
+                                },
+                            )
 
-                        # TODO: should players lose points?
-                        self.points_per_room[room_id] += NEGATIVE_REWARD
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        color=WARNING_COLOR,
+                                        message=(
+                                            "WARNING: your partner thinks that you "
+                                            "are not doing the task correctly"
+                                        )
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                    "html": True,
+                                },
+                            )
+
+                            # give user possibility to send another message
+                            self.description_per_room[room_id] = False
+                            self.set_message_privilege(other_usr["id"], True)
+
+                            # TODO: should players lose points?
+                            self.points_per_room[room_id] += NEGATIVE_REWARD
+
+                        else:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        color=WARNING_COLOR,
+                                        message=(
+                                            "Wait for your partner fo send at least one message"
+                                        )
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True,
+                                },
+                            )
+
 
                 else:
                     # commands from user
