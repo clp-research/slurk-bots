@@ -60,23 +60,8 @@ function start_golmi(url, password, role, tracking, show_gripped_objects) {
     let objLayer = document.getElementById("objects");
     let grLayer = document.getElementById("gripper");
 
-    console.log(role)
-
     if (role === "wizard"){
         layerView = new document.ReceiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
-        $("#warning_button").show()
-        $('#warning_button').click(function(){
-            console.log("emitting warning")
-            socket.emit("message_command",
-                {
-                    "command": {
-                        "event": "warning"
-                    },
-                    "room": self_room
-                }
-            )
-        });
-
         grLayer.onclick = (event) => {
             console.log(event)
             socket.emit("mouse", {
@@ -122,15 +107,26 @@ function start_golmi(url, password, role, tracking, show_gripped_objects) {
 
 
 // --- stop and start drawing --- //
-function start(url, room_id, role, password, tracking, show_gripped_objects) {
+function start(url, room_id, role, password, tracking, show_gripped_objects, warning) {
     console.log("received url")
     start_golmi(url, password, role, tracking, show_gripped_objects)
     golmi_socket.connect();
     golmi_socket.emit("join", { "room_id": room_id });
 
     // add warn user butto to wizard interface
-    if (role === "wizard"){
-        $("#wizard_interface").show();
+    if (role === "wizard" && warning === true){
+        $("#warning_button").show()
+        $('#warning_button').click(function(){
+            console.log("emitting warning")
+            socket.emit("message_command",
+                {
+                    "command": {
+                        "event": "warning"
+                    },
+                    "room": self_room
+                }
+            )
+        });
     }
 }
 
@@ -174,6 +170,7 @@ $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             if (data.command.event === "init") {
+                console.log(data)
                 my_role = data.command.role,
                 start(
                     data.command.url,
@@ -181,7 +178,8 @@ $(document).ready(function () {
                     data.command.role,
                     data.command.password,
                     data.command.tracking,
-                    data.command.show_gripped_objects
+                    data.command.show_gripped_objects,
+                    data.command.warning
                 )
             }
         }

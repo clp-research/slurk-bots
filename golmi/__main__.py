@@ -69,6 +69,20 @@ class GolmiBot(TaskBot):
         self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.register_callbacks()
 
+    def post_init(self, waiting_room, golmi_server, golmi_password, version):
+        self.waiting_room = waiting_room
+        self.golmi_server = golmi_server
+        self.golmi_password = golmi_password
+        self.version = version
+        self.base_init_dict = {
+            "event": "init",
+            "url": self.golmi_server,
+            "password": self.golmi_password,
+            "tracking": self.version == "mouse_tracking",
+            "show_gripped_objects": self.version == "confirm_selection",
+            "warning": self.version != "no_feedback"
+        }
+
     def register_callbacks(self):
         @self.sio.event
         def new_task_room(data):
@@ -211,13 +225,10 @@ class GolmiBot(TaskBot):
                             "message_command",
                             {
                                 "command": {
-                                    "event": "init",
-                                    "url": self.golmi_server,
-                                    "room_id": str(room_id),
-                                    "password": self.golmi_password,
+                                    **self.base_init_dict,
                                     "role": role,
-                                    "tracking": self.version == "mouse_tracking",
-                                    "show_gripped_objects": self.version == "confirm_selection"
+                                    "room_id": str(room_id),
+
                                 },
                                 "room": room_id,
                                 "receiver_id": data["user"]["id"],
@@ -416,6 +427,10 @@ class GolmiBot(TaskBot):
                     if event == "warning":
                         logging.debug("emitting WARNING")
 
+                        if self.version == "no_feedback":
+                            # not available
+                            return
+
                         if self.description_per_room.get(room_id) is True:
                             self.sio.emit(
                                 "text",
@@ -593,13 +608,10 @@ class GolmiBot(TaskBot):
                     "message_command",
                     {
                         "command": {
-                            "event": "init",
-                            "url": self.golmi_server,
-                            "room_id": str(room_id),
-                            "password": self.golmi_password,
+                            **self.base_init_dict,
                             "role": role,
-                            "tracking": self.version == "mouse_tracking",
-                            "show_gripped_objects": self.version == "confirm_selection"
+                            "room_id": str(room_id),
+
                         },
                         "room": room_id,
                         "receiver_id": user["id"],
@@ -880,9 +892,6 @@ if __name__ == "__main__":
 
     # create bot instance
     bot = GolmiBot(args.token, args.user, args.task, args.host, args.port)
-    bot.waiting_room = args.waiting_room
-    bot.golmi_server = args.golmi_server
-    bot.golmi_password = args.golmi_password
-    bot.version = args.bot_version
+    bot.post_init(args.waiting_room, args.golmi_server, args.golmi_password, args.bot_version)
     # connect to chat server
     bot.run()
