@@ -7,7 +7,7 @@ def main():
     df1.columns = ["term", "image_path"]
 
     # import the existing wordslist
-    df2 = pd.read_csv("../data/wordlist.txt", sep="\n", header=None)
+    df2 = pd.read_csv("../data/wordlist.txt", sep=" ", header=None)
     df2.columns = ["term"]
 
     # update the existing wordslist
