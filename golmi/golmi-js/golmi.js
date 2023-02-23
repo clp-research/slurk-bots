@@ -3,7 +3,6 @@ let layerView = null
 let controller = null
 let show_mouse = null
 
-
 // copy some parts of the mouse tracking plugin
 let trackMousePointer = {
     isMoving: false,
@@ -44,8 +43,7 @@ function trackClicks(area) {
     });
 }
 
-
-function start_golmi(url, password, role, tracking, show_gripped_objects) {
+function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
     // --- create a golmi_socket --- //
     // don't connect yet
     golmi_socket = io(url, {
@@ -60,57 +58,61 @@ function start_golmi(url, password, role, tracking, show_gripped_objects) {
     let objLayer = document.getElementById("objects");
     let grLayer = document.getElementById("gripper");
 
-    if (role === "wizard"){
-        layerView = new document.ReceiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
-        grLayer.onclick = (event) => {
-            console.log(event)
-            socket.emit("mouse", {
-                type: "click",
-                coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": layerView.blockSize},
-                element_id: "gripper",
-                room: self_room
-            });
-        }
+    controller = new document.LocalKeyController();
 
-        // track mouse movements of the wizard on canvas
-        trackMovement("gripper", 200);
-        
+    if (role === "wizard"){
+        layerView = new document.ReceiverLayerView(
+            golmi_socket,
+            bgLayer,
+            objLayer,
+            grLayer,
+            show_gripped_objects,
+            show_gripper
+        );
+
+        // if the gripper is used there is no need to track clicks
+        if (show_gripper === false){
+            grLayer.onclick = (event) => {
+                console.log(event)
+                socket.emit("mouse", {
+                    type: "click",
+                    coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": layerView.blockSize},
+                    element_id: "gripper",
+                    room: self_room
+                });
+            }
+            // track mouse movements of the wizard on canvas
+            trackMovement("gripper", 200);
+        }      
+
     } else {
         layerView = new document.GiverLayerView(
             golmi_socket,
             bgLayer,
             objLayer,
             grLayer,
-            show_gripped_objects
+            show_gripped_objects,
+            show_gripper
         );
     }
-
-    // --- golmi_socket communication --- //
-    golmi_socket.on("connect", () => {
-        console.log("Connected to model server");
-    });
-
-    golmi_socket.on("disconnect", () => {
-        console.log("Disconnected from model server");
-    });
-
-    golmi_socket.on("joined_room", (data) => {
-        console.log(`Joined room ${data.room_id} as client ${data.client_id}`);
-    })
-
-    // for debugging: log all events
-    golmi_socket.onAny((eventName, ...args) => {
-        console.log(eventName, args);
-    });
 }
 
 
 // --- stop and start drawing --- //
-function start(url, room_id, role, password, tracking, show_gripped_objects, warning) {
+function start(url, room_id, role, password, show_gripper, show_gripped_objects, warning) {
     console.log("received url")
-    start_golmi(url, password, role, tracking, show_gripped_objects)
+    start_golmi(url, password, role, show_gripper, show_gripped_objects)
     golmi_socket.connect();
+
+    controller.resetKeys()
+    controller.attachModel(golmi_socket);
+   
+    //golmi_socket.emit("add_gripper");
     golmi_socket.emit("join", { "room_id": room_id });
+
+    if (role === "wizard"){
+        golmi_socket.emit("add_gripper");
+    }
 
     // add warn user butto to wizard interface
     if (role === "wizard" && warning === true){
@@ -168,30 +170,30 @@ function confirm_selection(answer){
 $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
-            if (data.command.event === "init") {
-                start(
-                    data.command.url,
-                    data.command.room_id,
-                    data.command.role,
-                    data.command.password,
-                    data.command.tracking,
-                    data.command.show_gripped_objects,
-                    data.command.warning
-                )
+
+            switch(data.command.event){
+                case "init":
+                    start(
+                        data.command.url,
+                        data.command.room_id,
+                        data.command.role,
+                        data.command.password,
+                        data.command.show_gripper,
+                        data.command.show_gripped_objects,
+                        data.command.warning
+                    );
+                    break;
+
+                case "detach_controller":
+                    console.log("detach")
+                    controller.can_move = false;
+                    break;
+
+                case "attach_controller":
+                    console.log("attach")
+                    controller.can_move = true;
+                    break;
             }
         }
     });
-
-    // listen for mouse events to plot mouse movements
-    // socket.on("mouse", (data) => {
-    //     if (my_role === "player"){
-    //         if (data.type == "move"){ 
-    //             canvas = $("#gripper")[0]
-    //             console.log(data.coordinates)
-    //             ctx = canvas.getContext("2d")
-    //             ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //             drawCircle(ctx, data.coordinates.x, data.coordinates.y, 5, 'red', 'red', 2)
-    //         }
-    //     }
-    // })
 });

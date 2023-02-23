@@ -1,26 +1,32 @@
 import argparse
-import copy
-from datetime import datetime
 import json
-from pathlib import Path
-import pickle
-import socketio
-import time
 import logging
-
-
-class MyCustomNamespace(socketio.AsyncNamespace):
-    async def trigger_event(self, event_name, sid, *args):
-        print(f"{event_name=}, {sid=}")
-        if args:
-            print(f"data is {args[0]}")
-
+import requests
+import socketio
 
 
 class GolmiClient:
-    def __init__(self, slurk_socket):
+    def __init__(self, slurk_socket, bot, room_id):
         self.socket = socketio.Client()
         self.slurk_socket = slurk_socket
+        self.room_id = room_id
+        self.bot = bot
+        if bot.version == "show_gripper":
+            self.register_callbacks()
+
+    def register_callbacks(self):
+        @self.socket.event
+        def update_grippers(data):
+            piece = list(data.values())[0]["gripped"]
+            if piece is None:
+                # record movement, no object was gripped
+                self.bot.add_to_log(
+                    "gripper_movement",
+                    {"gripper": list(data.values())[0]},
+                    self.room_id
+                )
+            else:
+                self.bot.piece_selection(self.room_id, piece)
 
     def run(self, address, room_id, auth):
         self.socket.connect(address, auth={"password": auth})

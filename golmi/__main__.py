@@ -1,10 +1,9 @@
-import base64
+from copy import deepcopy
 import logging
 import os
 import random
 from time import sleep
 from threading import Timer
-import json
 import requests
 import string
 
@@ -23,9 +22,7 @@ class RoomTimer:
 
     def start_timer(self):
         self.timer = Timer(
-            TIMEOUT_TIMER * 60,
-            self.function,
-            args=[self.room_id, "timeout"]
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
         )
         self.timer.start()
 
@@ -49,9 +46,7 @@ class RoomTimer:
 
     def user_left(self, user):
         self.left_room[user] = Timer(
-            LEAVE_TIMER * 60,
-            self.function,
-            args=[self.room_id, "user_left"]
+            LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
         )
         self.left_room[user].start()
 
@@ -83,16 +78,16 @@ class GolmiBot(TaskBot):
             "event": "init",
             "url": golmi_server,
             "password": golmi_password,
-            "tracking": version == "mouse_tracking",
-            "show_gripped_objects": version == "confirm_selection",
-            "warning": version != "no_feedback"
+            "tracking": version != "show_gripper",
+            "show_gripper": version == "show_gripper",
+            "show_gripped_objects": version in {"confirm_selection", "show_gripper"},
+            "warning": version != "no_feedback",
         }
 
     def register_callbacks(self):
         @self.sio.event
         def new_task_room(data):
             """Triggered after a new task room is created.
-
             An example scenario would be that the concierge
             bot emitted a room_created event once enough
             users for a task have entered the waiting room.
@@ -132,12 +127,12 @@ class GolmiBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending golmi bot to new room was successful.")
 
-                self.golmi_client_per_room[room_id] = GolmiClient(self.sio)
+                self.golmi_client_per_room[room_id] = GolmiClient(
+                    self.sio, self, room_id
+                )
                 self.golmi_client_per_room[room_id].run(
                     self.golmi_server, str(room_id), self.golmi_password
                 )
-                self.load_state(room_id)
-                sleep(1)
 
         @self.sio.event
         def joined_room(data):
@@ -179,7 +174,6 @@ class GolmiBot(TaskBot):
                         f"Could not set task instruction title: {response.status_code}"
                     )
                     response.raise_for_status()
-
 
         @self.sio.event
         def status(data):
@@ -233,7 +227,6 @@ class GolmiBot(TaskBot):
                                     **self.base_init_dict,
                                     "role": role,
                                     "room_id": str(room_id),
-
                                 },
                                 "room": room_id,
                                 "receiver_id": data["user"]["id"],
@@ -254,7 +247,12 @@ class GolmiBot(TaskBot):
 
                     # start a timer
                     self.timers_per_room[room_id].user_left(curr_usr["id"])
-        
+
+                    # if the wizard left, load the state again with no gripper
+                    # once the wizard reconnects a new gripper will be created
+                    if curr_usr["role"] == "wizard":
+                        self.load_state(room_id, from_disconnect=True)
+
         @self.sio.event
         def text_message(data):
             room_id = data["room"]
@@ -275,7 +273,7 @@ class GolmiBot(TaskBot):
             # revoke user's text privilege
             if curr_usr["role"] == "player":
                 self.description_per_room[room_id] = True
-                if self.version != "mouse_tracking":
+                if self.version != "show_gripper":
                     self.set_message_privilege(user_id, False)
 
         @self.sio.event
@@ -301,7 +299,7 @@ class GolmiBot(TaskBot):
                             message=(
                                 "WARNING: you already selected an object, "
                                 "wait for your partner to confirm your selection"
-                            )
+                            ),
                         ),
                         "room": room_id,
                         "receiver_id": user_id,
@@ -320,7 +318,7 @@ class GolmiBot(TaskBot):
                             message=(
                                 "WARNING: wait for your partner "
                                 "to send a description first"
-                            )
+                            ),
                         ),
                         "room": room_id,
                         "receiver_id": user_id,
@@ -346,24 +344,7 @@ class GolmiBot(TaskBot):
 
             piece = req.json()
             if piece:
-                target = self.boards_per_room[room_id][0]["state"]["targets"]
-                result = "right" if piece.keys() == target.keys() else "wrong"
-            
-                # load next state
-                if self.version != "confirm_selection":
-                    self.load_next_state(room_id, result)
-                else:
-                    self.selected_object_per_room[room_id] = True
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "Your partner selected an object, is it correct? <button onclick=\"confirm_selection('yes')\">YES</button> <button onclick=\"confirm_selection('no')\">NO</button>.",
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                            "html": True,
-                        },
-                    )
-
+                self.piece_selection(room_id, piece)
 
         @self.sio.event
         def command(data):
@@ -386,14 +367,25 @@ class GolmiBot(TaskBot):
                 curr_usr, other_usr = self.players_per_room[room_id]
                 if curr_usr["id"] != user_id:
                     curr_usr, other_usr = other_usr, curr_usr
-                
+
                 if isinstance(data["command"], dict):
                     # commands from interface
                     event = data["command"]["event"]
 
                     if event == "confirm_selection":
                         self.selected_object_per_room[room_id] = False
-                        logging.debug(data)
+
+                        if self.version == "show_gripper":
+                            # attach wizard's controller
+                            self.sio.emit(
+                                "message_command",
+                                {
+                                    "command": {"event": "attach_controller"},
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                },
+                            )
+
                         if data["command"]["answer"] == "no":
                             # TODO: remove points?
                             self.points_per_room[room_id] += NEGATIVE_REWARD
@@ -417,15 +409,20 @@ class GolmiBot(TaskBot):
                             )
                         else:
                             req = requests.get(
-                                f"{self.golmi_server}/slurk/{room_id}/gripped/mouse"
+                                f"{self.golmi_server}/slurk/{room_id}/gripped"
                             )
                             if req.ok is not True:
                                 logging.error("Could not retrieve gripped piece")
 
                             piece = req.json()
                             if piece:
-                                target = self.boards_per_room[room_id][0]["state"]["targets"]
-                                result = "right" if piece.keys() == target.keys() else "wrong"
+                                target = self.boards_per_room[room_id][0]["state"][
+                                    "targets"
+                                ]
+                                result = (
+                                    "right" if piece.keys() == target.keys()
+                                    else "wrong"
+                                )
                                 self.load_next_state(room_id, result)
 
                     # wizard sends a warning
@@ -436,15 +433,15 @@ class GolmiBot(TaskBot):
                             # not available
                             return
 
+                        # TODO: add official warning log??
+
                         if self.description_per_room.get(room_id) is True:
                             self.sio.emit(
                                 "text",
                                 {
                                     "message": COLOR_MESSAGE.format(
                                         color=WARNING_COLOR,
-                                        message=(
-                                            "You sent a warning to your partner"
-                                        )
+                                        message=("You sent a warning to your partner"),
                                     ),
                                     "room": room_id,
                                     "receiver_id": curr_usr["id"],
@@ -460,7 +457,7 @@ class GolmiBot(TaskBot):
                                         message=(
                                             "WARNING: your partner thinks that you "
                                             "are not doing the task correctly"
-                                        )
+                                        ),
                                     ),
                                     "room": room_id,
                                     "receiver_id": other_usr["id"],
@@ -483,14 +480,13 @@ class GolmiBot(TaskBot):
                                         color=WARNING_COLOR,
                                         message=(
                                             "Wait for your partner fo send at least one message"
-                                        )
+                                        ),
                                     ),
                                     "room": room_id,
                                     "receiver_id": curr_usr["id"],
                                     "html": True,
                                 },
                             )
-
 
                 else:
                     # commands from user
@@ -511,6 +507,60 @@ class GolmiBot(TaskBot):
                                 "receiver_id": user_id,
                             },
                         )
+
+    def piece_selection(self, room_id, piece):
+        # get users
+        wizard, player = self.players_per_room[room_id]
+        if wizard["role"] != "wizard":
+            wizard, player = player, wizard
+
+        # get target piece
+        target = self.boards_per_room[room_id][0]["state"]["targets"]
+        result = "right" if piece.keys() == target.keys() else "wrong"
+
+        # add selected piece to logs
+        self.add_to_log("wizard_piece_selection", piece, room_id)
+
+        # load next state
+        if self.version not in {"confirm_selection", "show_gripper"}:
+            self.load_next_state(room_id, result)
+        else:
+            self.selected_object_per_room[room_id] = True
+
+            if self.version == "show_gripper":
+                # detach wizard's controller
+                self.sio.emit(
+                    "message_command",
+                    {
+                        "command": {"event": "detach_controller"},
+                        "room": room_id,
+                        "receiver_id": wizard["id"],
+                    },
+                )
+
+            self.sio.emit(
+                "text",
+                {
+                    "message": "Your partner selected an object, is it correct? <button onclick=\"confirm_selection('yes')\">YES</button> <button onclick=\"confirm_selection('no')\">NO</button>.",
+                    "room": room_id,
+                    "receiver_id": player["id"],
+                    "html": True,
+                },
+            )
+
+    def add_to_log(self, event, data, room_id):
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": event,
+                "room_id": room_id,
+                "data": data,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
+            response.raise_for_status()
 
     def load_next_state(self, room_id, result):
         self.timers_per_room[room_id].reset()
@@ -570,7 +620,7 @@ class GolmiBot(TaskBot):
         # get permission_id based on user_id
         response = requests.get(
             f"{self.uri}/users/{user_id}/permissions",
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
             logging.error(
@@ -602,10 +652,7 @@ class GolmiBot(TaskBot):
 
         # users have no roles so we can assign them
         if not all([curr_usr["role"], other_usr["role"]]):
-            instruction_functions = {
-                "player": player_instr,
-                "wizard": wizard_instr
-            }
+            instruction_functions = {"player": player_instr, "wizard": wizard_instr}
             for user, role in zip([curr_usr, other_usr], ["wizard", "player"]):
                 user["role"] = role
 
@@ -616,7 +663,6 @@ class GolmiBot(TaskBot):
                             **self.base_init_dict,
                             "role": role,
                             "room_id": str(room_id),
-
                         },
                         "room": room_id,
                         "receiver_id": user["id"],
@@ -638,6 +684,9 @@ class GolmiBot(TaskBot):
                         f"Could not set task instruction title: {response.status_code}"
                     )
                     response.raise_for_status()
+
+            sleep(0.5)
+            self.load_state(room_id)
 
             self.sio.emit(
                 "text",
@@ -694,56 +743,49 @@ class GolmiBot(TaskBot):
             )
             response.raise_for_status()
 
-    def load_state(self, room_id):
+    def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
-        board = self.boards_per_room[room_id][0]
+        # load and log state
+        board = deepcopy(self.boards_per_room[room_id][0])
 
-        response = requests.post(
-            f"{self.uri}/logs",
-            json={
-                "event": "board_log",
-                "room_id": room_id,
-                "data": {
-                    "board": json.dumps(board),
-                },
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
-            response.raise_for_status()
+        # add gripper if not present
+        if self.version == "show_gripper":
+            if from_disconnect is False:
+                # copy over to new board the gripper of the previous one
+                # so that the controller can still operate it
+                if not board["state"]["grippers"]:
+                    req = requests.get(f"{self.golmi_server}/slurk/{room_id}/state")
+                    if req.ok is not True:
+                        logging.error("Could not retrieve state")
+
+                    state = req.json()
+                    grippers = state["grippers"]
+                    gr_id = list(grippers.keys())[0]
+
+                    grippers[gr_id]["gripped"] = None
+                    grippers[gr_id]["x"] = 12.5
+                    grippers[gr_id]["y"] = 12.5
+
+                    board["state"]["grippers"] = grippers
+
+        # no need to log if the board is loaded again
+        # after the wizard disconnected
+        if from_disconnect is False:
+            self.add_to_log("board_log", {"board": board}, room_id)
 
         self.golmi_client_per_room[room_id].load_config(board["config"])
         self.golmi_client_per_room[room_id].load_state(board["state"])
 
-    def confirmation_code(self, room_id, status, receiver_id=None):
+    def confirmation_code(self, room_id, status):
         """Generate AMT token that will be sent to each player."""
-        kwargs = dict()
-        # either only for one user or for both
-        if receiver_id is not None:
-            kwargs["receiver_id"] = receiver_id
-
         amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
         points = self.points_per_room[room_id]
         # post AMT token to logs
-        response = requests.post(
-            f"{self.uri}/logs",
-            json={
-                "event": "confirmation_log",
-                "room_id": room_id,
-                "data": {
-                    "status_txt": status,
-                    "amt_token": amt_token,
-                    "points": points
-                },
-                **kwargs,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
+        self.add_to_log(
+            "confirmation_log",
+            {"status_txt": status, "amt_token": amt_token, "points": points},
+            room_id,
         )
-        if not response.ok:
-            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
-            response.raise_for_status()
 
         self.sio.emit(
             "text",
@@ -754,11 +796,10 @@ class GolmiBot(TaskBot):
                         "Please enter the following token into the field on "
                         "the HIT webpage, and close this browser window. "
                         f"Your token: {amt_token}"
-                    )
+                    ),
                 ),
                 "room": room_id,
                 "html": True,
-                **kwargs,
             },
         )
 
@@ -767,15 +808,15 @@ class GolmiBot(TaskBot):
         sleep(2)
         self.sio.emit(
             "text",
-            {
-                "message": "The room is closing, see you next time 👋"  ,
-                "room": room_id
-            },
+            {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
         self.room_to_read_only(room_id)
 
         # cancel all timers
         self.timers_per_room[room_id].cancel_all_timers()
+
+        # disconnect from golmi server
+        self.golmi_client_per_room[room_id].disconnect()
 
         # remove any task room specific objects
         memory_dicts = [
@@ -785,7 +826,7 @@ class GolmiBot(TaskBot):
             self.description_per_room,
             self.boards_per_room,
             self.points_per_room,
-            self.selected_object_per_room
+            self.selected_object_per_room,
         ]
         for memory_dict in memory_dicts:
             if room_id in memory_dict:
@@ -881,7 +922,7 @@ if __name__ == "__main__":
     #  no_feedback: player can only send one message, does not know if the wizard selected the correct object
     #  feedback: player can only send one message, is informed if the wizard selected the correct object
     #  confirm_selection: player needs to confirm the wizard's selection
-    #  mouse_tracking: player can see the mouse movements of the wizard
+    #  show_gripper: player can see the mouse movements of the wizard
     if "BOT_VERSION" in os.environ:
         bot_version = {"default": os.environ["BOT_VERSION"]}
     else:
@@ -892,11 +933,13 @@ if __name__ == "__main__":
         help="version of the golmi bot",
         **bot_version,
     )
-    
+
     args = parser.parse_args()
 
     # create bot instance
     bot = GolmiBot(args.token, args.user, args.task, args.host, args.port)
-    bot.post_init(args.waiting_room, args.golmi_server, args.golmi_password, args.bot_version)
+    bot.post_init(
+        args.waiting_room, args.golmi_server, args.golmi_password, args.bot_version
+    )
     # connect to chat server
     bot.run()

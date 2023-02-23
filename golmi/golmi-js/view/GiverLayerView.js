@@ -24,7 +24,7 @@ $(document).ready(function () {
         gripped objects to} grCanvas
      */
     this.GiverLayerView = class GiverLayerView extends document.View {
-        constructor(modelSocket, bgCanvas, objCanvas, grCanvas, show_gripped) {
+        constructor(modelSocket, bgCanvas, objCanvas, grCanvas, show_gripped, show_gripper) {
             super(modelSocket);
             // Three overlapping canvas
             this.bgCanvas	= bgCanvas;
@@ -33,6 +33,7 @@ $(document).ready(function () {
             
             // save mode variable
             this.show_gripped = show_gripped
+            this.show_gripper = show_gripper
 
             // array holding the currently gripped objects
             this.grippedObjs = new Array();
@@ -129,13 +130,15 @@ $(document).ready(function () {
                 let params = {
                     x: target.x,
                     y: target.y,
-                    color: "Cornsilk"
+                    color: target.color[1],
+                    highlight: "blue"
                 }
-                // there should be only a single target (which is then overdrawn by the actual piece)
+                // there should be only a single target (which is then overdrawn by the actual piece)                
                 this._drawBlockObj(ctx, blockMatrix, params);
 
                 // draw bounding box around target (there should be only a single one in this experiment)
-                this._drawBB(ctx, blockMatrix, params, "red");
+                // DRAW BB AROUND TARGET PIECE
+                this._drawBB(ctx, blockMatrix, params, "blue");
             }
         }
 
@@ -194,32 +197,41 @@ $(document).ready(function () {
                     for (const [grippedId, grippedObj] of Object.entries(gripper.gripped)) {
                         let blockMatrix = grippedObj.block_matrix;
 
-                        if (grId == "init"){
-                            var highlight_color = "black";
-                        } else {
-                            var highlight_color = "green";
-                        }
-
-                        console.log(this.show_gripped)
                         if (this.show_gripped === true){
                             let params = {
                                 x: grippedObj.x,
                                 y: grippedObj.y,
                                 color: grippedObj.color,
-                                highlight: highlight_color // highlight a gripped object
+                                highlight: "green" // highlight a gripped object
                             }
                             this._drawBlockObj(ctx,
                                                blockMatrix,
                                                params);
     
-                            if (grId == "init"){
-                                this._drawBB(ctx, blockMatrix, params, "red");
-                            }
-                            else{
-                                this._drawBB(ctx, blockMatrix, params, "green");
-                            }
+                            this._drawBB(ctx, blockMatrix, params, "green");
                         }
                     }
+                }
+
+                if (this.show_gripper === true){
+                        // modify style depending on whether an object is gripped
+                    let grSize = gripper.gripped ? 0.1 : 0.3;
+
+                    // draw the gripper itself
+                    // --- config ---
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 2;
+                    // draw. The gripper as a simple cross
+                    // Note: coordinates are at a tiles upper-left corner!
+                    // We draw a gripper from that corner to the bottom-right
+                    ctx.beginPath();
+                    // top-left to bottom-right
+                    ctx.moveTo(this._toPxl(gripper.x - grSize), this._toPxl(gripper.y - grSize));
+                    ctx.lineTo(this._toPxl(gripper.x + 1 + grSize), this._toPxl(gripper.y + 1 + grSize));
+                    // bottom-left to top-right
+                    ctx.moveTo(this._toPxl(gripper.x - grSize), this._toPxl(gripper.y + 1 + grSize));
+                    ctx.lineTo(this._toPxl(gripper.x + 1 + grSize), this._toPxl(gripper.y - grSize));
+                    ctx.stroke();
                 }
             }
         }
@@ -260,6 +272,7 @@ $(document).ready(function () {
                     if (block) { // draw if matrix field contains a 1
                         let x = params.x + c;
                         let y = params.y + r;
+
                         this._drawBlock(ctx, x, y, params.color);
                         // draw object borders
                         if (this._isUpperBorder(bMatrix, c, r)) {
