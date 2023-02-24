@@ -170,7 +170,7 @@ class GolmiBot(TaskBot):
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
-                    LOG.error(
+                    logging.error(
                         f"Could not set task instruction title: {response.status_code}"
                     )
                     response.raise_for_status()
@@ -559,7 +559,7 @@ class GolmiBot(TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
-            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
+            logging.error(f"Could not post AMT token to logs: {response.status_code}")
             response.raise_for_status()
 
     def load_next_state(self, room_id, result):
@@ -680,7 +680,7 @@ class GolmiBot(TaskBot):
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
                 if not response.ok:
-                    LOG.error(
+                    logging.error(
                         f"Could not set task instruction title: {response.status_code}"
                     )
                     response.raise_for_status()
