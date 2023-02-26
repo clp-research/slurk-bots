@@ -226,7 +226,7 @@ class GolmiEval(TaskBot):
                         block_size = data["command"]["block_size"]
 
                         req = requests.get(
-                            f"{self.golmi_server}/{room_id}/{x}/{y}/{block_size}"
+                            f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
                         )
                         if req.ok is not True:
                             logging.error("Could not retrieve gripped piece")
