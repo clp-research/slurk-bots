@@ -29,6 +29,7 @@ $(document).ready(function () {
 
             // Set up key listeners
             this._initKeyListener();
+            this.can_move = true;
         }
 
         // --- (Un)Subscribing models ---
@@ -210,31 +211,40 @@ $(document).ready(function () {
          * Register the key listeners to allow gripper manipulation.
          * Notifies the associated models.
          */
+        unbindKeyListener() {
+            $(document).unbind("keydown");
+            $(document).unbind("keyup");
+        }
+
         _initKeyListener() {
             $(document).keydown( e => {
-                if (this._downAssigned(e.keyCode)) {
-                    // only progress if the key is not already in state "down"
-                    if (!this._isDown(e.keyCode)) {
-                        // Change the state to "down". This is done for all keys, not
-                        // just loopable ones, to prevent the keydown event from
-                        // firing repeatedly if the key is held.
-                        this.keyAssignment[e.keyCode][2] = true;
-                        // execute the function assigned to the keydown event
-                        let loopable = this._upAssigned(e.keyCode);
-                        this.keyAssignment[e.keyCode][0](this, loopable);
+                if (this.can_move === true){
+                    if (this._downAssigned(e.keyCode)) {
+                        // only progress if the key is not already in state "down"
+                        if (!this._isDown(e.keyCode)) {
+                            // Change the state to "down". This is done for all keys, not
+                            // just loopable ones, to prevent the keydown event from
+                            // firing repeatedly if the key is held.
+                            this.keyAssignment[e.keyCode][2] = true;
+                            // execute the function assigned to the keydown event
+                            let loopable = this._upAssigned(e.keyCode);
+                            this.keyAssignment[e.keyCode][0](this, loopable);
+                        }
                     }
                 }
             });
 
             $(document).keyup( e => {
-                // check if a function is assigned. Only execute if the key was remembered as "down"
-                if (this._upAssigned(e.keyCode) && this._isDown(e.keyCode)) {
-                    // execute the function assigned to the keyup event
-                    this.keyAssignment[e.keyCode][1](this);
-                }
-                // change the state to "up"
-                if (this._registered(e.keyCode)) {
-                    this.keyAssignment[e.keyCode][2] = false;
+                if (this.can_move === true){
+                    // check if a function is assigned. Only execute if the key was remembered as "down"
+                    if (this._upAssigned(e.keyCode) && this._isDown(e.keyCode)) {
+                        // execute the function assigned to the keyup event
+                        this.keyAssignment[e.keyCode][1](this);
+                    }
+                    // change the state to "up"
+                    if (this._registered(e.keyCode)) {
+                        this.keyAssignment[e.keyCode][2] = false;
+                    }
                 }
             });
         }

@@ -24,12 +24,16 @@ $(document).ready(function () {
         gripped objects to} grCanvas
      */
     this.ReceiverLayerView = class ReceiverLayerView extends document.View {
-        constructor(modelSocket, bgCanvas, objCanvas, grCanvas) {
+        constructor(modelSocket, bgCanvas, objCanvas, grCanvas, show_gripped, show_gripper) {
             super(modelSocket);
             // Three overlapping canvas
             this.bgCanvas	= bgCanvas;
             this.objCanvas	= objCanvas;
             this.grCanvas	= grCanvas;
+
+            // save mode variable
+            this.show_gripped = show_gripped
+            this.show_gripper = show_gripper
 
             // array holding the currently gripped objects
             this.grippedObjs = new Array();
@@ -178,6 +182,7 @@ $(document).ready(function () {
          * Draw the gripper object and, if applicable, the gripped object.
          * The gripper is used to navigate on the canvas and move objects.
          */
+
         drawGr() {
             let ctx = this.grCanvas.getContext("2d");
             ctx.beginPath()
@@ -187,16 +192,7 @@ $(document).ready(function () {
                     for (const [grippedId, grippedObj] of Object.entries(gripper.gripped)) {
                         let blockMatrix = grippedObj.block_matrix;
 
-                        if (grId == "init"){
-                            let params = {
-                                x: grippedObj.x,
-                                y: grippedObj.y,
-                                color: grippedObj.color
-                            }
-                            this._drawBlockObj(ctx,
-                                               blockMatrix,
-                                               params);
-                        } else {
+                        if (this.show_gripped === true){
                             let params = {
                                 x: grippedObj.x,
                                 y: grippedObj.y,
@@ -206,28 +202,30 @@ $(document).ready(function () {
                             this._drawBlockObj(ctx,
                                                blockMatrix,
                                                params);
+    
+                            this._drawBB(ctx, blockMatrix, params, "green");
                         }
                     }
                 }
 
-                if (grId != "init"){
-                    // modify style depending on whether an object is gripped
-                    let grSize = gripper.gripped ? 0.2 : 0.5;
+                if (this.show_gripper === true){
+                        // modify style depending on whether an object is gripped
+                    let grSize = gripper.gripped ? 0.1 : 0.3;
 
                     // draw the gripper itself
                     // --- config ---
-                    ctx.lineStyle = "red";
+                    ctx.strokeStyle = "#000000";
                     ctx.lineWidth = 2;
-                    // draw. The gripper is a simple cross
+                    // draw. The gripper as a simple cross
+                    // Note: coordinates are at a tiles upper-left corner!
+                    // We draw a gripper from that corner to the bottom-right
                     ctx.beginPath();
-                    ctx.moveTo(this._toPxl(gripper.x-grSize),
-                            this._toPxl(gripper.y-grSize));
-                    ctx.lineTo(this._toPxl(gripper.x+grSize),
-                            this._toPxl(gripper.y+grSize));
-                    ctx.moveTo(this._toPxl(gripper.x-grSize),
-                            this._toPxl(gripper.y+grSize));
-                    ctx.lineTo(this._toPxl(gripper.x+grSize),
-                            this._toPxl(gripper.y-grSize));
+                    // top-left to bottom-right
+                    ctx.moveTo(this._toPxl(gripper.x - grSize), this._toPxl(gripper.y - grSize));
+                    ctx.lineTo(this._toPxl(gripper.x + 1 + grSize), this._toPxl(gripper.y + 1 + grSize));
+                    // bottom-left to top-right
+                    ctx.moveTo(this._toPxl(gripper.x - grSize), this._toPxl(gripper.y + 1 + grSize));
+                    ctx.lineTo(this._toPxl(gripper.x + 1 + grSize), this._toPxl(gripper.y - grSize));
                     ctx.stroke();
                 }
             }
@@ -243,6 +241,21 @@ $(document).ready(function () {
             this.drawGr();
         }
 
+        _drawBB(ctx, bMatrix, params, color) {
+            // Draw blocks       
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawUpperBorder(ctx, params.x + i, params.y, color);
+            }
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawLowerBorder(ctx, params.x + i, params.y + bMatrix.length -1, color);
+            }
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawLeftBorder(ctx, params.x, params.y + i, color);
+            }
+            for (let i=0; i< bMatrix.length; i++) {
+                this._drawRightBorder(ctx, params.x + bMatrix[0].length -1, params.y + i, color);
+            }
+        }
         // --- draw helper functions ---
 
         _drawBlockObj(ctx, bMatrix, params) {
