@@ -1,108 +1,111 @@
 let session = [];
-
-function display_grid(grid, grid_name) {
-    // clear grid div
-    $(`#${grid_name}-grid`).empty();
-
-    // adjist colours
-    color_mapping = {
-        "red": "#f44336",
-        "blue": "#0080ff",
-        "green": "#588F3A",
-        "white": "white"
-    }
-
-    // add text box when hoovering
-    legend = {
-        "○": "screw",
-        "◊": "washer",
-        "˂": "bridge (occupies 2 locations)",
-        "□": "nut"
-    }
-
-    // define elements for padding
-    alphabet_ints = Array.from(Array(26)).map((e, i) => i + 65);
-    alphabet = alphabet_ints.map((x) => String.fromCharCode(x)); // [A..Z]
-
-    var table = $("<table>");
-    table.css({ "style": "width: 100%", "height": "100%" })
-
-    // add coordinates on upper header        
-    var top_header = $("<tr>");
-    for (let i = 0; i < grid[0].length + 1; i++) {
-        var item = $("<th>");
-        item.css({})
-        if (i === 0) {
-            item.text("");
-            item.css({ "border": "3px solid white" })
-        } else {
-            item.text(i)
-        }
-        top_header.append(item)
-    }
-    table.append(top_header);
+let golmi_socket_source = null
+let golmi_socket_target = null
+let targetlayerView = null
+let sourcelayerView = null
+let show_mouse = null
 
 
-    // create target
-    for (let i = 0; i < grid.length; i++) {
-        var div = $("<tr>");
+function start_golmi(url, password, role, room_id) {
+    // --- create a golmi_socket --- //
+    // don't connect yet
 
-        // header on the left
-        if (grid_name === "target" || grid_name === "reference") {
-            if ((i % 4) == 0) {
-                var header = $("<th rowspan='4'>");
-                header.text(alphabet[i / 4])
-                header.css({
-                    "background-color": "white"
-                })
-                div.append(header)
-            }
-        } else if (grid_name === "source") {
-            var header = $("<th rowspan='1'>");
-            header.text(alphabet[i])
-            div.append(header)
-        }
+    golmi_socket_target = io(url, {
+        auth: { "password": password }
+    });
 
-        // fill grid
-        for (let j = 0; j < grid[i].length; j++) {
-            var item = $("<td>").css({
-                "background-color": color_mapping[grid[i][j][0]]
+    // --- view --- // 
+    // Get references to the three canvas layers
+    let bgLayer_t = document.getElementById("target_background");
+    let objLayer_t = document.getElementById("target_objects");
+    let grLayer_t = document.getElementById("target_gripper");
+
+    targetlayerView = new document.CocoLayerView(
+        golmi_socket_target,
+        bgLayer_t,
+        objLayer_t,
+        grLayer_t
+    );
+
+
+    // --- golmi_socket communication --- //
+    golmi_socket_target.on("connect", () => {
+        console.log("Connected to model server");
+    });
+
+    golmi_socket_target.on("disconnect", () => {
+        console.log("Disconnected from model server");
+    });
+
+    golmi_socket_target.on("joined_room", (data) => {
+        console.log(`Joined room ${data.room_id} as client ${data.client_id}`);
+    })
+
+    // for debugging: log all events
+    golmi_socket_target.onAny((eventName, ...args) => {
+        console.log(eventName, args);
+    });
+
+    golmi_socket_target.connect()
+    golmi_socket_target.emit("join", { "room_id": `${room_id}_t` });
+
+    if (role === "wizard"){
+        golmi_socket_source = io(url, {
+            auth: { "password": password }
+        });
+    
+        // --- view --- // 
+        // Get references to the three canvas layers
+        let bgLayer = document.getElementById("source_background");
+        let objLayer = document.getElementById("source_objects");
+        let grLayer = document.getElementById("source_gripper");
+    
+        sourcelayerView = new document.CocoLayerView(
+            golmi_socket_source,
+            bgLayer,
+            objLayer,
+            grLayer
+        );
+
+        // --- golmi_socket communication --- //
+        golmi_socket_source.on("connect", () => {
+            console.log("Connected to model server");
+        });
+
+        golmi_socket_source.on("disconnect", () => {
+            console.log("Disconnected from model server");
+        });
+
+        golmi_socket_source.on("joined_room", (data) => {
+            console.log(`Joined room ${data.room_id} as client ${data.client_id}`);
+        })
+
+        // for debugging: log all events
+        golmi_socket_source.onAny((eventName, ...args) => {
+            console.log(eventName, args);
+        });
+
+        golmi_socket_source.connect()
+        golmi_socket_source.emit("join", { "room_id": `${room_id}_s` });
+        console.log(`${room_id}_s`)
+
+        // if the gripper is used there is no need to track clicks
+        grLayer.onclick = (event) => {
+            console.log(event)
+            socket.emit("mouse", {
+                type: "click",
+                coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": sourcelayerView.blockSize},
+                element_id: "gripper",
+                room: self_room
             });
-
-            txt = grid[i][j][1]
-
-            // replace empty cells to preserve dimensions
-            if (txt === ""){
-                txt = "|"
-                item.css({"color": "white"})
-            }
-
-            item.text(txt)
-            item.attr("title", legend[grid[i][j][1]])
-            div.append(item)
         }
-        table.append(div)
     }
+}
 
 
-    card_header = $(`<div>${grid_name.toUpperCase()} BOARD</div>`);
-    card_header.css({ "text-align": "center", "font-weight": "bold" })
-
-    hr = $("<hr>");
-    hr.css({ "margin": "10px 2px", "background-color": "#abb2b9", "opacity": ".50;" })
-
-    header_div = $("<div>");
-    header_div.css({ "style": "width: 100%", "height": "7%" })
-    header_div.append(card_header)
-    header_div.append(hr)
-
-    center = $("<center>");
-    center.css({ "style": "width: 100%", "height": "93%" })
-    center.append(table)
-
-    $(`#${grid_name}-grid`).append(header_div);
-    $(`#${grid_name}-grid`).append(center);
-};
+function stop() {
+    golmi_socket.disconnect();
+}
 
 
 function set_wizard(description) {
@@ -210,39 +213,44 @@ $(document).ready(() => {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
             // assign role
-            this_event = data.command.event
-            if (this_event === "assign_role"){
-                if (data.command.role === "wizard") {
-                    set_wizard(data.command.instruction)
-                } else if (data.command.role === "player"){
-                    set_player(data.command.instruction)
-                }
+            switch(data.command.event){
+                case "init":
+                    if (data.command.role === "wizard") {
+                        set_wizard(data.command.instruction)
+                    } else if (data.command.role === "player"){
+                        set_player(data.command.instruction)
+                    }
 
-            // reset roles
-            } else if (this_event === "reset_roles") {
-                reset_role(data.command.instruction)
+                    start_golmi(
+                        data.command.url,
+                        data.command.password,
+                        data.command.role,
+                        data.command.room_id,
+                    );
+                    break;
 
-            // board update
-            } else if (this_event === "set_board") {
-                if (data.command.name === "reference"){
-                    $("#reference-grid").show();
-                }
-                display_grid(data.command.board, data.command.name)
+                case "reset_roles":
+                    reset_role(data.command.instruction)
+                    break;
 
-            // commands were successfull, clear session
-            } else if (this_event === "success_run"){
-                // $("#history").text("")
-                $("#input").val("")
-                executed = data.command.executed
-                to_run = data.command.to_run
-                session.push(executed)
-                
-                $('#history').append(`<b><code>${executed}<br/></code></b>`);
-                $("#history").scrollTop($("#history")[0].scrollHeight);
-                
-                $("#input").val(to_run.join("\n"))
+                case "set_board":
+                    if (data.command.name === "reference"){
+                        $("#reference-grid").show();
+                    }
+                    // display_grid(data.command.board, data.command.name)
+                    break;
+
+                case "success_run":
+                    $("#input").val("")
+                    executed = data.command.executed
+                    to_run = data.command.to_run
+                    session.push(executed)
+
+                    $('#history').append(`<b><code>${executed}<br/></code></b>`);
+                    $("#history").scrollTop($("#history")[0].scrollHeight);
+                    $("#input").val(to_run.join("\n"))
+                    break;
             }
         }
     });
 });
-

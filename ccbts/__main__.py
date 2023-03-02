@@ -9,6 +9,7 @@ import requests
 from templates import TaskBot
 from wizardinterface import WizardInterface
 from .config import *
+from .golmi_client import *
 
 
 class RoomTimers:
@@ -33,7 +34,18 @@ class CcbtsBot(TaskBot):
         self.images_per_room = dict()
         self.robot_interfaces = dict()
         self.timers_per_room = dict()
+        self.golmi_client_per_room = dict()
         self.register_callbacks()
+
+    def post_init(self, waiting_room, golmi_server, golmi_password):
+        """
+        save extra variables after the __init__() method has been called
+        and create the init_base_dict: a dictionary containing
+        needed arguments for the init event to send to the JS frontend
+        """
+        self.waiting_room = waiting_room
+        self.golmi_server = golmi_server
+        self.golmi_password = golmi_password
 
     def register_callbacks(self):
         @self.sio.event
@@ -80,6 +92,12 @@ class CcbtsBot(TaskBot):
 
                 # create new timer for this room
                 self.timers_per_room[room_id] = RoomTimers()
+
+                self.golmi_client_per_room[room_id] = DoubleClient()
+                self.golmi_client_per_room[room_id].run(
+                    self.golmi_server, str(room_id), self.golmi_password
+                )
+                self.golmi_client_per_room[room_id].load_config(CONFIG)
 
         @self.sio.event
         def joined_room(data):
@@ -370,13 +388,28 @@ class CcbtsBot(TaskBot):
                 ["wizard", "player"], [curr_usr, other_usr]
             ):
                 user["role"] = role
+                # self.sio.emit(
+                #     "message_command",
+                #     {
+                #         "command": {
+                #             "event": "assign_role",
+                #             "role": role,
+                #             "instruction": INSTRUCTIONS[role],
+                #         },
+                #         "room": room_id,
+                #         "receiver_id": user["id"],
+                #     },
+                # )
                 self.sio.emit(
                     "message_command",
                     {
                         "command": {
-                            "event": "assign_role",
-                            "role": role,
+                            "event": "init",
+                            "url": self.golmi_server,
+                            "password": self.golmi_password,
                             "instruction": INSTRUCTIONS[role],
+                            "role": role,
+                            "room_id": str(room_id),
                         },
                         "room": room_id,
                         "receiver_id": user["id"],
@@ -384,7 +417,8 @@ class CcbtsBot(TaskBot):
                 )
 
             # self.set_image(room_id, other_usr)
-            self.set_boards(room_id)
+            # self.set_boards(room_id)
+            self.golmi_client_per_room[room_id].load_state(TESTSTATE)
 
         else:
             self.sio.emit(
@@ -576,10 +610,34 @@ if __name__ == "__main__":
         help="room where users await their partner",
         **waiting_room,
     )
+
+    if "GOLMI_SERVER" in os.environ:
+        golmi_server = {"default": os.environ["GOLMI_SERVER"]}
+    else:
+        golmi_server = {"required": True}
+
+    if "GOLMI_PASSWORD" in os.environ:
+        golmi_password = {"default": os.environ["GOLMI_PASSWORD"]}
+    else:
+        golmi_password = {"required": True}
+
+    parser.add_argument(
+        "--golmi-server",
+        type=str,
+        help="ip address to the golmi server",
+        **golmi_server,
+    )
+    parser.add_argument(
+        "--golmi-password",
+        type=str,
+        help="password to connect to the golmi server",
+        **golmi_password,
+    )
+
     args = parser.parse_args()
 
     # create bot instance
-    ccbts_bot = CcbtsBot(args.token, args.user, args.task, args.host, args.port)
-    ccbts_bot.waiting_room = args.waiting_room
+    bot = CcbtsBot(args.token, args.user, args.task, args.host, args.port)
+    bot.post_init(args.waiting_room, args.golmi_server, args.golmi_password)
     # connect to chat server
-    ccbts_bot.run()
+    bot.run()
