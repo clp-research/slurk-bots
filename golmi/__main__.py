@@ -107,7 +107,12 @@ class GolmiBot(TaskBot):
                 self.players_per_room[room_id] = list()
                 self.description_per_room[room_id] = False
                 self.selected_object_per_room[room_id] = False
-                self.points_per_room[room_id] = STARTING_POINTS
+                self.points_per_room[room_id] = {
+                    "score": STARTING_POINTS,
+                    "history": [
+                        {"correct": 0, "wrong": 0, "warnings": 0}
+                    ]
+                }
                 self.timers_per_room[room_id] = RoomTimer(
                     self.timeout_close_game, room_id
                 )
@@ -258,6 +263,10 @@ class GolmiBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
+            # ignore messages from self
+            if user_id == self.user:
+                return
+
             # get user
             curr_usr, other_usr = self.players_per_room[room_id]
             if curr_usr["id"] != user_id:
@@ -387,12 +396,34 @@ class GolmiBot(TaskBot):
                             )
 
                         if data["command"]["answer"] == "no":
-                            # TODO: remove points?
-                            self.points_per_room[room_id] += NEGATIVE_REWARD
+                            # allow the player to send a second description
+                            self.description_per_room[room_id] = False
+                            self.set_message_privilege(user_id, True)
+
+                            # remove points
+                            self.points_per_room[room_id]["score"] += NEGATIVE_REWARD
+                            self.points_per_room[room_id]["history"][-1]["wrong"] += 1
+
+                            # update points in title
+                            score = self.points_per_room[room_id]["score"]
+                            response = requests.patch(
+                                f"{self.uri}/rooms/{room_id}/text/title",
+                                json={"text": f"Points: {score}"},
+                                headers={"Authorization": f"Bearer {self.token}"},
+                            )
+                            if not response.ok:
+                                logging.error(
+                                    f"Could not set task point in title: {response.status_code}"
+                                )
+                                response.raise_for_status()
+
+                            # inform users
                             self.sio.emit(
                                 "text",
                                 {
-                                    "message": "Your partner thinks you selected the wrong piece, try again",
+                                    "message": (
+                                        "Your partner thinks you selected the wrong piece, "
+                                        "wait for the new instruction and try again"),
                                     "room": room_id,
                                     "receiver_id": other_usr["id"],
                                     "html": True,
@@ -401,13 +432,14 @@ class GolmiBot(TaskBot):
                             self.sio.emit(
                                 "text",
                                 {
-                                    "message": "Your partner will shortly try again",
+                                    "message": "You can now send a new description to your partner",
                                     "room": room_id,
                                     "receiver_id": curr_usr["id"],
                                     "html": True,
                                 },
                             )
                         else:
+                            # player thinks the wizard selected the right object
                             req = requests.get(
                                 f"{self.golmi_server}/slurk/{room_id}/gripped"
                             )
@@ -470,7 +502,8 @@ class GolmiBot(TaskBot):
                             self.set_message_privilege(other_usr["id"], True)
 
                             # TODO: should players lose points?
-                            self.points_per_room[room_id] += NEGATIVE_REWARD
+                            self.points_per_room[room_id]["score"] += NEGATIVE_REWARD
+                            self.points_per_room[room_id]["history"][-1]["warnings"] += 1
 
                         else:
                             self.sio.emit(
@@ -541,7 +574,11 @@ class GolmiBot(TaskBot):
             self.sio.emit(
                 "text",
                 {
-                    "message": "Your partner selected an object, is it correct? <button onclick=\"confirm_selection('yes')\">YES</button> <button onclick=\"confirm_selection('no')\">NO</button>.",
+                    "message": (
+                        "Your partner selected an object, is it correct? "
+                        "<button onclick=\"confirm_selection('yes')\">YES</button> "
+                        "<button onclick=\"confirm_selection('no')\">NO</button>."
+                    ),
                     "room": room_id,
                     "receiver_id": player["id"],
                     "html": True,
@@ -566,9 +603,11 @@ class GolmiBot(TaskBot):
         self.timers_per_room[room_id].reset()
 
         if result == "right":
-            self.points_per_room[room_id] += POSITIVE_REWARD
+            self.points_per_room[room_id]["score"] += POSITIVE_REWARD
+            self.points_per_room[room_id]["history"][-1]["correct"] += 1
         else:
-            self.points_per_room[room_id] += NEGATIVE_REWARD
+            self.points_per_room[room_id]["score"] += NEGATIVE_REWARD
+            self.points_per_room[room_id]["history"][-1]["wrong"] += 1
 
         player, wizard = self.players_per_room[room_id]
         if player["role"] != "player":
@@ -578,9 +617,23 @@ class GolmiBot(TaskBot):
         self.description_per_room[room_id] = False
         self.set_message_privilege(player["id"], True)
 
+        score = self.points_per_room[room_id]["score"]
+
+        if self.version != "no_feedback":
+            # update points on title
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/title",
+                json={"text": f"Points: {score}"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not set task point in title: {response.status_code}"
+                )
+                response.raise_for_status()
+
         if not self.boards_per_room[room_id]:
             # no more boards, close the room
-            score = self.points_per_room[room_id]
             self.sio.emit(
                 "text",
                 {
@@ -596,11 +649,14 @@ class GolmiBot(TaskBot):
             self.close_game(room_id)
 
         else:
-            points = self.points_per_room[room_id]
+            # create a new dictionary to keep track of board
+            self.points_per_room[room_id]["history"].append(
+                {"correct": 0, "wrong": 0, "warnings": 0}
+            )
             message = "Let's get you to the next board"
             if self.version != "no_feedback":
                 message = (
-                    f"That was the {result} piece, you currently have {points} points. "
+                    f"That was the {result} piece, you currently have {score} points. "
                     f"{message}"
                 )
             self.sio.emit(
@@ -746,6 +802,9 @@ class GolmiBot(TaskBot):
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
         # load and log state
+        if not self.boards_per_room[room_id]:
+            return
+
         board = deepcopy(self.boards_per_room[room_id][0])
 
         # add gripper if not present
