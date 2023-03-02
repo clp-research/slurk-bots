@@ -180,6 +180,8 @@ class GolmiBot(TaskBot):
                     )
                     response.raise_for_status()
 
+                self.update_title_points(room_id)
+
         @self.sio.event
         def status(data):
             """Triggered if a user enters or leaves a room."""
@@ -405,17 +407,7 @@ class GolmiBot(TaskBot):
                             self.points_per_room[room_id]["history"][-1]["wrong"] += 1
 
                             # update points in title
-                            score = self.points_per_room[room_id]["score"]
-                            response = requests.patch(
-                                f"{self.uri}/rooms/{room_id}/text/title",
-                                json={"text": f"Points: {score}"},
-                                headers={"Authorization": f"Bearer {self.token}"},
-                            )
-                            if not response.ok:
-                                logging.error(
-                                    f"Could not set task point in title: {response.status_code}"
-                                )
-                                response.raise_for_status()
+                            self.update_title_points(room_id)
 
                             # inform users
                             self.sio.emit(
@@ -621,16 +613,7 @@ class GolmiBot(TaskBot):
 
         if self.version != "no_feedback":
             # update points on title
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/title",
-                json={"text": f"Points: {score}"},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(
-                    f"Could not set task point in title: {response.status_code}"
-                )
-                response.raise_for_status()
+            self.update_title_points(room_id)
 
         if not self.boards_per_room[room_id]:
             # no more boards, close the room
@@ -861,6 +844,28 @@ class GolmiBot(TaskBot):
                 "html": True,
             },
         )
+
+    def update_title_points(self, room_id):
+        score = self.points_per_room[room_id]["score"]
+
+        correct = 0
+        for board in self.points_per_room[room_id]["history"]:
+            # only count a board as correct if the wizard
+            # got it on the first try (only relevant for confirm
+            # selection and gripper variants)
+            if board["wrong"] == 0:
+                correct += board["correct"]
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={"text": f"Reward: {score} | Correct: {correct}/{BOARDS_PER_ROOM}"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(
+                f"Could not set task point in title: {response.status_code}"
+            )
+            response.raise_for_status()
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
