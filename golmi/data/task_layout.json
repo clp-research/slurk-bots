@@ -93,7 +93,7 @@
             "margin": "0px 15px",
             "padding": "20px"
         },
-        ".button": {
+        ".button, .message_button": {
             "text-transform": "uppercase",
             "font-size": "medium",
             "border-radius": "5px",
@@ -107,7 +107,12 @@
             "padding": "15px",
             "cursor": "pointer"
         },
-        ".button:hover" : {
+        ".message_button": {
+            "margin-top": "3px",
+            "padding": "5px",
+            "width":"49%"
+        },
+        ".button:hover, .message_button:hover" : {
             "content": "''",
             "background": "#818BAC"
         }

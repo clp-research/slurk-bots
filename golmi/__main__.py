@@ -567,9 +567,9 @@ class GolmiBot(TaskBot):
                 "text",
                 {
                     "message": (
-                        "Your partner selected an object, is it correct? "
-                        "<button onclick=\"confirm_selection('yes')\">YES</button> "
-                        "<button onclick=\"confirm_selection('no')\">NO</button>."
+                        "Your partner selected an object, is it correct? <br>"
+                        "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
+                        "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
                     ),
                     "room": room_id,
                     "receiver_id": player["id"],
