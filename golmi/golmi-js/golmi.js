@@ -86,6 +86,15 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
         }      
 
     } else {
+        // give player possibility to click on objects to find out which one is the target
+        grLayer.onclick = (event) => {
+            socket.emit("mouse", {
+                type: "click",
+                coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": layerView.blockSize},
+                element_id: "gripper",
+                room: self_room
+            });
+        }
         layerView = new document.GiverLayerView(
             golmi_socket,
             bgLayer,

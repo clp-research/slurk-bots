@@ -293,6 +293,10 @@ class GolmiBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
+            # do not process events from itself
+            if user_id == self.user:
+                return
+
             if room_id not in self.players_per_room:
                 return
 
@@ -302,61 +306,95 @@ class GolmiBot(TaskBot):
 
             self.timers_per_room[room_id].reset()
 
-            if self.selected_object_per_room[room_id] is True:
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": COLOR_MESSAGE.format(
-                            color=WARNING_COLOR,
-                            message=(
-                                "WARNING: you already selected an object, "
-                                "wait for your partner to confirm your selection"
-                            ),
-                        ),
-                        "room": room_id,
-                        "receiver_id": user_id,
-                        "html": True,
-                    },
-                )
-                return
-
-            # no description yet, warn the user
-            if self.description_per_room[room_id] is False:
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": COLOR_MESSAGE.format(
-                            color=WARNING_COLOR,
-                            message=(
-                                "WARNING: wait for your partner "
-                                "to send a description first"
-                            ),
-                        ),
-                        "room": room_id,
-                        "receiver_id": user_id,
-                        "html": True,
-                    },
-                )
-                return
-
+            # get users
             curr_usr, other_usr = self.players_per_room[room_id]
             if curr_usr["id"] != user_id:
                 curr_usr, other_usr = other_usr, curr_usr
 
-            # check if player selected the correct area
-            x = data["coordinates"]["x"]
-            y = data["coordinates"]["y"]
-            block_size = data["coordinates"]["block_size"]
+            if curr_usr["role"] == "player":
+                x = data["coordinates"]["x"]
+                y = data["coordinates"]["y"]
+                block_size = data["coordinates"]["block_size"]
 
-            req = requests.get(
-                f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
-            )
-            if req.ok is not True:
-                logging.error("Could not retrieve gripped piece")
+                req = requests.get(
+                    f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
+                )
+                if req.ok is not True:
+                    logging.error("Could not retrieve gripped piece")
 
-            piece = req.json()
-            if piece:
-                self.piece_selection(room_id, piece)
+                piece = req.json()
+
+                target = self.boards_per_room[room_id][0]["state"]["targets"]
+
+                if piece.keys() == target.keys():
+                    self.sio.emit(
+                        "text",
+                        {
+                            "room": room_id,
+                            "message": "That is your target",
+                            "receiver_id": user_id,
+                        },
+                    )
+
+            else:
+                if self.selected_object_per_room[room_id] is True:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                color=WARNING_COLOR,
+                                message=(
+                                    "WARNING: you already selected an object, "
+                                    "wait for your partner to confirm your selection"
+                                ),
+                            ),
+                            "room": room_id,
+                            "receiver_id": user_id,
+                            "html": True,
+                        },
+                    )
+                    return
+
+                # no description yet, warn the user
+                if self.description_per_room[room_id] is False:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                color=WARNING_COLOR,
+                                message=(
+                                    "WARNING: wait for your partner "
+                                    "to send a description first"
+                                ),
+                            ),
+                            "room": room_id,
+                            "receiver_id": user_id,
+                            "html": True,
+                        },
+                    )
+                    return
+
+                # check if player selected the correct area
+                x = data["coordinates"]["x"]
+                y = data["coordinates"]["y"]
+                block_size = data["coordinates"]["block_size"]
+
+
+                if self.version == "confirm_selection":
+                    req = requests.get(
+                        f"{self.golmi_server}/slurk/grip/{room_id}/{x}/{y}/{block_size}"
+                    )
+                else:    
+                    req = requests.get(
+                        f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
+                    )
+
+                if req.ok is not True:
+                    logging.error("Could not retrieve gripped piece")
+
+                piece = req.json()
+                if piece:
+                    self.piece_selection(room_id, piece)
 
         @self.sio.event
         def command(data):
