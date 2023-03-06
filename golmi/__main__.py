@@ -180,7 +180,8 @@ class GolmiBot(TaskBot):
                     )
                     response.raise_for_status()
 
-                self.update_title_points(room_id)
+                if self.version != "no_feedback":
+                    self.update_title_points(room_id)
 
         @self.sio.event
         def status(data):
@@ -407,7 +408,8 @@ class GolmiBot(TaskBot):
                             self.points_per_room[room_id]["history"][-1]["wrong"] += 1
 
                             # update points in title
-                            self.update_title_points(room_id)
+                            if self.version != "no_feedback":
+                                self.update_title_points(room_id)
 
                             # inform users
                             self.sio.emit(
@@ -835,8 +837,8 @@ class GolmiBot(TaskBot):
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
                     message=(
-                        "Please enter the following token into the field on "
-                        "the HIT webpage, and close this browser window. "
+                        "The experiment is over, please remember to "
+                        "save your token before you close this browser window. "
                         f"Your token: {amt_token}"
                     ),
                 ),
@@ -939,6 +941,10 @@ class GolmiBot(TaskBot):
             logging.debug("Removing user from task room was successful.")
 
     def timeout_close_game(self, room_id, status):
+        self.sio.emit(
+            "text",
+            {"message": "The room is closing because of inactivity", "room": room_id},
+        )
         self.confirmation_code(room_id, status)
         self.close_game(room_id)
 
