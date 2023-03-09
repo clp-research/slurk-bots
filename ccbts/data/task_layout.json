@@ -53,6 +53,210 @@
         },
         {
             "layout-type": "div",
+            "class": "card",
+            "layout-content":[
+                {
+                    "layout-type": "div",
+                    "style": "display: flex",
+                    "layout-content": [
+                        {
+                            "layout-type": "div",
+                            "style": "column-gap: 5px; border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 50%;",
+                            "layout-content": [
+                                {
+                                    "layout-type": "b",
+                                    "style": "color: #00305E; margin-left: 5px",
+                                    "layout-content": "Shape"
+                                },
+                                {
+                                    "layout-type": "div",
+                                    "style": "display: flex",
+                                    "layout-content": [
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "shape_screw"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "shape_screw",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "screw"
+                                                }
+                                            ]
+                                        },
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "shape_nut"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "shape_nut",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "nut"
+                                                }
+                                            ]
+                                        },
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "shape_washer"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "shape_washer",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "washer"
+                                                }
+                                            ]
+                                        },
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "shape_bridge"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "shape_bridge",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "bridge"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "layout-type": "div",
+                            "style": "column-gap: 5px; border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 50%;",
+                            "layout-content": [
+                                {
+                                    "layout-type": "b",
+                                    "style": "color: #00305E; margin-left: 5px",
+                                    "layout-content": "Color"
+                                },
+                                {
+                                    "layout-type": "div",
+                                    "style": "display: flex",
+                                    "layout-content": [
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "color_blue"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "color_blue",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "blue"
+                                                }
+                                            ]
+                                        },
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "color_red"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "color_red",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "red"
+                                                }
+                                            ]
+                                        },
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "color_yellow"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "color_yellow",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "yellow"
+                                                }
+                                            ]
+                                        },
+                                        {   
+                                            "layout-type": "div",
+                                            "style": "width: 25%",
+                                            "layout-content": [
+                                                {
+                                                    "layout-type": "input",
+                                                    "type": "checkbox",
+                                                    "style": "margin-left: 5px; margin-top: 5px",
+                                                    "id": "color_green"
+                                                },
+                                                {
+                                                    "layout-type": "label",
+                                                    "for": "color_green",
+                                                    "style": "margin-right: 5px",
+                                                    "layout-content": "green"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "layout-type": "div",
+                    "style": "padding: 10px",
+                    "layout-content": [
+                        {
+                            "layout-type": "button",
+                            "class": "button",
+                            "role": "button",
+                            "layout-content": "Delete Object",
+                            "style": "padding: 10px",
+                            "id": "delete_object"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "layout-type": "div",
             "class": "hidden_card",
             "id": "source_card",
             "layout-content":[
@@ -197,7 +401,6 @@
             "border-radius": "5px",
             "border": "none",
             "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
-            "margin-top": "10px",
             "outline": 0,
             "background": "#00305E",
             "width": "100%",
