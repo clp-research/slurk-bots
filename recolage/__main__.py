@@ -222,6 +222,13 @@ class RecolageBot(TaskBot):
                         },
                     )
 
+                    # reduce height of sidebar
+                    response = requests.patch(
+                        f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+                        headers={"Authorization": f"Bearer {self.token}"},
+                        json={"attribute": "style", "value": f"height: 90%"}
+                    )
+
                     # cancel leave timers if any
                     self.timers_per_room[room_id].user_joined(curr_usr["id"])
 
