@@ -243,15 +243,16 @@ class RecolageBot(TaskBot):
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{curr_usr['name']} has left the game. "
-                            "Please wait a bit, your partner may rejoin.",
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                        },
-                    )
+                    if room_id in self.players_per_room:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"{curr_usr['name']} has left the game. "
+                                "Please wait a bit, your partner may rejoin.",
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                            },
+                        )
 
                     # start a timer
                     self.timers_per_room[room_id].user_left(curr_usr["id"])
@@ -890,7 +891,7 @@ class RecolageBot(TaskBot):
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
-            json={"text": f"Reward: {score} | Correct: {correct}/{BOARDS_PER_ROOM}"},
+            json={"text": f"Reward: {score} | Correct: {correct}"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
@@ -979,6 +980,7 @@ class RecolageBot(TaskBot):
         self.close_game(room_id)
 
     def terminate_experiment(self, room_id):
+        score = self.points_per_room[room_id]["score"]
         self.sio.emit(
             "text",
             {

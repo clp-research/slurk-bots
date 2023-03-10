@@ -22,7 +22,7 @@ def player_instr():
 
 
 BOARDS = Path(f"{ROOT}/data/boards.jsonl")
-BOARDS_PER_ROOM = 10
+BOARDS_PER_ROOM = -1  # -1 to load entire dataset
 
 
 TIMEOUT_TIMER = 10  # minutes of inactivity before the room is closed automatically

@@ -7,7 +7,6 @@ class Dataloader(dict):
     def __init__(self, path, n):
         self._path = path
         self._n = n
-        self._images = None
 
     def _sample_boards(self):
         baords = self._read_board_file()
@@ -28,7 +27,7 @@ class Dataloader(dict):
             hard=list()
         )
         with self._path.open('r', encoding="utf-8") as infile:
-            for line in infile:
+            for index, line in enumerate(infile, start=1):
                 board = json.loads(line)
                 level = board["board_info"]["difficoulty"]
 
@@ -39,6 +38,10 @@ class Dataloader(dict):
                 state["targets"][target_id] = target_obj
 
                 boards[level].append(board)
+
+        if self._n == -1:
+            self._n = index        
+        
         return boards
 
     def get_boards(self, room_id):
