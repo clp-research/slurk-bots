@@ -14,7 +14,7 @@ function check_response {
     echo "$response"
 }
 
-BOT_NAME="golmi"
+BOT_NAME="recolage"
 NUMBER_USERS=2
 
 GOLMI_HOST="127.0.0.1"

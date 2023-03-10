@@ -14,7 +14,7 @@ function check_response {
     echo "$response"
 }
 
-BOT_NAME="golmi"
+BOT_NAME="recolage"
 NUMBER_USERS=2
 
 GOLMI_HOST="127.0.0.1"
@@ -94,7 +94,7 @@ docker run --net="host" \
     -e SLURK_PORT=5000 \
     -e GOLMI_SERVER=$GOLMI_SERVER \
     -e GOLMI_PASSWORD=$GOLMI_PASSWORD \
-    -e BOT_VERSION="no_feedback" \
+    -e BOT_VERSION="feedback" \
     slurk/$BOT_NAME-bot &
 sleep 1
 

@@ -18,7 +18,7 @@ class Dataloader(dict):
                 sample.append(board)
 
                 if len(sample) == self._n:
-                    return sample            
+                    return sample
 
     def _read_board_file(self):
         """read boards and divide by level"""

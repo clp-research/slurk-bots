@@ -62,9 +62,9 @@
                     "layout-type": "button",
                     "class": "button",
                     "role": "button",
-                    "layout-content": "Send Warning",
+                    "layout-content": "generic button",
                     "style": "display: none",
-                    "id": "warning_button"
+                    "id": "generic_button"
                 }
             ]
         }        
@@ -123,7 +123,7 @@
         "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
         "plain": [
-            "golmi-js/golmi",
+            "recolage",
             "golmi-js/view/View",
             "golmi-js/view/GiverLayerView",
             "golmi-js/view/ReceiverLayerView",

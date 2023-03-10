@@ -1,4 +1,4 @@
-## GolmiBot
+## RecolageBot
 This bot loads pre-defined [GOLMI](https://github.com/clp-research/golmi) boards and show them to the users.
 One of the users is the Instruction Giver (or Player) and has to describe the target piece to the Instruction Receiver (or Wizard) who then has to select the correct target.
 There are 4 versions of this bot:
@@ -30,7 +30,7 @@ There are 4 versions of this bot:
     
     
     1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Copy the [```golmi-js```](golmi-js) directory to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins). 
+    2. Copy the [```golmi-js```](golmi-js) directory and [```recolage.js```](recolage.js) file to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins). 
     3. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash golmi/setup_no_feedback.sh``` 
     This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/golmi-bot```. At the end of the run there will a token printed in the shell that you will need to paste to access the waiting room. 
     4. Save the generated tokens!

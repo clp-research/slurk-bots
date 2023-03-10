@@ -51,7 +51,7 @@ class RoomTimer:
         self.left_room[user].start()
 
 
-class GolmiBot(TaskBot):
+class RecolageBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
@@ -553,6 +553,10 @@ class GolmiBot(TaskBot):
                                 },
                             )
 
+                    # user wants to terminate experiment
+                    if event == "abort":
+                        self.terminate_experiment(room_id)
+
                 else:
                     # commands from user
                     # set wizard
@@ -657,19 +661,7 @@ class GolmiBot(TaskBot):
 
         if not self.boards_per_room[room_id]:
             # no more boards, close the room
-            self.sio.emit(
-                "text",
-                {
-                    "room": room_id,
-                    "message": (
-                        "That was the last one 🎉 🎉 thank you very much for your time! "
-                        f"Your total score is: {score} points."
-                    ),
-                    "html": True,
-                },
-            )
-            self.confirmation_code(room_id, "sucess")
-            self.close_game(room_id)
+            self.terminate_experiment(room_id)
 
         else:
             # create a new dictionary to keep track of board
@@ -986,13 +978,28 @@ class GolmiBot(TaskBot):
         self.confirmation_code(room_id, status)
         self.close_game(room_id)
 
+    def terminate_experiment(self, room_id):
+        self.sio.emit(
+            "text",
+            {
+                "room": room_id,
+                "message": (
+                    "The experiment is over 🎉 🎉 thank you very much for your time! "
+                    f"Your total reward is: {score}"
+                ),
+                "html": True,
+            },
+        )
+        self.confirmation_code(room_id, "sucess")
+        self.close_game(room_id)
+
 
 if __name__ == "__main__":
     # set up loggingging configuration
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
-    parser = GolmiBot.create_argparser()
+    parser = RecolageBot.create_argparser()
     if "SLURK_WAITING_ROOM" in os.environ:
         waiting_room = {"default": os.environ["SLURK_WAITING_ROOM"]}
     else:
@@ -1045,9 +1052,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # create bot instance
-    bot = GolmiBot(args.token, args.user, args.task, args.host, args.port)
+    bot = RecolageBot(
+        args.token,
+        args.user,
+        args.task,
+        args.host,
+        args.port
+    )
     bot.post_init(
-        args.waiting_room, args.golmi_server, args.golmi_password, args.bot_version
+        args.waiting_room,
+        args.golmi_server,
+        args.golmi_password,
+        args.bot_version
     )
     # connect to chat server
     bot.run()
