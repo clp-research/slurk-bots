@@ -136,6 +136,27 @@ function reset_role(description) {
 }
 
 
+function clear_others(this_element){
+    options = {
+        color: new Set(["red", "blue", "yellow", "green"]),
+        shape: new Set(["screw", "bridge", "nut", "washer"]),
+        action: new Set(["select", "place"])
+    }
+
+    // get info about this element
+    parsed = this_element.split("_")
+    element = parsed[0]
+    value = parsed[1]
+
+    // clear other options
+    to_clear = options[element]
+    to_clear.delete(value)
+    to_clear.forEach(item => {
+        $(`#${element}_${item}`).prop('checked', false);
+    })
+}
+
+
 $(document).ready(() => {
     // send clear command and clear history box
     $('#clear_button').click(function(){
@@ -150,6 +171,7 @@ $(document).ready(() => {
         )
         $("#history").text("")
     });
+
 
     $('#run_button').click(function(){
         // read input box and run commands one by one
