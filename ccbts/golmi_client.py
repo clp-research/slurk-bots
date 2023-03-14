@@ -8,23 +8,23 @@ import socketio
 class DoubleClient:
     def __init__(self):
         self.target = GolmiClient()
-        self.source = GolmiClient()
+        self.working = GolmiClient()
 
     def run(self, address, room_id, auth):
         self.target.run(address, f"{room_id}_t", auth)
-        self.source.run(address, f"{room_id}_s", auth)
+        self.working.run(address, f"{room_id}_s", auth)
 
     def disconnect(self):
-        for socket in [self.target, self.source]:
+        for socket in [self.target, self.working]:
             socket.disconnect()
 
     def load_config(self, config):
-        for socket in [self.target, self.source]:
+        for socket in [self.target, self.working]:
             socket.load_config(config)
 
     def load_state(self, state):
         # only source can load a state
-        self.source.load_state(state)
+        self.target.load_state(state)
         # self.target.load_state(state)
 
 

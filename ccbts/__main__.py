@@ -300,7 +300,7 @@ class CcbtsBot(TaskBot):
                 else:
                     # user command
                     # set wizard
-                    if data["command"] == "set_role_wizard":
+                    if data["command"] == "role:wizard":
                         self.set_wizard_role(room_id, user_id)
 
                     # reset roles

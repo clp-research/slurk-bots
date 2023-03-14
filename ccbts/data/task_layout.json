@@ -53,7 +53,8 @@
         },
         {
             "layout-type": "div",
-            "class": "card",
+            "class": "hidden_card",
+            "id": "wizard_interface",
             "layout-content":[
                 {
                     "layout-type": "div",
@@ -89,7 +90,7 @@
                                                         },
                                                         {
                                                             "layout-type": "label",
-                                                            "for": "shape_screw",
+                                                            "for": "action_select",
                                                             "style": "margin-right: 5px",
                                                             "layout-content": "select"
                                                         }
@@ -108,7 +109,7 @@
                                                         },
                                                         {
                                                             "layout-type": "label",
-                                                            "for": "shape_nut",
+                                                            "for": "action_place",
                                                             "style": "margin-right: 5px",
                                                             "layout-content": "place"
                                                         }
@@ -325,62 +326,76 @@
         {
             "layout-type": "div",
             "class": "hidden_card",
-            "id": "source_card",
+            "id": "golmi_card",
             "layout-content":[
                 {
                     "layout-type": "div",
-                    "class": "viewport",
-                    "style": "height: 500px; width: 500px; padding: 10px; margin: 0px auto",
+                    "style": "display: flex",
+                    "id": "board_container",
                     "layout-content": [
                         {
-                            "layout-type": "canvas",
-                            "id": "source_background",
-                            "width": "500px",
-                            "height": "500px"
+                            "layout-type": "div",
+                            "id": "working_board",
+                            "style": "width: 50%",
+                            "layout-content": [
+                                {
+                                    "layout-type": "div",
+                                    "class": "viewport",
+                                    "style": "padding: 10px; margin: 0px auto",
+                                    "layout-content": [
+                                        {
+                                            "layout-type": "canvas",
+                                            "id": "working_background",
+                                            "width": "300px",
+                                            "height": "300px"
+                                        },
+                                        {
+                                            "layout-type": "canvas",
+                                            "id": "working_objects",
+                                            "width": "300px",
+                                            "height": "300px"
+                                        },
+                                        {
+                                            "layout-type": "canvas",
+                                            "id": "working_gripper",
+                                            "width": "300px",
+                                            "height": "300px"
+                                        }
+                                    ]
+                                }
+                            ]
                         },
                         {
-                            "layout-type": "canvas",
-                            "id": "source_objects",
-                            "width": "500px",
-                            "height": "500px"
-                        },
-                        {
-                            "layout-type": "canvas",
-                            "id": "source_gripper",
-                            "width": "500px",
-                            "height": "500px"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "layout-type": "div",
-            "class": "hidden_card",
-            "id": "target_card",
-            "layout-content":[
-                {
-                    "layout-type": "div",
-                    "class": "viewport",
-                    "style": "height: 500px; width: 500px; padding: 10px; margin: 0px auto",
-                    "layout-content": [
-                        {
-                            "layout-type": "canvas",
-                            "id": "target_background",
-                            "width": "500px",
-                            "height": "500px"
-                        },
-                        {
-                            "layout-type": "canvas",
-                            "id": "target_objects",
-                            "width": "500px",
-                            "height": "500px"
-                        },
-                        {
-                            "layout-type": "canvas",
-                            "id": "target_gripper",
-                            "width": "500px",
-                            "height": "500px"
+                            "layout-type": "div",
+                            "id": "target_board",
+                            "style": "width: 50%",
+                            "layout-content": [
+                                {
+                                    "layout-type": "div",
+                                    "class": "viewport",
+                                    "style": "padding: 10px; margin: 0px auto",
+                                    "layout-content": [
+                                        {
+                                            "layout-type": "canvas",
+                                            "id": "target_background",
+                                            "height": "300px",
+                                            "width": "300px"
+                                        },
+                                        {
+                                            "layout-type": "canvas",
+                                            "id": "target_objects",
+                                            "height": "300px",
+                                            "width": "300px"
+                                        },
+                                        {
+                                            "layout-type": "canvas",
+                                            "id": "target_gripper",
+                                            "height": "300px",
+                                            "width": "300px"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
@@ -400,7 +415,9 @@
     ],
     "css": {
         ".viewport": {
-            "position": "relative;"
+            "position": "relative;",
+            "height": "300px",
+            "width": "300px"
         },
         ".viewport canvas": {
             "position": "absolute;"
