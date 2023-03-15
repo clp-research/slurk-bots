@@ -18,6 +18,7 @@ from lib.config import (
     COLOR_MESSAGE,
     DATA_PATH,
     GAME_MODE,
+    N,
     SEED,
     SHUFFLE,
     STANDARD_COLOR,
@@ -103,7 +104,7 @@ class WordleBot:
         self.url = self.uri
         self.uri += "/slurk/api"
 
-        self.images_per_room = ImageData(DATA_PATH, 3, GAME_MODE, SHUFFLE, SEED)
+        self.images_per_room = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
         self.players_per_room = dict()
         self.last_message_from = dict()
         self.guesses_per_room = dict()
