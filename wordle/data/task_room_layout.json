@@ -248,7 +248,7 @@
             {
               "layout-type": "p",
               "id": "image-desc",
-              "style": "max-width: 100%; height: auto; object-fit: contain; font-style: bold;",
+              "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
               "layout-content": "In this game mode, only one of you sees the image and needs to describe it to the other player."
             },
             {
