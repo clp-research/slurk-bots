@@ -202,6 +202,9 @@ class WordleBot:
                 )
                 self.timers_per_room[room_id].round_timer.start()
 
+                # show info to users
+                self._update_score_info(room_id)
+
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
@@ -626,6 +629,14 @@ class WordleBot:
 
                 self.next_round(room_id)
 
+    def _update_score_info(self, room):
+        response = requests.patch(
+            f"{self.uri}/rooms/{room}/text/subtitle",
+            json={"text": f"Your score is {self.points_per_room[room]} – You have {len(self.images_per_room[room])} rounds to go."},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "update score")
+
     def next_round(self, room_id):
         """
         Load the next image and wordle and move to the next round if possible
@@ -650,6 +661,8 @@ class WordleBot:
                 },
             )
             sleep(1)
+
+            self._update_score_info(room_id)
 
             self.sio.emit(
                 "text",
@@ -708,6 +721,8 @@ class WordleBot:
                 },
             )
 
+            self._update_score_info(room_id)
+
             sleep(2)
 
             self.sio.emit(
@@ -759,13 +774,19 @@ class WordleBot:
 
             # show a different image to each user. one image can be None
 
-            # remove image for both
+            # remove image and description for both
             response = requests.post(
                 f"{self.uri}/rooms/{room_id}/class/image-area",
                 json={"class": "dis-area"},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "hide image")
+            response = requests.post(
+                f"{self.uri}/rooms/{room_id}/class/image-desc",
+                json={"class": "dis-area"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "hide description")
 
             # Player 1
             if image_1:
@@ -783,6 +804,15 @@ class WordleBot:
                 )
                 self.request_feedback(response, "enable image 1")
 
+            else:
+                # enable the explanatory text
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-desc",
+                    json={"class": "dis-area", "receiver_id": user_1["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable explanation")
+
             # Player 2
             if image_2:
                 response = requests.patch(
@@ -798,6 +828,14 @@ class WordleBot:
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "enable image 2")
+            else:
+                # enable the explanatory text
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-desc",
+                    json={"class": "dis-area", "receiver_id": user_2["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable explanation")
 
             # the task for both users is the same - no special receiver
             response = requests.patch(

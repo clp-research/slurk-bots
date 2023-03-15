@@ -1,5 +1,6 @@
 {
   "title": "Wordle Task Room",
+  "subtitle": "",
   "html": [
     {
       "layout-type": "div",
@@ -244,6 +245,12 @@
           "layout-type": "div",
           "class": "card",
           "layout-content": [
+            {
+              "layout-type": "p",
+              "id": "image-desc",
+              "style": "max-width: 100%; height: auto; object-fit: contain; font-style: bold;",
+              "layout-content": "In this game mode, only one of you sees the image and needs to describe it to the other player."
+            },
             {
               "layout-type": "div",
               "id": "image-area",
