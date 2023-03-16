@@ -755,18 +755,8 @@ class WordleBot:
             # show a different image to each user. one image can be None
 
             # remove image and description for both
-            response = requests.post(
-                f"{self.uri}/rooms/{room_id}/class/image-area",
-                json={"class": "dis-area"},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "hide image")
-            response = requests.post(
-                f"{self.uri}/rooms/{room_id}/class/image-desc",
-                json={"class": "dis-area"},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "hide description")
+            self._hide_image(room_id)
+            self._hide_image_desc(room_id)
 
             # Player 1
             if image_1:
@@ -825,6 +815,22 @@ class WordleBot:
             )
             self.request_feedback(response, "set task instruction title")
 
+    def _hide_image(self, room_id):
+        response = requests.post(
+            f"{self.uri}/rooms/{room_id}/class/image-area",
+            json={"class": "dis-area"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "hide image")
+
+    def _hide_image_desc(self, room_id):
+        response = requests.post(
+            f"{self.uri}/rooms/{room_id}/class/image-desc",
+            json={"class": "dis-area"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "hide description")
+
     def confirmation_code(self, room_id, status, receiver_id=None):
         """Generate AMT token that will be sent to each player."""
         kwargs = dict()
@@ -871,6 +877,24 @@ class WordleBot:
                 **kwargs,
             },
         )
+
+        # show token also in display area
+        json = {"text": f"Please enter the following token into the field "
+                        f"on the HIT webpage, and close this browser "
+                        f"window: {amt_token}"
+                }
+        if receiver_id:
+            json.update({"receiver_id": receiver_id})
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json=json,
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "add token to display area")
+
+        self._hide_image(room_id)
+        self._hide_image_desc(room_id)
+
         return amt_token
 
     def social_media_post(self, room_id, this_user_id, other_user_name):
