@@ -475,6 +475,23 @@ class WordleBot:
         guess = command["guess"]
         remaining_guesses = command["remaining"]
 
+        # make sure the guess has the right length
+        if len(word) != len(guess):
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=f"Unfortunately this word is not valid. "
+                                f"Your guess needs to have {len(word)} letters.",
+                    ),
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            return
+
         # make sure it's a good guess
         if guess not in self.wordlist:
             self.sio.emit(
@@ -490,21 +507,12 @@ class WordleBot:
                     "html": True,
                 },
             )
-            return
-
-        # make sure the guess has the right length
-        if len(word) != len(guess):
             self.sio.emit(
-                "text",
+                "message_command",
                 {
-                    "message": COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR,
-                        message=f"Unfortunately this word is not valid. "
-                                f"Your guess needs to have {len(word)} letters.",
-                    ),
-                    "receiver_id": curr_usr["id"],
+                    "command": {"command": "unsubmit"},
                     "room": room_id,
-                    "html": True,
+                    "receiver_id": curr_usr["id"],
                 },
             )
             return
@@ -581,6 +589,11 @@ class WordleBot:
                 },
             )
             self.guesses_per_room[room_id] = dict()
+            self.sio.emit(
+                "message_command",
+                {"command": {"command": "unsubmit"}, "room": room_id,},
+            )
+
             return
 
         # both users think they are done with the game
