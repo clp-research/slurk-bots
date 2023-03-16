@@ -356,8 +356,7 @@ class WordleBot:
                         {
                             "message": COLOR_MESSAGE.format(
                                 color=STANDARD_COLOR,
-                                message=f"{curr_usr['name']} has left the game."
-                                        f" Please wait a bit, your partner may rejoin.",
+                                message=f"{curr_usr['name']} has left the game.",
                             ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
@@ -365,11 +364,14 @@ class WordleBot:
                         },
                     )
 
-                    LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
-                    self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
-                        TIME_LEFT * 60, self.close_game, args=[room_id]
-                    )
-                    self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
+                    # FIXME: this should not generate a success token
+                    self.close_game(room_id)
+
+                    # LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
+                    # self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
+                    #     TIME_LEFT * 60, self.close_game, args=[room_id]
+                    # )
+                    # self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
 
         @self.sio.event
         def text_message(data):
