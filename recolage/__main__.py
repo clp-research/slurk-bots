@@ -568,7 +568,7 @@ class RecolageBot(TaskBot):
                 else:
                     # commands from user
                     # set wizard
-                    if data["command"] == "set_role_wizard":
+                    if data["command"] == "role:wizard":
                         self.set_wizard_role(room_id, user_id)
 
                     # reset roles
@@ -914,6 +914,8 @@ class RecolageBot(TaskBot):
             "text",
             {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
+
+        sleep(20)
         self.room_to_read_only(room_id)
 
         # cancel all timers
