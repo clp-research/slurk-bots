@@ -493,6 +493,14 @@ class WordleBot:
                     "html": True,
                 },
             )
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"command": "unsubmit"},
+                    "room": room_id,
+                    "receiver_id": curr_usr["id"],
+                },
+            )
             return
 
         # make sure it's a good guess
