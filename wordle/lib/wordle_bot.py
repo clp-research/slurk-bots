@@ -118,6 +118,9 @@ class WordleBot:
         # read wordlist
         with open(WORD_LIST) as infile:
             self.wordlist = set((line.strip()) for line in infile)
+        # ensure all the words from the initial image file are guessable
+        with open(DATA_PATH) as infile:
+            self.wordlist.update(line.split('\t')[0] for line in infile)
 
         self.waiting_timer = None
         self.received_waiting_token = set()
@@ -170,6 +173,7 @@ class WordleBot:
                 self.move_divider(room_id, 20, 80)
 
                 self.images_per_room.get_word_image_pairs(room_id)
+                self._update_guessable_words(room_id)
                 LOG.debug(self.images_per_room[room_id])
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
@@ -637,6 +641,12 @@ class WordleBot:
             headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "update score")
+
+    def _update_guessable_words(self, room_id):
+        word_count_1 = len(self.wordlist)
+        self.wordlist.update(pair[0] for pair in self.images_per_room[room_id])
+        word_count_2 = len(self.wordlist)
+        LOG.debug(f"Added {word_count_2-word_count_1} words to wordlist.")
 
     def next_round(self, room_id):
         """
