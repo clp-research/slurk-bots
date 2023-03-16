@@ -19,6 +19,13 @@ SHUFFLE = True
 # What mode the game uses for showing images. one of "same", "different", "one_blind"
 GAME_MODE = "one_blind"
 
+# Whether the bot runs a public version or not
+# - This influences the kind of goodbye message
+# - Public data collections will not get a token but a tweetable message
+# - Set this to False when running data collections with AMT, Prolific, or similar
+# - Individual tokens will be generated when this is False
+PUBLIC = False
+
 # All below *TIME_* variables are in minutes.
 # They indicate how long a situation has to persist for something to happen.
 

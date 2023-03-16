@@ -19,6 +19,7 @@ from lib.config import (
     DATA_PATH,
     GAME_MODE,
     N,
+    PUBLIC,
     SEED,
     SHUFFLE,
     STANDARD_COLOR,
@@ -111,6 +112,8 @@ class WordleBot:
         self.guesses_history = dict()
         self.points_per_room = dict()
         self.timers_per_room = dict()
+
+        self.public = PUBLIC
 
         # maps number of guesses to points
         self.point_system = dict(zip([6, 5, 4, 3, 2, 1], [100, 50, 25, 10, 5, 1]))
@@ -669,8 +672,6 @@ class WordleBot:
         self.guesses_history[room_id] = list()
         self.guesses_per_room[room_id] = dict()
 
-        curr_usr, other_usr = self.players_per_room[room_id]
-
         # was this the last game round?
         if not self.images_per_room[room_id]:
             self.sio.emit(
@@ -684,50 +685,7 @@ class WordleBot:
                     "html": True,
                 },
             )
-            sleep(1)
-
             self._update_score_info(room_id)
-
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR,
-                        message=(
-                            "Please share the following text on social media: "
-                            "I played slurdle and helped science! "
-                            f"Together with {other_usr['name']}, "
-                            f"I got {self.points_per_room[room_id]} "
-                            f"points for {self.images_per_room.n} puzzle(s). "
-                            f"Play here: {self.url}. #slurdle"
-                        ),
-                    ),
-                    "receiver_id": curr_usr["id"],
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR,
-                        message=(
-                            "Please share the following text on social media: "
-                            "I played slurdle and helped science! "
-                            f"Together with {curr_usr['name']}, "
-                            f"I got {self.points_per_room[room_id]} "
-                            f"points for {self.images_per_room.n} puzzle(s). "
-                            f"Play here: {self.url}. #slurdle"
-                        ),
-                    ),
-                    "receiver_id": other_usr["id"],
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-
-            # self.confirmation_code(room_id, "success")
             sleep(1)
             self.close_game(room_id)
         else:
@@ -746,9 +704,7 @@ class WordleBot:
             )
 
             self._update_score_info(room_id)
-
             sleep(2)
-
             self.sio.emit(
                 "message_command",
                 {"command": {"command": "wordle_init"}, "room": room_id},
@@ -917,23 +873,51 @@ class WordleBot:
         )
         return amt_token
 
-    def close_game(self, room_id):
-        """Erase any data structures no longer necessary."""
-        sleep(2)
+    def social_media_post(self, room_id, this_user_id, other_user_name):
         self.sio.emit(
             "text",
             {
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
                     message=(
-                        "This room is closing. Make sure to save your token "
-                        # "before you leave or reload this page."
+                        "Please share the following text on social media: "
+                        "I played slurdle and helped science! "
+                        f"Together with {other_user_name}, "
+                        f"I got {self.points_per_room[room_id]} "
+                        f"points for {self.images_per_room.n} puzzle(s). "
+                        f"Play here: {self.url}. #slurdle"
                     ),
                 ),
+                "receiver_id": this_user_id,
                 "room": room_id,
                 "html": True,
             },
         )
+
+    def close_game(self, room_id):
+        """Erase any data structures no longer necessary."""
+
+        curr_usr, other_usr = self.players_per_room[room_id]
+        if self.public:
+            self.social_media_post(room_id, curr_usr["id"], other_usr["name"])
+            self.social_media_post(room_id, other_usr["id"], curr_usr["name"])
+        else:
+            self.confirmation_code(room_id, "success", curr_usr["id"])
+            self.confirmation_code(room_id, "success", other_usr["id"])
+
+            sleep(10)
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message="This room is closing. Make sure to save your token.",
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
