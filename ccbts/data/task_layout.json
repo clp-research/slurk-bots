@@ -85,7 +85,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "action_select"
                                                         },
                                                         {
@@ -104,7 +104,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "action_place"
                                                         },
                                                         {
@@ -145,7 +145,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "shape_screw"
                                                         },
                                                         {
@@ -163,7 +163,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "shape_nut"
                                                         },
                                                         {
@@ -181,7 +181,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "shape_washer"
                                                         },
                                                         {
@@ -199,7 +199,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "shape_bridge"
                                                         },
                                                         {
@@ -234,7 +234,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "color_blue"
                                                         },
                                                         {
@@ -252,7 +252,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "color_red"
                                                         },
                                                         {
@@ -270,7 +270,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "color_yellow"
                                                         },
                                                         {
@@ -288,7 +288,7 @@
                                                             "layout-type": "input",
                                                             "type": "checkbox",
                                                             "style": "margin-left: 5px; margin-top: 5px",
-                                                            "onclick": "clear_others(this.id)",
+                                                            "onclick": "on_checkbox_change(this.id)",
                                                             "id": "color_green"
                                                         },
                                                         {

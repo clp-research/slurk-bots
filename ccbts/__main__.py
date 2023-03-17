@@ -93,10 +93,8 @@ class CcbtsBot(TaskBot):
                 # create new timer for this room
                 self.timers_per_room[room_id] = RoomTimers()
 
-                self.golmi_client_per_room[room_id] = DoubleClient()
-                self.golmi_client_per_room[room_id].run(
-                    self.golmi_server, str(room_id), self.golmi_password
-                )
+                self.golmi_client_per_room[room_id] = DoubleClient(str(room_id), self.golmi_server)
+                self.golmi_client_per_room[room_id].run(self.golmi_password)
                 self.golmi_client_per_room[room_id].load_config(CONFIG)
 
         @self.sio.event
@@ -159,6 +157,7 @@ class CcbtsBot(TaskBot):
                     curr_usr, other_usr = other_usr, curr_usr
 
                 if data["type"] == "join":
+                    self.move_divider(room_id, chat_area=30, task_area=70)
                     # inform game partner about the rejoin event
                     self.sio.emit(
                         "text",
@@ -224,6 +223,68 @@ class CcbtsBot(TaskBot):
                         self.close_game, args=[room_id]
                     )
                     self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
+
+        @self.sio.event
+        def mouse(data):
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            # do not process events from itself
+            if user_id == self.user:
+                return
+
+            if room_id not in self.players_per_room:
+                return
+
+            # don't react to mouse movements
+            if data["type"] != "click":
+                return
+
+            logging.debug(data)
+            this_client = self.golmi_client_per_room[room_id]
+
+            action = data["coordinates"]["action"]
+            if action == "place":
+                state = this_client.get_working_state()
+
+                shape = data["coordinates"]["shape"]
+                color = data["coordinates"]["color"]
+
+                # create a new object and add it to the state
+                obj = OBJS[shape]
+                obj["color"] = COLORS[color]
+                x = data["coordinates"]["x"] // data["coordinates"]["block_size"]
+                y = data["coordinates"]["y"] // data["coordinates"]["block_size"]
+
+                obj["x"] = x #- len(obj["block_matrix"][0]) // 2
+                obj["y"] = y #- len(obj["block_matrix"]) // 2
+                
+                id_n = str(next(NAME_GEN))
+                obj["id_n"] = id_n
+                state["objs"][id_n] = obj
+
+                this_client.load_working_state(state)
+
+            elif action == "select":
+                piece = this_client.grip_object(
+                    x=data["coordinates"]["x"],
+                    y=data["coordinates"]["y"],
+                    block_size=data["coordinates"]["block_size"]
+                )
+                if piece:
+                    piece = list(piece.values())[0]
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": {
+                                "event": "update_selectors",
+                                "color": piece["color"][0],
+                                "shape": piece["type"],
+                            },
+                            "room": room_id,
+                            "receiver_id": user_id,
+                        }
+                    )
 
         @self.sio.event
         def command(data):
@@ -296,6 +357,28 @@ class CcbtsBot(TaskBot):
                                     },
                                 )
                             self.set_boards(room_id)
+
+                        # change the color of the selected object
+                        elif event == "update_object":
+                            this_client = self.golmi_client_per_room[room_id]
+                            state = this_client.get_working_state()
+                            piece = this_client.get_gripped_object()
+
+                            if piece:
+                                id_n = list(piece.keys())[0]
+                                obj = piece[id_n]
+
+                                color = data["command"]["color"]
+                                shape = data["command"]["shape"]
+                                if color in COLORS:
+                                    new_color = COLORS[color]
+                                    obj["color"] = new_color
+
+                                state["objs"][id_n] = obj
+                                state["grippers"]["mouse"]["gripped"][id_n] = obj
+
+                                logging.debug(state)
+                                this_client.load_working_state(state)
 
                 else:
                     # user command
@@ -418,7 +501,7 @@ class CcbtsBot(TaskBot):
 
             # self.set_image(room_id, other_usr)
             # self.set_boards(room_id)
-            self.golmi_client_per_room[room_id].load_state(TESTSTATE)
+            self.golmi_client_per_room[room_id].load_target_state(TESTSTATE)
 
         else:
             self.sio.emit(

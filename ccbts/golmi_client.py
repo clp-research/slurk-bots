@@ -6,13 +6,15 @@ import socketio
 
 
 class DoubleClient:
-    def __init__(self):
+    def __init__(self, room_id, golmi_address):
+        self.golmi_address = golmi_address
+        self.room_id = room_id
         self.target = GolmiClient()
         self.working = GolmiClient()
 
-    def run(self, address, room_id, auth):
-        self.target.run(address, f"{room_id}_t", auth)
-        self.working.run(address, f"{room_id}_s", auth)
+    def run(self, auth):
+        self.target.run(self.golmi_address, f"{self.room_id}_t", auth)
+        self.working.run(self.golmi_address, f"{self.room_id}_w", auth)
 
     def disconnect(self):
         for socket in [self.target, self.working]:
@@ -22,10 +24,37 @@ class DoubleClient:
         for socket in [self.target, self.working]:
             socket.load_config(config)
 
-    def load_state(self, state):
-        # only source can load a state
+    def load_target_state(self, state):
         self.target.load_state(state)
-        # self.target.load_state(state)
+
+    def load_working_state(self, state):
+        self.working.load_state(state)
+
+    def get_working_state(self):
+        req = requests.get(
+            f"{self.golmi_address}/slurk/{self.room_id}_w/state"
+        )
+        if req.ok is not True:
+            print("Could not retrieve state")
+
+        return req.json()
+
+    def grip_object(self, x, y, block_size):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/grip/{self.room_id}_w/{x}/{y}/{block_size}'
+        )
+        if req.ok is not True:
+            print("Could not retrieve gripped piece")
+
+        return req.json()
+
+    def get_gripped_object(self):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/{self.room_id}_w/gripped'
+        )
+        return req.json() if req.ok else None
+
+
 
 
 class GolmiClient:

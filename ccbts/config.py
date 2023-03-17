@@ -72,6 +72,22 @@ OBJS = {
     }
 }
 
-
+COLORS = {
+    "green": ["green", "#008000", [0, 128, 0]],
+    "red":  ["red", "#ff0000", [255, 0, 0]],
+    "yellow" : ["yellow", "#ffa500", [255, 165, 0]],
+    "blue": ["blue", "#1b4ccd", [27, 76, 205]]
+}
 
 TESTSTATE = json.loads(Path(f"{ROOT}/ccbts/data/state.json").read_text())
+
+def name_generator():
+    """
+    make sure objects are placed with increasing id
+    """
+    n = 0
+    while True:
+        yield n
+        n += 1
+
+NAME_GEN = name_generator()
