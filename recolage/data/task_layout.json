@@ -127,7 +127,6 @@
             "golmi-js/view/View",
             "golmi-js/view/GiverLayerView",
             "golmi-js/view/ReceiverLayerView",
-            "golmi-js/view/LView",
             "golmi-js/controller/LocalKeyController"
         ]
     }
