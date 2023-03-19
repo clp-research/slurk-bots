@@ -80,6 +80,7 @@ COLORS = {
 }
 
 TESTSTATE = json.loads(Path(f"{ROOT}/ccbts/data/state.json").read_text())
+EMPTYSTATE = json.loads(Path(f"{ROOT}/ccbts/data/empty_state.json").read_text())
 
 def name_generator():
     """

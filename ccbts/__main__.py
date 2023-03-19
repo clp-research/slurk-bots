@@ -93,7 +93,7 @@ class CcbtsBot(TaskBot):
                 # create new timer for this room
                 self.timers_per_room[room_id] = RoomTimers()
 
-                self.golmi_client_per_room[room_id] = DoubleClient(str(room_id), self.golmi_server)
+                self.golmi_client_per_room[room_id] = TripleClient(str(room_id), self.golmi_server)
                 self.golmi_client_per_room[room_id].run(self.golmi_password)
                 self.golmi_client_per_room[room_id].load_config(CONFIG)
 
@@ -304,59 +304,77 @@ class CcbtsBot(TaskBot):
                 if isinstance(data["command"], dict):
                     event = data["command"]["event"]
                     interface = self.robot_interfaces[room_id]
+                    this_client = self.golmi_client_per_room[room_id]
                     # front end commands (wizard only)
                     right_user = self.check_role(user_id, "wizard", room_id)
                     if right_user is True:
                         # clear board
                         if event == "clear_board":
-                            interface.clear_board()
-                            self.set_boards(room_id)
+                            # interface.clear_board()
+                            # self.set_boards(room_id)
+                            this_client.clear_working_state()
+
+                        elif event == "delete_object":
+                            
+                            state = this_client.get_working_state()
+
+                            # obtain selected object
+                            gripped = state["grippers"]["mouse"]["gripped"]
+                            state["grippers"]["mouse"]["gripped"] = None
+                            gripped_id = list(gripped.keys())[0]
+                            state["objs"].pop(gripped_id)
+
+                            # load new state
+                            this_client.load_working_state(state)
+
+                        elif event == "show_progress":
+                            this_client.copy_working_state()
 
                         # run command
-                        elif event == "run":
-                            commands = data["command"]["commands"]
-                            to_run = commands.copy()
-                            executed = list()
+                        # elif event == "run":
+                        #     commands = data["command"]["commands"]
+                        #     to_run = commands.copy()
+                        #     executed = list()
 
-                            for command in commands:
-                                result = self.run_command(command, room_id, user_id)
-                                if result[0] is True:
-                                    executed.append(to_run.pop(0))
+                        #     for command in commands:
+                        #         result = self.run_command(command, room_id, user_id)
+                        #         if result[0] is True:
+                        #             executed.append(to_run.pop(0))
 
-                                    self.sio.emit(
-                                        "message_command",
-                                        {
-                                            "command": {
-                                                "event": "success_run",
-                                                "executed": command,
-                                                "to_run": to_run 
-                                            },
-                                            "room": room_id,
-                                            "receiver_id": user_id,
-                                        }
-                                    )
-                                else:
-                                    return
+                        #             self.sio.emit(
+                        #                 "message_command",
+                        #                 {
+                        #                     "command": {
+                        #                         "event": "success_run",
+                        #                         "executed": command,
+                        #                         "to_run": to_run 
+                        #                     },
+                        #                     "room": room_id,
+                        #                     "receiver_id": user_id,
+                        #                 }
+                        #             )
+                        #         else:
+                        #             return
 
                         # revert session
-                        elif event == "revert_session":
-                            history = data["command"]["command_list"]
-                            try:
-                                status = interface.revert_session(history)
+                        # elif event == "revert_session":
+                        #     history = data["command"]["command_list"]
+                        #     try:
+                        #         status = interface.revert_session(history)
 
-                            except (KeyError, TypeError, OverflowError) as error:
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            color=WARNING_COLOR, message=str(error)
-                                        ),
-                                        "room": room_id,
-                                        "receiver_id": user_id,
-                                        "html": True
-                                    },
-                                )
-                            self.set_boards(room_id)
+                        #     except (KeyError, TypeError, OverflowError) as error:
+                        #         self.sio.emit(
+                        #             "text",
+                        #             {
+                        #                 "message": COLOR_MESSAGE.format(
+                        #                     color=WARNING_COLOR, message=str(error)
+                        #                 ),
+                        #                 "room": room_id,
+                        #                 "receiver_id": user_id,
+                        #                 "html": True
+                        #             },
+                        #         )
+                        #     self.set_boards(room_id)
 
                         # change the color of the selected object
                         elif event == "update_object":
@@ -502,6 +520,7 @@ class CcbtsBot(TaskBot):
             # self.set_image(room_id, other_usr)
             # self.set_boards(room_id)
             self.golmi_client_per_room[room_id].load_target_state(TESTSTATE)
+            self.golmi_client_per_room[room_id].clear_working_states()
 
         else:
             self.sio.emit(

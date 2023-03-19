@@ -4,35 +4,51 @@ import logging
 import requests
 import socketio
 
+from .config import EMPTYSTATE
 
-class DoubleClient:
+
+class TripleClient:
     def __init__(self, room_id, golmi_address):
         self.golmi_address = golmi_address
         self.room_id = room_id
         self.target = GolmiClient()
-        self.working = GolmiClient()
+        self.player_working = GolmiClient()
+        self.wizard_working = GolmiClient()
+
 
     def run(self, auth):
         self.target.run(self.golmi_address, f"{self.room_id}_t", auth)
-        self.working.run(self.golmi_address, f"{self.room_id}_w", auth)
+        self.player_working.run(self.golmi_address, f"{self.room_id}_pw", auth)
+        self.wizard_working.run(self.golmi_address, f"{self.room_id}_ww", auth)
 
     def disconnect(self):
-        for socket in [self.target, self.working]:
+        for socket in [self.target, self.wizard_working, self.player_working]:
             socket.disconnect()
 
     def load_config(self, config):
-        for socket in [self.target, self.working]:
+        for socket in [self.target, self.wizard_working, self.player_working]:
             socket.load_config(config)
+
+    def clear_working_state(self):
+        self.wizard_working.load_state(EMPTYSTATE)
+
+    def clear_working_states(self):
+        self.wizard_working.load_state(EMPTYSTATE)
+        self.player_working.load_state(EMPTYSTATE)
+
+    def copy_working_state(self):
+        state = self.get_working_state()
+        self.player_working.load_state(state)
 
     def load_target_state(self, state):
         self.target.load_state(state)
 
     def load_working_state(self, state):
-        self.working.load_state(state)
+        self.wizard_working.load_state(state)
 
     def get_working_state(self):
         req = requests.get(
-            f"{self.golmi_address}/slurk/{self.room_id}_w/state"
+            f"{self.golmi_address}/slurk/{self.room_id}_ww/state"
         )
         if req.ok is not True:
             print("Could not retrieve state")
@@ -41,7 +57,7 @@ class DoubleClient:
 
     def grip_object(self, x, y, block_size):
         req = requests.get(
-            f'{self.golmi_address}/slurk/grip/{self.room_id}_w/{x}/{y}/{block_size}'
+            f'{self.golmi_address}/slurk/grip/{self.room_id}_ww/{x}/{y}/{block_size}'
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
@@ -50,7 +66,7 @@ class DoubleClient:
 
     def get_gripped_object(self):
         req = requests.get(
-            f'{self.golmi_address}/slurk/{self.room_id}_w/gripped'
+            f'{self.golmi_address}/slurk/{self.room_id}_ww/gripped'
         )
         return req.json() if req.ok else None
 

@@ -309,15 +309,31 @@
                 },
                 {
                     "layout-type": "div",
-                    "style": "padding: 10px",
+                    "style": "padding: 10px; display: flex",
                     "layout-content": [
                         {
                             "layout-type": "button",
                             "class": "button",
                             "role": "button",
                             "layout-content": "Delete Object",
-                            "style": "padding: 10px",
-                            "id": "delete_object"
+                            "style": "padding: 10px; margin: 5px; width: 33%",
+                            "onclick": "delete_object()"
+                        },
+                        {
+                            "layout-type": "button",
+                            "class": "button",
+                            "role": "button",
+                            "layout-content": "Show Progress",
+                            "onclick": "show_progress()",
+                            "style": "padding: 10px; margin: 5px; width: 33%"
+                        },
+                        {
+                            "layout-type": "button",
+                            "class": "button",
+                            "role": "button",
+                            "layout-content": "Clear Board",
+                            "onclick": "clear_board()",
+                            "style": "padding: 10px; margin: 5px; width: 33%"
                         }
                     ]
                 }

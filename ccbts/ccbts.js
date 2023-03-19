@@ -27,10 +27,10 @@ function start_golmi(url, password, role, room_id) {
     );
 
     golmi_socket_working.connect()
-    golmi_socket_working.emit("join", { "room_id": `${room_id}_w` });
-
 
     if (role === "wizard"){
+        golmi_socket_working.emit("join", { "room_id": `${room_id}_ww` });
+
         // if the gripper is used there is no need to track clicks
         grLayer.onclick = (event) => {
             socket.emit("mouse", {
@@ -50,6 +50,7 @@ function start_golmi(url, password, role, room_id) {
     }
 
     if (role === "player"){
+        golmi_socket_working.emit("join", { "room_id": `${room_id}_pw` });
         golmi_socket_target = io(url, {
             auth: { "password": password }
         });
@@ -108,6 +109,42 @@ function reset_role(description) {
     $("#target_card").hide();
     $("#instr_title").html("");
     $("#instr").html(description);
+}
+
+
+function delete_object(){
+    socket.emit("message_command",
+        {
+            command: {
+                event: "delete_object"
+            },
+            room: self_room
+        }
+    )
+}2
+
+
+function show_progress(){
+    socket.emit("message_command",
+        {
+            command: {
+                event: "show_progress"
+            },
+            room: self_room
+        }
+    )
+}
+
+
+function clear_board(){
+    socket.emit("message_command",
+        {
+            command: {
+                event: "clear_board"
+            },
+            room: self_room
+        }
+    )
 }
 
 
