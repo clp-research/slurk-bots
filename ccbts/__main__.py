@@ -519,7 +519,8 @@ class CcbtsBot(TaskBot):
 
             # self.set_image(room_id, other_usr)
             # self.set_boards(room_id)
-            self.golmi_client_per_room[room_id].load_target_state(TESTSTATE)
+            random_state = get_random_state()
+            self.golmi_client_per_room[room_id].load_target_state(random_state)
             self.golmi_client_per_room[room_id].clear_working_states()
 
         else:

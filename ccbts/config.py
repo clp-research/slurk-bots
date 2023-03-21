@@ -3,6 +3,7 @@
 
 import json
 from pathlib import Path
+import random
 
 ROOT = Path().resolve() #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,7 +33,7 @@ WARNING_COLOR = "FireBrick"
 TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
 
 
-CONFIG = {"width": 4.0, "height": 4.0, "move_step": 1, "prevent_overlap": False}
+CONFIG = {"width": 7.0, "height": 7.0, "move_step": 1, "prevent_overlap": False}
 OBJS = {
     "bridge": {
         "id_n": 0,
@@ -79,8 +80,19 @@ COLORS = {
     "blue": ["blue", "#1b4ccd", [27, 76, 205]]
 }
 
-TESTSTATE = json.loads(Path(f"{ROOT}/ccbts/data/state.json").read_text())
+
 EMPTYSTATE = json.loads(Path(f"{ROOT}/ccbts/data/empty_state.json").read_text())
+STATES = Path(f"{ROOT}/ccbts/data/states.json")
+def get_random_state():
+    pool = list()
+    with STATES.open(encoding="utf-8") as infile:
+        for line in infile:
+            pool.append(
+                json.loads(line)
+            )
+        
+    return random.choice(pool)
+
 
 def name_generator():
     """
