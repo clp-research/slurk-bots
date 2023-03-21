@@ -123,15 +123,30 @@ function start(url, room_id, role, password, show_gripper, show_gripped_objects,
         golmi_socket.emit("add_gripper");
     }
 
-    // add warn user butto to wizard interface
+    // create button for wizard and player
     if (role === "wizard" && warning === true){
-        $("#warning_button").show()
-        $('#warning_button').click(function(){
+        $("#generic_button").show()
+        $("#generic_button").html("Send Warning")
+        $('#generic_button').click(function(){
             console.log("emitting warning")
             socket.emit("message_command",
                 {
                     "command": {
                         "event": "warning"
+                    },
+                    "room": self_room
+                }
+            )
+        });
+    } else if (role === "player"){
+        $("#generic_button").show()
+        $("#generic_button").html("Terminate Experiment")
+        $('#generic_button').click(function(){
+            console.log("aborting")
+            socket.emit("message_command",
+                {
+                    "command": {
+                        "event": "abort"
                     },
                     "room": self_room
                 }
