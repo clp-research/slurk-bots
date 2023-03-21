@@ -11,7 +11,7 @@ DATA_PATH = os.path.join(ROOT, "data", "image_data.tsv")
 WORD_LIST = os.path.join(ROOT, "data", "wordlist.txt")
 
 # This many game rounds will be played per room and player pair.
-N = 1
+N = 3
 # Set this seed to make the random process reproducible.
 SEED = None
 # Whether to randomly sample images or present them in linear order.
