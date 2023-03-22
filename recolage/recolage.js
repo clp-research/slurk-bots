@@ -1,7 +1,7 @@
 let golmi_socket = null
 let layerView = null
 let controller = null
-let show_mouse = null
+
 
 // copy some parts of the mouse tracking plugin
 let trackMousePointer = {
@@ -9,12 +9,14 @@ let trackMousePointer = {
     pos: {x: undefined, y: undefined}
 };
 
+
 function trackGetPosition (evt, area) {
     let elem = document.getElementById(area);
     let position = elem.getBoundingClientRect();
     trackMousePointer.pos.x = evt.offsetX
     trackMousePointer.pos.y = evt.offsetY
 }
+
 
 function emitPosition(area) {
     if (trackMousePointer.isMoving) {
@@ -28,6 +30,7 @@ function emitPosition(area) {
     }
 }
 
+
 function trackMovement(area, interval) {
     $("#" + area).mousemove(function(e) {
         trackGetPosition(e, area);
@@ -36,12 +39,14 @@ function trackMovement(area, interval) {
     setInterval(emitPosition, interval, area);
 }
 
+
 function trackClicks(area) {
     $("#" + area).click(function(e) {
         trackGetPosition(e, area);
         
     });
 }
+
 
 function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
     // --- create a golmi_socket --- //
@@ -156,25 +161,11 @@ function start(url, room_id, role, password, show_gripper, show_gripped_objects,
 }
 
 
-function stop() {
+function reset_role() {
     golmi_socket.disconnect();
-}
-
-
-function drawCircle(ctx, x, y, radius, fill, stroke, strokeWidth) {
-    ctx.beginPath()
-    ctx.arc(x, y, radius, 0, 2 * Math.PI, false)
-
-    if (fill) {
-      ctx.fillStyle = fill
-      ctx.fill()
-    }
-
-    if (stroke) {
-      ctx.lineWidth = strokeWidth
-      ctx.strokeStyle = stroke
-      ctx.stroke()
-    }
+    $("#generic_button").hide()
+    layerView = null
+    controller = null
 }
 
 
@@ -194,9 +185,9 @@ function confirm_selection(answer){
 $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
-
             switch(data.command.event){
                 case "init":
+                    console.log("start")
                     start(
                         data.command.url,
                         data.command.room_id,
@@ -209,12 +200,12 @@ $(document).ready(function () {
                     break;
 
                 case "detach_controller":
-                    console.log("detach")
+                    console.log("detach controller")
                     controller.can_move = false;
                     break;
 
                 case "attach_controller":
-                    console.log("attach")
+                    console.log("attach controller")
                     controller.can_move = true;
                     break;
             }
