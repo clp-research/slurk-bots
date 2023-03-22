@@ -99,6 +99,13 @@ class RecolageBot(TaskBot):
             logging.debug(f"This bot is looking for task id: {self.task_id}")
 
             if task_id is not None and task_id == self.task_id:
+                # reduce height of sidebar
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                    json={"attribute": "style", "value": f"height: 90%"}
+                )
+
                 for usr in data["users"]:
                     self.received_waiting_token.discard(usr["id"])
 
@@ -145,18 +152,6 @@ class RecolageBot(TaskBot):
             room_id = data["room"]
 
             if room_id in self.players_per_room:
-                # add description title
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": "Please wait for the roles to be assigned"},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
-
                 # read out task greeting
                 for line in task_greeting():
                     self.sio.emit(
@@ -168,17 +163,6 @@ class RecolageBot(TaskBot):
                         },
                     )
                     sleep(0.5)
-
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr",
-                    json={"text": "Please wait for the roles to be assigned"},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
 
                 if self.version != "no_feedback":
                     self.update_title_points(room_id)
@@ -220,13 +204,6 @@ class RecolageBot(TaskBot):
                             "room": room_id,
                             "receiver_id": other_usr["id"],
                         },
-                    )
-
-                    # reduce height of sidebar
-                    response = requests.patch(
-                        f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
-                        headers={"Authorization": f"Bearer {self.token}"},
-                        json={"attribute": "style", "value": f"height: 90%"}
                     )
 
                     # cancel leave timers if any
@@ -331,7 +308,6 @@ class RecolageBot(TaskBot):
                     logging.error("Could not retrieve gripped piece")
 
                 piece = req.json()
-
                 target = self.boards_per_room[room_id][0]["state"]["targets"]
 
                 if piece.keys() == target.keys():
@@ -386,7 +362,6 @@ class RecolageBot(TaskBot):
                 x = data["coordinates"]["x"]
                 y = data["coordinates"]["y"]
                 block_size = data["coordinates"]["block_size"]
-
 
                 if self.version == "confirm_selection":
                     req = requests.get(
@@ -445,6 +420,7 @@ class RecolageBot(TaskBot):
                             )
 
                         if data["command"]["answer"] == "no":
+                            # remove gripper
                             if self.version != "show_gripper":
                                 response = requests.get(
                                     f"{self.golmi_server}/slurk/remove_mouse_gripper/{room_id}"
@@ -576,14 +552,13 @@ class RecolageBot(TaskBot):
                         self.terminate_experiment(room_id)
 
                 else:
-                    # commands from user
+                    # commands from users
                     # set wizard
                     if data["command"] == "role:wizard":
                         self.set_wizard_role(room_id, user_id)
 
-                    # reset roles
-                    elif data["command"] == "reset_roles":
-                        self.reset_roles(room_id)
+                    elif data["command"] == "abort":
+                        self.terminate_experiment(room_id)
 
                     else:
                         self.sio.emit(
@@ -761,19 +736,6 @@ class RecolageBot(TaskBot):
                 if role == "wizard":
                     self.set_message_privilege(curr_usr["id"], False)
 
-                instr = instruction_functions.get(role)
-
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr",
-                    json={"text": instr(), "receiver_id": user["id"]},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
-
             sleep(0.5)
             self.load_state(room_id)
 
@@ -795,42 +757,6 @@ class RecolageBot(TaskBot):
                 },
             )
 
-    def reset_roles(self, room_id):
-        self.timers_per_room[room_id].reset()
-
-        self.sio.emit(
-            "text",
-            {
-                "message": "Roles have been reset, please wait for new roles to be assigned",
-                "room": room_id,
-            },
-        )
-
-        for user in self.players_per_room[room_id]:
-            self.set_message_privilege(user["id"], True)
-            user["role"] = None
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "role": "reset",
-                        "instruction": "",
-                    },
-                    "room": room_id,
-                    "receiver_id": user["id"],
-                },
-            )
-
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr_title",
-            json={"text": "Please wait for the roles to be assigned"},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            logging.error(
-                f"Could not set task instruction title: {response.status_code}"
-            )
-            response.raise_for_status()
 
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
