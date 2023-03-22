@@ -22,11 +22,11 @@ There are 4 versions of this bot:
         "send_command": true
     }
     ```
-    **To skip all this setup above, you could run a setup script:**
-        * [no feedback](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_no_feedback.sh)
-        * [feedback](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_feedback.sh)
-        * [confirm selection](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_confirm_selection.sh)
-        * [gripper](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_gripper.sh)
+    **To skip all this setup above, you could run a setup script:**  
+    * [no feedback](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_no_feedback.sh)  
+    * [feedback](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_feedback.sh)  
+    * [confirm selection](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_confirm_selection.sh)  
+    * [gripper](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_gripper.sh)  
     
     
     1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.

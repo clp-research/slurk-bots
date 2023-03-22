@@ -445,6 +445,16 @@ class RecolageBot(TaskBot):
                             )
 
                         if data["command"]["answer"] == "no":
+                            if self.version != "show_gripper":
+                                response = requests.get(
+                                    f"{self.golmi_server}/slurk/remove_mouse_gripper/{room_id}"
+                                )
+                                if not response.ok:
+                                    logging.error(
+                                        f"Could not remove mouse gripper: {response.status_code}"
+                                    )
+                                    response.raise_for_status()
+
                             # allow the player to send a second description
                             self.description_per_room[room_id] = False
                             self.set_message_privilege(user_id, True)

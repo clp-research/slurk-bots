@@ -201,7 +201,7 @@ $(document).ready(function () {
                             let params = {
                                 x: grippedObj.x,
                                 y: grippedObj.y,
-                                color: grippedObj.color,
+                                color: grippedObj.color[1],
                                 highlight: "green" // highlight a gripped object
                             }
                             this._drawBlockObj(ctx,
