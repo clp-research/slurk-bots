@@ -331,7 +331,6 @@ class RecolageBot(TaskBot):
                     logging.error("Could not retrieve gripped piece")
 
                 piece = req.json()
-
                 target = self.boards_per_room[room_id][0]["state"]["targets"]
 
                 if piece.keys() == target.keys():
@@ -386,7 +385,6 @@ class RecolageBot(TaskBot):
                 x = data["coordinates"]["x"]
                 y = data["coordinates"]["y"]
                 block_size = data["coordinates"]["block_size"]
-
 
                 if self.version == "confirm_selection":
                     req = requests.get(
@@ -445,6 +443,17 @@ class RecolageBot(TaskBot):
                             )
 
                         if data["command"]["answer"] == "no":
+                            # remove gripper
+                            if self.version != "show_gripper":
+                                response = requests.get(
+                                    f"{self.golmi_server}/slurk/remove_mouse_gripper/{room_id}"
+                                )
+                                if not response.ok:
+                                    logging.error(
+                                        f"Could not remove mouse gripper: {response.status_code}"
+                                    )
+                                    response.raise_for_status()
+
                             # allow the player to send a second description
                             self.description_per_room[room_id] = False
                             self.set_message_privilege(user_id, True)

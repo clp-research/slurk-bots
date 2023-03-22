@@ -16,8 +16,9 @@ class GolmiClient:
 
     def register_callbacks(self):
         @self.socket.event
-        def update_grippers(data):
-            piece = list(data.values())[0]["gripped"]
+        def update_state(data):
+            grippers = data["grippers"]
+            piece = list(grippers.values())[0]["gripped"]
             if piece is None:
                 # record movement, no object was gripped
                 self.bot.add_to_log(
