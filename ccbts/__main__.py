@@ -522,6 +522,22 @@ class CcbtsBot(TaskBot):
             random_state = get_random_state()
             self.golmi_client_per_room[room_id].load_target_state(random_state)
             self.golmi_client_per_room[room_id].clear_working_states()
+            
+            # log board
+            response = requests.post(
+                f"{self.uri}/logs",
+                json={
+                    "event": "board_loaded",
+                    "room_id": room_id,
+                    "data": random_state,
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(f"Could not post AMT token to logs: {response.status_code}")
+                response.raise_for_status()
+
+            
 
         else:
             self.sio.emit(
