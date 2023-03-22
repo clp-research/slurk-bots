@@ -81,7 +81,11 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
                 console.log(event)
                 socket.emit("mouse", {
                     type: "click",
-                    coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": layerView.blockSize},
+                    coordinates: {
+                        "x": event.layerX,
+                        "y": event.layerY,
+                        "block_size": layerView.blockSize * layerView.grid_factor
+                    },
                     element_id: "gripper",
                     room: self_room
                 });
@@ -95,7 +99,11 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
         grLayer.onclick = (event) => {
             socket.emit("mouse", {
                 type: "click",
-                coordinates: {"x": event.offsetX, "y": event.offsetY, "block_size": layerView.blockSize},
+                coordinates: {
+                    "x": event.layerX,
+                    "y": event.layerY,
+                    "block_size": layerView.blockSize * layerView.grid_factor
+                },
                 element_id: "gripper",
                 room: self_room
             });
