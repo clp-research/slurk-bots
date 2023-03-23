@@ -39,6 +39,8 @@ Note: Every time a new terminal session is started, the env variables will need 
     
 ### Running and playing the bot
 
+A Golmi-server is needed to run this bot. Make sure that golmi is on the `slurk` branch.
+
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
