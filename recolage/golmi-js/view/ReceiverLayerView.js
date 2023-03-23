@@ -114,30 +114,6 @@ $(document).ready(function () {
         }
 
         /**
-         * Draw the (static) objects.
-         */
-        // drawObjs() {
-        //     let ctx = this.objCanvas.getContext("2d");
-        //     ctx.beginPath();
-        //     this.plotArrayBoard(ctx, this.objs_grid, this.objs)
-
-        //     // add targets bounding box
-        //     for (const object of Object.values(this.objs)){
-        //         if (object.gripped === true){
-        //             let blockMatrix = object.block_matrix;
-    
-        //             // call drawing helper functions with additional infos
-        //             let params = {
-        //                 x: object.x,
-        //                 y: object.y,
-        //             }
-        //             // draw bounding box around target (there should be only a single one in this experiment)
-        //             this._drawBB(ctx, blockMatrix, params, "green");
-        //         }
-        //     }
-        // }
-
-        /**
          * Redraw the (static) objects.
          * In contrast to drawObjs(), this function assumes the objects have
          * been drawn before and the old drawing needs to be removed first.
