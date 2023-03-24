@@ -95,12 +95,9 @@
         "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
         "plain": [
-            "golmi-js/golmieval",
+            "golmieval",
             "golmi-js/view/View",
-            "golmi-js/view/GiverLayerView",
-            "golmi-js/view/ReceiverLayerView",
-            "golmi-js/view/LView",
-            "golmi-js/controller/LocalKeyController"
+            "golmi-js/view/GiverLayerView"
         ]
     }
 }

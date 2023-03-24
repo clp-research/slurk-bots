@@ -44,7 +44,7 @@ export SLURK_DOCKER=slurk
 scripts/start_server.sh
 sleep 1
 
-# remove plogins
+# remove plugins
 rm -r slurk/views/static/plugins/golmi-js
 rm slurk/views/static/plugins/recolage.js
 

@@ -34,11 +34,19 @@ docker build --tag "slurk/$BOT_NAME-bot" -f $BOT_NAME/Dockerfile .
 docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
 # run slurk
+# copy plugins
+cp -r $BOT_NAME/golmi-js/ ../slurk/slurk/views/static/plugins/
+cp -r $BOT_NAME/golmieval.js ../slurk/slurk/views/static/plugins/
+
 cd ../slurk
 docker build --tag="slurk/server" -f Dockerfile .
 export SLURK_DOCKER=slurk
 scripts/start_server.sh
 sleep 1
+
+# remove plugins
+rm -r slurk/views/static/plugins/golmi-js
+rm slurk/views/static/plugins/golmieval.js
 
 # create admin token
 SLURK_TOKEN=$(check_response scripts/read_admin_token.sh)
@@ -88,7 +96,7 @@ sleep 1
 for ((c=0; c<NUMBER_USERS; c++))
 do
     USER=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/$BOT_NAME/data/user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
-    echo "User $c Token: $USER"
+    echo "http://127.0.0.1:5000/login?name=$c&token=$USER"
 done
 
 cd ../slurk-bots
