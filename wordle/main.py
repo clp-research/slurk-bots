@@ -14,7 +14,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
-    parser = argparse.ArgumentParser(description="Run Echo Bot.")
+    parser = argparse.ArgumentParser(description="Run Wordle Bot.")
 
     # collect environment variables as defaults
     if "SLURK_TOKEN" in os.environ:

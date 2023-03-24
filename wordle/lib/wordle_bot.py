@@ -14,7 +14,21 @@ import requests
 import socketio
 
 from lib.image_data import ImageData
-from lib.config import *
+from lib.config import (
+    COLOR_MESSAGE,
+    DATA_PATH,
+    GAME_MODE,
+    N,
+    SEED,
+    SHUFFLE,
+    STANDARD_COLOR,
+    TASK_GREETING,
+    TASK_TITLE,
+    TIME_LEFT,
+    TIME_ROUND,
+    WARNING_COLOR,
+    WORD_LIST
+)
 
 
 LOG = logging.getLogger(__name__)
@@ -90,7 +104,7 @@ class WordleBot:
         self.url = self.uri
         self.uri += "/slurk/api"
 
-        self.images_per_room = ImageData(DATA_PATH, 3, SHUFFLE, SEED)
+        self.images_per_room = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
         self.players_per_room = dict()
         self.last_message_from = dict()
         self.guesses_per_room = dict()
@@ -122,6 +136,14 @@ class WordleBot:
         # wait until the connection with the server ends
         self.sio.wait()
 
+    @staticmethod
+    def request_feedback(response, action):
+        if not response.ok:
+            LOG.error(f"Could not {action}: {response.status_code}")
+            response.raise_for_status()
+        else:
+            LOG.debug(f'Successfully did {action}.')
+
     def register_callbacks(self):
         @self.sio.event
         def new_task_room(data):
@@ -145,7 +167,10 @@ class WordleBot:
                 LOG.debug("Create data for the new task room...")
                 LOG.debug(data)
 
-                self.images_per_room.get_image_pairs(room_id)
+                self.move_divider(room_id, 20, 80)
+
+                self.images_per_room.get_word_image_pairs(room_id)
+                LOG.debug(self.images_per_room[room_id])
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
                     self.players_per_room[room_id].append(
@@ -157,12 +182,7 @@ class WordleBot:
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not let wordle bot join room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                LOG.debug("Sending wordle bot to new room was successful.")
+                self.request_feedback(response, "let wordle bot join room")
 
                 logging.info(room_id)
                 self.sio.emit(
@@ -183,10 +203,30 @@ class WordleBot:
                 )
                 self.timers_per_room[room_id].round_timer.start()
 
+                # show info to users
+                self._update_score_info(room_id)
+
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
+
+            mode_message = "In this game mode, "
+            if GAME_MODE == 'same':
+                mode_message += "both of you see the same image."
+            elif GAME_MODE == 'different':
+                mode_message += "each of you sees a different image. " \
+                                "Both images are connected to the same word."
+            else:
+                mode_message += "only one of you sees the image and " \
+                                "needs to describe it to the other person."
+
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/mode",
+                json={"text": mode_message},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "add mode explanation")
 
             if room_id in self.images_per_room:
                 # read out task greeting
@@ -208,24 +248,20 @@ class WordleBot:
                     {
                         "message": COLOR_MESSAGE.format(
                             color=STANDARD_COLOR,
-                            message=f"Let's start with the first of {self.images_per_room.n} images",
+                            message=f"Let's start with the first "
+                                    f"of {self.images_per_room.n} images",
                         ),
                         "room": room_id,
                         "html": True,
                     },
                 )
 
-                # ask players to send \ready
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
                     json={"text": line},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
+                self.request_feedback(response, "set task instruction title")
 
         @self.sio.event
         def status(data):
@@ -235,9 +271,7 @@ class WordleBot:
                 f"{self.uri}/users/{data['user']['id']}/task",
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            if not task.ok:
-                LOG.error(f"Could not set task instruction title: {task.status_code}")
-                task.raise_for_status()
+            self.request_feedback(task, "set task instruction title")
             if not task.json() or task.json()["id"] != int(self.task_id):
                 return
 
@@ -269,7 +303,7 @@ class WordleBot:
                     )
 
                     # reset the front-end of the user who just joined
-                    word, _ = self.images_per_room[room_id][0]
+                    word, _, _ = self.images_per_room[room_id][0]
                     self.sio.emit(
                         "message_command",
                         {
@@ -315,7 +349,8 @@ class WordleBot:
                         {
                             "message": COLOR_MESSAGE.format(
                                 color=STANDARD_COLOR,
-                                message=f"{curr_usr['name']} has left the game. Please wait a bit, your partner may rejoin.",
+                                message=f"{curr_usr['name']} has left the game."
+                                        f" Please wait a bit, your partner may rejoin.",
                             ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
@@ -365,7 +400,8 @@ class WordleBot:
                 return
 
             if room_id in self.images_per_room:
-                # only accept commands from the javascript frontend (commands are dictionaries)
+                # only accept commands from the javascript
+                # frontend (commands are dictionaries)
                 if isinstance(data["command"], dict):
                     if "guess" in data["command"]:
                         if data["command"]["guess"].strip() == "":
@@ -399,6 +435,28 @@ class WordleBot:
                         },
                     )
 
+    def move_divider(self, room_id, chat_area=50, task_area=50):
+        """move the central divider and resize chat and task area
+        the sum of char_area and task_area must sum up to 100
+        """
+        if chat_area + task_area != 100:
+            LOG.error("Could not resize chat and task area: invalid parameters.")
+            raise ValueError("chat_area and task_area must sum up to 100")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {task_area}%"}
+        )
+        self.request_feedback(response, "resize sidebar")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/content",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {chat_area}%"}
+        )
+        self.request_feedback(response, "resize content area")
+
     def _command_guess(self, room_id, user_id, command):
         """Must be sent to end a game round."""
         # identify the user that has not sent this event
@@ -409,7 +467,7 @@ class WordleBot:
         LOG.debug(command)
 
         # get the wordle for this room and the guess from the user
-        word, _ = self.images_per_room[room_id][0]
+        word, _, _ = self.images_per_room[room_id][0]
         guess = command["guess"]
         remaining_guesses = command["remaining"]
 
@@ -420,7 +478,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=WARNING_COLOR,
-                        message="**Unfortunately this word is not valid. Make sure that there aren't any typos**",
+                        message="**Unfortunately this word is not valid. "
+                                "Make sure that there aren't any typos**",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -436,7 +495,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Unfortunately this word is not valid. Your guess needs to have {len(word)} letters.",
+                        message=f"Unfortunately this word is not valid. "
+                                f"Your guess needs to have {len(word)} letters.",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -490,7 +550,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message="Your partner thinks that you have found the right word. Enter your guess.",
+                        message="Your partner thinks that you have "
+                                "found the right word. Enter your guess.",
                     ),
                     "receiver_id": other_usr["id"],
                     "room": room_id,
@@ -508,7 +569,8 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message="You and your partner sent a different word, please discuss and enter the same guess.",
+                        message="You and your partner sent a different word, "
+                                "please discuss and enter the same guess.",
                     ),
                     "room": room_id,
                     "html": True,
@@ -568,6 +630,14 @@ class WordleBot:
 
                 self.next_round(room_id)
 
+    def _update_score_info(self, room):
+        response = requests.patch(
+            f"{self.uri}/rooms/{room}/text/subtitle",
+            json={"text": f"Your score is {self.points_per_room[room]} – You have {len(self.images_per_room[room])} rounds to go."},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "update score")
+
     def next_round(self, room_id):
         """
         Load the next image and wordle and move to the next round if possible
@@ -593,6 +663,8 @@ class WordleBot:
             )
             sleep(1)
 
+            self._update_score_info(room_id)
+
             self.sio.emit(
                 "text",
                 {
@@ -601,7 +673,8 @@ class WordleBot:
                         message=(
                             "Please share the following text on social media: "
                             "I played slurdle and helped science! "
-                            f"Together with {other_usr['name']}, I got {self.points_per_room[room_id]} "
+                            f"Together with {other_usr['name']}, "
+                            f"I got {self.points_per_room[room_id]} "
                             f"points for {self.images_per_room.n} puzzle(s). "
                             f"Play here: {self.url}. #slurdle"
                         ),
@@ -619,7 +692,8 @@ class WordleBot:
                         message=(
                             "Please share the following text on social media: "
                             "I played slurdle and helped science! "
-                            f"Together with {curr_usr['name']}, I got {self.points_per_room[room_id]} "
+                            f"Together with {curr_usr['name']}, "
+                            f"I got {self.points_per_room[room_id]} "
                             f"points for {self.images_per_room.n} puzzle(s). "
                             f"Play here: {self.url}. #slurdle"
                         ),
@@ -640,12 +714,15 @@ class WordleBot:
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Ok, let's get both of you the next image. {len(self.images_per_room[room_id])} to go!",
+                        message=f"Ok, let's move on to the next round. "
+                                f"{len(self.images_per_room[room_id])} rounds to go!",
                     ),
                     "room": room_id,
                     "html": True,
                 },
             )
+
+            self._update_score_info(room_id)
 
             sleep(2)
 
@@ -689,19 +766,77 @@ class WordleBot:
         LOG.debug("Update the image and task description of the players.")
         # guarantee fixed user order - necessary for update due to rejoin
         users = sorted(self.players_per_room[room_id], key=lambda x: x["id"])
+        user_1 = users[0]
+        user_2 = users[1]
 
         if self.images_per_room[room_id]:
-            word, image = self.images_per_room[room_id][0]
-            # show a different image to each user
-            for usr in users:
+            word, image_1, image_2 = self.images_per_room[room_id][0]
+            LOG.debug(f'{image_1}\n{image_2}')
+
+            # show a different image to each user. one image can be None
+
+            # remove image and description for both
+            response = requests.post(
+                f"{self.uri}/rooms/{room_id}/class/image-area",
+                json={"class": "dis-area"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "hide image")
+            response = requests.post(
+                f"{self.uri}/rooms/{room_id}/class/image-desc",
+                json={"class": "dis-area"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "hide description")
+
+            # Player 1
+            if image_1:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": image, "receiver_id": usr["id"]},
+                    json={"attribute": "src", "value": image_1, "receiver_id": user_1["id"]},
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not set image: {response.status_code}")
-                    response.raise_for_status()
+                self.request_feedback(response, "set image 1")
+                # enable the image
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-area",
+                    json={"class": "dis-area", "receiver_id": user_1["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable image 1")
+
+            else:
+                # enable the explanatory text
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-desc",
+                    json={"class": "dis-area", "receiver_id": user_1["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable explanation")
+
+            # Player 2
+            if image_2:
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": image_2, "receiver_id": user_2["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "set image 2")
+                # enable the image
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-area",
+                    json={"class": "dis-area", "receiver_id": user_2["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable image 2")
+            else:
+                # enable the explanatory text
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-desc",
+                    json={"class": "dis-area", "receiver_id": user_2["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable explanation")
 
             # the task for both users is the same - no special receiver
             response = requests.patch(
@@ -709,11 +844,7 @@ class WordleBot:
                 json={"text": TASK_TITLE},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            if not response.ok:
-                LOG.error(
-                    f"Could not set task instruction title: {response.status_code}"
-                )
-                response.raise_for_status()
+            self.request_feedback(response, "set task instruction title")
 
     def confirmation_code(self, room_id, status, receiver_id=None):
         """Generate AMT token that will be sent to each player."""
@@ -734,16 +865,16 @@ class WordleBot:
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            LOG.error(f"Could not post AMT token to logs: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "post AMT token to logs")
 
         self.sio.emit(
             "text",
             {
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
-                    message="Please enter the following token into the field on the HIT webpage, and close this browser window.",
+                    message="Please enter the following token into "
+                            "the field on the HIT webpage, and close "
+                            "this browser window.",
                 ),
                 "room": room_id,
                 "html": True,
@@ -802,17 +933,14 @@ class WordleBot:
             json={"attribute": "readonly", "value": "True"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            LOG.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "set room to read_only")
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "placeholder", "value": "This room is read-only"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            LOG.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "set room to read_only")
 
         # remove user from room
         if room_id in self.players_per_room:
@@ -821,21 +949,14 @@ class WordleBot:
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(f"Could not get user: {response.status_code}")
-                    response.raise_for_status()
+                self.request_feedback(response, "get user")
                 etag = response.headers["ETag"]
 
                 response = requests.delete(
                     f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
                     headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not remove user from task room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                LOG.debug("Removing user from task room was successful.")
+                self.request_feedback(response, "remove user from task room")
 
             # remove users from room
             self.players_per_room.pop(room_id)
