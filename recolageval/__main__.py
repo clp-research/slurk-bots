@@ -31,7 +31,7 @@ class RoomTimer:
         self.timer.cancel()
 
 
-class GolmiEval(TaskBot):
+class RecolagEval(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
@@ -81,10 +81,10 @@ class GolmiEval(TaskBot):
                 )
                 if not response.ok:
                     logging.error(
-                        f"Could not let golmieval bot join room: {response.status_code}"
+                        f"Could not let recolageval bot join room: {response.status_code}"
                     )
                     response.raise_for_status()
-                logging.debug("Sending golmieval bot to new room was successful.")
+                logging.debug("Sending recolageval bot to new room was successful.")
 
                 self.golmi_client_per_room[room_id] = GolmiClient(self.sio)
                 self.golmi_client_per_room[room_id].run(
@@ -401,7 +401,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
-    parser = GolmiEval.create_argparser()
+    parser = RecolagEval.create_argparser()
     if "GOLMI_SERVER" in os.environ:
         golmi_server = {"default": os.environ["GOLMI_SERVER"]}
     else:
@@ -426,8 +426,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     logging.debug(args)
+
     # create bot instance
-    bot = GolmiEval(args.token, args.user, args.task, args.host, args.port)
+    bot = RecolagEval(args.token, args.user, args.task, args.host, args.port)
     bot.golmi_server = args.golmi_server
     bot.golmi_password = args.golmi_password
     # connect to chat server

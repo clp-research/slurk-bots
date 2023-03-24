@@ -95,7 +95,7 @@
         "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
         "plain": [
-            "golmieval",
+            "recolageval",
             "golmi-js/view/View",
             "golmi-js/view/GiverLayerView"
         ]

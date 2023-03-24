@@ -3,20 +3,20 @@
 
 from pathlib import Path
 
-ROOT = Path().resolve() #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = Path(__file__).parent.resolve()
 
 
 def task_greeting():
-    greeting = Path(f"{ROOT}/golmieval/data/task_greeting.txt")
+    greeting = Path(f"{ROOT}/data/task_greeting.txt")
     return greeting.read_text().strip().split("\n\n")
 
 
 def task_instr():
-    instr = Path(f"{ROOT}/golmieval/data/instruction.txt")
+    instr = Path(f"{ROOT}/data/instruction.txt")
     return instr.read_text().strip()
 
 
-BOARDS = Path(f"{ROOT}/golmieval/data/boards.jsonl")
+BOARDS = Path(f"{ROOT}/data/boards.jsonl")
 BOARDS_PER_ROOM = 15
 
 
