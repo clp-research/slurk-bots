@@ -122,42 +122,5 @@ $(document).ready(function () {
             this.clearObj();
             this.drawObjs();
         }
-
-        /**
-         * Draw the gripper object and, if applicable, the gripped object.
-         * The gripper is used to navigate on the canvas and move objects.
-         */
-
-        drawGr() {
-            if (this.show_gripper === true){
-                let ctx = this.grCanvas.getContext("2d");
-                ctx.beginPath()
-                for (const [grId, gripper] of Object.entries(this.grippers)) {
-                    // modify style depending on whether an object is gripped
-                    let grSize = gripper.gripped ? 0.1 : 0.3;
-                    grSize = grSize * this.grid_factor
-    
-                    // draw the gripper itself
-                    // --- config ---
-                    ctx.strokeStyle = "#000000";
-                    ctx.lineWidth = 2;
-                    // draw. The gripper as a simple cross
-                    // Note: coordinates are at a tiles upper-left corner!
-                    // We draw a gripper from that corner to the bottom-right
-                    ctx.beginPath();
-                    // top-left to bottom-right
-    
-                    let x = gripper.x * this.grid_factor
-                    let y = gripper.y * this.grid_factor
-    
-                    ctx.moveTo(this._toPxl(x - grSize), this._toPxl(y - grSize));
-                    ctx.lineTo(this._toPxl(x + 1 + grSize), this._toPxl(y + 1 + grSize));
-                    // bottom-left to top-right
-                    ctx.moveTo(this._toPxl(x - grSize), this._toPxl(y + 1 + grSize));
-                    ctx.lineTo(this._toPxl(x + 1 + grSize), this._toPxl(y - grSize));
-                    ctx.stroke();
-                }
-            }
-        }
     }; // class LayerView end
 }); // on document ready end

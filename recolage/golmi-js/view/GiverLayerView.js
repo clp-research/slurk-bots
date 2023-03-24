@@ -117,5 +117,51 @@ $(document).ready(function () {
                 this._drawBB(ctx, blockMatrix, params, "blue");
             }
         }
+
+        plotArrayBoard(ctx, board, obj_mapping, color=null, highlight=null){
+            // first plot the objects without borders
+            // to avoid artifacts
+            for (let [key, value] of Object.entries(board)) {
+                let position = key.split(":")
+                let i = parseInt(position[0])
+                let j = parseInt(position[1])
+
+                for (let obj_idn of value){
+                    let this_obj = obj_mapping[obj_idn]                    
+
+                    // the color must be overwrittenb
+                    let this_color = (color !== null) ? color : this_obj.color[1]
+                    this._drawBlock(ctx, j, i, this_color, this_obj.gripped);
+                }
+            }
+            // only plot borders
+            for (let [key, value] of Object.entries(board)) {
+                let position = key.split(":")
+                let i = parseInt(position[0])
+                let j = parseInt(position[1])
+
+                for (let obj_idn of value){
+                    let this_obj = obj_mapping[obj_idn]                    
+                    let highlight = (this_obj.gripped) ? ("green") : (false)
+
+                    if (value in this.targets){
+                        highlight = "blue"
+                    }
+
+                    if (this._isUpperBorder(board, i, j, obj_idn)) {
+                        this._drawUpperBorder(ctx, j, i, highlight);
+                    }
+                    if (this._isLowerBorder(board, i, j, obj_idn)) {
+                        this._drawLowerBorder(ctx, j, i, highlight);
+                    }
+                    if (this._isLeftBorder(board, i, j, obj_idn)) {
+                        this._drawLeftBorder(ctx, j, i, highlight);
+                    }
+                    if (this._isRightBorder(board, i, j, obj_idn)) {
+                        this._drawRightBorder(ctx, j, i, highlight);
+                    }
+                }
+            }
+        }
     }; // class LayerView end
 }); // on document ready end

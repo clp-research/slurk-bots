@@ -271,7 +271,7 @@ $(document).ready(function () {
 
                 for (let obj_idn of value){
                     let this_obj = obj_mapping[obj_idn]                    
-                    let highlight = (this_obj.gripped) ? ("black") : (false)
+                    let highlight = (this_obj.gripped) ? ("green") : (false)
 
                     if (this._isUpperBorder(board, i, j, obj_idn)) {
                         this._drawUpperBorder(ctx, j, i, highlight);
