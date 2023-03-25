@@ -110,31 +110,6 @@ $(document).ready(function () {
             }
             // draw to the screen
             ctx.stroke();
-        
-
-            // add targets
-            for (const target of Object.values(this.targets))	{
-                // for use cases where targets can be gripped: don't draw
-                // gripped targets on this layer, should be drawn on the
-                // gripper layer instead
-                if (target.gripped) { continue; }
-
-                let blockMatrix = target.block_matrix;
-
-                // call drawing helper functions with additional infos
-                let params = {
-                    x: target.x,
-                    y: target.y,
-                    color: "Cornsilk"
-                }
-                // there should be only a single target (which is then overdrawn by the actual piece)
-                //this._drawDiamond(ctx, target.x, target.y, 10, 10)
-                // this._drawBlockObj(ctx, blockMatrix, params);
-                this.drawObject(ctx, obj)
-
-                // draw bounding box around target (there should be only a single one in this experiment)
-                this._drawBB(ctx, blockMatrix, params, "red");
-            }
         }
 
         /**
@@ -169,7 +144,47 @@ $(document).ready(function () {
                 //this._drawCircle(ctx, obj.x, obj.y, obj.color[1], obj.color[1], 0)
                 // this._drawDiamond(ctx, obj.x, obj.y)
                 this.drawObject(ctx, obj)
-                //
+            }
+        }
+
+        drawObjs() {
+            let ctx = this.objCanvas.getContext("2d");
+            ctx.beginPath();
+            this.plotArrayBoard(ctx, this.objs_grid, this.objs)
+        }
+
+        plotArrayBoard(ctx, board, obj_mapping, overwrite_color=null){
+            // first plot the objects without borders
+            // to avoid artifacts
+            for (let [key, value] of Object.entries(board)) {
+                let position = key.split(":")
+                let i = parseInt(position[0])
+                let j = parseInt(position[1])
+
+                for (let obj_idn of value){
+                    let this_obj = obj_mapping[obj_idn]                    
+                    let highlight = (this_obj.gripped) ? ("black") : (false)
+
+                    // the color must be overwrittenb
+                    let color = (overwrite_color !== null) ? overwrite_color : this_obj.color[1]
+
+                    this.drawObject(ctx, this_obj)
+
+                    if (highlight){
+                        if (this._isUpperBorder(board, i, j, obj_idn)) {
+                            this._drawUpperBorder(ctx, j, i, highlight);
+                        }
+                        if (this._isLowerBorder(board, i, j, obj_idn)) {
+                            this._drawLowerBorder(ctx, j, i, highlight);
+                        }
+                        if (this._isLeftBorder(board, i, j, obj_idn)) {
+                            this._drawLeftBorder(ctx, j, i, highlight);
+                        }
+                        if (this._isRightBorder(board, i, j, obj_idn)) {
+                            this._drawRightBorder(ctx, j, i, highlight);
+                        }
+                    }
+                }
             }
         }
 
@@ -188,41 +203,7 @@ $(document).ready(function () {
          * The gripper is used to navigate on the canvas and move objects.
          */
         drawGr() {
-            let ctx = this.grCanvas.getContext("2d");
-            ctx.beginPath()
-            for (const [grId, gripper] of Object.entries(this.grippers)) {
-                // draw any gripped object first (i.e. 'below' the gripper)
-                if (gripper.gripped) {
-                    for (const [grippedId, grippedObj] of Object.entries(gripper.gripped)) {
-                        let blockMatrix = grippedObj.block_matrix;
-
-                        if (grId == "init"){
-                            var highlight_color = "black";
-                        } else {
-                            var highlight_color = "green";
-                        }
-
-                        let params = {
-                            x: grippedObj.x,
-                            y: grippedObj.y,
-                            color: grippedObj.color,
-                            highlight: highlight_color // highlight a gripped object
-                        }
-                        this.drawObject(ctx, grippedObj)
-                        //this._drawDiamond(ctx, x, y, 1, 1)
-                        // this._drawBlockObj(ctx,
-                        //                    blockMatrix,
-                        //                    params);
-
-                        if (grId == "init"){
-                            this._drawBB(ctx, blockMatrix, params, "red");
-                        }
-                        else{
-                            this._drawBB(ctx, blockMatrix, params, "green");
-                        }
-                    }
-                }
-            }
+            //pass
         }
 
         /**
