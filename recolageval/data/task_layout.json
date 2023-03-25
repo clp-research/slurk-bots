@@ -97,7 +97,8 @@
         "plain": [
             "recolageval",
             "golmi-js/view/View",
-            "golmi-js/view/GiverLayerView"
+            "golmi-js/view/RecolageLayerView",
+            "golmi-js/view/RecolageEvalLayerView"
         ]
     }
 }

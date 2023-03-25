@@ -103,6 +103,7 @@
         "plain": [
             "recolage",
             "golmi-js/view/View",
+            "golmi-js/view/RecolageLayerView",
             "golmi-js/view/GiverLayerView",
             "golmi-js/view/ReceiverLayerView",
             "golmi-js/controller/LocalKeyController"

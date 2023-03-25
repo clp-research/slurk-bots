@@ -21,7 +21,7 @@ function start_golmi(url, password) {
     let grLayer = document.getElementById("gripper");
 
     // Set up the view js, this also sets up key listeners
-    layerView = new document.GiverLayerView(golmi_socket, bgLayer, objLayer, grLayer);
+    layerView = new document.RecolageEvalLayerView(golmi_socket, bgLayer, objLayer, grLayer);
     grLayer.onclick = (event) => {
         console.log(event)
         socket.emit("message_command",

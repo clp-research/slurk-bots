@@ -23,73 +23,10 @@ $(document).ready(function () {
      * @param {reference to the canvas DOM element to draw grippers and
         gripped objects to} grCanvas
      */
-    this.GiverLayerView = class GiverLayerView extends document.View {
+    this.GiverLayerView = class GiverLayerView extends document.RecolageLayerView {
         constructor(modelSocket, bgCanvas, objCanvas, grCanvas, show_gripped, show_gripper) {
-            super(modelSocket);
-            // Three overlapping canvas
-            this.bgCanvas	= bgCanvas;
-            this.objCanvas	= objCanvas;
-            this.grCanvas	= grCanvas;
-
-            // save mode variable
-            this.show_gripped = show_gripped
-            this.show_gripper = show_gripper
-
-            // array holding the currently gripped objects
-            this.grippedObjs = new Array();
-
-            // Empty the canvas
-            this.clear();
+            super(modelSocket, bgCanvas, objCanvas, grCanvas, show_gripped, show_gripper);
         }
-
-        // Canvas width in pixels. Assumes all 3 canvas are the same size
-        get canvasWidth() {
-            return this.bgCanvas.width;
-        }
-
-        get canvasHeight() {
-            return this.bgCanvas.height;
-        }
-
-        // --- drawing functions --- //
-
-        /**
-         *  Remove any old drawings.
-         */
-        clear() {
-            // clear all three canvas
-            this.clearBg();
-            this.clearObj();
-            this.clearGr();
-        }
-
-        /**
-         * Remove old drawings from the background layer.
-         */
-        clearBg() {
-            let ctx = this.bgCanvas.getContext("2d");
-            ctx.clearRect(0, 0, this.bgCanvas.width, this.bgCanvas.height);
-        }
-
-        /**
-         * Remove old drawings from the object layer.
-         */
-        clearObj() {
-            let ctx = this.objCanvas.getContext("2d");
-            ctx.clearRect(0, 0, this.objCanvas.width, this.objCanvas.height);
-        }
-
-        /**
-         * Remove old drawings from the gripper layer.
-         */
-        clearGr() {
-            let ctx = this.grCanvas.getContext("2d");
-            ctx.clearRect(0, 0, this.grCanvas.width, this.grCanvas.height);
-        }
-
-        /**
-         * Draws a grid black on white as the background.
-         */
 
         drawBg() {
             let ctx = this.bgCanvas.getContext("2d");
