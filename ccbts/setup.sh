@@ -26,9 +26,9 @@ GOLMI_PASSWORD="GiveMeTheBigBluePasswordOnTheLeft"
 
 # run golmi
 cd ../golmi
-docker build --tag "golmi_server" -f dockerfile .
-docker run --network host --restart unless-stopped -d -e GOLMI_HOST="127.0.0.1" -e GOLMI_PORT=5001 golmi_server
-sleep 1
+# docker build --tag "golmi_server" -f dockerfile .
+# docker run --network host --restart unless-stopped -d -e GOLMI_HOST="127.0.0.1" -e GOLMI_PORT=5001 golmi_server
+# sleep 1
 
 # build docker images for bots
 cd ../slurk-bots

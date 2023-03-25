@@ -261,9 +261,8 @@ class CcbtsBot(TaskBot):
                 
                 id_n = str(next(NAME_GEN))
                 obj["id_n"] = id_n
-                state["objs"][id_n] = obj
 
-                this_client.load_working_state(state)
+                this_client.add_object(obj)
 
             elif action == "select":
                 piece = this_client.grip_object(

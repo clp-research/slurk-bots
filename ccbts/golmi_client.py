@@ -15,7 +15,6 @@ class TripleClient:
         self.player_working = GolmiClient()
         self.wizard_working = GolmiClient()
 
-
     def run(self, auth):
         self.target.run(self.golmi_address, f"{self.room_id}_t", auth)
         self.player_working.run(self.golmi_address, f"{self.room_id}_pw", auth)
@@ -27,6 +26,7 @@ class TripleClient:
 
     def load_config(self, config):
         for socket in [self.target, self.wizard_working, self.player_working]:
+            logging.debug(json.dumps(config))
             socket.load_config(config)
 
     def clear_working_state(self):
@@ -70,7 +70,17 @@ class TripleClient:
         )
         return req.json() if req.ok else None
 
-
+    def add_object(self, obj):
+        """
+        only wizard can add an object to his working
+        """
+        response = requests.post(
+            f"{self.golmi_address}/slurk/{self.room_id}_ww/object",
+            json=obj,
+        )
+        if not response.ok:
+            logging.error(f"Could not post new object: {response.status_code}")
+            response.raise_for_status()
 
 
 class GolmiClient:

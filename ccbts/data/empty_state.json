@@ -2,5 +2,7 @@
   "grippers": {},
   "objs": {},
   "state_id": null,
-  "targets": {}
+  "targets": {},
+  "targets_grid": {},
+  "objs_grid": {}
 }
