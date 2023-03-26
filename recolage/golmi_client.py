@@ -21,9 +21,15 @@ class GolmiClient:
             piece = list(grippers.values())[0]["gripped"]
             if piece is None:
                 # record movement, no object was gripped
+                gripper = list(grippers.values())[0]
                 self.bot.add_to_log(
                     "gripper_movement",
-                    {"gripper": list(data.values())[0]},
+                    {
+                        "coordinates": {
+                            "x": gripper["x"],
+                            "y": gripper["y"]
+                        }
+                    },
                     self.room_id
                 )
             else:

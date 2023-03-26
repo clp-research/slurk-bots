@@ -78,12 +78,11 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
         // if the gripper is used there is no need to track clicks
         if (show_gripper === false){
             grLayer.onclick = (event) => {
-                console.log(event)
                 socket.emit("mouse", {
                     type: "click",
                     coordinates: {
-                        "x": event.layerX,
-                        "y": event.layerY,
+                        "x": event.offsetX,
+                        "y": event.offsetY,
                         "block_size": layerView.blockSize * layerView.grid_factor
                     },
                     element_id: "gripper",
