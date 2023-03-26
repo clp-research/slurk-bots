@@ -273,6 +273,17 @@ class RecolageBot(TaskBot):
                 if self.version != "show_gripper":
                     self.set_message_privilege(user_id, False)
 
+                elif self.version == "show_gripper":
+                    # attach wizard's controller
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": {"event": "attach_controller"},
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                        },
+                    )
+
         @self.sio.event
         def mouse(data):
             room_id = data["room"]
@@ -644,6 +655,16 @@ class RecolageBot(TaskBot):
 
         self.boards_per_room[room_id].pop(0)
         self.description_per_room[room_id] = False
+        if self.version == "show_gripper":
+            # detach wizard's controller
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"event": "detach_controller"},
+                    "room": room_id,
+                    "receiver_id": wizard["id"],
+                },
+            )
         self.set_message_privilege(player["id"], True)
 
         score = self.points_per_room[room_id]["score"]

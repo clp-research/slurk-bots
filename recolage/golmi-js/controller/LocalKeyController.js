@@ -29,7 +29,7 @@ $(document).ready(function () {
 
             // Set up key listeners
             this._initKeyListener();
-            this.can_move = true;
+            this.can_move = false;
         }
 
         // --- (Un)Subscribing models ---

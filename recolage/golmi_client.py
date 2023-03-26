@@ -18,6 +18,9 @@ class GolmiClient:
         @self.socket.event
         def update_state(data):
             grippers = data["grippers"]
+            if not grippers:
+                return
+
             piece = list(grippers.values())[0]["gripped"]
             if piece is None:
                 # record movement, no object was gripped
@@ -33,6 +36,9 @@ class GolmiClient:
                     self.room_id
                 )
             else:
+                logging.debug("-------------")
+                logging.debug(piece)
+                logging.debug(grippers)
                 self.bot.piece_selection(self.room_id, piece)
 
     def run(self, address, room_id, auth):
