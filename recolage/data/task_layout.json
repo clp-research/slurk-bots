@@ -108,5 +108,6 @@
             "golmi-js/view/ReceiverLayerView",
             "golmi-js/controller/LocalKeyController"
         ]
-    }
+    },
+    "show_latency": false
 }

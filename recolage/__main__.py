@@ -61,6 +61,7 @@ class RecolageBot(TaskBot):
         self.description_per_room = dict()
         self.points_per_room = dict()
         self.selected_object_per_room = dict()
+        self.game_over = dict()
         self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
         self.register_callbacks()
 
@@ -114,6 +115,7 @@ class RecolageBot(TaskBot):
                 self.players_per_room[room_id] = list()
                 self.description_per_room[room_id] = False
                 self.selected_object_per_room[room_id] = False
+                self.game_over[room_id] = False
                 self.points_per_room[room_id] = {
                     "score": STARTING_POINTS,
                     "history": [
@@ -228,23 +230,24 @@ class RecolageBot(TaskBot):
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
                     if room_id in self.players_per_room:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"{curr_usr['name']} has left the game. "
-                                "Please wait a bit, your partner may rejoin.",
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                            },
-                        )
+                        if self.game_over[room_id] is False:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": f"{curr_usr['name']} has left the game. "
+                                    "Please wait a bit, your partner may rejoin.",
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                },
+                            )
 
-                    # start a timer
-                    self.timers_per_room[room_id].user_left(curr_usr["id"])
+                            # start a timer
+                            self.timers_per_room[room_id].user_left(curr_usr["id"])
 
-                    # if the wizard left, load the state again with no gripper
-                    # once the wizard reconnects a new gripper will be created
-                    if curr_usr["role"] == "wizard":
-                        self.load_state(room_id, from_disconnect=True)
+                            # if the wizard left, load the state again with no gripper
+                            # once the wizard reconnects a new gripper will be created
+                            if curr_usr["role"] == "wizard":
+                                self.load_state(room_id, from_disconnect=True)
 
         @self.sio.event
         def text_message(data):
@@ -447,7 +450,7 @@ class RecolageBot(TaskBot):
                             self.set_message_privilege(user_id, True)
 
                             # remove points
-                            self.points_per_room[room_id]["score"] += NEGATIVE_REWARD
+                            self.update_reward(room_id, NEGATIVE_REWARD)
                             self.points_per_room[room_id]["history"][-1]["wrong"] += 1
 
                             # update points in title
@@ -538,8 +541,8 @@ class RecolageBot(TaskBot):
                             self.description_per_room[room_id] = False
                             self.set_message_privilege(other_usr["id"], True)
 
-                            # TODO: should players lose points?
-                            self.points_per_room[room_id]["score"] += NEGATIVE_REWARD
+                            # remove points
+                            self.update_reward(room_id, NEGATIVE_REWARD)
                             self.points_per_room[room_id]["history"][-1]["warnings"] += 1
 
                         else:
@@ -580,6 +583,13 @@ class RecolageBot(TaskBot):
                                 "receiver_id": user_id,
                             },
                         )
+
+    def update_reward(self, room_id, reward):
+        score = self.points_per_room[room_id]["score"]
+        score += reward
+        score = round(score, 2)
+        self.points_per_room[room_id]["score"] = max(0, score)
+
 
     def piece_selection(self, room_id, piece):
         # get users
@@ -643,10 +653,10 @@ class RecolageBot(TaskBot):
         self.timers_per_room[room_id].reset()
 
         if result == "right":
-            self.points_per_room[room_id]["score"] += POSITIVE_REWARD
+            self.update_reward(room_id, POSITIVE_REWARD)
             self.points_per_room[room_id]["history"][-1]["correct"] += 1
         else:
-            self.points_per_room[room_id]["score"] += NEGATIVE_REWARD
+            self.update_reward(room_id, NEGATIVE_REWARD)
             self.points_per_room[room_id]["history"][-1]["wrong"] += 1
 
         player, wizard = self.players_per_room[room_id]
@@ -684,10 +694,7 @@ class RecolageBot(TaskBot):
             )
             message = "Let's get you to the next board"
             if self.version != "no_feedback":
-                message = (
-                    f"That was the {result} piece, you currently have {score} points. "
-                    f"{message}"
-                )
+                message = f"That was the {result} piece! {message}"
             self.sio.emit(
                 "text",
                 {
@@ -822,7 +829,7 @@ class RecolageBot(TaskBot):
         # post AMT token to logs
         self.add_to_log(
             "confirmation_log",
-            {"status_txt": status, "amt_token": amt_token, "points": points},
+            {"status_txt": status, "amt_token": amt_token, "reward": points},
             room_id,
         )
 
@@ -855,7 +862,7 @@ class RecolageBot(TaskBot):
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
-            json={"text": f"Reward: {score} | Correct: {correct}"},
+            json={"text": f"Bonus reward: {score} 💰 | Correct: {correct}"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
@@ -866,13 +873,12 @@ class RecolageBot(TaskBot):
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
-        sleep(2)
         self.sio.emit(
             "text",
             {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
 
-        sleep(20)
+        self.game_over[room_id] = True
         self.room_to_read_only(room_id)
 
         # cancel all timers
@@ -890,6 +896,7 @@ class RecolageBot(TaskBot):
             self.boards_per_room,
             self.points_per_room,
             self.selected_object_per_room,
+            self.game_over
         ]
         for memory_dict in memory_dicts:
             if room_id in memory_dict:
@@ -916,26 +923,27 @@ class RecolageBot(TaskBot):
             response.raise_for_status()
 
         # remove user from room
-        for usr in self.players_per_room[room_id]:
-            response = requests.get(
-                f"{self.uri}/users/{usr['id']}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-            etag = response.headers["ETag"]
-
-            response = requests.delete(
-                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(
-                    f"Could not remove user from task room: {response.status_code}"
+        if self.players_per_room.get(room_id) is not None:
+            for usr in self.players_per_room[room_id]:
+                response = requests.get(
+                    f"{self.uri}/users/{usr['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
                 )
-                response.raise_for_status()
-            logging.debug("Removing user from task room was successful.")
+                if not response.ok:
+                    logging.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                logging.debug("Removing user from task room was successful.")
 
     def timeout_close_game(self, room_id, status):
         self.sio.emit(
@@ -946,14 +954,12 @@ class RecolageBot(TaskBot):
         self.close_game(room_id)
 
     def terminate_experiment(self, room_id):
-        score = self.points_per_room[room_id]["score"]
         self.sio.emit(
             "text",
             {
                 "room": room_id,
                 "message": (
-                    "The experiment is over 🎉 🎉 thank you very much for your time! "
-                    f"Your total reward is: {score}"
+                    "The experiment is over 🎉 🎉 thank you very much for your time!"
                 ),
                 "html": True,
             },

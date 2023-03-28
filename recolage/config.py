@@ -25,8 +25,8 @@ BOARDS = Path(f"{ROOT}/data/boards.jsonl")
 BOARDS_PER_ROOM = -1  # -1 to load entire dataset
 
 
-TIMEOUT_TIMER = 10  # minutes of inactivity before the room is closed automatically
-LEAVE_TIMER = 5  # minutes if a user is alone in a room
+TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 3  # minutes if a user is alone in a room
 
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
@@ -38,5 +38,5 @@ TYPES = "https://raw.githubusercontent.com/clp-research/golmi/exp-descrimage/app
 
 # points to give to the users
 STARTING_POINTS = 0
-POSITIVE_REWARD = 50  # right piece selected
-NEGATIVE_REWARD = -25  # wrong piece selected
+POSITIVE_REWARD = 0.10  # right piece selected
+NEGATIVE_REWARD = -0.05  # wrong piece selected
