@@ -1,31 +1,53 @@
 import argparse
 import json
 import logging
+from dataclasses import dataclass, asdict
+
 import requests
 import socketio
 
-from .config import EMPTYSTATE
+from .config import EMPTYSTATE, SELECTIONSTATE
 
 
-class TripleClient:
+@dataclass
+class Rooms:
+    target: str
+    player_working:  str
+    wizard_working: str
+    selector: str
+
+    @property
+    def json(self):
+        return asdict(self)
+
+
+class QuadrupleClient:
     def __init__(self, room_id, golmi_address):
         self.golmi_address = golmi_address
         self.room_id = room_id
         self.target = GolmiClient()
         self.player_working = GolmiClient()
         self.wizard_working = GolmiClient()
+        self.selector = GolmiClient()
+        self.rooms = Rooms(
+            target=f"{self.room_id}_t",
+            player_working=f"{self.room_id}_pw",
+            wizard_working=f"{self.room_id}_ww",
+            selector=f"{self.room_id}_selector"
+        )
 
     def run(self, auth):
-        self.target.run(self.golmi_address, f"{self.room_id}_t", auth)
-        self.player_working.run(self.golmi_address, f"{self.room_id}_pw", auth)
-        self.wizard_working.run(self.golmi_address, f"{self.room_id}_ww", auth)
+        self.target.run(self.golmi_address, self.rooms.target, auth)
+        self.player_working.run(self.golmi_address,self.rooms.player_working, auth)
+        self.wizard_working.run(self.golmi_address, self.rooms.wizard_working, auth)
+        self.selector.run(self.golmi_address, self.rooms.selector, auth)
 
     def disconnect(self):
-        for socket in [self.target, self.wizard_working, self.player_working]:
+        for socket in [self.target, self.wizard_working, self.player_working, self.selector]:
             socket.disconnect()
 
     def load_config(self, config):
-        for socket in [self.target, self.wizard_working, self.player_working]:
+        for socket in [self.target, self.wizard_working, self.player_working, self.selector]:
             logging.debug(json.dumps(config))
             socket.load_config(config)
 
@@ -40,6 +62,9 @@ class TripleClient:
         state = self.get_working_state()
         self.player_working.load_state(state)
 
+    def load_selector(self):
+        self.selector.load_state(SELECTIONSTATE)
+
     def load_target_state(self, state):
         self.target.load_state(state)
 
@@ -48,7 +73,7 @@ class TripleClient:
 
     def get_working_state(self):
         req = requests.get(
-            f"{self.golmi_address}/slurk/{self.room_id}_ww/state"
+            f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/state"
         )
         if req.ok is not True:
             print("Could not retrieve state")
@@ -57,16 +82,23 @@ class TripleClient:
 
     def grip_object(self, x, y, block_size):
         req = requests.get(
-            f'{self.golmi_address}/slurk/grip/{self.room_id}_ww/{x}/{y}/{block_size}'
+            f'{self.golmi_address}/slurk/grip/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
 
         return req.json()
 
+    def wizard_select_object(self, x, y, block_size):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/grip/{self.rooms.selector}/{x}/{y}/{block_size}'
+        )
+        if req.ok is not True:
+            print("Could not retrieve gripped piece")
+
     def get_gripped_object(self):
         req = requests.get(
-            f'{self.golmi_address}/slurk/{self.room_id}_ww/gripped'
+            f'{self.golmi_address}/slurk/{self.rooms.wizard_working}/gripped'
         )
         return req.json() if req.ok else None
 
@@ -75,7 +107,7 @@ class TripleClient:
         only wizard can add an object to his working
         """
         response = requests.post(
-            f"{self.golmi_address}/slurk/{self.room_id}_ww/object",
+            f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/object",
             json=obj,
         )
         if not response.ok:

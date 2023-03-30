@@ -23,7 +23,7 @@ $(document).ready(function () {
      * @param {reference to the canvas DOM element to draw grippers and
         gripped objects to} grCanvas
      */
-    this.CocoLayerView = class GiverLayerView extends document.View {
+    this.CocoLayerView = class CocoLayerView extends document.View {
         constructor(modelSocket, bgCanvas, objCanvas, grCanvas) {
             super(modelSocket);
             // Three overlapping canvas
@@ -128,28 +128,6 @@ $(document).ready(function () {
         drawObjs() {
             let ctx = this.objCanvas.getContext("2d");
             ctx.beginPath();
-            // draw each object
-            for (const obj of Object.values(this.objs))	{
-                // skip any gripped object here
-
-                let blockMatrix = obj.block_matrix;
-
-                // call drawing helper functions with additional infos
-                let params = {
-                    x: obj.x,
-                    y: obj.y,
-                    color: obj.color[1]
-                }
-                //this._drawBlockObj(ctx, blockMatrix, params);
-                //this._drawCircle(ctx, obj.x, obj.y, obj.color[1], obj.color[1], 0)
-                // this._drawDiamond(ctx, obj.x, obj.y)
-                this.drawObject(ctx, obj)
-            }
-        }
-
-        drawObjs() {
-            let ctx = this.objCanvas.getContext("2d");
-            ctx.beginPath();
             this.plotArrayBoard(ctx, this.objs_grid, this.objs)
         }
 
@@ -162,15 +140,23 @@ $(document).ready(function () {
                 let j = parseInt(position[1])
 
                 for (let obj_idn of value){
+                    let this_obj = obj_mapping[obj_idn]
+                    this.drawObject(ctx, this_obj, i, j)
+                }
+            }
+
+            // only plot borders
+            for (let [key, value] of Object.entries(board)) {
+                let position = key.split(":")
+                let i = parseInt(position[0])
+                let j = parseInt(position[1])
+
+                for (let obj_idn of value){
                     let this_obj = obj_mapping[obj_idn]                    
                     let highlight = (this_obj.gripped) ? ("black") : (false)
 
-                    // the color must be overwrittenb
-                    let color = (overwrite_color !== null) ? overwrite_color : this_obj.color[1]
-
-                    this.drawObject(ctx, this_obj)
-
                     if (highlight){
+                        console.log(highlight)
                         if (this._isUpperBorder(board, i, j, obj_idn)) {
                             this._drawUpperBorder(ctx, j, i, highlight);
                         }
@@ -216,13 +202,7 @@ $(document).ready(function () {
             this.drawGr();
         }
 
-        drawObject(ctx, obj){
-            let params = {
-                x: obj.x,
-                y: obj.y,
-                color: obj.color[1]
-            }
-
+        drawObject(ctx, obj, i, j){
             switch (obj.type){
                 case "screw":
                     this._drawCircle(ctx, obj.x, obj.y, obj.color[1], obj.color[1], 0)
@@ -231,13 +211,12 @@ $(document).ready(function () {
                     this._drawDiamond(ctx, obj.x, obj.y, obj.color[1])
                     break;
                 case "nut":
-                    this._drawBlockObj(ctx, obj.block_matrix, params);
+                    this._drawBlock(ctx, j, i, obj.color[1], obj.gripped);
                     break;
                 case "bridge":
-                    this._drawBlockObj(ctx, obj.block_matrix, params);
+                    this._drawBlock(ctx, j, i, obj.color[1], obj.gripped);
                     break;
             }
-
         }
 
         // COCOBOT SHAPES
@@ -307,32 +286,6 @@ $(document).ready(function () {
 
         }
 
-        _drawBlockObj(ctx, bMatrix, params) {
-            // Draw blocks
-            for (let r=0; r<bMatrix.length;r++) {
-                bMatrix[r].forEach((block, c) =>  {
-                    if (block) { // draw if matrix field contains a 1
-                        let x = params.x + c;
-                        let y = params.y + r;
-                        this._drawBlock(ctx, x, y, params.color);
-                        // draw object borders
-                        if (this._isUpperBorder(bMatrix, c, r)) {
-                            this._drawUpperBorder(ctx, x, y, params.highlight);
-                        }
-                        if (this._isLowerBorder(bMatrix, c, r)) {
-                            this._drawLowerBorder(ctx, x, y, params.highlight);
-                        }
-                        if (this._isLeftBorder(bMatrix, c, r)) {
-                            this._drawLeftBorder(ctx, x, y, params.highlight);
-                        }
-                        if (this._isRightBorder(bMatrix, c, r)) {
-                            this._drawRightBorder(ctx, x, y, params.highlight);
-                        }
-                    }
-                });
-            }
-        }
-
         _drawBlock(ctx, x, y, color, lineColor="grey", lineWidth=1) {
             // --- config ---
             ctx.fillStyle = color;
@@ -383,28 +336,85 @@ $(document).ready(function () {
             return coord * this.blockSize;
         }
 
-        _isUpperBorder(blockMatrix, column, row) {
-            // true if 'row' is the top row OR there is no block above
-            return row == 0 || blockMatrix[row-1][column] == 0;
+        _isUpperBorder(sparse_matrix, row, column, this_obj_idn) {
+            if (row === 0){
+                return true;
+            }
+
+            return this._borderCheck(
+                sparse_matrix,
+                `${row}:${column}`,
+                `${row-1}:${column}`,
+                this_obj_idn
+            )
         }
 
-        _isLowerBorder(blockMatrix, column, row) {
-            // true if 'row' is the bottom row OR there is no block below
-            return row == (blockMatrix.length-1) ||
-                blockMatrix[row+1][column] == 0;
+        _isLowerBorder(sparse_matrix, row, column, this_obj_idn) {
+            if (row === this.rows - 1){
+                return true
+            }
+
+            return this._borderCheck(
+                sparse_matrix,
+                `${row}:${column}`,
+                `${row+1}:${column}`,
+                this_obj_idn
+            )
         }
 
-        _isLeftBorder(blockMatrix, column, row) {
-            // true if 'column' is the leftmost column OR there is no block
-            // to the left
-            return column == 0 || blockMatrix[row][column-1] == 0;
+        _isLeftBorder(sparse_matrix, row, column, this_obj_idn) {
+            if (column === 0){
+                return true
+            }
+
+            return this._borderCheck(
+                sparse_matrix,
+                `${row}:${column}`,
+                `${row}:${column-1}`,
+                this_obj_idn
+            )
         }
 
-        _isRightBorder(blockMatrix, column, row) {
-            // true if 'column' is the rightmost column OR there is no block
-            // to the right
-            return column == (blockMatrix[row].length-1) ||
-                blockMatrix[row][column+1] == 0;
+        _isRightBorder(sparse_matrix, row, column, this_obj_idn) {
+            if (column === this.cols - 1){
+                return true
+            }
+
+            return this._borderCheck(
+                sparse_matrix,
+                `${row}:${column}`,
+                `${row}:${column+1}`,
+                this_obj_idn
+            )
+        }
+
+        _borderCheck(sparse_matrix, this_cell_coord, other_cell_coord, this_obj_idn) {
+            let other_cell = sparse_matrix[other_cell_coord]
+            let this_cell = sparse_matrix[this_cell_coord]
+
+            // cell above is empty
+            if (!(other_cell_coord in sparse_matrix)){
+                return true
+            }
+
+            // other cell contains this object and it's the one on top
+            if (other_cell.includes(this_obj_idn) && other_cell[other_cell.length - 1] === this_obj_idn){
+                return false
+            }
+
+            // this object is not the last one in this cell
+            if (this_cell.length > 1 && this_cell[this_cell.length - 1] === this_obj_idn){
+                return true
+            }
+
+            // cell above does not contain this object
+            if (!(other_cell.includes(this_obj_idn))) {
+                // this object is the one on top of its cell
+                if (this_cell[this_cell.length - 1] === this_obj_idn){
+                    return true
+                }
+            }
+            return false
         }
 
     }; // class LayerView end

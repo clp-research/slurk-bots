@@ -82,7 +82,10 @@ COLORS = {
 
 
 EMPTYSTATE = json.loads(Path(f"{ROOT}/ccbts/data/empty_state.json").read_text())
+SELECTIONSTATE = json.loads(Path(f"{ROOT}/ccbts/data/selection_state.json").read_text())
 STATES = Path(f"{ROOT}/ccbts/data/states.json")
+
+
 def get_random_state():
     pool = list()
     with STATES.open(encoding="utf-8") as infile:

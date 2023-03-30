@@ -3,10 +3,9 @@ let golmi_socket_working = null
 let golmi_socket_target = null
 let targetlayerView = null
 let workinglayerView = null
-let show_mouse = null
 
 
-function start_golmi(url, password, role, room_id) {
+function start_golmi(url, password, role, golmi_rooms) {
     // --- create a golmi_socket --- //
     // don't connect yet
     golmi_socket_working = io(url, {
@@ -29,9 +28,8 @@ function start_golmi(url, password, role, room_id) {
     golmi_socket_working.connect()
 
     if (role === "wizard"){
-        golmi_socket_working.emit("join", { "room_id": `${room_id}_ww` });
+        golmi_socket_working.emit("join", { "room_id": golmi_rooms.wizard_working });
 
-        // if the gripper is used there is no need to track clicks
         grLayer.onclick = (event) => {
             socket.emit("mouse", {
                 type: "click",
@@ -47,10 +45,44 @@ function start_golmi(url, password, role, room_id) {
                 room: self_room
             });
         }
+
+        golmi_socket_target = io(url, {
+            auth: { "password": password }
+        });
+    
+        // --- view --- // 
+        // Get references to the three canvas layers
+        let bgLayer_t = document.getElementById("target_background");
+        let objLayer_t = document.getElementById("target_objects");
+        let grLayer_t = document.getElementById("target_gripper");
+    
+        targetlayerView = new document.CocoLayerView(
+            golmi_socket_target,
+            bgLayer_t,
+            objLayer_t,
+            grLayer_t
+        );
+
+        grLayer_t.onclick = (event) => {
+            socket.emit("mouse", {
+                type: "click",
+                coordinates: {
+                    event: "click",
+                    x: event.offsetX,
+                    y: event.offsetY,
+                    block_size: workinglayerView.blockSize,
+                    action: "wizard_selection"
+                },
+                room: self_room
+            });
+        }
+    
+        golmi_socket_target.connect()
+        golmi_socket_target.emit("join", { "room_id": golmi_rooms.selector });
     }
 
     if (role === "player"){
-        golmi_socket_working.emit("join", { "room_id": `${room_id}_pw` });
+        golmi_socket_working.emit("join", { "room_id": golmi_rooms.player_working });
         golmi_socket_target = io(url, {
             auth: { "password": password }
         });
@@ -69,7 +101,7 @@ function start_golmi(url, password, role, room_id) {
         );
     
         golmi_socket_target.connect()
-        golmi_socket_target.emit("join", { "room_id": `${room_id}_t` });
+        golmi_socket_target.emit("join", { "room_id": golmi_rooms.target });
     }
 }
 
@@ -83,9 +115,9 @@ function set_wizard(description) {
     $("#intro-image").hide();
     $("#golmi_card").show();
     $("#wizard_interface").show()
-    $("#board_container").css({"display": "block"})
-    $("#working_board").css({"width": ""})
-    $("#target_board").hide();
+    // $("#board_container").css({"display": "block"})
+    //$("#working_board").css({"width": ""})
+    //$("#target_board").hide();
     $("#instr_title").html("Wizard");
     $("#instr").html(description);
 };
@@ -101,15 +133,6 @@ function set_player(description) {
     // $("#reference-grid").show();
     // $("#terminal_card").hide();
 };
-
-
-function reset_role(description) {
-    $("#intro-image").show();
-    $("#source_card").hide();
-    $("#target_card").hide();
-    $("#instr_title").html("");
-    $("#instr").html(description);
-}
 
 
 function delete_object(){
@@ -224,30 +247,8 @@ $(document).ready(() => {
                         data.command.url,
                         data.command.password,
                         data.command.role,
-                        data.command.room_id,
+                        data.command.golmi_rooms,
                     );
-                    break;
-
-                case "reset_roles":
-                    reset_role(data.command.instruction)
-                    break;
-
-                case "set_board":
-                    if (data.command.name === "reference"){
-                        $("#reference-grid").show();
-                    }
-                    // display_grid(data.command.board, data.command.name)
-                    break;
-
-                case "success_run":
-                    $("#input").val("")
-                    executed = data.command.executed
-                    to_run = data.command.to_run
-                    session.push(executed)
-
-                    $('#history').append(`<b><code>${executed}<br/></code></b>`);
-                    $("#history").scrollTop($("#history")[0].scrollHeight);
-                    $("#input").val(to_run.join("\n"))
                     break;
 
                 case "update_selectors":

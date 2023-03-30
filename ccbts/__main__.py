@@ -93,9 +93,11 @@ class CcbtsBot(TaskBot):
                 # create new timer for this room
                 self.timers_per_room[room_id] = RoomTimers()
 
-                self.golmi_client_per_room[room_id] = TripleClient(str(room_id), self.golmi_server)
+                self.golmi_client_per_room[room_id] = QuadrupleClient(str(room_id), self.golmi_server)
                 self.golmi_client_per_room[room_id].run(self.golmi_password)
                 self.golmi_client_per_room[room_id].load_config(CONFIG)
+                self.golmi_client_per_room[room_id].load_selector()
+                
 
         @self.sio.event
         def joined_room(data):
@@ -285,6 +287,14 @@ class CcbtsBot(TaskBot):
                         }
                     )
 
+            elif action == "wizard_selection":
+                this_client.wizard_select_object(
+                    x=data["coordinates"]["x"],
+                    y=data["coordinates"]["y"],
+                    block_size=data["coordinates"]["block_size"]
+                )
+
+
         @self.sio.event
         def command(data):
             """Parse user commands."""
@@ -328,52 +338,6 @@ class CcbtsBot(TaskBot):
 
                         elif event == "show_progress":
                             this_client.copy_working_state()
-
-                        # run command
-                        # elif event == "run":
-                        #     commands = data["command"]["commands"]
-                        #     to_run = commands.copy()
-                        #     executed = list()
-
-                        #     for command in commands:
-                        #         result = self.run_command(command, room_id, user_id)
-                        #         if result[0] is True:
-                        #             executed.append(to_run.pop(0))
-
-                        #             self.sio.emit(
-                        #                 "message_command",
-                        #                 {
-                        #                     "command": {
-                        #                         "event": "success_run",
-                        #                         "executed": command,
-                        #                         "to_run": to_run 
-                        #                     },
-                        #                     "room": room_id,
-                        #                     "receiver_id": user_id,
-                        #                 }
-                        #             )
-                        #         else:
-                        #             return
-
-                        # revert session
-                        # elif event == "revert_session":
-                        #     history = data["command"]["command_list"]
-                        #     try:
-                        #         status = interface.revert_session(history)
-
-                        #     except (KeyError, TypeError, OverflowError) as error:
-                        #         self.sio.emit(
-                        #             "text",
-                        #             {
-                        #                 "message": COLOR_MESSAGE.format(
-                        #                     color=WARNING_COLOR, message=str(error)
-                        #                 ),
-                        #                 "room": room_id,
-                        #                 "receiver_id": user_id,
-                        #                 "html": True
-                        #             },
-                        #         )
-                        #     self.set_boards(room_id)
 
                         # change the color of the selected object
                         elif event == "update_object":
@@ -484,22 +448,12 @@ class CcbtsBot(TaskBot):
 
         # users have no roles so we can assign them
         if curr_usr["role"] is None and other_usr["role"] is None:
+            golmi_rooms = self.golmi_client_per_room[room_id].rooms.json
             for role, user in zip(
                 ["wizard", "player"], [curr_usr, other_usr]
             ):
                 user["role"] = role
-                # self.sio.emit(
-                #     "message_command",
-                #     {
-                #         "command": {
-                #             "event": "assign_role",
-                #             "role": role,
-                #             "instruction": INSTRUCTIONS[role],
-                #         },
-                #         "room": room_id,
-                #         "receiver_id": user["id"],
-                #     },
-                # )
+
                 self.sio.emit(
                     "message_command",
                     {
@@ -510,6 +464,7 @@ class CcbtsBot(TaskBot):
                             "instruction": INSTRUCTIONS[role],
                             "role": role,
                             "room_id": str(room_id),
+                            "golmi_rooms": golmi_rooms
                         },
                         "room": room_id,
                         "receiver_id": user["id"],
