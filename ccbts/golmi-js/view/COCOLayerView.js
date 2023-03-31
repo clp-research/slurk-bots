@@ -131,7 +131,7 @@ $(document).ready(function () {
             this.plotArrayBoard(ctx, this.objs_grid, this.objs)
         }
 
-        plotArrayBoard(ctx, board, obj_mapping, overwrite_color=null){
+        plotArrayBoard(ctx, board, obj_mapping){
             // first plot the objects without borders
             // to avoid artifacts
             for (let [key, value] of Object.entries(board)) {
@@ -156,6 +156,7 @@ $(document).ready(function () {
                     let highlight = (this_obj.gripped) ? ("black") : (false)
 
                     if (highlight){
+                        console.log(this_obj)
                         console.log(highlight)
                         if (this._isUpperBorder(board, i, j, obj_idn)) {
                             this._drawUpperBorder(ctx, j, i, highlight);
@@ -268,24 +269,6 @@ $(document).ready(function () {
         }
 
         // --- draw helper functions ---
-
-        _drawBB(ctx, bMatrix, params, color) {
-            // Draw blocks       
-            for (let i=0; i< bMatrix.length; i++) {
-                this._drawUpperBorder(ctx, params.x + i, params.y, color);
-            }
-            for (let i=0; i< bMatrix.length; i++) {
-                this._drawLowerBorder(ctx, params.x + i, params.y + bMatrix.length -1, color);
-            }
-            for (let i=0; i< bMatrix.length; i++) {
-                this._drawLeftBorder(ctx, params.x, params.y + i, color);
-            }
-            for (let i=0; i< bMatrix.length; i++) {
-                this._drawRightBorder(ctx, params.x + bMatrix[0].length -1, params.y + i, color);
-            }
-
-        }
-
         _drawBlock(ctx, x, y, color, lineColor="grey", lineWidth=1) {
             // --- config ---
             ctx.fillStyle = color;
@@ -298,22 +281,22 @@ $(document).ready(function () {
 
         _drawUpperBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x+1, y, highlight, borderColor, borderWidth);
+            this._drawBorder(ctx, x, y, x+1, y, highlight);
         }
 
         _drawLowerBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight, borderColor, borderWidth);
+            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight);
         }
 
         _drawLeftBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x, y+1, highlight, borderColor, borderWidth);
+            this._drawBorder(ctx, x, y, x, y+1, highlight);
         }
 
         _drawRightBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight, borderColor, borderWidth);
+            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight);
         }
 
         _drawBorder(ctx, x1, y1, x2, y2, highlight=false, borderColor="black",

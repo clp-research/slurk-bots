@@ -38,9 +38,7 @@ function start_golmi(url, password, role, golmi_rooms) {
                     x: event.offsetX,
                     y: event.offsetY,
                     block_size: workinglayerView.blockSize,
-                    color: get_propery("color"),
-                    shape: get_propery("shape"),
-                    action: get_propery("action"),
+                    board: "wizard_working",
                 },
                 room: self_room
             });
@@ -70,8 +68,8 @@ function start_golmi(url, password, role, golmi_rooms) {
                     event: "click",
                     x: event.offsetX,
                     y: event.offsetY,
-                    block_size: workinglayerView.blockSize,
-                    action: "wizard_selection"
+                    block_size: targetlayerView.blockSize,
+                    board: "wizard_selection"
                 },
                 room: self_room
             });
@@ -120,12 +118,14 @@ function set_wizard(description) {
     //$("#target_board").hide();
     $("#instr_title").html("Wizard");
     $("#instr").html(description);
+    $("#variable_board_description").html("Source Board");
 };
 
 
 function set_player(description) {
     $("#intro-image").hide();
     $("#golmi_card").show();
+    $("#variable_board_description").html("Target Board");
     // $("#source_board").show();
     // $("#target_board").show();
     $("#instr_title").html("Player");
@@ -164,6 +164,18 @@ function clear_board(){
         {
             command: {
                 event: "clear_board"
+            },
+            room: self_room
+        }
+    )
+}
+
+
+function work_in_progress(){
+    socket.emit("message_command",
+        {
+            command: {
+                event: "work_in_progress"
             },
             room: self_room
         }

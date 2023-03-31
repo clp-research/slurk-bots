@@ -245,54 +245,40 @@ class CcbtsBot(TaskBot):
             logging.debug(data)
             this_client = self.golmi_client_per_room[room_id]
 
-            action = data["coordinates"]["action"]
-            if action == "place":
-                state = this_client.get_working_state()
+            board = data["coordinates"]["board"]
+            if board == "wizard_working" :
+                # check if the user selected an object on his selection board
+                selected = this_client.get_wizard_selection()
+                if selected:
+                    obj = list(selected.values()).pop()
+                    id_n = str(next(NAME_GEN))
+                    obj["id_n"] = id_n
 
-                shape = data["coordinates"]["shape"]
-                color = data["coordinates"]["color"]
+                    x = data["coordinates"]["x"] // data["coordinates"]["block_size"]
+                    y = data["coordinates"]["y"] // data["coordinates"]["block_size"]
 
-                # create a new object and add it to the state
-                obj = OBJS[shape]
-                obj["color"] = COLORS[color]
-                x = data["coordinates"]["x"] // data["coordinates"]["block_size"]
-                y = data["coordinates"]["y"] // data["coordinates"]["block_size"]
+                    obj["x"] = x #- len(obj["block_matrix"][0]) // 2
+                    obj["y"] = y #- len(obj["block_matrix"]) // 2
 
-                obj["x"] = x #- len(obj["block_matrix"][0]) // 2
-                obj["y"] = y #- len(obj["block_matrix"]) // 2
-                
-                id_n = str(next(NAME_GEN))
-                obj["id_n"] = id_n
+                    obj["gripped"] = None
+                    logging.debug(obj)
+                    this_client.add_object(obj)
 
-                this_client.add_object(obj)
-
-            elif action == "select":
-                piece = this_client.grip_object(
-                    x=data["coordinates"]["x"],
-                    y=data["coordinates"]["y"],
-                    block_size=data["coordinates"]["block_size"]
-                )
-                if piece:
-                    piece = list(piece.values())[0]
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": {
-                                "event": "update_selectors",
-                                "color": piece["color"][0],
-                                "shape": piece["type"],
-                            },
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        }
+                else:
+                    # no object is selected, we can select this object
+                    piece = this_client.grip_object(
+                        x=data["coordinates"]["x"],
+                        y=data["coordinates"]["y"],
+                        block_size=data["coordinates"]["block_size"]
                     )
 
-            elif action == "wizard_selection":
+            if board == "wizard_selection":
                 this_client.wizard_select_object(
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],
                     block_size=data["coordinates"]["block_size"]
                 )
+                return
 
 
         @self.sio.event
@@ -309,6 +295,10 @@ class CcbtsBot(TaskBot):
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
+            curr_usr, other_usr = self.players_per_room[room_id]
+            if curr_usr["id"] != user_id:
+                curr_usr, other_usr = other_usr, curr_usr
+
             if room_id in self.images_per_room:
                 if isinstance(data["command"], dict):
                     event = data["command"]["event"]
@@ -324,20 +314,27 @@ class CcbtsBot(TaskBot):
                             this_client.clear_working_state()
 
                         elif event == "delete_object":
-                            
-                            state = this_client.get_working_state()
-
-                            # obtain selected object
-                            gripped = state["grippers"]["mouse"]["gripped"]
-                            state["grippers"]["mouse"]["gripped"] = None
-                            gripped_id = list(gripped.keys())[0]
-                            state["objs"].pop(gripped_id)
-
-                            # load new state
-                            this_client.load_working_state(state)
+                            selected = this_client.get_gripped_object()
+                            obj = list(selected.values()).pop()
+                            this_client.delete_object(obj)
 
                         elif event == "show_progress":
                             this_client.copy_working_state()
+
+                        elif event == "work_in_progress":
+                            logging.debug("CIAOCIAOCIAO")
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message="Your partner is has received your instruction and is working on it",
+                                        color=STANDARD_COLOR
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                    "html": True
+                                },
+                            )
 
                         # change the color of the selected object
                         elif event == "update_object":

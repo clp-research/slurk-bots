@@ -47,9 +47,10 @@ class QuadrupleClient:
             socket.disconnect()
 
     def load_config(self, config):
-        for socket in [self.target, self.wizard_working, self.player_working, self.selector]:
-            logging.debug(json.dumps(config))
+        for socket in [self.target, self.wizard_working, self.player_working]:
             socket.load_config(config)
+
+        self.selector.load_config({"width": 8.0, "height": 8.0, "move_step": 1, "prevent_overlap": False})
 
     def clear_working_state(self):
         self.wizard_working.load_state(EMPTYSTATE)
@@ -102,11 +103,29 @@ class QuadrupleClient:
         )
         return req.json() if req.ok else None
 
+    def get_wizard_selection(self):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/{self.rooms.selector}/gripped'
+        )
+        return req.json() if req.ok else None
+
     def add_object(self, obj):
         """
         only wizard can add an object to his working
         """
         response = requests.post(
+            f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/object",
+            json=obj,
+        )
+        if not response.ok:
+            logging.error(f"Could not post new object: {response.status_code}")
+            response.raise_for_status()
+
+    def delete_object(self, obj):
+        """
+        only wizard can add an object to his working
+        """
+        response = requests.delete(
             f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/object",
             json=obj,
         )
