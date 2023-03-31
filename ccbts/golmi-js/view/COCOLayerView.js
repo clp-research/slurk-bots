@@ -156,8 +156,6 @@ $(document).ready(function () {
                     let highlight = (this_obj.gripped) ? ("black") : (false)
 
                     if (highlight){
-                        console.log(this_obj)
-                        console.log(highlight)
                         if (this._isUpperBorder(board, i, j, obj_idn)) {
                             this._drawUpperBorder(ctx, j, i, highlight);
                         }
@@ -190,7 +188,7 @@ $(document).ready(function () {
          * The gripper is used to navigate on the canvas and move objects.
          */
         drawGr() {
-            //pass
+            console.log("placeholder gripper")
         }
 
         /**
@@ -206,71 +204,87 @@ $(document).ready(function () {
         drawObject(ctx, obj, i, j){
             switch (obj.type){
                 case "screw":
-                    this._drawCircle(ctx, obj.x, obj.y, obj.color[1], obj.color[1], 0)
+                    this._drawCircle(ctx, obj.x, obj.y, obj.color[1])
                     break;
                 case "washer":
                     this._drawDiamond(ctx, obj.x, obj.y, obj.color[1])
                     break;
                 case "nut":
-                    this._drawBlock(ctx, j, i, obj.color[1], obj.gripped);
+                    this._drawBlock(ctx, j, i, obj.color[1]);
                     break;
                 case "bridge":
-                    this._drawBlock(ctx, j, i, obj.color[1], obj.gripped);
+                    this._drawBridge(ctx, j, i, obj.color[1]);
                     break;
             }
         }
 
         // COCOBOT SHAPES
-        _drawDiamond(context, x, y, color){
-            context.beginPath();
+        _drawDiamond(ctx, x, y, color){
+            ctx.beginPath();
             x = this._toPxl(x)
             y = this._toPxl(y)
 
             let width = this.blockSize;
             let height = this.blockSize;
 
-            context.moveTo(x + width / 2, y);
+            ctx.moveTo(x + width / 2, y);
             
             // top left edge
-            context.lineTo(x, y + height / 2);
+            ctx.lineTo(x, y + height / 2);
             
             // bottom left edge
-            context.lineTo(x + width / 2, y + height);
+            ctx.lineTo(x + width / 2, y + height);
             
             // bottom right edge
-            context.lineTo(x + width , y + height / 2);
+            ctx.lineTo(x + width , y + height / 2);
             
             // closing the path automatically creates
             // the top right edge
-            context.closePath();
+            ctx.closePath();
             
-            context.fillStyle = color;
-            context.fill();
+            ctx.fillStyle = color;
+            ctx.fill();
         }
 
-        _drawCircle(ctx, x, y, fill, stroke, strokeWidth){
+        _drawCircle(ctx, x, y, color){
             ctx.beginPath()
-            let radius = this.blockSize / 2
-            x = this._toPxl(x)
-            y = this._toPxl(y)
+            let circle = new Path2D();
+            let padding = this.blockSize / 15;
+            let radius = this.blockSize / 2;
 
-            ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false)
-        
-            if (fill) {
-              ctx.fillStyle = fill
-              ctx.fill()
-            }
-        
-            if (stroke) {
-              ctx.lineWidth = strokeWidth
-              ctx.strokeStyle = stroke
-              ctx.stroke()
-            }
+            circle.arc(
+                this._toPxl(x) + radius,
+                this._toPxl(y) + radius,
+                radius - padding,
+                0, 2 * Math.PI,
+                false);
+
+            ctx.fillStyle = color;
+            ctx.fill(circle);
+
+            ctx.closePath();
+        }
+
+        _drawBridge(ctx, x, y, color){
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            let padding = this.blockSize / 4;
+            let px = this._toPxl(x);
+            let py = this._toPxl(y);
+            let w = Math.abs(px - this._toPxl(x+1));
+            let h =  Math.abs(py - this._toPxl(y+1));
+            ctx.fillRect(
+                px,
+                py + padding,
+                w,
+                h - padding*2
+            );
         }
 
         // --- draw helper functions ---
-        _drawBlock(ctx, x, y, color, lineColor="grey", lineWidth=1) {
+        _drawBlock(ctx, x, y, color) {
             // --- config ---
+            ctx.beginPath();
             ctx.fillStyle = color;
             let px = this._toPxl(x);
             let py = this._toPxl(y);
@@ -303,6 +317,7 @@ $(document).ready(function () {
             borderWidth=2) {
             // --- config ---
             // for no highlight, shadowBlur is set to 0 (= invisible)
+            // ctx.beginPath();
             ctx.shadowBlur = highlight ? 5 : 0;
             ctx.shadowColor = highlight;
             ctx.lineStyle = borderColor;
@@ -313,6 +328,7 @@ $(document).ready(function () {
             ctx.lineTo(this._toPxl(x2), this._toPxl(y2));
             ctx.stroke();
             ctx.shadowBlur = 0;
+            ctx.closePath();
         }
 
         _toPxl(coord) {
