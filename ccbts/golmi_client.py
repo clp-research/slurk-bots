@@ -37,20 +37,54 @@ class QuadrupleClient:
         )
 
     def run(self, auth):
-        self.target.run(self.golmi_address, self.rooms.target, auth)
-        self.player_working.run(self.golmi_address,self.rooms.player_working, auth)
-        self.wizard_working.run(self.golmi_address, self.rooms.wizard_working, auth)
-        self.selector.run(self.golmi_address, self.rooms.selector, auth)
+        self.target.run(
+            self.golmi_address,
+            self.rooms.target,
+            auth
+        )
+        self.player_working.run(
+            self.golmi_address,
+            self.rooms.player_working,
+            auth
+        )
+        self.wizard_working.run(
+            self.golmi_address,
+            self.rooms.wizard_working,
+            auth
+        )
+        self.selector.run(
+            self.golmi_address,
+            self.rooms.selector,
+            auth
+        )
 
     def disconnect(self):
-        for socket in [self.target, self.wizard_working, self.player_working, self.selector]:
+        sockets = [
+            self.target,
+            self.wizard_working,
+            self.player_working,
+            self.selector
+        ]
+        for socket in sockets:
             socket.disconnect()
 
     def load_config(self, config):
-        for socket in [self.target, self.wizard_working, self.player_working]:
+        sockets = [
+            self.target,
+            self.wizard_working,
+            self.player_working
+        ]
+        for socket in sockets:
             socket.load_config(config)
 
-        self.selector.load_config({"width": 8.0, "height": 8.0, "move_step": 1, "prevent_overlap": False})
+        self.selector.load_config(
+            {
+                "width": 10.0,
+                "height": 10.0,
+                "move_step": 1,
+                "prevent_overlap": False
+            }
+        )
 
     def clear_working_state(self):
         self.wizard_working.load_state(EMPTYSTATE)

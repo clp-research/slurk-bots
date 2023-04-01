@@ -327,7 +327,7 @@ class CcbtsBot(TaskBot):
                                 "text",
                                 {
                                     "message": COLOR_MESSAGE.format(
-                                        message="Your partner is has received your instruction and is working on it",
+                                        message="Your partner has received your instruction and is working on it",
                                         color=STANDARD_COLOR
                                     ),
                                     "room": room_id,

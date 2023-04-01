@@ -212,8 +212,11 @@ $(document).ready(function () {
                 case "nut":
                     this._drawBlock(ctx, j, i, obj.color[1]);
                     break;
-                case "bridge":
-                    this._drawBridge(ctx, j, i, obj.color[1]);
+                case "hbridge":
+                    this._drawHBridge(ctx, j, i, obj.color[1]);
+                    break;
+                case "vbridge":
+                    this._drawVBridge(ctx, j, i, obj.color[1]);
                     break;
             }
         }
@@ -265,7 +268,23 @@ $(document).ready(function () {
             ctx.closePath();
         }
 
-        _drawBridge(ctx, x, y, color){
+        _drawVBridge(ctx, x, y, color){
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            let padding = this.blockSize / 4;
+            let px = this._toPxl(x);
+            let py = this._toPxl(y);
+            let w = Math.abs(px - this._toPxl(x+1));
+            let h =  Math.abs(py - this._toPxl(y+1));
+            ctx.fillRect(
+                px + padding,
+                py,
+                w - padding*2,
+                h
+            );
+        }
+
+        _drawHBridge(ctx, x, y, color){
             ctx.beginPath();
             ctx.fillStyle = color;
             let padding = this.blockSize / 4;
