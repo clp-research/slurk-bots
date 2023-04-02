@@ -167,6 +167,15 @@ class QuadrupleClient:
             logging.error(f"Could not post new object: {response.status_code}")
             response.raise_for_status()
 
+    def remove_selection(self):
+        response = requests.delete(
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.selector}/mouse",
+            json=obj,
+        )
+        if not response.ok:
+            logging.error(f"Could not post new object: {response.status_code}")
+            response.raise_for_status()
+
 
 class GolmiClient:
     def __init__(self):

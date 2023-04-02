@@ -47,7 +47,7 @@ function start_golmi(url, password, role, golmi_rooms) {
         golmi_socket_target = io(url, {
             auth: { "password": password }
         });
-    
+
         // --- view --- // 
         // Get references to the three canvas layers
         let bgLayer_t = document.getElementById("target_background");
@@ -74,7 +74,7 @@ function start_golmi(url, password, role, golmi_rooms) {
                 room: self_room
             });
         }
-    
+
         golmi_socket_target.connect()
         golmi_socket_target.emit("join", { "room_id": golmi_rooms.selector });
     }
@@ -84,20 +84,20 @@ function start_golmi(url, password, role, golmi_rooms) {
         golmi_socket_target = io(url, {
             auth: { "password": password }
         });
-    
+
         // --- view --- // 
         // Get references to the three canvas layers
         let bgLayer_t = document.getElementById("target_background");
         let objLayer_t = document.getElementById("target_objects");
         let grLayer_t = document.getElementById("target_gripper");
-    
+
         targetlayerView = new document.CocoLayerView(
             golmi_socket_target,
             bgLayer_t,
             objLayer_t,
             grLayer_t
         );
-    
+
         golmi_socket_target.connect()
         golmi_socket_target.emit("join", { "room_id": golmi_rooms.target });
     }
@@ -113,9 +113,6 @@ function set_wizard(description) {
     $("#intro-image").hide();
     $("#golmi_card").show();
     $("#wizard_interface").show()
-    // $("#board_container").css({"display": "block"})
-    //$("#working_board").css({"width": ""})
-    //$("#target_board").hide();
     $("#instr_title").html("Wizard");
     $("#instr").html(description);
     $("#variable_board_description").html("Source Board");
@@ -126,12 +123,8 @@ function set_player(description) {
     $("#intro-image").hide();
     $("#golmi_card").show();
     $("#variable_board_description").html("Target Board");
-    // $("#source_board").show();
-    // $("#target_board").show();
     $("#instr_title").html("Player");
     $("#instr").html(description);
-    // $("#reference-grid").show();
-    // $("#terminal_card").hide();
 };
 
 
@@ -144,7 +137,7 @@ function delete_object(){
             room: self_room
         }
     )
-}2
+}
 
 
 function show_progress(){
@@ -242,6 +235,7 @@ function get_propery(this_element){
         }
     }
 }
+
 
 $(document).ready(() => {
     socket.on("command", (data) => {

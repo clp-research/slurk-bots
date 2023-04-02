@@ -264,6 +264,9 @@ class CcbtsBot(TaskBot):
                     logging.debug(obj)
                     this_client.add_object(obj)
 
+                    # ungrip any selected object
+                    this_client.remove_selection()
+
                 else:
                     # no object is selected, we can select this object
                     piece = this_client.grip_object(
