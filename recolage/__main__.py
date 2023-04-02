@@ -436,8 +436,8 @@ class RecolageBot(TaskBot):
                         if data["command"]["answer"] == "no":
                             # remove gripper
                             if self.version != "show_gripper":
-                                response = requests.get(
-                                    f"{self.golmi_server}/slurk/remove_mouse_gripper/{room_id}"
+                                response = requests.delete(
+                                    f"{self.golmi_server}/slurk/gripper/{room_id}/mouse"
                                 )
                                 if not response.ok:
                                     logging.error(
