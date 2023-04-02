@@ -169,8 +169,7 @@ class QuadrupleClient:
 
     def remove_selection(self):
         response = requests.delete(
-            f"{self.golmi_address}/slurk/gripper/{self.rooms.selector}/mouse",
-            json=obj,
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.selector}/mouse"
         )
         if not response.ok:
             logging.error(f"Could not post new object: {response.status_code}")
