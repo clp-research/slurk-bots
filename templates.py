@@ -33,7 +33,7 @@ class Bot(ABC):
         if port is not None:
             self.uri += f":{port}"
         self.uri += "/slurk/api"
-        logging.info(f"Running {self.__class__.__name__} on {self.uri} ...")
+        logging.info(f"Running {self.__class__.__name__} on {self.uri} with token: {self.token} ...")
 
         self.register_callbacks()
 
