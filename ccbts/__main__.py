@@ -265,7 +265,7 @@ class CcbtsBot(TaskBot):
                     this_client.add_object(obj)
 
                     # ungrip any selected object
-                    this_client.remove_selection()
+                    this_client.remove_selection("wizard_selection")
 
                 else:
                     # no object is selected, we can select this object
@@ -281,6 +281,10 @@ class CcbtsBot(TaskBot):
                     y=data["coordinates"]["y"],
                     block_size=data["coordinates"]["block_size"]
                 )
+
+                # remove selected objects from wizard's working board
+                this_client.remove_selection("wizard_working")
+
                 return
 
 
