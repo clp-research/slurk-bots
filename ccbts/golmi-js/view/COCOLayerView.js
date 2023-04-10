@@ -146,29 +146,17 @@ $(document).ready(function () {
             }
 
             // only plot borders
-            for (let [key, value] of Object.entries(board)) {
-                let position = key.split(":")
-                let i = parseInt(position[0])
-                let j = parseInt(position[1])
-
-                for (let obj_idn of value){
-                    let this_obj = obj_mapping[obj_idn]                    
-                    let highlight = (this_obj.gripped) ? ("black") : (false)
-
-                    if (highlight){
-                        if (this._isUpperBorder(board, i, j, obj_idn)) {
-                            this._drawUpperBorder(ctx, j, i, highlight);
-                        }
-                        if (this._isLowerBorder(board, i, j, obj_idn)) {
-                            this._drawLowerBorder(ctx, j, i, highlight);
-                        }
-                        if (this._isLeftBorder(board, i, j, obj_idn)) {
-                            this._drawLeftBorder(ctx, j, i, highlight);
-                        }
-                        if (this._isRightBorder(board, i, j, obj_idn)) {
-                            this._drawRightBorder(ctx, j, i, highlight);
-                        }
+            for (const object of Object.values(this.objs)){
+                if (object.gripped === true){
+                    let blockMatrix = object.block_matrix;
+    
+                    // call drawing helper functions with additional infos
+                    let params = {
+                        x: object.x,
+                        y: object.y,
                     }
+                    // draw bounding box around target (there should be only a single one in this experiment)
+                    this._drawBB(ctx, blockMatrix, params, "green");
                 }
             }
         }
@@ -298,6 +286,21 @@ $(document).ready(function () {
                 w,
                 h - padding*2
             );
+        }
+
+        _drawBB(ctx, bMatrix, params, color) {
+            let x = params.x * this.grid_factor
+            let y = params.y * this.grid_factor
+            // Draw blocks       
+            for (let i=0; i< bMatrix[0].length * this.grid_factor; i++) {
+                this._drawUpperBorder(ctx, x+i, y, color);
+                this._drawLowerBorder(ctx, x+i, (y + bMatrix.length * this.grid_factor -1), color);
+            }
+
+            for (let i=0; i< bMatrix.length * this.grid_factor; i++) {
+                this._drawLeftBorder(ctx, x, y + i, color);
+                this._drawRightBorder(ctx, x + bMatrix[0].length * this.grid_factor -1, y + i, color);
+            }
         }
 
         // --- draw helper functions ---
