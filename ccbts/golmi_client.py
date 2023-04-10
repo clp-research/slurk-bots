@@ -1,5 +1,3 @@
-import argparse
-import json
 import logging
 from dataclasses import dataclass, asdict
 
@@ -117,7 +115,7 @@ class QuadrupleClient:
 
     def grip_object(self, x, y, block_size):
         req = requests.get(
-            f'{self.golmi_address}/slurk/grip/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+            f'{self.golmi_address}/slurk/grip/"{self.rooms.wizard_working}/{x}/{y}/{block_size}'
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
@@ -157,8 +155,18 @@ class QuadrupleClient:
 
     def delete_object(self, obj):
         """
-        only wizard can add an object to his working
+        remove an object from the wizard working board
         """
+        # bridges can span over 2 blocks, make sure that no
+        # other piece is placed on this bridge
+        if obj["type"] in {"vbridge", "hbridge"}:
+            state = self.get_working_state()
+            this_obj = obj["id_n"]
+            for tile in state["objs_grid"].values():
+                if this_obj in tile:
+                    if tile[-1] != this_obj:
+                        return
+
         response = requests.delete(
             f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/object",
             json=obj,
