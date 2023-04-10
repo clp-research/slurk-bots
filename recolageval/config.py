@@ -20,7 +20,7 @@ BOARDS = Path(f"{ROOT}/data/boards.jsonl")
 BOARDS_PER_ROOM = 15
 
 
-TIMEOUT_TIMER = 60  # minutes of inactivity before the room is closed automatically
+TIMEOUT_TIMER = 10  # minutes of inactivity before the room is closed automatically
 
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'

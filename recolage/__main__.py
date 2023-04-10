@@ -51,18 +51,42 @@ class RoomTimer:
         self.left_room[user].start()
 
 
+class Session:
+    def __init__(self):
+        self.players = list()
+        self.golmi_client = None
+        self.timer = None
+        self.boards = Dataloader(BOARDS, BOARDS_PER_ROOM)
+        self.description = False
+        self.selected_object = False
+        self.game_over = False
+        self.points = {
+            "score": STARTING_POINTS,
+            "history": [
+                {"correct": 0, "wrong": 0, "warnings": 0}
+            ]
+        }
+
+    def close(self):
+        self.golmi_client.disconnect()
+        self.timer.cancel_all_timers()
+
+
+class SessionManager(dict):
+    def create_session(self, room_id):
+        self[room_id] = Session()
+
+    def clear_session(self, room_id):
+        if room_id in self:
+            self[room_id].close()
+            self.pop(room_id)
+
+
 class RecolageBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
-        self.players_per_room = dict()
-        self.golmi_client_per_room = dict()
-        self.timers_per_room = dict()
-        self.description_per_room = dict()
-        self.points_per_room = dict()
-        self.selected_object_per_room = dict()
-        self.game_over = dict()
-        self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
+        self.sessions = SessionManager()
         self.register_callbacks()
 
     def post_init(self, waiting_room, golmi_server, golmi_password, version):
@@ -110,23 +134,13 @@ class RecolageBot(TaskBot):
                 for usr in data["users"]:
                     self.received_waiting_token.discard(usr["id"])
 
-                # create image items for this room
-                self.boards_per_room.get_boards(room_id)
-                self.players_per_room[room_id] = list()
-                self.description_per_room[room_id] = False
-                self.selected_object_per_room[room_id] = False
-                self.game_over[room_id] = False
-                self.points_per_room[room_id] = {
-                    "score": STARTING_POINTS,
-                    "history": [
-                        {"correct": 0, "wrong": 0, "warnings": 0}
-                    ]
-                }
-                self.timers_per_room[room_id] = RoomTimer(
-                    self.timeout_close_game, room_id
-                )
+                # create session for these users
+                self.sessions.create_session(room_id)
+                timer = RoomTimer(self.timeout_close_game, room_id)
+                self.sessions[room_id].timer = timer
+
                 for usr in data["users"]:
-                    self.players_per_room[room_id].append(
+                    self.sessions[room_id].players.append(
                         {**usr, "role": None, "status": "joined"}
                     )
 
@@ -141,19 +155,16 @@ class RecolageBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending golmi bot to new room was successful.")
 
-                self.golmi_client_per_room[room_id] = GolmiClient(
-                    self.sio, self, room_id
-                )
-                self.golmi_client_per_room[room_id].run(
-                    self.golmi_server, str(room_id), self.golmi_password
-                )
+                client = GolmiClient(self.sio, self, room_id)
+                client.run(self.golmi_server, str(room_id), self.golmi_password)
+                self.sessions[room_id].golmi_client = client
 
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
-            if room_id in self.players_per_room:
+            if room_id in self.sessions:
                 # read out task greeting
                 for line in task_greeting():
                     self.sio.emit(
@@ -192,8 +203,8 @@ class RecolageBot(TaskBot):
                     logging.debug("Waiting Timer restarted.")
 
             # some joined a task room
-            elif room_id in self.players_per_room:
-                curr_usr, other_usr = self.players_per_room[room_id]
+            elif room_id in self.sessions:
+                curr_usr, other_usr = self.sessions[room_id].players
                 if curr_usr["id"] != data["user"]["id"]:
                     curr_usr, other_usr = other_usr, curr_usr
 
@@ -209,7 +220,7 @@ class RecolageBot(TaskBot):
                     )
 
                     # cancel leave timers if any
-                    self.timers_per_room[room_id].user_joined(curr_usr["id"])
+                    self.sessions[room_id].timer.user_joined(curr_usr["id"])
 
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
@@ -229,8 +240,8 @@ class RecolageBot(TaskBot):
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    if room_id in self.players_per_room:
-                        if self.game_over[room_id] is False:
+                    if room_id in self.sessions:
+                        if self.sessions[room_id].game_over is False:
                             self.sio.emit(
                                 "text",
                                 {
@@ -242,7 +253,7 @@ class RecolageBot(TaskBot):
                             )
 
                             # start a timer
-                            self.timers_per_room[room_id].user_left(curr_usr["id"])
+                            self.sessions[room_id].timer.user_left(curr_usr["id"])
 
                             # if the wizard left, load the state again with no gripper
                             # once the wizard reconnects a new gripper will be created
@@ -259,7 +270,7 @@ class RecolageBot(TaskBot):
                 return
 
             # get user
-            curr_usr, other_usr = self.players_per_room[room_id]
+            curr_usr, other_usr = self.sessions[room_id].players
             if curr_usr["id"] != user_id:
                 curr_usr, other_usr = other_usr, curr_usr
 
@@ -267,12 +278,12 @@ class RecolageBot(TaskBot):
             if not all([curr_usr["role"], other_usr["role"]]):
                 return
 
-            self.timers_per_room[room_id].reset()
+            self.sessions[room_id].timer.reset()
 
             # we have a message from the player
             # revoke user's text privilege
             if curr_usr["role"] == "player":
-                self.description_per_room[room_id] = True
+                self.sessions[room_id].description = True
                 if self.version != "show_gripper":
                     self.set_message_privilege(user_id, False)
 
@@ -296,17 +307,17 @@ class RecolageBot(TaskBot):
             if user_id == self.user:
                 return
 
-            if room_id not in self.players_per_room:
+            if room_id not in self.sessions:
                 return
 
             # don't react to mouse movements
             if data["type"] != "click":
                 return
 
-            self.timers_per_room[room_id].reset()
+            self.sessions[room_id].timer.reset()
 
             # get users
-            curr_usr, other_usr = self.players_per_room[room_id]
+            curr_usr, other_usr = self.sessions[room_id].players
             if curr_usr["id"] != user_id:
                 curr_usr, other_usr = other_usr, curr_usr
 
@@ -322,7 +333,7 @@ class RecolageBot(TaskBot):
                     logging.error("Could not retrieve gripped piece")
 
                 piece = req.json()
-                target = self.boards_per_room[room_id][0]["state"]["targets"]
+                target = self.sessions[room_id].boards[0]["state"]["targets"]
 
                 if piece.keys() == target.keys():
                     self.sio.emit(
@@ -335,7 +346,7 @@ class RecolageBot(TaskBot):
                     )
 
             else:
-                if self.selected_object_per_room[room_id] is True:
+                if self.sessions[room_id].selected_object is True:
                     self.sio.emit(
                         "text",
                         {
@@ -354,7 +365,7 @@ class RecolageBot(TaskBot):
                     return
 
                 # no description yet, warn the user
-                if self.description_per_room[room_id] is False:
+                if self.sessions[room_id].description is False:
                     self.sio.emit(
                         "text",
                         {
@@ -403,15 +414,15 @@ class RecolageBot(TaskBot):
             if user_id == self.user:
                 return
 
-            self.timers_per_room[room_id].reset()
+            self.sessions[room_id].timer.reset()
 
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            if room_id in self.players_per_room:
+            if room_id in self.sessions:
                 # get users
-                curr_usr, other_usr = self.players_per_room[room_id]
+                curr_usr, other_usr = self.sessions[room_id].players
                 if curr_usr["id"] != user_id:
                     curr_usr, other_usr = other_usr, curr_usr
 
@@ -420,7 +431,7 @@ class RecolageBot(TaskBot):
                     event = data["command"]["event"]
 
                     if event == "confirm_selection":
-                        self.selected_object_per_room[room_id] = False
+                        self.sessions[room_id].selected_object = False
 
                         if self.version == "show_gripper":
                             # attach wizard's controller
@@ -446,12 +457,12 @@ class RecolageBot(TaskBot):
                                     response.raise_for_status()
 
                             # allow the player to send a second description
-                            self.description_per_room[room_id] = False
+                            self.sessions[room_id].description = False
                             self.set_message_privilege(user_id, True)
 
                             # remove points
                             self.update_reward(room_id, NEGATIVE_REWARD)
-                            self.points_per_room[room_id]["history"][-1]["wrong"] += 1
+                            self.sessions[room_id].points["history"][-1]["wrong"] += 1
 
                             # update points in title
                             if self.version != "no_feedback":
@@ -488,7 +499,7 @@ class RecolageBot(TaskBot):
 
                             piece = req.json()
                             if piece:
-                                target = self.boards_per_room[room_id][0]["state"][
+                                target = self.sessions[room_id].boards[0]["state"][
                                     "targets"
                                 ]
                                 result = (
@@ -507,7 +518,7 @@ class RecolageBot(TaskBot):
 
                         # TODO: add official warning log??
 
-                        if self.description_per_room.get(room_id) is True:
+                        if self.sessions[room_id].description is True:
                             self.sio.emit(
                                 "text",
                                 {
@@ -538,12 +549,12 @@ class RecolageBot(TaskBot):
                             )
 
                             # give user possibility to send another message
-                            self.description_per_room[room_id] = False
+                            self.sessions[room_id].description = False
                             self.set_message_privilege(other_usr["id"], True)
 
                             # remove points
                             self.update_reward(room_id, NEGATIVE_REWARD)
-                            self.points_per_room[room_id]["history"][-1]["warnings"] += 1
+                            self.sessions[room_id].points["history"][-1]["warnings"] += 1
 
                         else:
                             self.sio.emit(
@@ -585,20 +596,20 @@ class RecolageBot(TaskBot):
                         )
 
     def update_reward(self, room_id, reward):
-        score = self.points_per_room[room_id]["score"]
+        score = self.sessions[room_id].points["score"]
         score += reward
         score = round(score, 2)
-        self.points_per_room[room_id]["score"] = max(0, score)
+        self.sessions[room_id].points["score"] = max(0, score)
 
 
     def piece_selection(self, room_id, piece):
         # get users
-        wizard, player = self.players_per_room[room_id]
+        wizard, player = self.sessions[room_id].players
         if wizard["role"] != "wizard":
             wizard, player = player, wizard
 
         # get target piece
-        target = self.boards_per_room[room_id][0]["state"]["targets"]
+        target = self.sessions[room_id].boards[0]["state"]["targets"]
         result = "right" if piece.keys() == target.keys() else "wrong"
 
         # add selected piece to logs
@@ -608,7 +619,7 @@ class RecolageBot(TaskBot):
         if self.version not in {"confirm_selection", "show_gripper"}:
             self.load_next_state(room_id, result)
         else:
-            self.selected_object_per_room[room_id] = True
+            self.sessions[room_id].selected_object = True
 
             if self.version == "show_gripper":
                 # detach wizard's controller
@@ -650,21 +661,21 @@ class RecolageBot(TaskBot):
             response.raise_for_status()
 
     def load_next_state(self, room_id, result):
-        self.timers_per_room[room_id].reset()
+        self.sessions[room_id].timer.reset()
 
         if result == "right":
             self.update_reward(room_id, POSITIVE_REWARD)
-            self.points_per_room[room_id]["history"][-1]["correct"] += 1
+            self.sessions[room_id].points["history"][-1]["correct"] += 1
         else:
             self.update_reward(room_id, NEGATIVE_REWARD)
-            self.points_per_room[room_id]["history"][-1]["wrong"] += 1
+            self.sessions[room_id].points["history"][-1]["wrong"] += 1
 
-        player, wizard = self.players_per_room[room_id]
+        player, wizard = self.sessions[room_id].players
         if player["role"] != "player":
             player, wizard = wizard, player
 
-        self.boards_per_room[room_id].pop(0)
-        self.description_per_room[room_id] = False
+        self.sessions[room_id].boards.pop(0)
+        self.sessions[room_id].description = False
         if self.version == "show_gripper":
             # detach wizard's controller
             self.sio.emit(
@@ -677,19 +688,19 @@ class RecolageBot(TaskBot):
             )
         self.set_message_privilege(player["id"], True)
 
-        score = self.points_per_room[room_id]["score"]
+        score = self.sessions[room_id].points["score"]
 
         if self.version != "no_feedback":
             # update points on title
             self.update_title_points(room_id)
 
-        if not self.boards_per_room[room_id]:
+        if not self.sessions[room_id].boards:
             # no more boards, close the room
             self.terminate_experiment(room_id)
 
         else:
             # create a new dictionary to keep track of board
-            self.points_per_room[room_id]["history"].append(
+            self.sessions[room_id].points["history"].append(
                 {"correct": 0, "wrong": 0, "warnings": 0}
             )
             message = "Let's get you to the next board"
@@ -736,9 +747,9 @@ class RecolageBot(TaskBot):
             response.raise_for_status()
 
     def set_wizard_role(self, room_id, user_id):
-        self.timers_per_room[room_id].reset()
+        self.sessions[room_id].timer.reset()
 
-        curr_usr, other_usr = self.players_per_room[room_id]
+        curr_usr, other_usr = self.sessions[room_id].players
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
 
@@ -789,10 +800,10 @@ class RecolageBot(TaskBot):
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
         # load and log state
-        if not self.boards_per_room[room_id]:
+        if not self.sessions[room_id].boards:
             return
 
-        board = deepcopy(self.boards_per_room[room_id][0])
+        board = deepcopy(self.sessions[room_id].boards[0])
 
         # add gripper if not present
         if self.version == "show_gripper":
@@ -819,13 +830,13 @@ class RecolageBot(TaskBot):
         if from_disconnect is False:
             self.add_to_log("board_log", {"board": board}, room_id)
 
-        self.golmi_client_per_room[room_id].load_config(board["config"])
-        self.golmi_client_per_room[room_id].load_state(board["state"])
+        self.sessions[room_id].golmi_client.load_config(board["config"])
+        self.sessions[room_id].golmi_client.load_state(board["state"])
 
     def confirmation_code(self, room_id, status):
         """Generate AMT token that will be sent to each player."""
         amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        points = self.points_per_room[room_id]
+        points = self.sessions[room_id].points
         # post AMT token to logs
         self.add_to_log(
             "confirmation_log",
@@ -850,10 +861,10 @@ class RecolageBot(TaskBot):
         )
 
     def update_title_points(self, room_id):
-        score = self.points_per_room[room_id]["score"]
+        score = self.sessions[room_id].points["score"]
 
         correct = 0
-        for board in self.points_per_room[room_id]["history"]:
+        for board in self.sessions[room_id].points["history"]:
             # only count a board as correct if the wizard
             # got it on the first try (only relevant for confirm
             # selection and gripper variants)
@@ -878,29 +889,9 @@ class RecolageBot(TaskBot):
             {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
 
-        self.game_over[room_id] = True
+        self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
-
-        # cancel all timers
-        self.timers_per_room[room_id].cancel_all_timers()
-
-        # disconnect from golmi server
-        self.golmi_client_per_room[room_id].disconnect()
-
-        # remove any task room specific objects
-        memory_dicts = [
-            self.golmi_client_per_room,
-            self.players_per_room,
-            self.timers_per_room,
-            self.description_per_room,
-            self.boards_per_room,
-            self.points_per_room,
-            self.selected_object_per_room,
-            self.game_over
-        ]
-        for memory_dict in memory_dicts:
-            if room_id in memory_dict:
-                memory_dict.pop(room_id)
+        self.sessions.clear_session(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -923,8 +914,8 @@ class RecolageBot(TaskBot):
             response.raise_for_status()
 
         # remove user from room
-        if self.players_per_room.get(room_id) is not None:
-            for usr in self.players_per_room[room_id]:
+        if room_id in self.sessions:
+            for usr in self.sessions[room_id].players:
                 response = requests.get(
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},

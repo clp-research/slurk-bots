@@ -31,15 +31,34 @@ class RoomTimer:
         self.timer.cancel()
 
 
+class Session:
+    def __init__(self):
+        self.players = list()
+        self.golmi_client = None
+        self.boards = Dataloader(BOARDS, BOARDS_PER_ROOM)
+        self.can_load_next_state = False
+        self.timer = None
+
+    def close(self):
+        self.golmi_client.disconnect()
+        self.timer.cancel()
+
+
+class SessionManager(dict):
+    def create_session(self, room_id):
+        self[room_id] = Session()
+
+    def clear_session(self, room_id):
+        if room_id in self:
+            self[room_id].close()
+            self.pop(room_id)
+        
+
 class RecolagEval(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
-        self.players_per_room = dict()
-        self.golmi_client_per_room = dict()
-        self.boards_per_room = Dataloader(BOARDS, BOARDS_PER_ROOM)
-        self.can_load_next_state = dict()
-        self.timers_per_room = dict()
+        self.sessions = SessionManager()
         self.register_callbacks()
 
     def register_callbacks(self):
@@ -63,15 +82,12 @@ class RecolagEval(TaskBot):
 
                 # create image items for this room
                 logging.debug("Create data for the new task room...")
-
-                self.boards_per_room.get_boards(room_id)
-                self.can_load_next_state[room_id] = False
-                self.players_per_room[room_id] = list()
-                self.timers_per_room[room_id] = RoomTimer(
+                self.sessions.create_session(room_id)
+                self.sessions[room_id].timer = RoomTimer(
                     TIMEOUT_TIMER, self.close_game, room_id
                 )
                 for usr in data["users"]:
-                    self.players_per_room[room_id].append(
+                    self.sessions[room_id].players.append(
                         {**usr, "role": None, "status": "joined"}
                     )
 
@@ -86,10 +102,12 @@ class RecolagEval(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending recolageval bot to new room was successful.")
 
-                self.golmi_client_per_room[room_id] = GolmiClient(self.sio)
-                self.golmi_client_per_room[room_id].run(
+                client = GolmiClient(self.sio)
+                client.run(
                     self.golmi_server, str(room_id), self.golmi_password
                 )
+
+                self.sessions[room_id].golmi_client = client
                 self.load_state(room_id)
 
         @self.sio.event
@@ -97,7 +115,7 @@ class RecolagEval(TaskBot):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
-            if room_id in self.players_per_room:
+            if room_id in self.sessions:
                 # add description title
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
@@ -131,23 +149,6 @@ class RecolagEval(TaskBot):
                         "html": True,
                     },
                 )
-                # self.sio.emit(
-                #     "text",
-                #     {
-                #         "message": "Here's a little help: you can reference pieces according to this legend",
-                #         "room": room_id,
-                #         "html": True,
-                #     },
-                # )
-                # self.sio.emit(
-                #     "image",
-                #     {
-                #         "room": room_id,
-                #         "url": TYPES,
-                #         "width": 600,
-                #         "height": 300,
-                #     },
-                # )
 
         @self.sio.event
         def status(data):
@@ -167,7 +168,7 @@ class RecolagEval(TaskBot):
 
             room_id = data["room"]
             # some joined a task room
-            if room_id in self.players_per_room:
+            if room_id in self.sessions:
                 if data["type"] == "join":
                     # connect view
                     sleep(0.5)
@@ -193,8 +194,8 @@ class RecolagEval(TaskBot):
 
             room_id = data["room"]
             # user sent at least one message, he can load the next state
-            self.can_load_next_state[room_id] = True
-            self.timers_per_room[room_id].snooze()
+            self.sessions[room_id].can_load_next_state = True
+            self.sessions[room_id].timer.snooze()
 
         @self.sio.event
         def command(data):
@@ -210,7 +211,7 @@ class RecolagEval(TaskBot):
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            if room_id in self.players_per_room:
+            if room_id in self.sessions:
                 # command comes from front end
                 if isinstance(data["command"], dict):
                     if "event" not in data["command"]:
@@ -232,7 +233,7 @@ class RecolagEval(TaskBot):
                             logging.error("Could not retrieve gripped piece")
 
                         piece = req.json()
-                        target = self.boards_per_room[room_id][0]["state"]["targets"]
+                        target = self.sessions[room_id].boards[0]["state"]["targets"]
 
                         if piece.keys() == target.keys():
                             self.sio.emit(
@@ -259,7 +260,7 @@ class RecolagEval(TaskBot):
                         )
 
     def load_next_state(self, room_id):
-        if self.can_load_next_state[room_id] is False:
+        if self.sessions[room_id].can_load_next_state is False:
             self.sio.emit(
                 "text",
                 {
@@ -276,9 +277,9 @@ class RecolagEval(TaskBot):
             )
             return
 
-        self.boards_per_room[room_id].pop(0)
+        self.sessions[room_id].boards.pop(0)
         # no more image, close room
-        if not self.boards_per_room[room_id]:
+        if not self.sessions[room_id].boards:
             self.sio.emit(
                 "text",
                 {
@@ -293,9 +294,9 @@ class RecolagEval(TaskBot):
             self.close_game(room_id)
 
         else:
-            self.can_load_next_state[room_id] = False
+            self.sessions[room_id].can_load_next_state = False
             self.load_state(room_id)
-            boards_left = len(self.boards_per_room[room_id])
+            boards_left = len(self.sessions[room_id].boards)
 
             if boards_left % 5 == 0:
                 message = f"Still {boards_left} boards to go"
@@ -312,7 +313,7 @@ class RecolagEval(TaskBot):
 
     def load_state(self, room_id):
         """load the current board on the golmi server"""
-        board = self.boards_per_room[room_id][0]
+        board = self.sessions[room_id].boards[0]
 
         # send a message to self to log config and board?
         self.sio.emit(
@@ -323,32 +324,20 @@ class RecolagEval(TaskBot):
                 "receiver_id": self.user,
             },
         )
-
-        self.golmi_client_per_room[room_id].load_config(board["config"])
-        self.golmi_client_per_room[room_id].load_state(board["state"])
+        client = self.sessions[room_id].golmi_client
+        client.load_config(board["config"])
+        client.load_state(board["state"])
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
-        sleep(2)
         self.sio.emit(
             "text",
             {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
         self.room_to_read_only(room_id)
 
-        # disconnect golmi client
-        golmi_client = self.golmi_client_per_room.get(room_id)
-        if golmi_client is not None:
-            golmi_client.disconnect()
-
-        for memory_dict in [
-            self.players_per_room,
-            self.golmi_client_per_room,
-            self.boards_per_room,
-            self.timers_per_room,
-        ]:
-            if room_id in memory_dict:
-                memory_dict.pop(room_id)
+        # clear session
+        self.sessions.clear_session(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -371,8 +360,8 @@ class RecolagEval(TaskBot):
             response.raise_for_status()
 
         # remove user from room
-        if room_id in self.players_per_room:
-            for usr in self.players_per_room[room_id]:
+        if room_id in self.sessions:
+            for usr in self.sessions[room_id].players:
                 response = requests.get(
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
@@ -392,8 +381,6 @@ class RecolagEval(TaskBot):
                     )
                     response.raise_for_status()
                 logging.debug("Removing user from task room was successful.")
-
-            self.players_per_room.pop(room_id)
 
 
 if __name__ == "__main__":

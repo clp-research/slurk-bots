@@ -3,23 +3,25 @@ import json
 import random
 
 
-class Dataloader(dict):
+class Dataloader(list):
     def __init__(self, path, n):
         self._path = path
         self._n = n
+        self.get_boards()
 
     def _sample_boards(self):
+        self.clear()
         boards = self._read_board_file()
 
         images_per_level = self._n // 3
-        sample = list()
+
         for level in cycle(["easy", "medium", "hard"]):
             if boards.get(level):
                 for board in random.sample(boards[level], images_per_level):
-                    sample.append(board)
+                    self.append(board)
 
-                    if len(sample) == self._n:
-                        return sample
+                    if len(self) == self._n:
+                        return
 
     def _read_board_file(self):
         """read boards and divide by level"""
@@ -46,13 +48,12 @@ class Dataloader(dict):
 
         return boards
 
-    def get_boards(self, room_id):
+    def get_boards(self):
         """sample random boards for a room"""
-        room_boards = self._sample_boards()
-        random.shuffle(room_boards)
-        self[room_id] = room_boards
+        self._sample_boards()
+        random.shuffle(self)
+
 
 if __name__ == "__main__":
     from pathlib import Path
     d = Dataloader(Path("data/boards.jsonl"), -1)
-    d.get_boards(2)
