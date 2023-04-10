@@ -26,15 +26,26 @@ class RoomTimers:
         self.left_room = dict()
 
 
-class CcbtsBot(TaskBot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.received_waiting_token = set()
+class SessionDicts:
+    def __init__(self):
         self.players_per_room = dict()
         self.images_per_room = dict()
         self.robot_interfaces = dict()
         self.timers_per_room = dict()
         self.golmi_client_per_room = dict()
+        self.last_action_per_room = dict()
+
+    def clear_session(self, room_id):
+        for memory_dict in vars(self).values():
+            if room_id in memory_dict:
+                memory_dict.pop(room_id)
+
+
+class CcbtsBot(TaskBot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.received_waiting_token = set()
+        self.session = SessionDicts()
         self.register_callbacks()
 
     def post_init(self, waiting_room, golmi_server, golmi_password):
@@ -68,14 +79,14 @@ class CcbtsBot(TaskBot):
 
                 # create image items for this room
                 logging.debug("Create data for the new task room...")
-                self.images_per_room[room_id] = random.choice(IMGS)
+                self.session.images_per_room[room_id] = random.choice(IMGS)
 
                 # create robot interface for this room
-                self.robot_interfaces[room_id] = WizardInterface()
+                self.session.robot_interfaces[room_id] = WizardInterface()
 
-                self.players_per_room[room_id] = []
+                self.session.players_per_room[room_id] = []
                 for usr in data["users"]:
-                    self.players_per_room[room_id].append(
+                    self.session.players_per_room[room_id].append(
                         {**usr, "role": None, "status": "joined"}
                     )
 
@@ -91,20 +102,21 @@ class CcbtsBot(TaskBot):
                 logging.debug("Sending wordle bot to new room was successful.")
 
                 # create new timer for this room
-                self.timers_per_room[room_id] = RoomTimers()
+                self.session.timers_per_room[room_id] = RoomTimers()
 
-                self.golmi_client_per_room[room_id] = QuadrupleClient(str(room_id), self.golmi_server)
-                self.golmi_client_per_room[room_id].run(self.golmi_password)
-                self.golmi_client_per_room[room_id].load_config(CONFIG)
-                self.golmi_client_per_room[room_id].load_selector()
-                
+                client = QuadrupleClient(str(room_id), self.golmi_server)
+                client.run(self.golmi_password)
+                client.load_config(CONFIG)
+                client.load_selector()
+
+                self.session.golmi_client_per_room[room_id] = client
 
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
-            if room_id in self.images_per_room:
+            if room_id in self.session.images_per_room:
                 # add description title
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
@@ -153,8 +165,8 @@ class CcbtsBot(TaskBot):
                     logging.debug("Waiting Timer restarted.")
 
             # some joined a task room
-            elif room_id in self.images_per_room:
-                curr_usr, other_usr = self.players_per_room[room_id]
+            elif room_id in self.session.images_per_room:
+                curr_usr, other_usr = self.session.players_per_room[room_id]
                 if curr_usr["id"] != data["user"]["id"]:
                     curr_usr, other_usr = other_usr, curr_usr
 
@@ -196,7 +208,7 @@ class CcbtsBot(TaskBot):
                     # cancel timer
                     logging.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
 
-                    timer = self.timers_per_room[room_id].left_room.get(curr_usr["id"])
+                    timer = self.session.timers_per_room[room_id].left_room.get(curr_usr["id"])
                     if timer is not None:
                         timer.cancel()
 
@@ -220,11 +232,11 @@ class CcbtsBot(TaskBot):
 
                     # start timer since user left the room
                     logging.debug(f"Starting Timer: left room for user {curr_usr['name']}")
-                    self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
+                    self.session.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
                         TIME_LEFT*60,
                         self.close_game, args=[room_id]
                     )
-                    self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
+                    self.session.timers_per_room[room_id].left_room[curr_usr["id"]].start()
 
         @self.sio.event
         def mouse(data):
@@ -235,18 +247,17 @@ class CcbtsBot(TaskBot):
             if user_id == self.user:
                 return
 
-            if room_id not in self.players_per_room:
+            if room_id not in self.session.players_per_room:
                 return
 
             # don't react to mouse movements
             if data["type"] != "click":
                 return
 
-            logging.debug(data)
-            this_client = self.golmi_client_per_room[room_id]
+            this_client = self.session.golmi_client_per_room[room_id]
 
             board = data["coordinates"]["board"]
-            if board == "wizard_working" :
+            if board == "wizard_working":
                 # check if the user selected an object on his selection board
                 selected = this_client.get_wizard_selection()
                 if selected:
@@ -261,8 +272,9 @@ class CcbtsBot(TaskBot):
                     obj["y"] = y #- len(obj["block_matrix"]) // 2
 
                     obj["gripped"] = None
-                    logging.debug(obj)
-                    this_client.add_object(obj)
+                    action = this_client.add_object(obj)
+                    if action is not False:
+                        self.session.last_action_per_room[room_id] = action
 
                     # ungrip any selected object
                     this_client.remove_selection("wizard_selection")
@@ -287,7 +299,6 @@ class CcbtsBot(TaskBot):
 
                 return
 
-
         @self.sio.event
         def command(data):
             """Parse user commands."""
@@ -302,15 +313,15 @@ class CcbtsBot(TaskBot):
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            curr_usr, other_usr = self.players_per_room[room_id]
+            curr_usr, other_usr = self.session.players_per_room[room_id]
             if curr_usr["id"] != user_id:
                 curr_usr, other_usr = other_usr, curr_usr
 
-            if room_id in self.images_per_room:
+            if room_id in self.session.images_per_room:
                 if isinstance(data["command"], dict):
                     event = data["command"]["event"]
-                    interface = self.robot_interfaces[room_id]
-                    this_client = self.golmi_client_per_room[room_id]
+                    interface = self.session.robot_interfaces[room_id]
+                    this_client = self.session.golmi_client_per_room[room_id]
                     # front end commands (wizard only)
                     right_user = self.check_role(user_id, "wizard", room_id)
                     if right_user is True:
@@ -323,7 +334,9 @@ class CcbtsBot(TaskBot):
                         elif event == "delete_object":
                             selected = this_client.get_gripped_object()
                             obj = list(selected.values()).pop()
-                            this_client.delete_object(obj)
+                            action = this_client.delete_object(obj)
+                            if action is not False:
+                                self.session.last_action_per_room[room_id] = action
 
                         elif event == "show_progress":
                             this_client.copy_working_state()
@@ -345,7 +358,6 @@ class CcbtsBot(TaskBot):
 
                         # change the color of the selected object
                         elif event == "update_object":
-                            this_client = self.golmi_client_per_room[room_id]
                             state = this_client.get_working_state()
                             piece = this_client.get_gripped_object()
 
@@ -364,6 +376,18 @@ class CcbtsBot(TaskBot):
 
                                 logging.debug(state)
                                 this_client.load_working_state(state)
+
+                        elif event == "undo":
+                            last_command = self.session.last_action_per_room[room_id]
+                            obj = last_command["obj"]
+                            if last_command["action"] == "add":
+                                action = this_client.delete_object(obj)
+                            elif last_command["action"] == "delete":
+                                action = this_client.add_object(obj)
+
+                            # register new last actiond
+                            if action is not False:
+                                self.session.last_action_per_room[room_id] = action
 
                 else:
                     # user command
@@ -395,7 +419,7 @@ class CcbtsBot(TaskBot):
                         )
 
     def check_role(self, user_id, wanted_role, room_id):
-        curr_usr, other_usr = self.players_per_room[room_id]
+        curr_usr, other_usr = self.session.players_per_room[room_id]
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
 
@@ -423,7 +447,7 @@ class CcbtsBot(TaskBot):
         """
         pass a command list to the backend
         """
-        interface = self.robot_interfaces[room_id]
+        interface = self.session.robot_interfaces[room_id]
         try:
             result = interface.play(command)
 
@@ -446,13 +470,13 @@ class CcbtsBot(TaskBot):
         return result
 
     def set_wizard_role(self, room_id, user_id):
-        curr_usr, other_usr = self.players_per_room[room_id]
+        curr_usr, other_usr = self.session.players_per_room[room_id]
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
 
         # users have no roles so we can assign them
         if curr_usr["role"] is None and other_usr["role"] is None:
-            golmi_rooms = self.golmi_client_per_room[room_id].rooms.json
+            golmi_rooms = self.session.golmi_client_per_room[room_id].rooms.json
             for role, user in zip(
                 ["wizard", "player"], [curr_usr, other_usr]
             ):
@@ -478,8 +502,8 @@ class CcbtsBot(TaskBot):
             # self.set_image(room_id, other_usr)
             # self.set_boards(room_id)
             random_state = get_random_state()
-            self.golmi_client_per_room[room_id].load_target_state(random_state)
-            self.golmi_client_per_room[room_id].clear_working_states()
+            self.session.golmi_client_per_room[room_id].load_target_state(random_state)
+            self.session.golmi_client_per_room[room_id].clear_working_states()
             
             # log board
             response = requests.post(
@@ -524,7 +548,7 @@ class CcbtsBot(TaskBot):
             },
         )
 
-        for user in self.players_per_room[room_id]:
+        for user in self.session.players_per_room[room_id]:
             user["role"] = None
             self.sio.emit(
                 "message_command",
@@ -551,13 +575,13 @@ class CcbtsBot(TaskBot):
 
     def set_boards(self, room_id, wizard_only=False):
         # get boards from the robot interface
-        interface = self.robot_interfaces[room_id]
+        interface = self.session.robot_interfaces[room_id]
         boards = interface.get_boards()
         source_board = boards["s"].tolist()
         target_board = boards["t"].tolist()
 
         # get player information
-        player_usr, wizard_usr = self.players_per_room[room_id]
+        player_usr, wizard_usr = self.session.players_per_room[room_id]
         if player_usr["role"] != "player":
             player_usr, wizard_usr = wizard_usr, player_usr
 
@@ -618,11 +642,7 @@ class CcbtsBot(TaskBot):
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
-        for memory_dict in [self.images_per_room,
-                            self.robot_interfaces,
-                            self.timers_per_room]:
-            if room_id in memory_dict:
-                memory_dict.pop(room_id)
+        self.session.clear_session(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -645,8 +665,8 @@ class CcbtsBot(TaskBot):
             response.raise_for_status()
 
         # remove user from room
-        if room_id in self.players_per_room:
-            for usr in self.players_per_room[room_id]:
+        if room_id in self.session.players_per_room:
+            for usr in self.session.players_per_room[room_id]:
                 response = requests.get(
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
@@ -668,7 +688,7 @@ class CcbtsBot(TaskBot):
                 logging.debug("Removing user from task room was successful.")
 
             # remove users from room
-            self.players_per_room.pop(room_id)
+            self.session.players_per_room.pop(room_id)
 
 
 if __name__ == "__main__":

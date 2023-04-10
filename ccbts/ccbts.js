@@ -128,47 +128,32 @@ function set_player(description) {
 };
 
 
-function delete_object(){
+$("#delete_button").click(() => {
+    button_command("delete_object")
+})
+
+$("#clear_board_button").click(() => {
+    button_command("clear_board")
+})
+
+$("#work_in_progress_button").click(() => {
+    button_command("work_in_progress")
+})
+
+$("#show_progress_button").click(() => {
+    button_command("show_progress")
+})
+
+$("#undo_button").click(() => {
+    button_command("undo")
+})
+
+
+function button_command(this_event){
     socket.emit("message_command",
         {
             command: {
-                event: "delete_object"
-            },
-            room: self_room
-        }
-    )
-}
-
-
-function show_progress(){
-    socket.emit("message_command",
-        {
-            command: {
-                event: "show_progress"
-            },
-            room: self_room
-        }
-    )
-}
-
-
-function clear_board(){
-    socket.emit("message_command",
-        {
-            command: {
-                event: "clear_board"
-            },
-            room: self_room
-        }
-    )
-}
-
-
-function work_in_progress(){
-    socket.emit("message_command",
-        {
-            command: {
-                event: "work_in_progress"
+                event: this_event
             },
             room: self_room
         }
