@@ -181,16 +181,13 @@ $(document).ready(function () {
             let x = params.x * this.grid_factor
             let y = params.y * this.grid_factor
             // Draw blocks       
-            for (let i=0; i< bMatrix.length * this.grid_factor; i++) {
+            for (let i=0; i< bMatrix[0].length * this.grid_factor; i++) {
                 this._drawUpperBorder(ctx, x+i, y, color);
-            }
-            for (let i=0; i< bMatrix.length * this.grid_factor; i++) {
                 this._drawLowerBorder(ctx, x+i, (y + bMatrix.length * this.grid_factor -1), color);
             }
+
             for (let i=0; i< bMatrix.length * this.grid_factor; i++) {
                 this._drawLeftBorder(ctx, x, y + i, color);
-            }
-            for (let i=0; i< bMatrix.length * this.grid_factor; i++) {
                 this._drawRightBorder(ctx, x + bMatrix[0].length * this.grid_factor -1, y + i, color);
             }
         }
