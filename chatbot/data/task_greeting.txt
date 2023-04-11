@@ -1,0 +1,3 @@
+**Welcome to the Clem Game!**
+
+Please type **/ready** to begin the game.
