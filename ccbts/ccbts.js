@@ -161,67 +161,6 @@ function button_command(this_event){
 }
 
 
-function on_checkbox_change(this_element){
-    clear_others(this_element);
-    parsed = this_element.split("_")
-    value = parsed[1]
-
-    if ($(`#action_place`).is(':checked') === true){
-        return
-    }
-
-    // we allow to change the color
-    if (["red", "blue", "yellow", "green"].includes(value)){
-        socket.emit("message_command",
-            {
-                command: {
-                    event: "update_object",
-                    shape: get_propery("shape"),
-                    color: get_propery("color"),
-                },
-                room: self_room
-            }
-        )
-    }
-}
-
-
-function clear_others(this_element){
-    options = {
-        color: new Set(["red", "blue", "yellow", "green"]),
-        shape: new Set(["screw", "bridge", "nut", "washer"]),
-        action: new Set(["select", "place"])
-    }
-
-    // get info about this element
-    parsed = this_element.split("_")
-    element = parsed[0]
-    value = parsed[1]
-
-    // clear other options
-    to_clear = options[element]
-    to_clear.delete(value)
-    to_clear.forEach(item => {
-        $(`#${element}_${item}`).prop('checked', false);
-    })
-}
-
-
-function get_propery(this_element){
-    options = {
-        color: ["red", "blue", "yellow", "green"],
-        shape: ["screw", "bridge", "nut", "washer"],
-        action: ["select", "place"]
-    }
-
-    for (let item of options[this_element]){
-        if ($(`#${this_element}_${item}`).is(':checked')){
-            return item
-        }
-    }
-}
-
-
 $(document).ready(() => {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {

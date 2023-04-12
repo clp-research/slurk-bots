@@ -182,7 +182,8 @@ class QuadrupleClient:
             response.raise_for_status()
             return False
 
-        obj.pop("gripped")
+        if "gripped" in obj:
+            obj.pop("gripped")
         return dict(
             action="delete",
             obj=obj

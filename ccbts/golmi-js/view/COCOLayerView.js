@@ -156,7 +156,7 @@ $(document).ready(function () {
                         y: object.y,
                     }
                     // draw bounding box around target (there should be only a single one in this experiment)
-                    this._drawBB(ctx, blockMatrix, params, "green");
+                    this._drawBB(ctx, blockMatrix, params, "black");
                 }
             }
         }
