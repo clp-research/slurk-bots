@@ -39,11 +39,12 @@ Note: Every time a new terminal session is started, the env variables will need 
     
 ### Running and playing the bot
 
-A Golmi-server is needed to run this bot. Make sure that golmi is on the `new_plotting` branch.
+A [GOLMI server](https://github.com/clp-research/golmi) is needed to run this bot. Make sure that golmi is on the `slurk` branch.
 
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
+    --net="host" \
     -e GOLMI_TOKEN=$THIS_BOT_TOKEN \
     -e GOLMI_USER=$THIS_BOT \
     -e GOLMI_TASK_ID=$TASK_ID \
@@ -52,8 +53,7 @@ docker run \
     -e GOLMI_SERVER=$GOLMI_SERVER \
     -e GOLMI_PASSWORD=$GOLMI_PASSWORD \
     -e VERSION=$BOT_VERSION \
-    --net="host" \
-    slurk/golmi-bot &
+    -d slurk/golmi-bot
 ```
 
 To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be a token towards the end that will look something like this: `2f42a98e-0a29-43c2-9f94-97b38f25c30f`

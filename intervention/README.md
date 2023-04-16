@@ -30,7 +30,13 @@ Note: Every time a new terminal session is started, the env variables will need 
 
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
-docker run -e SLURK_TOKEN=$INT_TOKEN -e SLURK_USER=$INT_USER -e SLURK_PORT=5000 -e TASK_ID=$TASK_ID --net="host" slurk/intervention-bot &
+docker run \
+  --net="host" \
+  -e SLURK_TOKEN=$INT_TOKEN \
+  -e SLURK_USER=$INT_USER \
+  -e SLURK_PORT=5000 \
+  -e TASK_ID=$TASK_ID \
+  -d slurk/intervention-bot
 ```
 
 To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be two tokens towards the end that will look something like below.
