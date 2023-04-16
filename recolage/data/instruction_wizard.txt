@@ -1,0 +1,1 @@
+Receive instructions from the player and try to identify the target piece by clicking on it.
