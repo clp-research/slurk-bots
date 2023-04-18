@@ -15,14 +15,6 @@ INSTRUCTIONS = dict(
     wizard=Path(f"{ROOT}/ccbts/data/instruction_wizard.html").read_text().strip()
 )
 
-# IMGS = [image for image in Path(f"{ROOT}/ccbts/data/images").iterdir()]
-IMGS = [
-    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/parallel-bridges.png",
-    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/square-bridges.png",
-    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack-bridges-nuts.png",
-    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack-nuts-screws.png",
-    "https://raw.githubusercontent.com/sebag90/ccbts_imgs/main/stack-nuts-washers-screws.png"
-]
 
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'

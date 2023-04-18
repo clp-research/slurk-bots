@@ -7,7 +7,6 @@ from time import sleep
 import requests
 
 from templates import TaskBot
-from wizardinterface import WizardInterface
 from .config import *
 from .golmi_client import *
 
@@ -30,10 +29,10 @@ class Session:
     def __init__(self):
         self.players = list()
         self.images = random.choice(IMGS)
-        self.robot_interface = WizardInterface()
         self.timer = None
         self.golmi_client = None
         self.last_action = None
+        self.image = get_random_state()
 
     def close(self):
         self.golmi_client.disconnect()
@@ -209,12 +208,8 @@ class CcbtsBot(TaskBot):
                             },
                         )
 
-                        # send board again
-                        self.set_boards(room_id)
-
                     # cancel timer
                     logging.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
-
                     timer = self.sessions[room_id].timer.left_room.get(curr_usr["id"])
                     if timer is not None:
                         timer.cancel()
@@ -327,15 +322,13 @@ class CcbtsBot(TaskBot):
             if room_id in self.sessions:
                 if isinstance(data["command"], dict):
                     event = data["command"]["event"]
-                    interface = self.sessions[room_id].robot_interface
+                    #interface = self.sessions[room_id].robot_interface
                     this_client = self.sessions[room_id].golmi_client
                     # front end commands (wizard only)
                     right_user = self.check_role(user_id, "wizard", room_id)
                     if right_user is True:
                         # clear board
                         if event == "clear_board":
-                            # interface.clear_board()
-                            # self.set_boards(room_id)
                             this_client.clear_working_state()
 
                         elif event == "delete_object":
@@ -450,32 +443,6 @@ class CcbtsBot(TaskBot):
 
             return False
 
-    def run_command(self, command, room_id, user_id):
-        """
-        pass a command list to the backend
-        """
-        interface = self.sessions[room_id].robot_interface
-        try:
-            result = interface.play(command)
-
-        except (KeyError, TypeError, OverflowError) as error:
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color=WARNING_COLOR, message=str(error)
-                    ),
-                    "room": room_id,
-                    "receiver_id": user_id,
-                    "html": True
-                },
-            )
-            result = [False]
-        
-        # update board for wizard and send feedback
-        self.set_boards(room_id)
-        return result
-
     def set_wizard_role(self, room_id, user_id):
         curr_usr, other_usr = self.sessions[room_id].players
         if curr_usr["id"] != user_id:
@@ -506,10 +473,8 @@ class CcbtsBot(TaskBot):
                     },
                 )
 
-            # self.set_image(room_id, other_usr)
-            # self.set_boards(room_id)
-            random_state = get_random_state()
-            self.sessions[room_id].golmi_client.load_target_state(random_state)
+            this_state = self.sessions[room_id].image
+            self.sessions[room_id].golmi_client.load_target_state(this_state)
             self.sessions[room_id].golmi_client.clear_working_states()
             
             # log board
@@ -525,8 +490,6 @@ class CcbtsBot(TaskBot):
             if not response.ok:
                 logging.error(f"Could not post AMT token to logs: {response.status_code}")
                 response.raise_for_status()
-
-            
 
         else:
             self.sio.emit(
@@ -579,58 +542,6 @@ class CcbtsBot(TaskBot):
                 f"Could not set task instruction title: {response.status_code}"
             )
             response.raise_for_status()
-
-    def set_boards(self, room_id, wizard_only=False):
-        # get boards from the robot interface
-        interface = self.sessions[room_id].robot_interface
-        boards = interface.get_boards()
-        source_board = boards["s"].tolist()
-        target_board = boards["t"].tolist()
-
-        # get player information
-        player_usr, wizard_usr = self.sessions[room_id].players
-        if player_usr["role"] != "player":
-            player_usr, wizard_usr = wizard_usr, player_usr
-
-        # send board update
-        for name, board in zip(["source", "target"], [source_board, target_board]):
-            command_dict = {
-                "command": {
-                    "event": "set_board",
-                    "board": board,
-                    "name": name,
-                },
-                "room": room_id
-            }
-
-            if wizard_only is True:
-                command_dict["receiver_id"] = wizard_usr["id"]
-
-            # set source board
-            self.sio.emit("message_command", command_dict)
-
-        # set reference board (only player)
-        if wizard_only is False:
-            # TODO wizard interface should return numpy array
-            if not hasattr(interface, "ref_board"):
-                reference_json = interface.get_reference_boards()
-                reference_board = random.choice(list(reference_json["references"].values()))
-                interface.ref_board = reference_board
-
-            reference_board = interface.ref_board
-
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "set_board",
-                        "board": reference_board,
-                        "name": "reference",
-                    },
-                    "room": room_id,
-                    "receiver_id": player_usr["id"],
-                },
-            )
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
