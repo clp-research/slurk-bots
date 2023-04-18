@@ -39,7 +39,14 @@ Note: Every time a new terminal session is started, the env variables will need 
 
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
-docker run -e SLURK_TOKEN=$CLICK_BOT_TOKEN -e SLURK_USER=$CLICK_BOT -e CLICK_DATA="test_items/shape-colors.json" -e CLICK_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/click-bot &
+docker run \
+    --net="host" \
+    -e SLURK_TOKEN=$CLICK_BOT_TOKEN \
+    -e SLURK_USER=$CLICK_BOT \
+    -e CLICK_DATA="test_items/shape-colors.json" \
+    -e CLICK_TASK_ID=$TASK_ID \
+    -e SLURK_PORT=5000 \
+    -d slurk/click-bot
 ```
 
 To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be a token towards the end that will look something like this: `2f42a98e-0a29-43c2-9f94-97b38f25c30f`

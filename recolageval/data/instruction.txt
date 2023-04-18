@@ -1,0 +1,4 @@
+Describe the highlighted piece on the board on the 
+right so that another person could **uniquely** identify it. 
+When in doubt, click on a piece to find out if that's your target.
+Once you're happy with your description, send it and press NEXT (or write `/next` in the chat) to load the next board.

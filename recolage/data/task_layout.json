@@ -1,0 +1,113 @@
+{
+    "title": "Recolage Data Collection",
+    "subtitle": "Work together with your partner to solve the task",
+    "html": [
+        {
+            "layout-type": "div",
+            "class": "card",
+            "layout-content": [
+                {
+                    "layout-type": "div",
+                    "id": "viewport",
+                    "style": "height: 500px; width: 500px; padding: 10px; margin: 0px auto",
+                    "layout-content": [
+                        {
+                            "layout-type": "canvas",
+                            "id": "background",
+                            "width": "500px",
+                            "height": "500px"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "objects",
+                            "width": "500px",
+                            "height": "500px"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "gripper",
+                            "width": "500px",
+                            "height": "500px"
+                        }
+                    ]
+                },
+                {
+                    "layout-type": "hr",
+                    "layout-content": "",
+                    "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+                },
+                {
+                    "layout-type": "button",
+                    "class": "button",
+                    "role": "button",
+                    "layout-content": "generic button",
+                    "style": "display: none",
+                    "id": "generic_button"
+                }
+            ]
+        }        
+    ],
+    "css": {
+        "#viewport": {
+            "position": "relative;"
+        },
+        "#viewport canvas": {
+            "position": "absolute;"
+        },
+        "canvas": {
+            "background-color": "transparent;",
+            "border": "1px solid #000000;"
+        },
+        ".card": {
+            "position": "relative",
+            "display": "flex",
+            "flex-direction": "column",
+            "min-width": "0",
+            "background-color": "#fff",
+            "background-clip": "border-box",
+            "border": "1px solid rgba(0,0,0,.125)",
+            "border-radius": ".25rem",
+            "height": "100%",
+            "margin": "0px 15px",
+            "padding": "20px"
+        },
+        ".button, .message_button": {
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+            "margin-top": "10px",
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
+        },
+        ".message_button": {
+            "margin-top": "3px",
+            "padding": "5px",
+            "width":"49%"
+        },
+        ".button:hover, .message_button:hover" : {
+            "content": "''",
+            "background": "#818BAC"
+        }
+    },
+    "scripts": {
+        "incoming-text": "markdown",
+        "incoming-image": "display-image",
+        "submit-message": "send-message",
+        "print-history": ["attribute-history", "markdown-history"],
+        "plain": [
+            "recolage",
+            "golmi-js/view/View",
+            "golmi-js/view/RecolageLayerView",
+            "golmi-js/view/GiverLayerView",
+            "golmi-js/view/ReceiverLayerView",
+            "golmi-js/controller/LocalKeyController"
+        ]
+    },
+    "show_latency": false
+}

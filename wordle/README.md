@@ -32,7 +32,14 @@ Note: Every time a new terminal session is started, the env variables will need 
 
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
-docker run -e SLURK_TOKEN=$WORDLE_BOT_TOKEN -e SLURK_USER=$WORDLE_BOT -e SLURK_WAITING_ROOM=$WAITING_ROOM -e WORDLE_TASK_ID=$TASK_ID -e SLURK_PORT=5000 --net="host" slurk/wordle-bot &
+docker run \
+    --net="host" \
+    -e SLURK_TOKEN=$WORDLE_BOT_TOKEN \
+    -e SLURK_USER=$WORDLE_BOT \
+    -e SLURK_WAITING_ROOM=$WAITING_ROOM \
+    -e WORDLE_TASK_ID=$TASK_ID \
+    -e SLURK_PORT=5000 \
+    -d slurk/wordle-bot
 ```
 
 To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be two tokens towards the end that will look something like below. You could use one for each instance of the bots playing Wordle together.
