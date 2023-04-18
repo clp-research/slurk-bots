@@ -191,13 +191,18 @@ class CcbtsBot(TaskBot):
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
                     if role is not None:
+                        golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
                         self.sio.emit(
                             "message_command",
                             {
                                 "command": {
-                                    "event": "assign_role",
-                                    "role": role,
+                                    "event": "init",
+                                    "url": self.golmi_server,
+                                    "password": self.golmi_password,
                                     "instruction": INSTRUCTIONS[role],
+                                    "role": role,
+                                    "room_id": str(room_id),
+                                    "golmi_rooms": golmi_rooms
                                 },
                                 "room": room_id,
                                 "receiver_id": curr_usr["id"],
