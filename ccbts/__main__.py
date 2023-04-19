@@ -24,15 +24,18 @@ class RoomTimers:
     def __init__(self):
         self.left_room = dict()
 
+    def cancel(self):
+        for timer in self.left_room.values():
+            timer.cancel()
+
 
 class Session:
     def __init__(self):
         self.players = list()
-        self.images = random.choice(IMGS)
         self.timer = None
         self.golmi_client = None
         self.last_action = None
-        self.image = get_random_state()
+        self.states = [get_random_state()]
 
     def close(self):
         self.golmi_client.disconnect()
@@ -473,7 +476,7 @@ class CcbtsBot(TaskBot):
                     },
                 )
 
-            this_state = self.sessions[room_id].image
+            this_state = self.sessions[room_id].states[0]
             self.sessions[room_id].golmi_client.load_target_state(this_state)
             self.sessions[room_id].golmi_client.clear_working_states()
             
@@ -483,7 +486,7 @@ class CcbtsBot(TaskBot):
                 json={
                     "event": "board_loaded",
                     "room_id": room_id,
-                    "data": random_state,
+                    "data": this_state,
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
