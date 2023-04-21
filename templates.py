@@ -177,7 +177,7 @@ class TaskBot(Bot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
-            logging.error(f"Could not post {event} token to logs: {response.status_code}")
+            logging.error(f"Could not post {event} to logs: {response.status_code}")
             response.raise_for_status()
 
     @classmethod
