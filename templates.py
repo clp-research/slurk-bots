@@ -166,6 +166,20 @@ class TaskBot(Bot):
             json={"attribute": "style", "value": f"width: {chat_area}%"}
         )
 
+    def add_to_log(self, event, data, room_id):
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": event,
+                "room_id": room_id,
+                "data": data,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not post AMT token to logs: {response.status_code}")
+            response.raise_for_status()
+
     @classmethod
     def create_argparser(cls):
         # inherit from parent's argparser
