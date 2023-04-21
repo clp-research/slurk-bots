@@ -52,7 +52,7 @@ class SessionManager(dict):
             self.pop(room_id)
 
 
-class CcbtsBot(TaskBot):
+class CoCoBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
@@ -614,7 +614,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
-    parser = CcbtsBot.create_argparser()
+    parser = CoCoBot.create_argparser()
     if "SLURK_WAITING_ROOM" in os.environ:
         waiting_room = {"default": os.environ["SLURK_WAITING_ROOM"]}
     else:
@@ -652,7 +652,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # create bot instance
-    bot = CcbtsBot(args.token, args.user, args.task, args.host, args.port)
+    bot = CoCoBot(args.token, args.user, args.task, args.host, args.port)
     bot.post_init(args.waiting_room, args.golmi_server, args.golmi_password)
     # connect to chat server
     bot.run()

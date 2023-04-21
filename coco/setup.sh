@@ -15,7 +15,7 @@ function check_response {
 }
 
 # define here name of the bot and number of users
-BOT_NAME="ccbts"
+BOT_NAME="coco"
 NUMBER_USERS=2
 
 
@@ -37,8 +37,8 @@ docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
 # run slurk
 # copy plugins
-cp -r ccbts/golmi-js/ ../slurk/slurk/views/static/plugins/
-cp -r ccbts/ccbts.js ../slurk/slurk/views/static/plugins/
+cp -r coco/golmi-js/ ../slurk/slurk/views/static/plugins/
+cp -r coco/ccbts.js ../slurk/slurk/views/static/plugins/
 
 cd ../slurk
 docker build --tag="slurk/server" -f Dockerfile .
