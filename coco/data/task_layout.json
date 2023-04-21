@@ -217,17 +217,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "layout-type": "div",
-            "class": "card",
-            "layout-content": [
-                {
-                    "layout-type": "hr",
-                    "layout-content": "",
-                    "style": "margin: 10px 2px; background-color: #abb2b9; opacity: .50;"
-                }
-            ]
         }
     ],
     "css": {

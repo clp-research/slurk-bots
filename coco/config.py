@@ -91,13 +91,18 @@ def get_random_state():
     return random.choice(pool)
 
 
-def name_generator():
-    """
-    make sure objects are placed with increasing id
-    """
-    n = 0
-    while True:
-        yield n
-        n += 1
+def new_obj_name(state):
+    # obtain used ids
+    objs = [int(i) for i in state["objs"].keys()]
+    objs.sort()
 
-NAME_GEN = name_generator()
+    if not objs:
+        return "0"
+
+    # calculate next possible id
+    highest = objs[-1]
+    possible = set(range(highest + 2))
+    new_ids = list(possible - set(objs))
+    new_ids.sort()
+
+    return str(new_ids[0])

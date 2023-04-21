@@ -85,6 +85,15 @@ class CoCoBot(TaskBot):
             logging.debug(f"This bot is looking for task id: {self.task_id}")
 
             if task_id is not None and task_id == self.task_id:
+                # reduce height of sidebar
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                    json={"attribute": "style", "value": f"height: 90%"}
+                )
+                sleep(0.5)
+                self.move_divider(room_id, chat_area=30, task_area=70)
+
                 for usr in data["users"]:
                     self.received_waiting_token.discard(usr["id"])
 
@@ -175,7 +184,7 @@ class CoCoBot(TaskBot):
                     curr_usr, other_usr = other_usr, curr_usr
 
                 if data["type"] == "join":
-                    self.move_divider(room_id, chat_area=30, task_area=70)
+                    sleep(0.5)
                     # inform game partner about the rejoin event
                     self.sio.emit(
                         "text",
@@ -267,14 +276,13 @@ class CoCoBot(TaskBot):
                 selected = this_client.get_wizard_selection()
                 if selected:
                     obj = list(selected.values()).pop()
-                    id_n = str(next(NAME_GEN))
+
+                    current_state = this_client.get_working_state()
+                    id_n = new_obj_name(current_state)
                     obj["id_n"] = id_n
 
-                    x = data["coordinates"]["x"] // data["coordinates"]["block_size"]
-                    y = data["coordinates"]["y"] // data["coordinates"]["block_size"]
-
-                    obj["x"] = x #- len(obj["block_matrix"][0]) // 2
-                    obj["y"] = y #- len(obj["block_matrix"]) // 2
+                    obj["x"] = data["coordinates"]["x"] // data["coordinates"]["block_size"]
+                    obj["y"] = data["coordinates"]["y"] // data["coordinates"]["block_size"]
 
                     obj["gripped"] = None
                     action = this_client.add_object(obj)
@@ -301,7 +309,6 @@ class CoCoBot(TaskBot):
 
                 # remove selected objects from wizard's working board
                 this_client.remove_selection("wizard_working")
-
                 return
 
         @self.sio.event
@@ -336,10 +343,11 @@ class CoCoBot(TaskBot):
 
                         elif event == "delete_object":
                             selected = this_client.get_gripped_object()
-                            obj = list(selected.values()).pop()
-                            action = this_client.delete_object(obj)
-                            if action is not False:
-                                self.sessions[room_id].last_action = action
+                            if selected:
+                                obj = list(selected.values()).pop()
+                                action = this_client.delete_object(obj)
+                                if action is not False:
+                                    self.sessions[room_id].last_action = action
 
                         elif event == "show_progress":
                             this_client.copy_working_state()
