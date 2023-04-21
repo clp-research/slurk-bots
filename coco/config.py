@@ -5,14 +5,16 @@ import json
 from pathlib import Path
 import random
 
-ROOT = Path().resolve() #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+ROOT = Path(__file__).parent.resolve()
 
 
-TASK_GREETING = Path(f"{ROOT}/ccbts/data/task_greeting.txt").read_text().strip().split("\n\n")
+TASK_GREETING = Path(f"{ROOT}/data/task_greeting.txt").read_text().strip().split("\n\n")
+
 
 INSTRUCTIONS = dict(
-    player=Path(f"{ROOT}/ccbts/data/instruction_player.html").read_text().strip(),
-    wizard=Path(f"{ROOT}/ccbts/data/instruction_wizard.html").read_text().strip()
+    player=Path(f"{ROOT}/data/instruction_player.html").read_text().strip(),
+    wizard=Path(f"{ROOT}/data/instruction_wizard.html").read_text().strip()
 )
 
 
@@ -73,9 +75,9 @@ COLORS = {
 }
 
 
-EMPTYSTATE = json.loads(Path(f"{ROOT}/ccbts/data/empty_state.json").read_text())
-SELECTIONSTATE = json.loads(Path(f"{ROOT}/ccbts/data/selection_state.json").read_text())
-STATES = Path(f"{ROOT}/ccbts/data/states.json")
+EMPTYSTATE = json.loads(Path(f"{ROOT}/data/empty_state.json").read_text())
+SELECTIONSTATE = json.loads(Path(f"{ROOT}/data/selection_state.json").read_text())
+STATES = Path(f"{ROOT}/data/states.json")
 
 
 def get_random_state():

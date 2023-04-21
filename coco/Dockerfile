@@ -4,10 +4,8 @@ RUN mkdir -p /usr/src
 WORKDIR /usr/src
 
 COPY templates.py /usr/src/
-COPY ccbts /usr/src/ccbts
+COPY coco /usr/src/coco
 
-COPY ccbts/90_cocobots_blockworld/ver4 /usr/src
+RUN pip install --no-cache-dir -r coco/requirements.txt
 
-RUN pip install --no-cache-dir -r ccbts/requirements.txt
-
-ENTRYPOINT ["python", "-m", "ccbts"]
+ENTRYPOINT ["python", "-m", "coco"]
