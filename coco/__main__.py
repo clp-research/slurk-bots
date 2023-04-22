@@ -32,7 +32,7 @@ class RoomTimers:
 class Session:
     def __init__(self):
         self.players = list()
-        self.timer = None
+        self.timer = RoomTimers()
         self.golmi_client = None
         self.last_action = None
         self.states = load_states()
@@ -118,12 +118,9 @@ class CoCoBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Sending wordle bot to new room was successful.")
 
-                # create new timer for this room
-                self.sessions[room_id].timer = RoomTimers()
+                # create client
                 client = QuadrupleClient(str(room_id), self.golmi_server)
                 client.run(self.golmi_password)
-                client.load_config(CONFIG)
-                client.load_selector()
                 self.sessions[room_id].golmi_client = client
 
         @self.sio.event
@@ -410,10 +407,6 @@ class CoCoBot(TaskBot):
                     if data["command"] == "role:wizard":
                         self.set_wizard_role(room_id, user_id)
 
-                    # reset roles
-                    elif data["command"] == "reset_roles":
-                        self.reset_roles(room_id)
-
                     elif data["command"] == "game_over":
                         right_user = self.check_role(user_id, "player", room_id)
                         if right_user is True:
@@ -487,7 +480,6 @@ class CoCoBot(TaskBot):
                         "receiver_id": user["id"],
                     },
                 )
-
             self.load_state(room_id)
 
         else:
@@ -495,39 +487,12 @@ class CoCoBot(TaskBot):
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
-                        message="Roles have already be assigned, please reset roles first",
+                        message="Roles have already be assigned",
                         color=WARNING_COLOR
                     ),
                     "room": room_id,
                     "receiver_id": user_id,
                     "html": True
-                },
-            )
-
-    def reset_roles(self, room_id):
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    message="Roles have been resetted, please wait for new roles to be assigned",
-                    color=STANDARD_COLOR
-                ),
-                "room": room_id,
-                "html": True
-            },
-        )
-
-        for user in self.sessions[room_id].players:
-            user["role"] = None
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "reset_roles",
-                        "instruction": "",
-                    },
-                    "room": room_id,
-                    "receiver_id": user["id"],
                 },
             )
 
@@ -552,11 +517,17 @@ class CoCoBot(TaskBot):
         if not self.sessions[room_id].states:
             self.sessions[room_id].states = load_states()
 
+        # get current state
         this_state = self.sessions[room_id].states[0]
-        this_client = self.sessions[room_id].golmi_client
-        # this_client.load_config(CONFIG)
-        this_client.load_target_state(this_state)
-        this_client.clear_working_states()
+        client = self.sessions[room_id].golmi_client
+
+        # load configuration and selector board
+        client.load_config(CONFIG)
+        client.load_selector()
+
+        # load new target state
+        client.load_target_state(this_state)
+        client.clear_working_states()
 
         self.add_to_log("target_board_log", {"board": this_state}, room_id)
 
