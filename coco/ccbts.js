@@ -122,6 +122,7 @@ function set_wizard(description) {
 function set_player(description) {
     $("#intro-image").hide();
     $("#golmi_card").show();
+    $("#player_interface").show()
     $("#variable_board_description").html("Target Board");
     $("#instr_title").html("Player");
     $("#instr").html(description);
@@ -146,6 +147,10 @@ $("#show_progress_button").click(() => {
 
 $("#undo_button").click(() => {
     button_command("undo")
+})
+
+$("#next_state").click(() => {
+    button_command("next_state")
 })
 
 

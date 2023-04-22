@@ -28,6 +28,9 @@ class RoomTimers:
         for timer in self.left_room.values():
             timer.cancel()
 
+    def reset(self):
+        pass
+
 
 class Session:
     def __init__(self):
@@ -336,70 +339,99 @@ class CoCoBot(TaskBot):
                     event = data["command"]["event"]
                     #interface = self.sessions[room_id].robot_interface
                     this_client = self.sessions[room_id].golmi_client
-                    # front end commands (wizard only)
-                    right_user = self.check_role(user_id, "wizard", room_id)
-                    if right_user is True:
-                        # clear board
-                        if event == "clear_board":
-                            this_client.clear_working_state()
+                    
+                    # clear board
+                    if event == "clear_board":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
 
-                        elif event == "delete_object":
-                            selected = this_client.get_gripped_object()
-                            if selected:
-                                obj = list(selected.values()).pop()
-                                action = this_client.delete_object(obj)
-                                if action is not False:
-                                    self.sessions[room_id].last_action = action
+                        this_client.clear_working_state()
 
-                        elif event == "show_progress":
-                            this_client.copy_working_state()
+                    elif event == "delete_object":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
 
-                        elif event == "work_in_progress":
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message="Your partner has received your instruction and is working on it",
-                                        color=STANDARD_COLOR
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": other_usr["id"],
-                                    "html": True
-                                },
-                            )
-
-                        # change the color of the selected object
-                        elif event == "update_object":
-                            state = this_client.get_working_state()
-                            piece = this_client.get_gripped_object()
-
-                            if piece:
-                                id_n = list(piece.keys())[0]
-                                obj = piece[id_n]
-
-                                color = data["command"]["color"]
-                                shape = data["command"]["shape"]
-                                if color in COLORS:
-                                    new_color = COLORS[color]
-                                    obj["color"] = new_color
-
-                                state["objs"][id_n] = obj
-                                state["grippers"]["mouse"]["gripped"][id_n] = obj
-
-                                logging.debug(state)
-                                this_client.load_working_state(state)
-
-                        elif event == "undo":
-                            last_command = self.sessions[room_id].last_action
-                            obj = last_command["obj"]
-                            if last_command["action"] == "add":
-                                action = this_client.delete_object(obj)
-                            elif last_command["action"] == "delete":
-                                action = this_client.add_object(obj)
-
-                            # register new last actiond
+                        selected = this_client.get_gripped_object()
+                        if selected:
+                            obj = list(selected.values()).pop()
+                            action = this_client.delete_object(obj)
                             if action is not False:
                                 self.sessions[room_id].last_action = action
+
+                    elif event == "show_progress":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        this_client.copy_working_state()
+
+                    elif event == "work_in_progress":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="Your partner has received your instruction and is working on it",
+                                    color=STANDARD_COLOR
+                                ),
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                                "html": True
+                            },
+                        )
+
+                    # change the color of the selected object
+                    elif event == "update_object":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        state = this_client.get_working_state()
+                        piece = this_client.get_gripped_object()
+
+                        if piece:
+                            id_n = list(piece.keys())[0]
+                            obj = piece[id_n]
+
+                            color = data["command"]["color"]
+                            shape = data["command"]["shape"]
+                            if color in COLORS:
+                                new_color = COLORS[color]
+                                obj["color"] = new_color
+
+                            state["objs"][id_n] = obj
+                            state["grippers"]["mouse"]["gripped"][id_n] = obj
+
+                            logging.debug(state)
+                            this_client.load_working_state(state)
+
+                    elif event == "undo":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        last_command = self.sessions[room_id].last_action
+                        obj = last_command["obj"]
+                        if last_command["action"] == "add":
+                            action = this_client.delete_object(obj)
+                        elif last_command["action"] == "delete":
+                            action = this_client.add_object(obj)
+
+                        # register new last actiond
+                        if action is not False:
+                            self.sessions[room_id].last_action = action
+
+                    elif event == "next_state":
+                        right_user = self.check_role(user_id, "player", room_id)
+                        if right_user is False:
+                            return
+
+                        self.load_next_state(room_id)
 
                 else:
                     # user command
@@ -508,6 +540,17 @@ class CoCoBot(TaskBot):
             response.raise_for_status()
 
     def load_next_state(self, room_id):
+        self.sio.emit(
+            "text", {
+                "message": COLOR_MESSAGE.format(
+                    message="Let's get you to the next board!",
+                    color=STANDARD_COLOR
+                ),
+                "room": room_id,
+                "html": True
+            }
+        )
+
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
         self.load_state(room_id)

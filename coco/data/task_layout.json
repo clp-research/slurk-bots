@@ -107,6 +107,27 @@
     {
       "layout-type": "div",
       "class": "hidden_card",
+      "id": "player_interface",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "style": "padding: 10px; display: flex",
+          "layout-content": [
+            {
+              "layout-type": "button",
+              "class": "button",
+              "role": "button",
+              "layout-content": "next state",
+              "id": "next_state",
+              "style": "padding: 10px; margin: 5px; width: 100%"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "layout-type": "div",
+      "class": "hidden_card",
       "id": "golmi_card",
       "layout-content": [
         {
