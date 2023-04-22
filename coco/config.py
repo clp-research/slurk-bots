@@ -80,15 +80,16 @@ SELECTIONSTATE = json.loads(Path(f"{ROOT}/data/selection_state.json").read_text(
 STATES = Path(f"{ROOT}/data/states.json")
 
 
-def get_random_state():
+def load_states():
     pool = list()
     with STATES.open(encoding="utf-8") as infile:
         for line in infile:
             pool.append(
                 json.loads(line)
             )
-        
-    return random.choice(pool)
+
+    random.shuffle(pool)
+    return pool
 
 
 def new_obj_name(state):

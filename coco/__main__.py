@@ -35,7 +35,7 @@ class Session:
         self.timer = None
         self.golmi_client = None
         self.last_action = None
-        self.states = [get_random_state()]
+        self.states = load_states()
 
     def close(self):
         self.golmi_client.disconnect()
@@ -86,13 +86,14 @@ class CoCoBot(TaskBot):
 
             if task_id is not None and task_id == self.task_id:
                 # reduce height of sidebar
+                self.move_divider(room_id, chat_area=30, task_area=70)
+                sleep(0.5)
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
                     headers={"Authorization": f"Bearer {self.token}"},
-                    json={"attribute": "style", "value": f"height: 90%"}
+                    json={"attribute": "style", "value": f"height: 90%; width:70%"}
                 )
-                sleep(0.5)
-                self.move_divider(room_id, chat_area=30, task_area=70)
+                # sleep(0.5)
 
                 for usr in data["users"]:
                     self.received_waiting_token.discard(usr["id"])
@@ -275,6 +276,7 @@ class CoCoBot(TaskBot):
                 # check if the user selected an object on his selection board
                 selected = this_client.get_wizard_selection()
                 if selected:
+                    # wizard wants to place a new object
                     obj = list(selected.values()).pop()
 
                     current_state = this_client.get_working_state()
@@ -288,6 +290,9 @@ class CoCoBot(TaskBot):
                     action = this_client.add_object(obj)
                     if action is not False:
                         self.sessions[room_id].last_action = action
+                        # the state changes, log it
+                        current_state = this_client.get_working_state()
+                        self.add_to_log("working_board_log", {"board": current_state}, room_id)
 
                     # ungrip any selected object
                     this_client.remove_selection("wizard_selection")
@@ -395,7 +400,6 @@ class CoCoBot(TaskBot):
                             elif last_command["action"] == "delete":
                                 action = this_client.add_object(obj)
 
-                            logging.debug(action)
                             # register new last actiond
                             if action is not False:
                                 self.sessions[room_id].last_action = action
@@ -484,23 +488,7 @@ class CoCoBot(TaskBot):
                     },
                 )
 
-            this_state = self.sessions[room_id].states[0]
-            self.sessions[room_id].golmi_client.load_target_state(this_state)
-            self.sessions[room_id].golmi_client.clear_working_states()
-            
-            # log board
-            response = requests.post(
-                f"{self.uri}/logs",
-                json={
-                    "event": "board_loaded",
-                    "room_id": room_id,
-                    "data": this_state,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(f"Could not post AMT token to logs: {response.status_code}")
-                response.raise_for_status()
+            self.load_state(room_id)
 
         else:
             self.sio.emit(
@@ -552,6 +540,38 @@ class CoCoBot(TaskBot):
             logging.error(
                 f"Could not set task instruction title: {response.status_code}"
             )
+            response.raise_for_status()
+
+    def load_next_state(self, room_id):
+        self.sessions[room_id].timer.reset()
+        self.sessions[room_id].states.pop(0)
+        self.load_state(room_id)
+
+    def load_state(self, room_id, from_disconnect=False):
+        """load the current board on the golmi server"""
+        if not self.sessions[room_id].states:
+            self.sessions[room_id].states = load_states()
+
+        this_state = self.sessions[room_id].states[0]
+        this_client = self.sessions[room_id].golmi_client
+        # this_client.load_config(CONFIG)
+        this_client.load_target_state(this_state)
+        this_client.clear_working_states()
+
+        self.add_to_log("target_board_log", {"board": this_state}, room_id)
+
+    def add_to_log(self, event, data, room_id):
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": event,
+                "room_id": room_id,
+                "data": data,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not post {event} to logs: {response.status_code}")
             response.raise_for_status()
 
     def close_game(self, room_id):
