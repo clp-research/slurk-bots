@@ -4,6 +4,18 @@
   "html": [
     {
       "layout-type": "div",
+      "id": "fullscreen-overlay",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "id": "fullscreenButton",
+          "class": "button",
+          "layout-content": "Enter Fullscreen"
+        }
+      ]
+    },
+    {
+      "layout-type": "div",
       "class": "cards",
       "layout-content": [
         {
@@ -15,24 +27,35 @@
               "id": "instr",
               "layout-content": [
                 {
-                  "layout-type": "p",
-                  "style": "padding-bottom: 5px",
-                  "layout-content": "Together with your partner, guess the secret 5-letter word. The image gives you a hint, but the connection may be indirect."
+                  "layout-type": "button",
+                  "class": "collapsible",
+                  "layout-content": "Click to see task instructions"
                 },
                 {
-                  "layout-type": "p",
-                  "id": "mode",
-                  "style": "padding-bottom: 5px",
-                  "layout-content": ""
-                },
-                {
-                  "layout-type": "p",
-                  "style": "padding-bottom: 5px",
-                  "layout-content": "You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints."
-                },
-                {
-                  "layout-type": "p",
-                  "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
+                  "layout-type": "div",
+                  "class": "collapsible-content",
+                  "layout-content": [
+                    {
+                      "layout-type": "p",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": "Together with your partner, guess the secret 5-letter word. The image gives you a hint, but the connection may be indirect."
+                    },
+                    {
+                      "layout-type": "p",
+                      "id": "mode",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": ""
+                    },
+                    {
+                      "layout-type": "p",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": "You must submit the same guess as your partner, so coordinate! If the guess is not correct, you get more hints."
+                    },
+                    {
+                      "layout-type": "p",
+                      "layout-content": "The earlier you guess the word, the more points you get, so put your heads together!"
+                    }
+                  ]
                 },
                 {
                   "layout-type": "div",
@@ -373,6 +396,48 @@
     "#instr": {
       "text-justify": "inter-word",
       "margin": "10px"
+    },
+    "#fullscreenButton:hover": {
+      "background-color": "rgb(129, 139, 172)!important"
+    },
+    "#fullscreen-overlay":{
+      "background-color": "rgba(0,0,0,0.8)",
+      "position": "fixed",
+      "top": "0px",
+      "left": "0px",
+      "height": "100vh",
+      "width": "100vw",
+      "z-index": 3
+    },
+    "#fullscreenButton": {
+      "width": "300px",
+      "height": "100px",
+      "position": "absolute",
+      "left": "calc(50vw - 150px)",
+      "top": "calc(50vh - 90px)",
+      "font-size": "2em",
+      "border-radius": "100px",
+      "line-height": "100px",
+      "background-color": "white",
+      "text-align": "center",
+      "z-index": 4
+    },
+    ".collapsible": {
+      "background-color": "#eee",
+      "color": "#444",
+      "font-size": "1rem",
+      "cursor": "pointer",
+      "padding": "18px",
+      "width": "100%",
+      "border": "none",
+      "text-align": "left",
+      "outline": "none"
+    },
+    ".collapsible-content": {
+      "padding": "18px 18px",
+      "display": "none",
+      "overflow": "hidden",
+      "background-color": "#f1f1f1"
     }
   },
   "scripts": {
@@ -384,6 +449,6 @@
       "markdown-history"
     ],
     "typing-users": "typing-users",
-    "plain": "wordle"
+    "plain": ["collapsible-task-instructions","enforce-fullscreen","wordle"]
   }
 }
