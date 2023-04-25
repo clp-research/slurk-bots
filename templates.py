@@ -166,7 +166,7 @@ class TaskBot(Bot):
             json={"attribute": "style", "value": f"width: {chat_area}%"}
         )
 
-    def add_to_log(self, event, data, room_id):
+    def log_event(self, event, data, room_id):
         response = requests.post(
             f"{self.uri}/logs",
             json={
@@ -176,9 +176,7 @@ class TaskBot(Bot):
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(f"Could not post {event} to logs: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, event)
 
     @classmethod
     def create_argparser(cls):
