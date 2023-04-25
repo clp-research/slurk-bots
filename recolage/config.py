@@ -39,5 +39,5 @@ TYPES = "https://raw.githubusercontent.com/clp-research/golmi/exp-descrimage/app
 
 # points to give to the users
 STARTING_POINTS = 0
-POSITIVE_REWARD = 0.10  # right piece selected
-NEGATIVE_REWARD = -0.05  # wrong piece selected
+POSITIVE_REWARD = 10  # right piece selected
+NEGATIVE_REWARD = -5  # wrong piece selected

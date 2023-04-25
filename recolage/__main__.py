@@ -148,11 +148,7 @@ class RecolageBot(TaskBot):
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    logging.error(
-                        f"Could not let golmi bot join room: {response.status_code}"
-                    )
-                    response.raise_for_status()
+                self.request_feedback(response, "letting task bot join room")
                 logging.debug("Sending golmi bot to new room was successful.")
 
                 client = GolmiClient(self.sio, self, room_id)
@@ -177,8 +173,8 @@ class RecolageBot(TaskBot):
                     )
                     sleep(0.5)
 
-                if self.version != "no_feedback":
-                    self.update_title_points(room_id)
+                # if self.version != "no_feedback":
+                #     self.update_title_points(room_id)
 
         @self.sio.event
         def status(data):
@@ -329,8 +325,7 @@ class RecolageBot(TaskBot):
                 req = requests.get(
                     f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
                 )
-                if req.ok is not True:
-                    logging.error("Could not retrieve gripped piece")
+                self.request_feedback(req, "retrieving gripped piece")
 
                 piece = req.json()
                 target = self.sessions[room_id].boards[0]["state"]["targets"]
@@ -397,8 +392,7 @@ class RecolageBot(TaskBot):
                         f"{self.golmi_server}/slurk/{room_id}/{x}/{y}/{block_size}"
                     )
 
-                if req.ok is not True:
-                    logging.error("Could not retrieve gripped piece")
+                self.request_feedback(req, "retrieving gripped piece")
 
                 piece = req.json()
                 if piece:
@@ -450,11 +444,7 @@ class RecolageBot(TaskBot):
                                 response = requests.delete(
                                     f"{self.golmi_server}/slurk/gripper/{room_id}/mouse"
                                 )
-                                if not response.ok:
-                                    logging.error(
-                                        f"Could not remove mouse gripper: {response.status_code}"
-                                    )
-                                    response.raise_for_status()
+                                self.request_feedback(response, "removing mouse gripper")
 
                             # allow the player to send a second description
                             self.sessions[room_id].description = False
@@ -494,8 +484,7 @@ class RecolageBot(TaskBot):
                             req = requests.get(
                                 f"{self.golmi_server}/slurk/{room_id}/gripped"
                             )
-                            if req.ok is not True:
-                                logging.error("Could not retrieve gripped piece")
+                            self.request_feedback(req, "retrieving gripped piece")
 
                             piece = req.json()
                             if piece:
@@ -613,7 +602,7 @@ class RecolageBot(TaskBot):
         result = "right" if piece.keys() == target.keys() else "wrong"
 
         # add selected piece to logs
-        self.add_to_log("wizard_piece_selection", piece, room_id)
+        self.log_event("wizard_piece_selection", piece, room_id)
 
         # load next state
         if self.version not in {"confirm_selection", "show_gripper"}:
@@ -645,20 +634,6 @@ class RecolageBot(TaskBot):
                     "html": True,
                 },
             )
-
-    def add_to_log(self, event, data, room_id):
-        response = requests.post(
-            f"{self.uri}/logs",
-            json={
-                "event": event,
-                "room_id": room_id,
-                "data": data,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            logging.error(f"Could not post AMT token to logs: {response.status_code}")
-            response.raise_for_status()
 
     def load_next_state(self, room_id, result):
         self.sessions[room_id].timer.reset()
@@ -725,11 +700,7 @@ class RecolageBot(TaskBot):
             f"{self.uri}/users/{user_id}/permissions",
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(
-                f"Could not retrieve user's permission: {response.status_code}"
-            )
-            response.raise_for_status()
+        self.request_feedback(response, "retrieving user's permissions")
 
         permission_id = response.json()["id"]
         requests.patch(
@@ -740,11 +711,7 @@ class RecolageBot(TaskBot):
                 "Authorization": f"Bearer {self.token}",
             },
         )
-        if not response.ok:
-            logging.error(
-                f"Could not change user's message permission: {response.status_code}"
-            )
-            response.raise_for_status()
+        self.request_feedback(response, "changing user's message permission")
 
     def set_wizard_role(self, room_id, user_id):
         self.sessions[room_id].timer.reset()
@@ -774,6 +741,10 @@ class RecolageBot(TaskBot):
 
                 if role == "wizard":
                     self.set_message_privilege(curr_usr["id"], False)
+
+            # update title with points
+            if self.version != "no_feedback":
+                self.update_title_points(room_id)
 
             sleep(0.5)
             self.load_state(room_id)
@@ -812,8 +783,7 @@ class RecolageBot(TaskBot):
                 # so that the controller can still operate it
                 if not board["state"]["grippers"]:
                     req = requests.get(f"{self.golmi_server}/slurk/{room_id}/state")
-                    if req.ok is not True:
-                        logging.error("Could not retrieve state")
+                    self.request_feedback(req, "retrieving state")
 
                     state = req.json()
                     grippers = state["grippers"]
@@ -828,7 +798,7 @@ class RecolageBot(TaskBot):
         # no need to log if the board is loaded again
         # after the wizard disconnected
         if from_disconnect is False:
-            self.add_to_log("board_log", {"board": board}, room_id)
+            self.log_event("board_log", {"board": board}, room_id)
 
         self.sessions[room_id].golmi_client.load_config(board["config"])
         self.sessions[room_id].golmi_client.load_state(board["state"])
@@ -838,7 +808,7 @@ class RecolageBot(TaskBot):
         amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
         points = self.sessions[room_id].points
         # post AMT token to logs
-        self.add_to_log(
+        self.log_event(
             "confirmation_log",
             {"status_txt": status, "amt_token": amt_token, "reward": points},
             room_id,
@@ -873,14 +843,10 @@ class RecolageBot(TaskBot):
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
-            json={"text": f"Bonus reward: {score} 💰 | Correct: {correct}"},
+            json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(
-                f"Could not set task point in title: {response.status_code}"
-            )
-            response.raise_for_status()
+        self.request_feedback(response, "setting point stand in title")
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
@@ -901,17 +867,14 @@ class RecolageBot(TaskBot):
             json={"attribute": "readonly", "value": "True"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "setting room to read_only")
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "placeholder", "value": "This room is read-only"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "setting room title to read_only")
 
         # remove user from room
         if room_id in self.sessions:
@@ -920,20 +883,14 @@ class RecolageBot(TaskBot):
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    logging.error(f"Could not get user: {response.status_code}")
-                    response.raise_for_status()
+                self.request_feedback(response, "getting user")
                 etag = response.headers["ETag"]
 
                 response = requests.delete(
                     f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
                     headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
                 )
-                if not response.ok:
-                    logging.error(
-                        f"Could not remove user from task room: {response.status_code}"
-                    )
-                    response.raise_for_status()
+                self.request_feedback(response, "removing user from task toom")
                 logging.debug("Removing user from task room was successful.")
 
     def timeout_close_game(self, room_id, status):
