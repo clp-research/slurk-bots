@@ -166,6 +166,18 @@ class TaskBot(Bot):
             json={"attribute": "style", "value": f"width: {chat_area}%"}
         )
 
+    def log_event(self, event, data, room_id):
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": event,
+                "room_id": room_id,
+                "data": data,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, event)
+
     @classmethod
     def create_argparser(cls):
         # inherit from parent's argparser
