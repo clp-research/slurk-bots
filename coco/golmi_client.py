@@ -122,6 +122,15 @@ class QuadrupleClient:
 
         return req.json()
 
+    def grip_cell(self, x, y, block_size):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/grip_cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+        )
+        if req.ok is not True:
+            print("Could not retrieve gripped piece")
+
+        return req.json()
+
     def wizard_select_object(self, x, y, block_size):
         req = requests.get(
             f'{self.golmi_address}/slurk/grip/{self.rooms.selector}/{x}/{y}/{block_size}'
@@ -141,6 +150,12 @@ class QuadrupleClient:
         )
         return req.json() if req.ok else None
 
+    # def get_wizard_entire_cell(self, x, y, block_size):
+    #     req = requests.get(
+    #         f'{self.golmi_address}/slurk/cell/{self.rooms.selector}/{x}/{y}/{block_size}'
+    #     )
+    #     return req.json() if req.ok else None
+
     def add_object(self, obj):
         """
         only wizard can add an object to his working
@@ -158,6 +173,12 @@ class QuadrupleClient:
             action="add",
             obj=obj
         )
+
+    def remove_gripper(self, gripper):
+        req = requests.delete(
+            f'{self.golmi_address}/slurk/gripper{self.rooms.selector}/{gripper}'
+        )
+        return req.json() if req.ok else None
 
     def delete_object(self, obj):
         """
@@ -189,14 +210,14 @@ class QuadrupleClient:
             obj=obj
         )
 
-    def remove_selection(self, room):
+    def remove_selection(self, room, gripper_id):
         rooms = {
             "wizard_selection": self.rooms.selector,
             "wizard_working": self.rooms.wizard_working
         }
 
         response = requests.delete(
-            f"{self.golmi_address}/slurk/gripper/{rooms[room]}/mouse"
+            f"{self.golmi_address}/slurk/gripper/{rooms[room]}/{gripper_id}"
         )
         if not response.ok:
             logging.error(f"Could not post new object: {response.status_code}")

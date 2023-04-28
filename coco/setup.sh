@@ -80,7 +80,7 @@ echo $CONCIERGE_BOT_TOKEN
 CONCIERGE_BOT=$(check_response scripts/create_user.sh "ConciergeBot" $CONCIERGE_BOT_TOKEN | jq .id)
 echo "Concierge Bot Id:"
 echo $CONCIERGE_BOT
-docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e SLURK_PORT=5000 --net="host" slurk/concierge-bot &
+docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e SLURK_PORT=5000 --net="host" --restart unless-stopped slurk/concierge-bot &
 sleep 1
 
 # create math bot
@@ -99,6 +99,7 @@ docker run \
     -e SLURK_WAITING_ROOM=$WAITING_ROOM \
     -e SLURK_PORT=5000 \
     --net="host" \
+    --restart unless-stopped \
     slurk/$BOT_NAME-bot &
 sleep 1
 

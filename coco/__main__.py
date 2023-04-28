@@ -273,38 +273,53 @@ class CoCoBot(TaskBot):
 
             board = data["coordinates"]["board"]
             if board == "wizard_working":
-                # check if the user selected an object on his selection board
-                selected = this_client.get_wizard_selection()
-                if selected:
-                    # wizard wants to place a new object
-                    obj = list(selected.values()).pop()
+                if data["coordinates"]["button"] == "left":
+                    # check if the user selected an object on his selection board
+                    selected = this_client.get_wizard_selection()
+                    if selected:
+                        # wizard wants to place a new object
+                        obj = list(selected.values()).pop()
 
-                    current_state = this_client.get_working_state()
-                    id_n = new_obj_name(current_state)
-                    obj["id_n"] = id_n
-
-                    obj["x"] = data["coordinates"]["x"] // data["coordinates"]["block_size"]
-                    obj["y"] = data["coordinates"]["y"] // data["coordinates"]["block_size"]
-
-                    obj["gripped"] = None
-                    action = this_client.add_object(obj)
-                    if action is not False:
-                        self.sessions[room_id].last_action = action
-                        # the state changes, log it
                         current_state = this_client.get_working_state()
-                        self.add_to_log("working_board_log", {"board": current_state}, room_id)
+                        id_n = new_obj_name(current_state)
+                        obj["id_n"] = id_n
 
-                    # ungrip any selected object
-                    this_client.remove_selection("wizard_selection")
+                        obj["x"] = data["coordinates"]["x"] // data["coordinates"]["block_size"]
+                        obj["y"] = data["coordinates"]["y"] // data["coordinates"]["block_size"]
 
-                else:
-                    # no object is selected, we can select this object
-                    piece = this_client.grip_object(
+                        obj["gripped"] = None
+                        action = this_client.add_object(obj)
+                        if action is not False:
+                            self.sessions[room_id].last_action = action
+                            # the state changes, log it
+                            current_state = this_client.get_working_state()
+                            self.log_event("working_board_log", {"board": current_state}, room_id)
+
+                        # ungrip any selected object
+                        this_client.remove_selection("wizard_selection", "mouse")
+                        this_client.remove_selection("wizard_working", "cell")
+
+                    else:
+                        # no object is selected, we can select this object
+                        this_client.remove_selection("wizard_working", "cell")
+
+                        piece = this_client.grip_object(
+                            x=data["coordinates"]["x"],
+                            y=data["coordinates"]["y"],
+                            block_size=data["coordinates"]["block_size"]
+                        )
+                        
+
+                elif data["coordinates"]["button"] == "right":
+                    this_client.remove_selection("wizard_selection", "mouse")
+                    this_client.remove_selection("wizard_working", "mouse")
+                    this_client.grip_cell(
                         x=data["coordinates"]["x"],
                         y=data["coordinates"]["y"],
                         block_size=data["coordinates"]["block_size"]
                     )
-
+                    
+                            
             if board == "wizard_selection":
                 this_client.wizard_select_object(
                     x=data["coordinates"]["x"],
@@ -313,7 +328,8 @@ class CoCoBot(TaskBot):
                 )
 
                 # remove selected objects from wizard's working board
-                this_client.remove_selection("wizard_working")
+                this_client.remove_selection("wizard_working", "mouse")
+                this_client.remove_selection("wizard_working", "cell")
                 return
 
         @self.sio.event
@@ -572,21 +588,7 @@ class CoCoBot(TaskBot):
         client.load_target_state(this_state)
         client.clear_working_states()
 
-        self.add_to_log("target_board_log", {"board": this_state}, room_id)
-
-    def add_to_log(self, event, data, room_id):
-        response = requests.post(
-            f"{self.uri}/logs",
-            json={
-                "event": event,
-                "room_id": room_id,
-                "data": data,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            logging.error(f"Could not post {event} to logs: {response.status_code}")
-            response.raise_for_status()
+        self.log_event("target_board_log", {"board": this_state}, room_id)
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
