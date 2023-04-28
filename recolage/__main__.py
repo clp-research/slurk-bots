@@ -233,6 +233,20 @@ class RecolageBot(TaskBot):
                                 "receiver_id": data["user"]["id"],
                             },
                         )
+                    else:
+                        sleep(0.5)
+                        #start demo
+                        self.sio.emit(
+                            "message_command",
+                            {
+                                "command": {
+                                    "url": self.golmi_server,
+                                    "event": "demo",
+                                    "password": self.golmi_password
+                                },
+                                "room": room_id,
+                            },
+                        )
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone

@@ -4,10 +4,13 @@ import logging
 import requests
 import socketio
 
+from .config import *
+
 
 class GolmiClient:
     def __init__(self, slurk_socket, bot, room_id):
         self.socket = socketio.Client()
+        self.demo_socket = socketio.Client()
         self.slurk_socket = slurk_socket
         self.room_id = room_id
         self.bot = bot
@@ -36,14 +39,17 @@ class GolmiClient:
                     self.room_id
                 )
             else:
-                logging.debug("-------------")
-                logging.debug(piece)
-                logging.debug(grippers)
                 self.bot.piece_selection(self.room_id, piece)
 
     def run(self, address, room_id, auth):
         self.socket.connect(address, auth={"password": auth})
         self.socket.call("join", {"room_id": room_id})
+
+        self.demo_socket.connect(address, auth={"password": auth})
+        self.socket.call("join", {"room_id": f"{room_id}_demo"})
+        self.socket.emit("load_config", DEMO_BOARD["config"])
+        self.socket.emit("load_state", DEMO_BOARD["state"])
+
 
     def random_init(self, random_config):
         self.socket.emit("random_init", random_config)
