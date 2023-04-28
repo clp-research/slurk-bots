@@ -117,7 +117,7 @@
               "layout-type": "button",
               "class": "button",
               "role": "button",
-              "layout-content": "next state",
+              "layout-content": "next episode",
               "id": "next_state",
               "style": "padding: 10px; margin: 5px; width: 100%"
             }
