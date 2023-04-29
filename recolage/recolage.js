@@ -1,7 +1,8 @@
 var golmi_socket = null
 var layerView = null
 var controller = null
-
+var demo_socket = null
+var demo_layerView = null
 
 // copy some parts of the mouse tracking plugin
 let trackMousePointer = {
@@ -121,14 +122,8 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
 function start(url, room_id, role, password, show_gripper, show_gripped_objects, warning) {
     console.log("received url")
 
-    try {
-        console.log("disconnect demo socket")
-        golmi_socket.disconnect()
-    } catch (error) {
-        console.log("socket was not defined")
-    }
-    layerView = null;
-    golmi_socket = null;
+    $("#demo_view").remove()
+    $("#task_view").show()
 
     start_golmi(url, password, role, show_gripper, show_gripped_objects)
     golmi_socket.connect();
@@ -198,26 +193,26 @@ function confirm_selection(answer){
 
 
 function start_demo(url, password){
-    golmi_socket = io(url, {
+    demo_socket = io(url, {
         auth: { "password": password }
     });
     // --- view --- // 
     // Get references to the three canvas layers
-    let bgLayer = document.getElementById("background");
-    let objLayer = document.getElementById("objects");
-    let grLayer = document.getElementById("gripper");
+    let bgLayer = document.getElementById("background_demo");
+    let objLayer = document.getElementById("objects_demo");
+    let grLayer = document.getElementById("gripper_demo");
 
-    layerView = new document.ReceiverLayerView(
-        golmi_socket,
+    demo_layerView = new document.ReceiverLayerView(
+        demo_socket,
         bgLayer,
         objLayer,
         grLayer
     );
 
-    golmi_socket.connect();
+    demo_socket.connect();
   
     //golmi_socket.emit("add_gripper");
-    golmi_socket.emit("join", { "room_id": `${self_room}_demo`});
+    demo_socket.emit("join", { "room_id": `${self_room}_demo`});
 }
 
 $(document).ready(function () {
@@ -246,6 +241,7 @@ $(document).ready(function () {
                 case "attach_controller":
                     console.log("attach controller")
                     controller.can_move = true;
+                    controller.resetKeys()
                     break;
 
                 case "demo":

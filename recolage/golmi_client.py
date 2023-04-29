@@ -28,7 +28,7 @@ class GolmiClient:
             if piece is None:
                 # record movement, no object was gripped
                 gripper = list(grippers.values())[0]
-                self.bot.add_to_log(
+                self.bot.log_event(
                     "gripper_movement",
                     {
                         "coordinates": {
@@ -49,7 +49,6 @@ class GolmiClient:
         self.socket.call("join", {"room_id": f"{room_id}_demo"})
         self.socket.emit("load_config", DEMO_BOARD["config"])
         self.socket.emit("load_state", DEMO_BOARD["state"])
-
 
     def random_init(self, random_config):
         self.socket.emit("random_init", random_config)

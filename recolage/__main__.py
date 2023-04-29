@@ -460,6 +460,17 @@ class RecolageBot(TaskBot):
                                 )
                                 self.request_feedback(response, "removing mouse gripper")
 
+                            else:
+                                # reset the gripper to its original position
+                                req = requests.get(f"{self.golmi_server}/slurk/{room_id}/state")
+                                self.request_feedback(req, "retrieving state")
+
+                                state = req.json()
+                                grippers = state["grippers"]
+                                gr_id = list(grippers.keys())[0]
+
+                                req = requests.patch(f"{self.golmi_server}/slurk/gripper/reset/{room_id}/{gr_id}")
+
                             # allow the player to send a second description
                             self.sessions[room_id].description = False
                             self.set_message_privilege(user_id, True)
