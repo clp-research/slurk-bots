@@ -392,7 +392,6 @@ class WordleBot:
                         },
                     )
 
-                    # FIXME: this should not generate a success token
                     self.close_game(room_id, generate_token=False)
 
                     # LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
