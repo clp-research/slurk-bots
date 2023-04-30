@@ -66,15 +66,26 @@ class RoomTimers:
         )
         self.left_room[user].start()
 
+    def start_round_timer(self, function, room_id):
+        # cancel old timer if still running
+        if isinstance(self.round_timer, Timer):
+            self.round_timer.cancel()
+
+        timer = Timer(
+            TIME_ROUND * 60, function, args=[room_id]
+        )
+        timer.start()
+        self.round_timer = timer
+
 
 class Session:
     def __init__(self):
-        self.players = list()
+        self.timer = RoomTimers()
         self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
+        self.players = list()
         self.guesses = dict()
         self.guesses_history = list()
         self.points = 0
-        self.timer = None
 
     def close(self):
         self.timer.cancel_all_timers()
@@ -229,11 +240,7 @@ class WordleBot:
                 self.show_item(room_id)
 
                 # begin timers
-                self.sessions[room_id].timer = RoomTimers()
-                self.sessions[room_id].timer.round_timer = Timer(
-                    TIME_ROUND * 60, self.time_out_round, args=[room_id]
-                )
-                self.sessions[room_id].timer.round_timer.start()
+                self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
 
                 # show info to users
                 self._update_score_info(room_id)
@@ -386,7 +393,7 @@ class WordleBot:
                     )
 
                     # FIXME: this should not generate a success token
-                    self.close_game(room_id)
+                    self.close_game(room_id, generate_token=False)
 
                     # LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
                     # self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
@@ -748,10 +755,8 @@ class WordleBot:
 
             self.show_item(room_id)
 
-            self.sessions[room_id].timer.round_timer = Timer(
-                TIME_ROUND * 60, self.time_out_round, args=[room_id]
-            )
-            self.sessions[room_id].timer.round_timer.start()
+            # restart next_round_timer
+            self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
 
     def time_out_round(self, room_id):
         """
@@ -949,7 +954,7 @@ class WordleBot:
             },
         )
 
-    def close_game(self, room_id):
+    def close_game(self, room_id, generate_token=True):
         """Erase any data structures no longer necessary."""
 
         curr_usr, other_usr = self.sessions[room_id].players
@@ -957,16 +962,22 @@ class WordleBot:
             self.social_media_post(room_id, curr_usr["id"], other_usr["name"])
             self.social_media_post(room_id, other_usr["id"], curr_usr["name"])
         else:
-            self.confirmation_code(room_id, "success", curr_usr["id"])
-            self.confirmation_code(room_id, "success", other_usr["id"])
+            if generate_token is True:
+                self.confirmation_code(room_id, "success", curr_usr["id"])
+                self.confirmation_code(room_id, "success", other_usr["id"])
 
             sleep(10)
+
+            message = "This room is closing."
+            if generate_token is True:
+                message += " Make sure to save your token."
+
             self.sio.emit(
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message="This room is closing. Make sure to save your token.",
+                        message=message,
                     ),
                     "room": room_id,
                     "html": True,
