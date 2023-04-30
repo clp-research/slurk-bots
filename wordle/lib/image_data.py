@@ -4,7 +4,7 @@
 import random
 
 
-class ImageData(dict):
+class ImageData(list):
     """Manage the access to image data.
 
     Mapping from room id to items left for this room.
@@ -44,6 +44,7 @@ class ImageData(dict):
             random.seed(seed)
 
         self._switch_order = self._switch_image_order()
+        self.get_word_image_pairs()
 
     @property
     def n(self):
@@ -53,7 +54,7 @@ class ImageData(dict):
     def mode(self):
         return self._mode
 
-    def get_word_image_pairs(self, room_id):
+    def get_word_image_pairs(self):
         """Create a collection of word/image pair items.
 
         Each item holds a word and 1 or 2 urls each to one image
@@ -64,9 +65,6 @@ class ImageData(dict):
         This function remembers previous calls to itself,
         which makes it possible to split a file of items over
         several participants even for not random sampling.
-
-        Args:
-            room_id (str): Unique identifier of a task room.
 
         Returns:
             None
@@ -105,9 +103,9 @@ class ImageData(dict):
                     new_sample.append((item[0], item[2], item[1]))
                 else:
                     new_sample.append(item)
-            self[room_id] = new_sample
+            self.extend(new_sample)
         else:
-            self[room_id] = sample
+            self.extend(sample)
 
     def _image_gen(self):
         """Generate one image pair at a time."""

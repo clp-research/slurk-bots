@@ -20,11 +20,18 @@ docker build --tag "slurk/wordle-bot" -f wordle/Dockerfile .
 docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
 # run slurk
+
+## copy plugins
+cp wordle/wordle.js ../slurk/slurk/views/static/plugins/
+
+
 cd ../slurk
 docker build --tag="slurk/server" -f Dockerfile .
 export SLURK_DOCKER=slurk
 scripts/start_server.sh
 sleep 5
+
+rm slurk/views/static/plugins/wordle.js
 
 # create admin token
 SLURK_TOKEN=$(check_response scripts/read_admin_token.sh)
