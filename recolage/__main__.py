@@ -242,7 +242,8 @@ class RecolageBot(TaskBot):
                                 "command": {
                                     "url": self.golmi_server,
                                     "event": "demo",
-                                    "password": self.golmi_password
+                                    "password": self.golmi_password,
+                                    "room": f"{room_id}_demo"
                                 },
                                 "room": room_id,
                             },
