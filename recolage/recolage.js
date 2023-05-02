@@ -192,7 +192,7 @@ function confirm_selection(answer){
 }
 
 
-function start_demo(url, password){
+function start_demo(url, password, room_id){
     demo_socket = io(url, {
         auth: { "password": password }
     });
@@ -212,8 +212,9 @@ function start_demo(url, password){
     demo_socket.connect();
   
     //golmi_socket.emit("add_gripper");
-    demo_socket.emit("join", { "room_id": `${self_room}_demo`});
+    demo_socket.emit("join", { "room_id": room_id});
 }
+
 
 $(document).ready(function () {
     socket.on("command", (data) => {
@@ -247,7 +248,8 @@ $(document).ready(function () {
                 case "demo":
                     start_demo(
                         data.command.url,
-                        data.command.password
+                        data.command.password,
+                        data.command.room
                     );
             }
         }
