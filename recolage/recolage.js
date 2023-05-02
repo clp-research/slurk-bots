@@ -1,7 +1,8 @@
-let golmi_socket = null
-let layerView = null
-let controller = null
-
+var golmi_socket = null
+var layerView = null
+var controller = null
+var demo_socket = null
+var demo_layerView = null
 
 // copy some parts of the mouse tracking plugin
 let trackMousePointer = {
@@ -54,8 +55,6 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
     golmi_socket = io(url, {
         auth: { "password": password }
     });
-    // debug: print any messages to the console
-    localStorage.debug = 'golmi_socket.io-client:golmi_socket';
 
     // --- view --- // 
     // Get references to the three canvas layers
@@ -122,6 +121,10 @@ function start_golmi(url, password, role, show_gripper, show_gripped_objects) {
 // --- stop and start drawing --- //
 function start(url, room_id, role, password, show_gripper, show_gripped_objects, warning) {
     console.log("received url")
+
+    $("#demo_view").remove()
+    $("#task_view").show()
+
     start_golmi(url, password, role, show_gripper, show_gripped_objects)
     golmi_socket.connect();
 
@@ -189,9 +192,33 @@ function confirm_selection(answer){
 }
 
 
+function start_demo(url, password){
+    demo_socket = io(url, {
+        auth: { "password": password }
+    });
+    // --- view --- // 
+    // Get references to the three canvas layers
+    let bgLayer = document.getElementById("background_demo");
+    let objLayer = document.getElementById("objects_demo");
+    let grLayer = document.getElementById("gripper_demo");
+
+    demo_layerView = new document.ReceiverLayerView(
+        demo_socket,
+        bgLayer,
+        objLayer,
+        grLayer
+    );
+
+    demo_socket.connect();
+  
+    //golmi_socket.emit("add_gripper");
+    demo_socket.emit("join", { "room_id": `${self_room}_demo`});
+}
+
 $(document).ready(function () {
     socket.on("command", (data) => {
         if (typeof (data.command) === "object") {
+            console.log(data)
             switch(data.command.event){
                 case "init":
                     console.log("start")
@@ -214,7 +241,14 @@ $(document).ready(function () {
                 case "attach_controller":
                     console.log("attach controller")
                     controller.can_move = true;
+                    controller.resetKeys()
                     break;
+
+                case "demo":
+                    start_demo(
+                        data.command.url,
+                        data.command.password
+                    );
             }
         }
     });

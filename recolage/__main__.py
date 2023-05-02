@@ -233,6 +233,20 @@ class RecolageBot(TaskBot):
                                 "receiver_id": data["user"]["id"],
                             },
                         )
+                    else:
+                        sleep(0.5)
+                        #start demo
+                        self.sio.emit(
+                            "message_command",
+                            {
+                                "command": {
+                                    "url": self.golmi_server,
+                                    "event": "demo",
+                                    "password": self.golmi_password
+                                },
+                                "room": room_id,
+                            },
+                        )
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
@@ -445,6 +459,17 @@ class RecolageBot(TaskBot):
                                     f"{self.golmi_server}/slurk/gripper/{room_id}/mouse"
                                 )
                                 self.request_feedback(response, "removing mouse gripper")
+
+                            else:
+                                # reset the gripper to its original position
+                                req = requests.get(f"{self.golmi_server}/slurk/{room_id}/state")
+                                self.request_feedback(req, "retrieving state")
+
+                                state = req.json()
+                                grippers = state["grippers"]
+                                gr_id = list(grippers.keys())[0]
+
+                                req = requests.patch(f"{self.golmi_server}/slurk/gripper/reset/{room_id}/{gr_id}")
 
                             # allow the player to send a second description
                             self.sessions[room_id].description = False

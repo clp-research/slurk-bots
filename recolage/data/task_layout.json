@@ -8,8 +8,35 @@
             "layout-content": [
                 {
                     "layout-type": "div",
-                    "id": "viewport",
+                    "class": "viewport",
+                    "id": "demo_view",
                     "style": "height: 500px; width: 500px; padding: 10px; margin: 0px auto",
+                    "layout-content": [
+                        {
+                            "layout-type": "canvas",
+                            "id": "background_demo",
+                            "width": "500px",
+                            "height": "500px"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "objects_demo",
+                            "width": "500px",
+                            "height": "500px"
+                        },
+                        {
+                            "layout-type": "canvas",
+                            "id": "gripper_demo",
+                            "width": "500px",
+                            "height": "500px"
+                        }
+                    ]
+                },
+                {
+                    "layout-type": "div",
+                    "class": "viewport",
+                    "id": "task_view",
+                    "style": "display: none; height: 500px; width: 500px; padding: 10px; margin: 0px auto",
                     "layout-content": [
                         {
                             "layout-type": "canvas",
@@ -48,10 +75,10 @@
         }        
     ],
     "css": {
-        "#viewport": {
+        ".viewport": {
             "position": "relative;"
         },
-        "#viewport canvas": {
+        ".viewport canvas": {
             "position": "absolute;"
         },
         "canvas": {
