@@ -48,10 +48,12 @@ function shadeKeyBoard(letter, color) {
 function deleteLetter() {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let box = row.children[nextLetter - 1]
-    box.textContent = ""
-    box.classList.remove("filled-box")
-    currentGuess.pop()
-    nextLetter -= 1
+    if (box){
+        box.textContent = ""
+        box.classList.remove("filled-box")
+        currentGuess.pop()
+        nextLetter -= 1
+    }
 }
 
 
@@ -210,12 +212,11 @@ $(document).ready(() => {
 
         if (typeof (data.command) === "object") {
             if (data.command.command === "wordle_init") {
-
                 guessesRemaining = NUMBER_OF_GUESSES;
                 currentGuess = [];
                 $("#keyboard-cont").show()
                 initBoard();
-                for (let i = 0; i < 5; i++) {
+                for (let i=0; i<5; i++) {
                     deleteLetter()
                 }
 
