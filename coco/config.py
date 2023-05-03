@@ -13,8 +13,8 @@ TASK_GREETING = Path(f"{ROOT}/data/task_greeting.txt").read_text().strip().split
 
 
 INSTRUCTIONS = dict(
-    player=Path(f"{ROOT}/data/instruction_player.html").read_text().strip(),
-    wizard=Path(f"{ROOT}/data/instruction_wizard.html").read_text().strip()
+    player=Path(f"{ROOT}/data/piece_legend.html").read_text().strip(),
+    wizard=Path(f"{ROOT}/data/piece_legend.html").read_text().strip()
 )
 
 
