@@ -19,7 +19,6 @@ class RoomTimers:
 
     :param round_timer: After 15 minutes the image will change
         and players get no points
-
     """
     def __init__(self):
         self.left_room = dict()
@@ -39,6 +38,7 @@ class Session:
         self.golmi_client = None
         self.last_action = None
         self.states = load_states()
+        self.game_over = False
 
     def close(self):
         self.golmi_client.disconnect()
@@ -447,7 +447,24 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        self.load_next_state(room_id)
+                        if self.sessions[room_id].game_over is True:
+                            self.load_next_state(room_id)
+                        else:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message=(
+                                            "The game is not over yet, you can only load the next "
+                                            "episode once this is over (command: /episode:over)."
+                                        ),
+                                        color=WARNING_COLOR
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True
+                                },
+                            )
 
                 else:
                     # user command
@@ -455,10 +472,17 @@ class CoCoBot(TaskBot):
                     if data["command"] == "role:wizard":
                         self.set_wizard_role(room_id, user_id)
 
-                    elif data["command"] == "game_over":
+                    # elif data["command"] == "game:over":
+                    #     right_user = self.check_role(user_id, "player", room_id)
+                    #     if right_user is True:
+                    #         self.close_game(room_id)
+
+                    elif data["command"] == "episode:over":
                         right_user = self.check_role(user_id, "player", room_id)
-                        if right_user is True:
-                            self.close_game(room_id)
+                        if right_user is False:
+                            return
+
+                        self.sessions[room_id].game_over = True
 
                     else:
                         self.sio.emit(
@@ -567,6 +591,7 @@ class CoCoBot(TaskBot):
             }
         )
 
+        self.sessions[room_id].game_over = False
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
         self.load_state(room_id)
