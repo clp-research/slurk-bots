@@ -97,7 +97,15 @@
               "class": "button",
               "role": "button",
               "id": "work_in_progress_button",
-              "layout-content": "Work in progress",
+              "layout-content": "Work in Progress",
+              "style": "padding: 10px; margin: 5px; width: 25%"
+            },
+            {
+              "layout-type": "button",
+              "class": "button",
+              "role": "button",
+              "id": "revert_session_button",
+              "layout-content": "Revert Session",
               "style": "padding: 10px; margin: 5px; width: 25%"
             }
           ]
@@ -118,7 +126,7 @@
               "class": "button",
               "role": "button",
               "layout-content": "next episode",
-              "id": "next_state",
+              "id": "next_state_button",
               "style": "padding: 10px; margin: 5px; width: 100%"
             }
           ]

@@ -146,41 +146,27 @@ function set_player(description) {
 };
 
 
-$("#delete_button").click(() => {
-    button_command("delete_object")
-})
-
-$("#clear_board_button").click(() => {
-    button_command("clear_board")
-})
-
-$("#work_in_progress_button").click(() => {
-    button_command("work_in_progress")
-})
-
-$("#show_progress_button").click(() => {
-    button_command("show_progress")
-})
-
-$("#undo_button").click(() => {
-    button_command("undo")
-})
-
-$("#next_state").click(() => {
-    button_command("next_state")
-})
-
-
-function button_command(this_event){
-    socket.emit("message_command",
-        {
-            command: {
-                event: this_event
-            },
-            room: self_room
-        }
-    )
-}
+// add listener for each button
+[
+    "delete",
+    "clear_board",
+    "work_in_progress",
+    "show_progress",
+    "undo",
+    "next_state",
+    "revert_session"
+].forEach(element => {
+    $(`#${element}_button`).click(() => {
+        socket.emit("message_command",
+            {
+                command: {
+                    event: element
+                },
+                room: self_room
+            }
+        )
+    })
+});
 
 
 $(document).ready(() => {

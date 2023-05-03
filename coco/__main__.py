@@ -39,6 +39,7 @@ class Session:
         self.last_action = None
         self.states = load_states()
         self.game_over = False
+        self.checkpoint = dict()    
 
     def close(self):
         self.golmi_client.disconnect()
@@ -308,7 +309,6 @@ class CoCoBot(TaskBot):
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"]
                         )
-                        
 
                 elif data["coordinates"]["button"] == "right":
                     this_client.remove_selection("wizard_selection", "mouse")
@@ -382,6 +382,31 @@ class CoCoBot(TaskBot):
                             return
 
                         this_client.copy_working_state()
+                        current_state = this_client.get_working_state()
+                        self.sessions[room_id].checkpoint = current_state
+
+                    elif event == "revert_session":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        client = self.sessions[room_id].golmi_client
+                        client.load_working_state(
+                            self.sessions[room_id].checkpoint
+                        )
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="Reverting session to last checkpoint",
+                                    color=STANDARD_COLOR
+                                ),
+                                "room": room_id,
+                                "receiver_id": curr_usr["id"],
+                                "html": True
+                            },
+                        )
 
                     elif event == "work_in_progress":
                         right_user = self.check_role(user_id, "wizard", room_id)
