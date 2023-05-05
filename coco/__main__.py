@@ -294,7 +294,7 @@ class CoCoBot(TaskBot):
                             self.sessions[room_id].last_action = action
                             # the state changes, log it
                             current_state = this_client.get_working_state()
-                            self.log_event("working_board_log", {"board": current_state}, room_id)
+                            self.log_event("working_board_log", current_state, room_id)
 
                         # ungrip any selected object
                         this_client.remove_selection("wizard_selection", "mouse")
@@ -309,6 +309,17 @@ class CoCoBot(TaskBot):
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"]
                         )
+                        self.log_event(
+                            "user_selection",
+                            dict(
+                                x=data["coordinates"]["x"],
+                                y=data["coordinates"]["y"],
+                                block_size=data["coordinates"]["block_size"],
+                                selection="single_object",
+                                board="wizard_working"
+                            ),
+                            room_id
+                        )
 
                 elif data["coordinates"]["button"] == "right":
                     this_client.remove_selection("wizard_selection", "mouse")
@@ -317,6 +328,18 @@ class CoCoBot(TaskBot):
                         x=data["coordinates"]["x"],
                         y=data["coordinates"]["y"],
                         block_size=data["coordinates"]["block_size"]
+                    )
+
+                    self.log_event(
+                        "user_selection",
+                        dict(
+                            x=data["coordinates"]["x"],
+                            y=data["coordinates"]["y"],
+                            block_size=data["coordinates"]["block_size"],
+                            selection="entire_cell",
+                            board="wizard_working"
+                        ),
+                        room_id
                     )
                     
                             
@@ -330,6 +353,18 @@ class CoCoBot(TaskBot):
                 # remove selected objects from wizard's working board
                 this_client.remove_selection("wizard_working", "mouse")
                 this_client.remove_selection("wizard_working", "cell")
+
+                self.log_event(
+                    "user_selection",
+                    dict(
+                        x=data["coordinates"]["x"],
+                        y=data["coordinates"]["y"],
+                        block_size=data["coordinates"]["block_size"],
+                        selection="single_object",
+                        board="wizard_selection"
+                    ),
+                    room_id
+                )
                 return
 
         @self.sio.event
@@ -375,6 +410,9 @@ class CoCoBot(TaskBot):
                             action = this_client.delete_object(obj)
                             if action is not False:
                                 self.sessions[room_id].last_action = action
+                                # the state changes, log it
+                                current_state = this_client.get_working_state()
+                                self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "show_progress":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -410,6 +448,10 @@ class CoCoBot(TaskBot):
                                 "html": True
                             },
                         )
+
+                        # the state changes, log it
+                        current_state = this_client.get_working_state()
+                        self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "work_in_progress":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -447,31 +489,6 @@ class CoCoBot(TaskBot):
                             },
                         )
 
-                    # change the color of the selected object
-                    elif event == "update_object":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        state = this_client.get_working_state()
-                        piece = this_client.get_gripped_object()
-
-                        if piece:
-                            id_n = list(piece.keys())[0]
-                            obj = piece[id_n]
-
-                            color = data["command"]["color"]
-                            shape = data["command"]["shape"]
-                            if color in COLORS:
-                                new_color = COLORS[color]
-                                obj["color"] = new_color
-
-                            state["objs"][id_n] = obj
-                            state["grippers"]["mouse"]["gripped"][id_n] = obj
-
-                            logging.debug(state)
-                            this_client.load_working_state(state)
-
                     elif event == "undo":
                         right_user = self.check_role(user_id, "wizard", room_id)
                         if right_user is False:
@@ -487,6 +504,9 @@ class CoCoBot(TaskBot):
                         # register new last actiond
                         if action is not False:
                             self.sessions[room_id].last_action = action
+                            # the state changes, log it
+                            current_state = this_client.get_working_state()
+                            self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "next_state":
                         right_user = self.check_role(user_id, "player", room_id)
@@ -659,7 +679,7 @@ class CoCoBot(TaskBot):
         client.load_target_state(this_state)
         client.clear_working_states()
 
-        self.log_event("target_board_log", {"board": this_state}, room_id)
+        self.log_event("target_board_log", this_state, room_id)
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
