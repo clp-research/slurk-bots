@@ -76,7 +76,7 @@
                   "layout-type": "button",
                   "class": "button",
                   "role": "button",
-                  "id": "delete_button",
+                  "id": "delete_object_button",
                   "layout-content": "Delete Object",
                   "style": "padding: 10px; margin: 5px;"
                 },

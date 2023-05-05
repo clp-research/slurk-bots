@@ -148,7 +148,7 @@ function set_player(description) {
 
 // add listener for each button
 [
-    "delete",
+    "delete_object",
     "clear_board",
     "work_in_progress",
     "show_progress",

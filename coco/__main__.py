@@ -390,6 +390,9 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
+                        # undo should not work anymore after reverting
+                        self.sessions[room_id].last_action = None
+
                         client = self.sessions[room_id].golmi_client
                         client.load_working_state(
                             self.sessions[room_id].checkpoint
