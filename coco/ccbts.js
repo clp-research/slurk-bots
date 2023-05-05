@@ -154,7 +154,8 @@ function set_player(description) {
     "show_progress",
     "undo",
     "next_state",
-    "revert_session"
+    "revert_session",
+    "ok"
 ].forEach(element => {
     $(`#${element}_button`).click(() => {
         socket.emit("message_command",

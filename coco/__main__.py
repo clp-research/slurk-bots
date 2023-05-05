@@ -426,6 +426,24 @@ class CoCoBot(TaskBot):
                             },
                         )
 
+                    elif event == "ok":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="Your partner has completed your instruction",
+                                    color=SUCCESS_COLOR
+                                ),
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                                "html": True
+                            },
+                        )
+
                     # change the color of the selected object
                     elif event == "update_object":
                         right_user = self.check_role(user_id, "wizard", room_id)

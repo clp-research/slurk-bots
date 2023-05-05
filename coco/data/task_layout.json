@@ -61,52 +61,77 @@
           "style": "padding: 10px; display: flex",
           "layout-content": [
             {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "layout-content": "Undo",
-              "id": "undo_button",
-              "style": "padding: 10px; margin: 5px; width: 25%"
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "layout-content": "Undo",
+                  "id": "undo_button",
+                  "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "delete_button",
+                  "layout-content": "Delete Object",
+                  "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "revert_session_button",
+                  "layout-content": "Revert Session",
+                  "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "clear_board_button",
+                  "layout-content": "Clear Board",
+                  "style": "padding: 10px; margin: 5px;"
+                }
+              ]
             },
             {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "id": "delete_button",
-              "layout-content": "Delete Object",
-              "style": "padding: 10px; margin: 5px; width: 25%"
+              "layout-type": "hr",
+              "layout-content": "",
+              "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
             },
             {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "id": "show_progress_button",
-              "layout-content": "Show Progress",
-              "style": "padding: 10px; margin: 5px; width: 25%"
-            },
-            {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "id": "clear_board_button",
-              "layout-content": "Clear Board",
-              "style": "padding: 10px; margin: 5px; width: 25%"
-            },
-            {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "id": "work_in_progress_button",
-              "layout-content": "Work in Progress",
-              "style": "padding: 10px; margin: 5px; width: 25%"
-            },
-            {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "id": "revert_session_button",
-              "layout-content": "Revert Session",
-              "style": "padding: 10px; margin: 5px; width: 25%"
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "work_in_progress_button",
+                  "layout-content": "Work in Progress",
+                  "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "ok_button",
+                  "layout-content": "done",
+                  "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "show_progress_button",
+                  "layout-content": "Show Progress",
+                  "style": "padding: 10px; margin: 5px;"
+                }
+              ]
             }
           ]
         }
