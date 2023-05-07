@@ -283,12 +283,88 @@ class CoCoBot(TaskBot):
 
                         current_state = this_client.get_working_state()
                         id_n = new_obj_name(current_state)
+
+                        x = data["coordinates"]["x"]
+                        y = data["coordinates"]["y"]
+                        block_size = data["coordinates"]["block_size"]
+
+                        # update object
                         obj["id_n"] = id_n
-
-                        obj["x"] = data["coordinates"]["x"] // data["coordinates"]["block_size"]
-                        obj["y"] = data["coordinates"]["y"] // data["coordinates"]["block_size"]
-
+                        obj["x"] = x // block_size
+                        obj["y"] = y // block_size
                         obj["gripped"] = None
+
+                        # last item on cell cannot be a screw
+                        cell_objs = this_client.get_wizard_working_cell(
+                            x, y, block_size
+                        )
+
+                        if cell_objs:
+                            # make sure last object on this cell is not a screw
+                            top_obj = cell_objs[-1]
+                            if top_obj["type"] == "screw":
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            message="You cannot place objects on top of screws",
+                                            color=WARNING_COLOR
+                                        ),
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                        "html": True
+                                    },
+                                )
+                                return
+
+                        if "bridge" in obj["type"]:
+                            # make sure bridges are levled on board
+                            this_cell_height = len(cell_objs)
+
+                            if obj["type"] == "hbridge":
+                                other_cell = (x + block_size, y)
+                            elif obj["type"] == "vbridge":
+                                other_cell = (x, y + block_size)
+
+                            x, y = other_cell
+                            other_cell_objs = this_client.get_wizard_working_cell(
+                                x, y, block_size
+                            )
+                            other_cell_height = len(other_cell_objs)
+
+                            if this_cell_height != other_cell_height:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            message="A bridge can only be positioned if both parts are on the same heigth",
+                                            color=WARNING_COLOR
+                                        ),
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                        "html": True
+                                    },
+                                )
+                                return
+
+                            if other_cell_objs:
+                                # make sure bridge is not resting on a screw
+                                if other_cell_objs[-1]["type"] == "screw":
+                                    self.sio.emit(
+                                        "text",
+                                        {
+                                            "message": COLOR_MESSAGE.format(
+                                                message="You cannot place objects on top of screws",
+                                                color=WARNING_COLOR
+                                            ),
+                                            "room": room_id,
+                                            "receiver_id": user_id,
+                                            "html": True
+                                        },
+                                    )
+                                    return
+
+
                         action = this_client.add_object(obj)
                         if action is not False:
                             self.sessions[room_id].last_action = action

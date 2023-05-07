@@ -150,6 +150,13 @@ class QuadrupleClient:
         )
         return req.json() if req.ok else None
 
+    def get_wizard_working_cell(self, x, y, block_size):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+        )
+        return req.json() if req.ok else None
+
+
     # def get_wizard_entire_cell(self, x, y, block_size):
     #     req = requests.get(
     #         f'{self.golmi_address}/slurk/cell/{self.rooms.selector}/{x}/{y}/{block_size}'
