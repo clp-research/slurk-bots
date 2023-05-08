@@ -20,6 +20,7 @@ class RoomTimers:
     :param round_timer: After 15 minutes the image will change
         and players get no points
     """
+
     def __init__(self):
         self.left_room = dict()
 
@@ -39,7 +40,7 @@ class Session:
         self.last_action = None
         self.states = load_states()
         self.game_over = False
-        self.checkpoint = dict()    
+        self.checkpoint = dict()
 
     def close(self):
         self.golmi_client.disconnect()
@@ -95,7 +96,7 @@ class CoCoBot(TaskBot):
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
                     headers={"Authorization": f"Bearer {self.token}"},
-                    json={"attribute": "style", "value": f"height: 90%; width:70%"}
+                    json={"attribute": "style", "value": f"height: 90%; width:70%"},
                 )
                 # sleep(0.5)
 
@@ -147,13 +148,14 @@ class CoCoBot(TaskBot):
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
-                        "text", {
+                        "text",
+                        {
                             "message": COLOR_MESSAGE.format(
                                 message=line, color=STANDARD_COLOR
                             ),
                             "room": room_id,
-                            "html": True
-                        }
+                            "html": True,
+                        },
                     )
                     sleep(0.5)
 
@@ -193,13 +195,13 @@ class CoCoBot(TaskBot):
                         {
                             "message": COLOR_MESSAGE.format(
                                 message=f"{curr_usr['name']} has joined the game.",
-                                color=STANDARD_COLOR
+                                color=STANDARD_COLOR,
                             ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
-                            "html": True
+                            "html": True,
                         },
-                    )               
+                    )
 
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
@@ -215,7 +217,7 @@ class CoCoBot(TaskBot):
                                     "instruction": INSTRUCTIONS[role],
                                     "role": role,
                                     "room_id": str(room_id),
-                                    "golmi_rooms": golmi_rooms
+                                    "golmi_rooms": golmi_rooms,
                                 },
                                 "room": room_id,
                                 "receiver_id": curr_usr["id"],
@@ -223,7 +225,9 @@ class CoCoBot(TaskBot):
                         )
 
                     # cancel timer
-                    logging.debug(f"Cancelling Timer: left room for user {curr_usr['name']}")
+                    logging.debug(
+                        f"Cancelling Timer: left room for user {curr_usr['name']}"
+                    )
                     timer = self.sessions[room_id].timer.left_room.get(curr_usr["id"])
                     if timer is not None:
                         timer.cancel()
@@ -238,19 +242,20 @@ class CoCoBot(TaskBot):
                                     f"{curr_usr['name']} has left the game. "
                                     "Please wait a bit, your partner may rejoin."
                                 ),
-                                color=STANDARD_COLOR
+                                color=STANDARD_COLOR,
                             ),
                             "room": room_id,
                             "receiver_id": other_usr["id"],
-                            "html": True
+                            "html": True,
                         },
                     )
 
                     # start timer since user left the room
-                    logging.debug(f"Starting Timer: left room for user {curr_usr['name']}")
+                    logging.debug(
+                        f"Starting Timer: left room for user {curr_usr['name']}"
+                    )
                     self.sessions[room_id].timer.left_room[curr_usr["id"]] = Timer(
-                        TIME_LEFT*60,
-                        self.close_game, args=[room_id]
+                        TIME_LEFT * 60, self.close_game, args=[room_id]
                     )
                     self.sessions[room_id].timer.left_room[curr_usr["id"]].start()
 
@@ -308,11 +313,11 @@ class CoCoBot(TaskBot):
                                     {
                                         "message": COLOR_MESSAGE.format(
                                             message="You cannot place objects on top of screws",
-                                            color=WARNING_COLOR
+                                            color=WARNING_COLOR,
                                         ),
                                         "room": room_id,
                                         "receiver_id": user_id,
-                                        "html": True
+                                        "html": True,
                                     },
                                 )
                                 return
@@ -338,11 +343,11 @@ class CoCoBot(TaskBot):
                                     {
                                         "message": COLOR_MESSAGE.format(
                                             message="A bridge can only be positioned if both parts are on the same heigth",
-                                            color=WARNING_COLOR
+                                            color=WARNING_COLOR,
                                         ),
                                         "room": room_id,
                                         "receiver_id": user_id,
-                                        "html": True
+                                        "html": True,
                                     },
                                 )
                                 return
@@ -355,15 +360,14 @@ class CoCoBot(TaskBot):
                                         {
                                             "message": COLOR_MESSAGE.format(
                                                 message="You cannot place objects on top of screws",
-                                                color=WARNING_COLOR
+                                                color=WARNING_COLOR,
                                             ),
                                             "room": room_id,
                                             "receiver_id": user_id,
-                                            "html": True
+                                            "html": True,
                                         },
                                     )
                                     return
-
 
                         action = this_client.add_object(obj)
                         if action is not False:
@@ -383,7 +387,7 @@ class CoCoBot(TaskBot):
                         piece = this_client.grip_object(
                             x=data["coordinates"]["x"],
                             y=data["coordinates"]["y"],
-                            block_size=data["coordinates"]["block_size"]
+                            block_size=data["coordinates"]["block_size"],
                         )
                         self.log_event(
                             "user_selection",
@@ -392,9 +396,9 @@ class CoCoBot(TaskBot):
                                 y=data["coordinates"]["y"],
                                 block_size=data["coordinates"]["block_size"],
                                 selection="single_object",
-                                board="wizard_working"
+                                board="wizard_working",
                             ),
-                            room_id
+                            room_id,
                         )
 
                 elif data["coordinates"]["button"] == "right":
@@ -403,7 +407,7 @@ class CoCoBot(TaskBot):
                     this_client.grip_cell(
                         x=data["coordinates"]["x"],
                         y=data["coordinates"]["y"],
-                        block_size=data["coordinates"]["block_size"]
+                        block_size=data["coordinates"]["block_size"],
                     )
 
                     self.log_event(
@@ -413,17 +417,16 @@ class CoCoBot(TaskBot):
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"],
                             selection="entire_cell",
-                            board="wizard_working"
+                            board="wizard_working",
                         ),
-                        room_id
+                        room_id,
                     )
-                    
-                            
+
             if board == "wizard_selection":
                 this_client.wizard_select_object(
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],
-                    block_size=data["coordinates"]["block_size"]
+                    block_size=data["coordinates"]["block_size"],
                 )
 
                 # remove selected objects from wizard's working board
@@ -437,9 +440,9 @@ class CoCoBot(TaskBot):
                         y=data["coordinates"]["y"],
                         block_size=data["coordinates"]["block_size"],
                         selection="single_object",
-                        board="wizard_selection"
+                        board="wizard_selection",
                     ),
-                    room_id
+                    room_id,
                 )
                 return
 
@@ -464,9 +467,9 @@ class CoCoBot(TaskBot):
             if room_id in self.sessions:
                 if isinstance(data["command"], dict):
                     event = data["command"]["event"]
-                    #interface = self.sessions[room_id].robot_interface
+                    # interface = self.sessions[room_id].robot_interface
                     this_client = self.sessions[room_id].golmi_client
-                    
+
                     # clear board
                     if event == "clear_board":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -488,7 +491,9 @@ class CoCoBot(TaskBot):
                                 self.sessions[room_id].last_action = action
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
-                                self.log_event("working_board_log", current_state, room_id)
+                                self.log_event(
+                                    "working_board_log", current_state, room_id
+                                )
 
                     elif event == "show_progress":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -508,20 +513,18 @@ class CoCoBot(TaskBot):
                         self.sessions[room_id].last_action = None
 
                         client = self.sessions[room_id].golmi_client
-                        client.load_working_state(
-                            self.sessions[room_id].checkpoint
-                        )
+                        client.load_working_state(self.sessions[room_id].checkpoint)
 
                         self.sio.emit(
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
                                     message="Reverting session to last checkpoint",
-                                    color=STANDARD_COLOR
+                                    color=STANDARD_COLOR,
                                 ),
                                 "room": room_id,
                                 "receiver_id": curr_usr["id"],
-                                "html": True
+                                "html": True,
                             },
                         )
 
@@ -539,11 +542,11 @@ class CoCoBot(TaskBot):
                             {
                                 "message": COLOR_MESSAGE.format(
                                     message="Your partner has received your instruction and is working on it",
-                                    color=STANDARD_COLOR
+                                    color=STANDARD_COLOR,
                                 ),
                                 "room": room_id,
                                 "receiver_id": other_usr["id"],
-                                "html": True
+                                "html": True,
                             },
                         )
 
@@ -557,11 +560,11 @@ class CoCoBot(TaskBot):
                             {
                                 "message": COLOR_MESSAGE.format(
                                     message="Your partner has completed your instruction",
-                                    color=SUCCESS_COLOR
+                                    color=SUCCESS_COLOR,
                                 ),
                                 "room": room_id,
                                 "receiver_id": other_usr["id"],
-                                "html": True
+                                "html": True,
                             },
                         )
 
@@ -600,11 +603,11 @@ class CoCoBot(TaskBot):
                                             "The game is not over yet, you can only load the next "
                                             "episode once this is over (command: /episode:over)."
                                         ),
-                                        color=WARNING_COLOR
+                                        color=WARNING_COLOR,
                                     ),
                                     "room": room_id,
                                     "receiver_id": curr_usr["id"],
-                                    "html": True
+                                    "html": True,
                                 },
                             )
 
@@ -632,11 +635,11 @@ class CoCoBot(TaskBot):
                             {
                                 "message": COLOR_MESSAGE.format(
                                     message="Sorry, but I do not understand this command.",
-                                    color=STANDARD_COLOR
+                                    color=STANDARD_COLOR,
                                 ),
                                 "room": room_id,
                                 "receiver_id": user_id,
-                                "html": True
+                                "html": True,
                             },
                         )
 
@@ -651,15 +654,14 @@ class CoCoBot(TaskBot):
         else:
             # inform user
             self.sio.emit(
-            "text",
+                "text",
                 {
                     "message": COLOR_MESSAGE.format(
-                        message="You're not allowed to do that",
-                        color=WARNING_COLOR
+                        message="You're not allowed to do that", color=WARNING_COLOR
                     ),
                     "room": room_id,
                     "receiver_id": user_id,
-                    "html": True
+                    "html": True,
                 },
             )
 
@@ -673,9 +675,7 @@ class CoCoBot(TaskBot):
         # users have no roles so we can assign them
         if curr_usr["role"] is None and other_usr["role"] is None:
             golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
-            for role, user in zip(
-                ["wizard", "player"], [curr_usr, other_usr]
-            ):
+            for role, user in zip(["wizard", "player"], [curr_usr, other_usr]):
                 user["role"] = role
 
                 self.sio.emit(
@@ -688,7 +688,7 @@ class CoCoBot(TaskBot):
                             "instruction": INSTRUCTIONS[role],
                             "role": role,
                             "room_id": str(room_id),
-                            "golmi_rooms": golmi_rooms
+                            "golmi_rooms": golmi_rooms,
                         },
                         "room": room_id,
                         "receiver_id": user["id"],
@@ -701,12 +701,11 @@ class CoCoBot(TaskBot):
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
-                        message="Roles have already be assigned",
-                        color=WARNING_COLOR
+                        message="Roles have already be assigned", color=WARNING_COLOR
                     ),
                     "room": room_id,
                     "receiver_id": user_id,
-                    "html": True
+                    "html": True,
                 },
             )
 
@@ -723,14 +722,14 @@ class CoCoBot(TaskBot):
 
     def load_next_state(self, room_id):
         self.sio.emit(
-            "text", {
+            "text",
+            {
                 "message": COLOR_MESSAGE.format(
-                    message="Let's get you to the next board!",
-                    color=STANDARD_COLOR
+                    message="Let's get you to the next board!", color=STANDARD_COLOR
                 ),
                 "room": room_id,
-                "html": True
-            }
+                "html": True,
+            },
         )
 
         self.sessions[room_id].game_over = False
@@ -765,10 +764,10 @@ class CoCoBot(TaskBot):
             {
                 "message": COLOR_MESSAGE.format(
                     message="The room is closing, thanky you for plaing",
-                    color=STANDARD_COLOR
+                    color=STANDARD_COLOR,
                 ),
                 "room": room_id,
-                "html": True
+                "html": True,
             },
         )
         self.room_to_read_only(room_id)
