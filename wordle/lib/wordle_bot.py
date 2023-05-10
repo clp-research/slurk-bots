@@ -934,7 +934,6 @@ class WordleBot:
             json=json,
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        self.request_feedback(response, "add token to display area")
 
         self._hide_image(room_id)
         self._hide_image_desc(room_id)
