@@ -28,7 +28,7 @@ from lib.config import (
     TIME_LEFT,
     TIME_ROUND,
     WARNING_COLOR,
-    WORD_LIST
+    WORD_LIST,
 )
 
 
@@ -46,6 +46,7 @@ class RoomTimers:
         and players get no points
 
     """
+
     def __init__(self):
         self.left_room = dict()
         self.round_timer = None
@@ -71,9 +72,7 @@ class RoomTimers:
         if isinstance(self.round_timer, Timer):
             self.round_timer.cancel()
 
-        timer = Timer(
-            TIME_ROUND * 60, function, args=[room_id]
-        )
+        timer = Timer(TIME_ROUND * 60, function, args=[room_id])
         timer.start()
         self.round_timer = timer
 
@@ -151,7 +150,7 @@ class WordleBot:
         self.url = self.uri
         self.uri += "/slurk/api"
 
-        self.sessions = SessionManager()        
+        self.sessions = SessionManager()
 
         self.public = PUBLIC
 
@@ -163,7 +162,7 @@ class WordleBot:
             self.wordlist = set((line.strip()) for line in infile)
         # ensure all the words from the initial image file are guessable
         with open(DATA_PATH) as infile:
-            self.wordlist.update(line.split('\t')[0] for line in infile)
+            self.wordlist.update(line.split("\t")[0] for line in infile)
 
         self.waiting_timer = None
         self.received_waiting_token = set()
@@ -188,7 +187,7 @@ class WordleBot:
             LOG.error(f"Could not {action}: {response.status_code}")
             response.raise_for_status()
         else:
-            LOG.debug(f'Successfully did {action}.')
+            LOG.debug(f"Successfully did {action}.")
 
     def register_callbacks(self):
         @self.sio.event
@@ -241,7 +240,9 @@ class WordleBot:
                 self.show_item(room_id)
 
                 # begin timers
-                self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
+                self.sessions[room_id].timer.start_round_timer(
+                    self.time_out_round, room_id
+                )
 
                 # show info to users
                 self._update_score_info(room_id)
@@ -252,14 +253,18 @@ class WordleBot:
             room_id = data["room"]
 
             mode_message = "In this game mode, "
-            if GAME_MODE == 'same':
+            if GAME_MODE == "same":
                 mode_message += "both of you see the same image."
-            elif GAME_MODE == 'different':
-                mode_message += "each of you sees a different image. " \
-                                "Both images are connected to the same word."
+            elif GAME_MODE == "different":
+                mode_message += (
+                    "each of you sees a different image. "
+                    "Both images are connected to the same word."
+                )
             else:
-                mode_message += "only one of you sees the image and " \
-                                "needs to describe it to the other person."
+                mode_message += (
+                    "only one of you sees the image and "
+                    "needs to describe it to the other person."
+                )
 
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/mode",
@@ -289,7 +294,7 @@ class WordleBot:
                         "message": COLOR_MESSAGE.format(
                             color=STANDARD_COLOR,
                             message=f"Let's start with the first "
-                                    f"of {self.sessions[room_id].images.n} images",
+                            f"of {self.sessions[room_id].images.n} images",
                         ),
                         "room": room_id,
                         "html": True,
@@ -399,7 +404,13 @@ class WordleBot:
 
                             # close game, this user gets failure, other user success
                             self.sessions[room_id].game_over = True
-                            self.end_game(room_id, {curr_usr["id"]: "disconnection", other_usr["id"]: "success"})
+                            self.end_game(
+                                room_id,
+                                {
+                                    curr_usr["id"]: "disconnection",
+                                    other_usr["id"]: "success",
+                                },
+                            )
                             sleep(1)
                             self.close_room(room_id)
 
@@ -485,14 +496,14 @@ class WordleBot:
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"width: {task_area}%"}
+            json={"attribute": "style", "value": f"width: {task_area}%"},
         )
         self.request_feedback(response, "resize sidebar")
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/content",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"width: {chat_area}%"}
+            json={"attribute": "style", "value": f"width: {chat_area}%"},
         )
         self.request_feedback(response, "resize content area")
 
@@ -518,7 +529,7 @@ class WordleBot:
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
                         message=f"Unfortunately this word is not valid. "
-                                f"Your guess needs to have {len(word)} letters.",
+                        f"Your guess needs to have {len(word)} letters.",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -543,7 +554,7 @@ class WordleBot:
                     "message": COLOR_MESSAGE.format(
                         color=WARNING_COLOR,
                         message="**Unfortunately this word is not valid. "
-                                "Make sure that there aren't any typos**",
+                        "Make sure that there aren't any typos**",
                     ),
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
@@ -606,7 +617,7 @@ class WordleBot:
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
                         message="Your partner thinks that you have "
-                                "found the right word. Enter your guess.",
+                        "found the right word. Enter your guess.",
                     ),
                     "receiver_id": other_usr["id"],
                     "room": room_id,
@@ -625,7 +636,7 @@ class WordleBot:
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
                         message="You and your partner sent a different word, "
-                                "please discuss and enter the same guess.",
+                        "please discuss and enter the same guess.",
                     ),
                     "room": room_id,
                     "html": True,
@@ -634,7 +645,10 @@ class WordleBot:
             self.sessions[room_id].guesses = dict()
             self.sio.emit(
                 "message_command",
-                {"command": {"command": "unsubmit"}, "room": room_id,},
+                {
+                    "command": {"command": "unsubmit"},
+                    "room": room_id,
+                },
             )
 
             return
@@ -693,7 +707,9 @@ class WordleBot:
     def _update_score_info(self, room):
         response = requests.patch(
             f"{self.uri}/rooms/{room}/text/subtitle",
-            json={"text": f"Your score is {self.sessions[room].points} – You have {len(self.sessions[room].images)} rounds to go."},
+            json={
+                "text": f"Your score is {self.sessions[room].points} – You have {len(self.sessions[room].images)} rounds to go."
+            },
             headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "update score")
@@ -731,7 +747,9 @@ class WordleBot:
             # close the game, bot users get a success token
             curr_usr, other_usr = self.sessions[room_id].players
             self.sessions[room_id].game_over = True
-            self.end_game(room_id, {curr_usr["id"]: "success", other_usr["id"]: "success"})
+            self.end_game(
+                room_id, {curr_usr["id"]: "success", other_usr["id"]: "success"}
+            )
             sleep(1)
             self.close_room(room_id)
         else:
@@ -742,7 +760,7 @@ class WordleBot:
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
                         message=f"Ok, let's move on to the next round. "
-                                f"{len(self.sessions[room_id].images)} rounds to go!",
+                        f"{len(self.sessions[room_id].images)} rounds to go!",
                     ),
                     "room": room_id,
                     "html": True,
@@ -794,7 +812,7 @@ class WordleBot:
 
         if self.sessions[room_id].images:
             word, image_1, image_2 = self.sessions[room_id].images[0]
-            LOG.debug(f'{image_1}\n{image_2}')
+            LOG.debug(f"{image_1}\n{image_2}")
 
             # show a different image to each user. one image can be None
 
@@ -806,7 +824,11 @@ class WordleBot:
             if image_1:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": image_1, "receiver_id": user_1["id"]},
+                    json={
+                        "attribute": "src",
+                        "value": image_1,
+                        "receiver_id": user_1["id"],
+                    },
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "set image 1")
@@ -831,7 +853,11 @@ class WordleBot:
             if image_2:
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={"attribute": "src", "value": image_2, "receiver_id": user_2["id"]},
+                    json={
+                        "attribute": "src",
+                        "value": image_2,
+                        "receiver_id": user_2["id"],
+                    },
                     headers={"Authorization": f"Bearer {self.token}"},
                 )
                 self.request_feedback(response, "set image 2")
@@ -902,8 +928,8 @@ class WordleBot:
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
                     message="Please enter the following token into "
-                            "the field on the HIT webpage, and close "
-                            "this browser window.",
+                    "the field on the HIT webpage, and close "
+                    "this browser window.",
                 ),
                 "room": room_id,
                 "html": True,
@@ -923,9 +949,10 @@ class WordleBot:
         )
 
         # show token also in display area
-        json = {"text": f"Please enter the following token into the field "
-                f"on the HIT webpage, and close this browser "
-                f"window: {amt_token}"
+        json = {
+            "text": f"Please enter the following token into the field "
+            f"on the HIT webpage, and close this browser "
+            f"window: {amt_token}"
         }
         if receiver_id:
             json.update({"receiver_id": receiver_id})
