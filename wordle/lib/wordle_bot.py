@@ -86,6 +86,7 @@ class Session:
         self.guesses = dict()
         self.guesses_history = list()
         self.points = 0
+        self.game_over = False
 
     def close(self):
         self.timer.cancel_all_timers()
@@ -328,77 +329,79 @@ class WordleBot:
 
                 if data["type"] == "join":
                     # inform game partner about the rejoin event
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message=f"{curr_usr['name']} has joined the game. ",
-                            ),
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                            "html": True,
-                        },
-                    )
-
-                    # reset the front-end of the user who just joined
-                    word, _, _ = self.sessions[room_id].images[0]
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": {
-                                "command": "wordle_init",
-                            },
-                            "room": room_id,
-                            "receiver_id": curr_usr["id"],
-                        },
-                    )
-                    self.show_item(room_id)
-
-                    # enter all the guesses that this user sent to the bot
-                    # to catch up with the other user
-                    for guess in self.sessions[room_id].guesses_history:
-                        self.sio.emit(
-                            "message_command",
-                            {
-                                "command": {
-                                    "command": "wordle_guess",
-                                    "guess": guess,
-                                    "correct_word": word,
+                    if room_id in self.sessions:
+                        if self.sessions[room_id].game_over is False:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        color=STANDARD_COLOR,
+                                        message=f"{curr_usr['name']} has joined the game. ",
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                    "html": True,
                                 },
-                                "room": room_id,
-                                "receiver_id": curr_usr["id"],
-                            },
-                        )
+                            )
 
-                    # cancel timer
-                    LOG.debug(
-                        f"Cancelling Timer: left room for user {curr_usr['name']}"
-                    )
-                    self.sessions[room_id].timer.user_joined(curr_usr["id"])
+                            # reset the front-end of the user who just joined
+                            word, _, _ = self.sessions[room_id].images[0]
+                            self.sio.emit(
+                                "message_command",
+                                {
+                                    "command": {
+                                        "command": "wordle_init",
+                                    },
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                },
+                            )
+                            self.show_item(room_id)
+
+                            # enter all the guesses that this user sent to the bot
+                            # to catch up with the other user
+                            for guess in self.sessions[room_id].guesses_history:
+                                self.sio.emit(
+                                    "message_command",
+                                    {
+                                        "command": {
+                                            "command": "wordle_guess",
+                                            "guess": guess,
+                                            "correct_word": word,
+                                        },
+                                        "room": room_id,
+                                        "receiver_id": curr_usr["id"],
+                                    },
+                                )
+
+                            # cancel timer
+                            LOG.debug(
+                                f"Cancelling Timer: left room for user {curr_usr['name']}"
+                            )
+                            self.sessions[room_id].timer.user_joined(curr_usr["id"])
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message=f"{curr_usr['name']} has left the game.",
-                            ),
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                            "html": True,
-                        },
-                    )
+                    if room_id in self.sessions:
+                        if self.sessions[room_id].game_over is False:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        color=STANDARD_COLOR,
+                                        message=f"{curr_usr['name']} has left the game.",
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                    "html": True,
+                                },
+                            )
 
-                    self.close_game(room_id, generate_token=False)
-
-                    # LOG.debug(f"Starting Timer: left room for user {curr_usr['name']}")
-                    # self.timers_per_room[room_id].left_room[curr_usr["id"]] = Timer(
-                    #     TIME_LEFT * 60, self.close_game, args=[room_id]
-                    # )
-                    # self.timers_per_room[room_id].left_room[curr_usr["id"]].start()
+                            # close game, this user gets failure, other user success
+                            self.sessions[room_id].game_over = True
+                            self.end_game(room_id, {curr_usr["id"]: "disconnection", other_usr["id"]: "success"})
+                            sleep(1)
+                            self.close_room(room_id)
 
         @self.sio.event
         def text_message(data):
@@ -724,7 +727,13 @@ class WordleBot:
             )
             self._update_score_info(room_id)
             sleep(1)
-            self.close_game(room_id)
+
+            # close the game, bot users get a success token
+            curr_usr, other_usr = self.sessions[room_id].players
+            self.sessions[room_id].game_over = True
+            self.end_game(room_id, {curr_usr["id"]: "success", other_usr["id"]: "success"})
+            sleep(1)
+            self.close_room(room_id)
         else:
             # load the next image
             self.sio.emit(
@@ -915,9 +924,9 @@ class WordleBot:
 
         # show token also in display area
         json = {"text": f"Please enter the following token into the field "
-                        f"on the HIT webpage, and close this browser "
-                        f"window: {amt_token}"
-                }
+                f"on the HIT webpage, and close this browser "
+                f"window: {amt_token}"
+        }
         if receiver_id:
             json.update({"receiver_id": receiver_id})
         response = requests.patch(
@@ -953,35 +962,28 @@ class WordleBot:
             },
         )
 
-    def close_game(self, room_id, generate_token=True):
-        """Erase any data structures no longer necessary."""
-
-        curr_usr, other_usr = self.sessions[room_id].players
+    def end_game(self, room_id, user_dict):
         if self.public:
+            curr_usr, other_usr = self.sessions[room_id].players
             self.social_media_post(room_id, curr_usr["id"], other_usr["name"])
             self.social_media_post(room_id, other_usr["id"], curr_usr["name"])
         else:
-            if generate_token is True:
-                self.confirmation_code(room_id, "success", curr_usr["id"])
-                self.confirmation_code(room_id, "success", other_usr["id"])
+            for user_id, status in user_dict.items():
+                self.confirmation_code(room_id, status, user_id)
+                sleep(0.5)
 
-            sleep(10)
-
-            message = "This room is closing."
-            if generate_token is True:
-                message += " Make sure to save your token."
-
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR,
-                        message=message,
-                    ),
-                    "room": room_id,
-                    "html": True,
-                },
-            )
+    def close_room(self, room_id):
+        self.sio.emit(
+            "text",
+            {
+                "message": COLOR_MESSAGE.format(
+                    color=STANDARD_COLOR,
+                    message="This room is closing. Make sure to save your token.",
+                ),
+                "room": room_id,
+                "html": True,
+            },
+        )
 
         self.room_to_read_only(room_id)
 
