@@ -515,6 +515,7 @@ class CoCoBot(TaskBot):
                             return
 
                         this_client.clear_working_state()
+                        self.sessions[room_id].current_action = ActionNode.new_tree()
 
                     elif event == "delete_object":
                         right_user = self.check_role(user_id, "wizard", room_id)
