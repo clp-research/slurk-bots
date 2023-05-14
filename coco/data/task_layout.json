@@ -79,7 +79,18 @@
                   "id": "delete_object_button",
                   "layout-content": "Delete Object",
                   "style": "padding: 10px; margin: 5px;"
-                },
+                }
+              ]
+            },
+            {
+              "layout-type": "hr",
+              "layout-content": "",
+              "style": "margin: 10px; background-color: #abb2b9; opacity: .50;"
+            },
+            {
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
                 {
                   "layout-type": "button",
                   "class": "button",
@@ -101,7 +112,7 @@
             {
               "layout-type": "hr",
               "layout-content": "",
-              "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+              "style": "margin: 10px; background-color: #abb2b9; opacity: .50;"
             },
             {
               "layout-type": "div",
