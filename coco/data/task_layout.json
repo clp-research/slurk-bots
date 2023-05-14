@@ -76,6 +76,14 @@
                   "layout-type": "button",
                   "class": "button",
                   "role": "button",
+                  "id": "redo_button",
+                  "layout-content": "Redo",
+                  "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
                   "id": "delete_object_button",
                   "layout-content": "Delete Object",
                   "style": "padding: 10px; margin: 5px;"

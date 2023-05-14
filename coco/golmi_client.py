@@ -174,12 +174,9 @@ class QuadrupleClient:
         if not response.ok:
             logging.error(f"Could not post new object: {response.status_code}")
             response.raise_for_status()
-            return False
+            return False, None
 
-        return dict(
-            action="add",
-            obj=obj
-        )
+        return "add", obj
 
     def remove_gripper(self, gripper):
         req = requests.delete(
@@ -199,7 +196,7 @@ class QuadrupleClient:
             for tile in state["objs_grid"].values():
                 if this_obj in tile:
                     if tile[-1] != this_obj:
-                        return False
+                        return False, None
                 
         response = requests.delete(
             f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/object",
@@ -208,14 +205,11 @@ class QuadrupleClient:
         if not response.ok:
             logging.error(f"Could not post new object: {response.status_code}")
             response.raise_for_status()
-            return False
+            return False, None
 
         if "gripped" in obj:
             obj.pop("gripped")
-        return dict(
-            action="delete",
-            obj=obj
-        )
+        return "delete", obj
 
     def remove_selection(self, room, gripper_id):
         rooms = {

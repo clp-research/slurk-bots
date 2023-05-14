@@ -32,12 +32,50 @@ class RoomTimers:
         pass
 
 
+class ActionNode:
+    def __init__(self, action, obj):
+        self.action = action
+        self.obj = obj
+        self.parent = None
+        self.child = None
+
+    def __eq__(self, other):
+        return (self.action == other.action
+                and self.obj == other.obj)
+
+    def __str__(self):
+        return f"Node({self.action}, {self.obj['type']})"
+
+    def __repr__(self):
+        return self.__str__()
+
+    def next_state(self):
+        if self.child is not None:
+            return self.child
+        return None
+
+    def previous_state(self):
+        if self.parent is not None:
+            return self.parent
+        return None
+
+    def add_action(self, action, object):
+        new_node = ActionNode(action, object)
+        new_node.parent = self
+        self.child = new_node
+        return new_node
+
+    @classmethod
+    def new_tree(cls):
+        return cls("root", None)
+
+
 class Session:
     def __init__(self):
         self.players = list()
         self.timer = RoomTimers()
         self.golmi_client = None
-        self.last_action = None
+        self.current_action = ActionNode.new_tree()
         self.states = load_states()
         self.game_over = False
         self.checkpoint = dict()
@@ -369,9 +407,11 @@ class CoCoBot(TaskBot):
                                     )
                                     return
 
-                        action = this_client.add_object(obj)
+                        action, obj = this_client.add_object(obj)
                         if action is not False:
-                            self.sessions[room_id].last_action = action
+                            current_action = self.sessions[room_id].current_action
+                            self.sessions[room_id].current_action = current_action.add_action(action, obj)
+
                             # the state changes, log it
                             current_state = this_client.get_working_state()
                             self.log_event("working_board_log", current_state, room_id)
@@ -486,9 +526,12 @@ class CoCoBot(TaskBot):
                         selected = this_client.get_gripped_object()
                         if selected:
                             obj = list(selected.values()).pop()
-                            action = this_client.delete_object(obj)
+                            action, obj = this_client.delete_object(obj)
+
                             if action is not False:
-                                self.sessions[room_id].last_action = action
+                                current_action = self.sessions[room_id].current_action
+                                self.sessions[room_id].current_action = current_action.add_action(action, obj)
+
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
                                 self.log_event(
@@ -510,7 +553,7 @@ class CoCoBot(TaskBot):
                             return
 
                         # undo should not work anymore after reverting
-                        self.sessions[room_id].last_action = None
+                        self.sessions[room_id].current_action = ActionNode.new_tree()
 
                         client = self.sessions[room_id].golmi_client
                         client.load_working_state(self.sessions[room_id].checkpoint)
@@ -573,19 +616,48 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        last_command = self.sessions[room_id].last_action
-                        obj = last_command["obj"]
-                        if last_command["action"] == "add":
-                            action = this_client.delete_object(obj)
-                        elif last_command["action"] == "delete":
-                            action = this_client.add_object(obj)
+                        last_command = self.sessions[room_id].current_action
+
+                        if last_command.action == "root":
+                            return
+
+                        if last_command.action == "add":
+                            action, obj = this_client.delete_object(last_command.obj)
+                        elif last_command.action == "delete":
+                            action, obj = this_client.add_object(last_command.obj)
 
                         # register new last actiond
                         if action is not False:
-                            self.sessions[room_id].last_action = action
-                            # the state changes, log it
-                            current_state = this_client.get_working_state()
-                            self.log_event("working_board_log", current_state, room_id)
+                            current_state = last_command.previous_state()
+                            if current_state is not None:
+                                self.sessions[room_id].current_action = current_state
+
+                                # the state changes, log it
+                                current_state = this_client.get_working_state()
+                                self.log_event("working_board_log", current_state, room_id)
+
+                    elif event == "redo":
+                        right_user = self.check_role(user_id, "wizard", room_id)
+                        if right_user is False:
+                            return
+
+                        current_state = self.sessions[room_id].current_action
+                        current_state = current_state.next_state()
+
+                        if current_state is not None:
+                            self.sessions[room_id].current_action = current_state
+
+                            if current_state.action == "add":
+                                action, obj = this_client.add_object(current_state.obj)
+                            elif current_state.action == "delete":
+                                action, obj = this_client.delete_object(current_state.obj)
+
+                            # register new last actiond
+                            if action is not False:
+
+                                # the state changes, log it
+                                current_state = this_client.get_working_state()
+                                self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "next_state":
                         right_user = self.check_role(user_id, "player", room_id)

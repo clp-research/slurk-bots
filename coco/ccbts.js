@@ -153,6 +153,7 @@ function set_player(description) {
     "work_in_progress",
     "show_progress",
     "undo",
+    "redo",
     "next_state",
     "revert_session",
     "ok"
