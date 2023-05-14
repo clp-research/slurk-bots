@@ -39,10 +39,6 @@ class ActionNode:
         self.parent = None
         self.child = None
 
-    def __eq__(self, other):
-        return (self.action == other.action
-                and self.obj == other.obj)
-
     def __str__(self):
         return f"Node({self.action}, {self.obj['type']})"
 
@@ -410,7 +406,9 @@ class CoCoBot(TaskBot):
                         action, obj = this_client.add_object(obj)
                         if action is not False:
                             current_action = self.sessions[room_id].current_action
-                            self.sessions[room_id].current_action = current_action.add_action(action, obj)
+                            self.sessions[
+                                room_id
+                            ].current_action = current_action.add_action(action, obj)
 
                             # the state changes, log it
                             current_state = this_client.get_working_state()
@@ -530,7 +528,11 @@ class CoCoBot(TaskBot):
 
                             if action is not False:
                                 current_action = self.sessions[room_id].current_action
-                                self.sessions[room_id].current_action = current_action.add_action(action, obj)
+                                self.sessions[
+                                    room_id
+                                ].current_action = current_action.add_action(
+                                    action, obj
+                                )
 
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
@@ -634,7 +636,9 @@ class CoCoBot(TaskBot):
 
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
-                                self.log_event("working_board_log", current_state, room_id)
+                                self.log_event(
+                                    "working_board_log", current_state, room_id
+                                )
 
                     elif event == "redo":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -650,14 +654,18 @@ class CoCoBot(TaskBot):
                             if current_state.action == "add":
                                 action, obj = this_client.add_object(current_state.obj)
                             elif current_state.action == "delete":
-                                action, obj = this_client.delete_object(current_state.obj)
+                                action, obj = this_client.delete_object(
+                                    current_state.obj
+                                )
 
                             # register new last actiond
                             if action is not False:
 
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
-                                self.log_event("working_board_log", current_state, room_id)
+                                self.log_event(
+                                    "working_board_log", current_state, room_id
+                                )
 
                     elif event == "next_state":
                         right_user = self.check_role(user_id, "player", room_id)
