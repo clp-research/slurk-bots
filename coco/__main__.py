@@ -587,7 +587,7 @@ class CoCoBot(TaskBot):
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
-                                    message="Your partner has received your instruction and is working on it",
+                                    message="... processing...",
                                     color=STANDARD_COLOR,
                                 ),
                                 "room": room_id,
@@ -605,7 +605,7 @@ class CoCoBot(TaskBot):
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
-                                    message="Your partner has completed your instruction",
+                                    message="... ok...",
                                     color=SUCCESS_COLOR,
                                 ),
                                 "room": room_id,
