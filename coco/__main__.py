@@ -89,13 +89,63 @@ class SessionManager(dict):
         if room_id in self:
             self[room_id].close()
             self.pop(room_id)
+            
 
+class MoveEvaluator:
+    def __init__(self, rules):
+        self.rules = rules
+
+    def can_place_on_top(self, this_obj, top_obj):
+        if top_obj["type"] in self.rules:
+            allowed_objs_on_top = self.rules[top_obj["type"]]
+            if this_obj["type"] not in allowed_objs_on_top:
+                return False
+        return True
+
+    def is_allowed(self, this_obj, client, x, y, block_size):
+        # last item on cell cannot be a screw
+        cell_objs = client.get_wizard_working_cell(
+            x, y, block_size
+        )
+
+        if cell_objs:
+            # make sure this object can be placed on the last one on this cell
+            top_obj = cell_objs[-1]
+            valid_placement = self.can_place_on_top(this_obj, top_obj)
+            if valid_placement is False:
+                return False
+
+        if "bridge" in this_obj["type"]:
+            # make sure bridges are levled on board
+            this_cell_height = len(cell_objs)
+
+            if this_obj["type"] == "hbridge":
+                other_cell = (x + block_size, y)
+            elif this_obj["type"] == "vbridge":
+                other_cell = (x, y + block_size)
+
+            x, y = other_cell
+            other_cell_objs = client.get_wizard_working_cell(
+                x, y, block_size
+            )
+            other_cell_height = len(other_cell_objs)
+
+            if this_cell_height != other_cell_height:
+                return False
+
+            if other_cell_objs:
+                # make sure bridge is not resting on a screw
+                allowed_placement = self.can_place_on_top(this_obj, other_cell_objs[-1])
+                if allowed_placement is False:
+                    return False
+        return True
 
 class CoCoBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.sessions = SessionManager()
+        self.move_evaluator = MoveEvaluator(RULES)
         self.register_callbacks()
 
     def post_init(self, waiting_room, golmi_server, golmi_password):
@@ -333,75 +383,21 @@ class CoCoBot(TaskBot):
                         obj["y"] = y // block_size
                         obj["gripped"] = None
 
-                        # last item on cell cannot be a screw
-                        cell_objs = this_client.get_wizard_working_cell(
-                            x, y, block_size
-                        )
-
-                        if cell_objs:
-                            # make sure last object on this cell is not a screw
-                            top_obj = cell_objs[-1]
-                            if top_obj["type"] == "screw":
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            message="You cannot place objects on top of screws",
-                                            color=WARNING_COLOR,
-                                        ),
-                                        "room": room_id,
-                                        "receiver_id": user_id,
-                                        "html": True,
-                                    },
-                                )
-                                return
-
-                        if "bridge" in obj["type"]:
-                            # make sure bridges are levled on board
-                            this_cell_height = len(cell_objs)
-
-                            if obj["type"] == "hbridge":
-                                other_cell = (x + block_size, y)
-                            elif obj["type"] == "vbridge":
-                                other_cell = (x, y + block_size)
-
-                            x, y = other_cell
-                            other_cell_objs = this_client.get_wizard_working_cell(
-                                x, y, block_size
+                        allowed_move = self.move_evaluator.is_allowed(obj, this_client, x, y, block_size)
+                        if allowed_move is False:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message="This move is not allowed",
+                                        color=WARNING_COLOR,
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                    "html": True,
+                                },
                             )
-                            other_cell_height = len(other_cell_objs)
-
-                            if this_cell_height != other_cell_height:
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            message="A bridge can only be positioned if both parts are on the same heigth",
-                                            color=WARNING_COLOR,
-                                        ),
-                                        "room": room_id,
-                                        "receiver_id": user_id,
-                                        "html": True,
-                                    },
-                                )
-                                return
-
-                            if other_cell_objs:
-                                # make sure bridge is not resting on a screw
-                                if other_cell_objs[-1]["type"] == "screw":
-                                    self.sio.emit(
-                                        "text",
-                                        {
-                                            "message": COLOR_MESSAGE.format(
-                                                message="You cannot place objects on top of screws",
-                                                color=WARNING_COLOR,
-                                            ),
-                                            "room": room_id,
-                                            "receiver_id": user_id,
-                                            "html": True,
-                                        },
-                                    )
-                                    return
+                            return
 
                         action, obj = this_client.add_object(obj)
                         if action is not False:
@@ -444,8 +440,7 @@ class CoCoBot(TaskBot):
                     this_client.remove_selection("wizard_working", "mouse")
 
                     gripper_on_board = this_client.get_gripper("cell")
-                    logging.debug("#################")
-                    logging.debug(gripper_on_board)
+
                     if gripper_on_board:
                         cell_objects = this_client.get_wizard_entire_cell(
                             x=gripper_on_board["x"],
@@ -472,7 +467,22 @@ class CoCoBot(TaskBot):
                             obj["y"] = obj["y"] - old_y + new_y
                             obj["gripped"] = None
 
-                            # TODO: add position checks
+                            allowed_move = self.move_evaluator.is_allowed(obj, this_client, obj["x"], obj["y"], 1)
+                            if allowed_move is False:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            message="This move is not allowed",
+                                            color=WARNING_COLOR,
+                                        ),
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                        "html": True,
+                                    },
+                                )
+                                this_client.remove_working_gripper("cell")
+                                return
 
                             action, obj = this_client.add_object(obj)
                             if action is not False:
