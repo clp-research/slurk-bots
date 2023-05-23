@@ -43,3 +43,18 @@ To access the waiting rooms, you will need to input the saved tokes as well as a
 
 ## Modifications
 Under `lib/config.py` you find a number of global variables that define experiment settings as well as short descriptions of their effect on the experiment.
+
+### Allowed moves  
+you can modify which moves are allowed to execute by modifying `allowed_moves.json`. The file has following structure:
+```
+{
+    "screw": []
+}
+```
+
+If an object has an entry in this file (in this example, the `screw` object), you can specify which other objects are allowed to be placed on top of it by populating the list. In this example the list is empty, which means that no other objects can be placed on top of screws. To allow only washers to be placed on top of screws, you can modify `allowed_moves.json` to look like this:
+```
+{
+    "screw": ["washer"]
+}
+```
