@@ -156,12 +156,17 @@ class QuadrupleClient:
         )
         return req.json() if req.ok else None
 
+    def get_gripper(self, gripper_id):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}'
+        )
+        return req.json() if req.ok else None
 
-    # def get_wizard_entire_cell(self, x, y, block_size):
-    #     req = requests.get(
-    #         f'{self.golmi_address}/slurk/cell/{self.rooms.selector}/{x}/{y}/{block_size}'
-    #     )
-    #     return req.json() if req.ok else None
+    def get_wizard_entire_cell(self, x, y, block_size):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+        )
+        return req.json() if req.ok else None
 
     def add_object(self, obj):
         """
@@ -180,7 +185,13 @@ class QuadrupleClient:
 
     def remove_gripper(self, gripper):
         req = requests.delete(
-            f'{self.golmi_address}/slurk/gripper{self.rooms.selector}/{gripper}'
+            f'{self.golmi_address}/slurk/gripper/{self.rooms.selector}/{gripper}'
+        )
+        return req.json() if req.ok else None
+
+    def remove_working_gripper(self, gripper):
+        req = requests.delete(
+            f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper}'
         )
         return req.json() if req.ok else None
 

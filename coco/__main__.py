@@ -442,23 +442,72 @@ class CoCoBot(TaskBot):
                 elif data["coordinates"]["button"] == "right":
                     this_client.remove_selection("wizard_selection", "mouse")
                     this_client.remove_selection("wizard_working", "mouse")
-                    this_client.grip_cell(
-                        x=data["coordinates"]["x"],
-                        y=data["coordinates"]["y"],
-                        block_size=data["coordinates"]["block_size"],
-                    )
 
-                    self.log_event(
-                        "user_selection",
-                        dict(
+                    gripper_on_board = this_client.get_gripper("cell")
+                    logging.debug("#################")
+                    logging.debug(gripper_on_board)
+                    if gripper_on_board:
+                        cell_objects = this_client.get_wizard_entire_cell(
+                            x=gripper_on_board["x"],
+                            y=gripper_on_board["y"],
+                            block_size=1,
+                        )
+
+                        logging.debug(cell_objects)
+
+                        old_x = gripper_on_board["x"]
+                        old_y = gripper_on_board["y"]
+
+                        for obj in cell_objects:
+                            current_state = this_client.get_working_state()
+                            id_n = new_obj_name(current_state)
+
+                            block_size = data["coordinates"]["block_size"]
+                            new_x = data["coordinates"]["x"] // block_size
+                            new_y = data["coordinates"]["y"] // block_size
+
+                            # update object parameters
+                            obj["id_n"] = id_n
+                            obj["x"] = obj["x"] - old_x + new_x
+                            obj["y"] = obj["y"] - old_y + new_y
+                            obj["gripped"] = None
+
+                            # TODO: add position checks
+
+                            action, obj = this_client.add_object(obj)
+                            if action is not False:
+                                current_action = self.sessions[room_id].current_action
+                                self.sessions[
+                                    room_id
+                                ].current_action = current_action.add_action(action, obj)
+
+                                # the state changes, log it
+                                current_state = this_client.get_working_state()
+                                self.log_event("working_board_log", current_state, room_id)
+                            else:
+                                # invalid positioning, stop
+                                return
+
+                        this_client.remove_working_gripper("cell")
+                        
+                    else:
+                        this_client.grip_cell(
                             x=data["coordinates"]["x"],
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"],
-                            selection="entire_cell",
-                            board="wizard_working",
-                        ),
-                        room_id,
-                    )
+                        )
+
+                        self.log_event(
+                            "user_selection",
+                            dict(
+                                x=data["coordinates"]["x"],
+                                y=data["coordinates"]["y"],
+                                block_size=data["coordinates"]["block_size"],
+                                selection="entire_cell",
+                                board="wizard_working",
+                            ),
+                            room_id,
+                        )
 
             if board == "wizard_selection":
                 this_client.wizard_select_object(
