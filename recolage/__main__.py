@@ -667,9 +667,11 @@ class RecolageBot(TaskBot):
         if result == "right":
             self.update_reward(room_id, POSITIVE_REWARD)
             self.sessions[room_id].points["history"][-1]["correct"] += 1
+            result_emoji = "✅"
         else:
             self.update_reward(room_id, NEGATIVE_REWARD)
             self.sessions[room_id].points["history"][-1]["wrong"] += 1
+            result_emoji = "❌"
 
         player, wizard = self.sessions[room_id].players
         if player["role"] != "player":
@@ -706,7 +708,17 @@ class RecolageBot(TaskBot):
             )
             message = "Let's get you to the next board"
             if self.version != "no_feedback":
-                message = f"That was the {result} piece! {message}"
+                message = f"That was the {result} piece {result_emoji} {message}"
+
+            # limited number of boards, inform the user that how many left
+            if BOARDS_PER_ROOM > 0:
+                boards_left = len(self.sessions[room_id].boards)
+                if boards_left % 5 == 0:
+                    message = f"{message}. Still {boards_left} to go"
+
+                    if boards_left < 10:
+                        message = f"{message}. You almost made it!"
+
             self.sio.emit(
                 "text",
                 {
