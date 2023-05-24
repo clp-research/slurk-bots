@@ -19,6 +19,8 @@ from lib.config import (
     DATA_PATH,
     GAME_MODE,
     N,
+    PLATFORM,
+    PROLIFIC_URL,
     PUBLIC,
     SEED,
     SHUFFLE,
@@ -27,6 +29,7 @@ from lib.config import (
     TASK_TITLE,
     TIME_LEFT,
     TIME_ROUND,
+    TIME_WAITING,
     WARNING_COLOR,
     WORD_LIST,
 )
@@ -39,12 +42,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class RoomTimers:
     """A number of timed events during the game.
 
-    :param alone_in_room: Closes a room if one player is alone in
-        the room for longer than 5 minutes
-
     :param round_timer: After 15 minutes the image will change
         and players get no points
-
     """
 
     def __init__(self):
@@ -153,6 +152,7 @@ class WordleBot:
         self.sessions = SessionManager()
 
         self.public = PUBLIC
+        self.data_collection = PLATFORM
 
         # maps number of guesses to points
         self.point_system = dict(zip([6, 5, 4, 3, 2, 1], [100, 50, 25, 10, 5, 1]))
@@ -316,17 +316,42 @@ class WordleBot:
                 f"{self.uri}/users/{data['user']['id']}/task",
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            self.request_feedback(task, "set task instruction title")
+            self.request_feedback(task, "get task")
             if not task.json() or task.json()["id"] != int(self.task_id):
                 return
 
             room_id = data["room"]
             # someone joined waiting room
             if room_id == self.waiting_room:
+                if self.waiting_timer is not None:
+                    LOG.debug("Waiting Timer stopped.")
+                    self.waiting_timer.cancel()
                 if data["type"] == "join":
                     LOG.debug("Waiting Timer restarted.")
+                    self.waiting_timer = Timer(
+                        TIME_WAITING * 60,
+                        self._no_partner,
+                        args=[room_id, data["user"]["id"]],
+                        )
+                    self.waiting_timer.start()
+                    sleep(10)
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                color=STANDARD_COLOR,
+                                message=f"If nobody shows up within "
+                                        f"{TIME_WAITING} minutes, I will give "
+                                        f"you a submission link, so that you "
+                                        f"can get paid for your waiting time."
+                            ),
+                            "room": room_id,
+                            "receiver_id": data['user']['id'],
+                            "html": True,
+                        },
+                    )
 
-            # some joined a task room
+        # some joined a task room
             elif room_id in self.sessions:
                 curr_usr, other_usr = self.sessions[room_id].players
                 if curr_usr["id"] != data["user"]["id"]:
@@ -802,6 +827,43 @@ class WordleBot:
         )
         self.next_round(room_id)
 
+    def _no_partner(self, room_id, user_id):
+        """Handle the situation that a participant waits in vain."""
+        if user_id not in self.received_waiting_token:
+            self.sio.emit(
+                "text",
+                {"message": "Unfortunately we could not find a partner for you!",
+                 "room": room_id,
+                 "receiver_id": user_id,
+                },
+            )
+            # create token and send it to user
+            self.confirmation_code(room_id, "no_partner", receiver_id=user_id)
+            sleep(5)
+            self.sio.emit(
+                "text",
+                {
+                    "message": "You may also wait some more :)",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+            # no need to cancel
+            # the running out of this timer triggered this event
+            self.waiting_timer = Timer(
+                TIME_WAITING * 60, self._no_partner, args=[room_id, user_id]
+            )
+            self.waiting_timer.start()
+            self.received_waiting_token.add(user_id)
+        else:
+            self.sio.emit(
+                "text",
+                {"message": "You won't be remunerated for further waiting time.",
+                 "room": room_id,
+                 "receiver_id": user_id,
+                },
+            )
+
     def show_item(self, room_id):
         """Update the image of the players."""
         LOG.debug("Update the image and task description of the players.")
@@ -908,64 +970,92 @@ class WordleBot:
         if receiver_id is not None:
             kwargs["receiver_id"] = receiver_id
 
-        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        # post AMT token to logs
+        confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        # post confirmation token to logs
         response = requests.post(
             f"{self.uri}/logs",
             json={
                 "event": "confirmation_log",
                 "room_id": room_id,
-                "data": {"status_txt": status, "amt_token": amt_token},
+                "data": {"status_txt": status, "confirmation_token": confirmation_token},
                 **kwargs,
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        self.request_feedback(response, "post AMT token to logs")
+        self.request_feedback(response, "post confirmation token to logs")
 
+        if self.data_collection == "AMT":
+            self._show_amt_token(room_id, receiver_id, confirmation_token)
+        elif self.data_collection == "Prolific":
+            self._show_prolific_link(room_id, receiver_id, confirmation_token)
+
+        self._hide_image(room_id)
+        self._hide_image_desc(room_id)
+
+        return confirmation_token
+
+    def _show_prolific_link(self, room, receiver, token):
+        # show token also in display area
+
+        url = f"{PROLIFIC_URL}{token}"
+        self.sio.emit(
+            "text",
+            {"message": f"Please return to <a href='{url}'>{url}</a> to complete your submission.",
+             "room": room,
+             "html": True,
+             "receiver_id": receiver
+             }
+        )
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room}/text/instr",
+            json={"text": "", "receiver_id": receiver},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "remove text from display area")
+
+    def _show_amt_token(self, room, receiver, token):
         self.sio.emit(
             "text",
             {
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
                     message="Please enter the following token into "
-                    "the field on the HIT webpage, and close "
-                    "this browser window.",
+                            "the field on the HIT webpage, and close "
+                            "this browser window.",
                 ),
-                "room": room_id,
+                "room": room,
                 "html": True,
-                **kwargs,
+                "receiver_id": receiver
             },
         )
         self.sio.emit(
             "text",
             {
                 "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR, message=f"Here is your token: {amt_token}"
+                    color=STANDARD_COLOR, message=f"Here's your token: {token}"
                 ),
-                "room": room_id,
+                "room": room,
                 "html": True,
-                **kwargs,
+                "receiver_id": receiver
             },
         )
 
         # show token also in display area
         json = {
             "text": f"Please enter the following token into the field "
-            f"on the HIT webpage, and close this browser "
-            f"window: {amt_token}"
+                    f"on the HIT webpage, and close this browser "
+                    f"window: {token}"
         }
-        if receiver_id:
-            json.update({"receiver_id": receiver_id})
+        if receiver:
+            json.update({"receiver_id": receiver})
+
         response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr",
+            f"{self.uri}/rooms/{room}/text/instr",
             json=json,
             headers={"Authorization": f"Bearer {self.token}"},
         )
-
-        self._hide_image(room_id)
-        self._hide_image_desc(room_id)
-
-        return amt_token
+        self.request_feedback(response, "show token in display area")
 
     def social_media_post(self, room_id, this_user_id, other_user_name):
         self.sio.emit(
@@ -1004,7 +1094,7 @@ class WordleBot:
             {
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
-                    message="This room is closing. Make sure to save your token.",
+                    message="This room is closing now.",
                 ),
                 "room": room_id,
                 "html": True,

@@ -78,5 +78,7 @@ USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/
 echo $USER1
 USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/wordle_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo $USER2
+USER3=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/wordle_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+echo $USER3
 
 cd ../slurk-bots
