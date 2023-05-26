@@ -176,19 +176,7 @@ $(document).ready(function () {
          * The gripper is used to navigate on the canvas and move objects.
          */
         drawGr() {
-            let ctx = this.grCanvas.getContext("2d");
-            for (const [grId, gripper] of Object.entries(this.grippers)) {
-                // modify style depending on whether an object is gripped
-                if (grId === "cell"){
-   
-                    // call drawing helper functions with additional infos
-                    let params = {
-                        x: gripper.x,
-                        y: gripper.y,
-                    }
-                    this._drawBB(ctx, [[1]], params, "red");
-                }
-            }
+            console.log("placeholder gripper")
         }
 
         /**
@@ -230,16 +218,16 @@ $(document).ready(function () {
             let width = this.blockSize;
             let height = this.blockSize;
 
-            ctx.moveTo(x + width / 2, y);
+            ctx.moveTo(x + width / 2, y + 2);
             
             // top left edge
-            ctx.lineTo(x, y + height / 2);
+            ctx.lineTo(x + 2, y + height / 2);
             
             // bottom left edge
-            ctx.lineTo(x + width / 2, y + height);
+            ctx.lineTo(x + width / 2, y + height - 2);
             
             // bottom right edge
-            ctx.lineTo(x + width , y + height / 2);
+            ctx.lineTo(x + width - 2 , y + height / 2);
             
             // closing the path automatically creates
             // the top right edge
@@ -247,12 +235,18 @@ $(document).ready(function () {
             
             ctx.fillStyle = color;
             ctx.fill();
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+
+            ctx.closePath();
         }
 
         _drawCircle(ctx, x, y, color){
             ctx.beginPath()
             let circle = new Path2D();
-            let padding = this.blockSize / 15;
+            let padding = this.blockSize / 10;
             let radius = this.blockSize / 2;
 
             circle.arc(
@@ -264,6 +258,10 @@ $(document).ready(function () {
 
             ctx.fillStyle = color;
             ctx.fill(circle);
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'black';
+            ctx.stroke(circle);
 
             ctx.closePath();
         }
@@ -282,6 +280,22 @@ $(document).ready(function () {
                 w - padding*2,
                 h
             );
+
+            ctx.lineWidth = 2;
+
+            // right border
+            ctx.beginPath();
+            ctx.moveTo(px + padding, py);
+            ctx.lineTo(px + padding, py + h);
+            ctx.stroke();
+
+            // left border
+            ctx.beginPath();
+            ctx.moveTo(px + w - padding, py);
+            ctx.lineTo(px + w - padding, py + h);
+            ctx.stroke();
+
+            ctx.closePath();
         }
 
         _drawHBridge(ctx, x, y, color){
@@ -298,6 +312,22 @@ $(document).ready(function () {
                 w,
                 h - padding*2
             );
+
+            ctx.lineWidth = 2;
+
+            // upper border
+            ctx.beginPath();
+            ctx.moveTo(px, py + padding);
+            ctx.lineTo(px+w, py + padding);
+            ctx.stroke();
+
+            // lower border
+            ctx.beginPath();
+            ctx.moveTo(px, py + h - padding);
+            ctx.lineTo(px+w, py + h - padding);
+            ctx.stroke();
+
+            ctx.closePath();
         }
 
         _drawBB(ctx, bMatrix, params, color) {
@@ -315,6 +345,42 @@ $(document).ready(function () {
             }
         }
 
+        _drawUpperBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            this._drawBorder(ctx, x, y, x+1, y, highlight, borderColor, borderWidth);
+        }
+
+        _drawLowerBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight, borderColor, borderWidth);
+        }
+
+        _drawLeftBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            this._drawBorder(ctx, x, y, x, y+1, highlight, borderColor, borderWidth);
+        }
+
+        _drawRightBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight, borderColor, borderWidth);
+        }
+
+        _drawBorder(ctx, x1, y1, x2, y2, highlight=false, borderColor="black",
+            borderWidth=2) {
+            // --- config ---
+            // for no highlight, shadowBlur is set to 0 (= invisible)
+            ctx.shadowBlur = highlight ? 5 : 0;
+            ctx.shadowColor = highlight;
+            ctx.lineStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+
+            ctx.beginPath();
+            ctx.moveTo(this._toPxl(x1), this._toPxl(y1));
+            ctx.lineTo(this._toPxl(x2), this._toPxl(y2));
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
         // --- draw helper functions ---
         _drawBlock(ctx, x, y, color) {
             // --- config ---
@@ -325,6 +391,10 @@ $(document).ready(function () {
             let w = Math.abs(px - this._toPxl(x+1));
             let h =  Math.abs(py - this._toPxl(y+1));
             ctx.fillRect(px, py, w, h);
+            this._drawUpperBorder(ctx, x, y, false)
+            this._drawLowerBorder(ctx, x, y, false)
+            this._drawLeftBorder(ctx, x, y, false)
+            this._drawRightBorder(ctx, x, y, false)
         }
 
         _drawUpperBorder(
