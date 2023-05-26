@@ -89,7 +89,7 @@ class SessionManager(dict):
         if room_id in self:
             self[room_id].close()
             self.pop(room_id)
-            
+
 
 class MoveEvaluator:
     def __init__(self, rules):
@@ -105,10 +105,7 @@ class MoveEvaluator:
     def is_allowed(self, this_obj, client, x, y, block_size):
         # last item on cell cannot be a screw
         cell_objs = client.get_entire_cell(
-            x=x,
-            y=y,
-            block_size=block_size,
-            board="wizard_working"
+            x=x, y=y, block_size=block_size, board="wizard_working"
         )
 
         if cell_objs:
@@ -129,10 +126,7 @@ class MoveEvaluator:
 
             x, y = other_cell
             other_cell_objs = client.get_entire_cell(
-                x=x,
-                y=y,
-                block_size=block_size,
-                board="wizard_working"
+                x=x, y=y, block_size=block_size, board="wizard_working"
             )
             other_cell_height = len(other_cell_objs)
 
@@ -145,6 +139,7 @@ class MoveEvaluator:
                 if allowed_placement is False:
                     return False
         return True
+
 
 class CoCoBot(TaskBot):
     def __init__(self, *args, **kwargs):
@@ -389,7 +384,9 @@ class CoCoBot(TaskBot):
                         obj["y"] = y // block_size
                         obj["gripped"] = None
 
-                        allowed_move = self.move_evaluator.is_allowed(obj, this_client, x, y, block_size)
+                        allowed_move = self.move_evaluator.is_allowed(
+                            obj, this_client, x, y, block_size
+                        )
                         if allowed_move is False:
                             self.sio.emit(
                                 "text",
@@ -452,7 +449,7 @@ class CoCoBot(TaskBot):
                             x=gripper_on_board["x"],
                             y=gripper_on_board["y"],
                             block_size=1,
-                            board="wizard_working"
+                            board="wizard_working",
                         )
 
                         logging.debug(cell_objects)
@@ -474,7 +471,9 @@ class CoCoBot(TaskBot):
                             obj["y"] = obj["y"] - old_y + new_y
                             obj["gripped"] = None
 
-                            allowed_move = self.move_evaluator.is_allowed(obj, this_client, obj["x"], obj["y"], 1)
+                            allowed_move = self.move_evaluator.is_allowed(
+                                obj, this_client, obj["x"], obj["y"], 1
+                            )
                             if allowed_move is False:
                                 self.sio.emit(
                                     "text",
@@ -496,17 +495,21 @@ class CoCoBot(TaskBot):
                                 current_action = self.sessions[room_id].current_action
                                 self.sessions[
                                     room_id
-                                ].current_action = current_action.add_action(action, obj)
+                                ].current_action = current_action.add_action(
+                                    action, obj
+                                )
 
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
-                                self.log_event("working_board_log", current_state, room_id)
+                                self.log_event(
+                                    "working_board_log", current_state, room_id
+                                )
                             else:
                                 # invalid positioning, stop
                                 return
 
                         this_client.remove_working_gripper("cell")
-                        
+
                     else:
                         this_client.grip_cell(
                             x=data["coordinates"]["x"],
@@ -555,14 +558,14 @@ class CoCoBot(TaskBot):
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],
                     block_size=data["coordinates"]["block_size"],
-                    board="target"
+                    board="target",
                 )
 
                 if objects:
                     message = "Bottom to top: "
                     obj_strings = list()
                     for obj in objects:
-                        name = obj['type']
+                        name = obj["type"]
                         if name == "vbridge":
                             name = "vertical bridge"
 
@@ -802,14 +805,14 @@ class CoCoBot(TaskBot):
                             x=gripper["x"],
                             y=gripper["y"],
                             block_size=1,
-                            board="wizard_working"
+                            board="wizard_working",
                         )
 
                         if objects:
                             message = "Bottom to top: "
                             obj_strings = list()
                             for obj in objects:
-                                name = obj['type']
+                                name = obj["type"]
                                 if name == "vbridge":
                                     name = "vertical bridge"
 

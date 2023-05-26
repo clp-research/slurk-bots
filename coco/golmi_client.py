@@ -10,7 +10,7 @@ from .config import EMPTYSTATE, SELECTIONSTATE
 @dataclass
 class Rooms:
     target: str
-    player_working:  str
+    player_working: str
     wizard_working: str
     selector: str
 
@@ -31,57 +31,27 @@ class QuadrupleClient:
             target=f"{self.room_id}_t",
             player_working=f"{self.room_id}_pw",
             wizard_working=f"{self.room_id}_ww",
-            selector=f"{self.room_id}_selector"
+            selector=f"{self.room_id}_selector",
         )
 
     def run(self, auth):
-        self.target.run(
-            self.golmi_address,
-            self.rooms.target,
-            auth
-        )
-        self.player_working.run(
-            self.golmi_address,
-            self.rooms.player_working,
-            auth
-        )
-        self.wizard_working.run(
-            self.golmi_address,
-            self.rooms.wizard_working,
-            auth
-        )
-        self.selector.run(
-            self.golmi_address,
-            self.rooms.selector,
-            auth
-        )
+        self.target.run(self.golmi_address, self.rooms.target, auth)
+        self.player_working.run(self.golmi_address, self.rooms.player_working, auth)
+        self.wizard_working.run(self.golmi_address, self.rooms.wizard_working, auth)
+        self.selector.run(self.golmi_address, self.rooms.selector, auth)
 
     def disconnect(self):
-        sockets = [
-            self.target,
-            self.wizard_working,
-            self.player_working,
-            self.selector
-        ]
+        sockets = [self.target, self.wizard_working, self.player_working, self.selector]
         for socket in sockets:
             socket.disconnect()
 
     def load_config(self, config):
-        sockets = [
-            self.target,
-            self.wizard_working,
-            self.player_working
-        ]
+        sockets = [self.target, self.wizard_working, self.player_working]
         for socket in sockets:
             socket.load_config(config)
 
         self.selector.load_config(
-            {
-                "width": 10.0,
-                "height": 10.0,
-                "move_step": 1,
-                "prevent_overlap": False
-            }
+            {"width": 10.0, "height": 10.0, "move_step": 1, "prevent_overlap": False}
         )
 
     def clear_working_state(self):
@@ -115,7 +85,7 @@ class QuadrupleClient:
 
     def grip_object(self, x, y, block_size):
         req = requests.get(
-            f'{self.golmi_address}/slurk/grip/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+            f"{self.golmi_address}/slurk/grip/{self.rooms.wizard_working}/{x}/{y}/{block_size}"
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
@@ -124,7 +94,7 @@ class QuadrupleClient:
 
     def grip_cell(self, x, y, block_size):
         req = requests.get(
-            f'{self.golmi_address}/slurk/grip_cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+            f"{self.golmi_address}/slurk/grip_cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}"
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
@@ -133,26 +103,24 @@ class QuadrupleClient:
 
     def wizard_select_object(self, x, y, block_size):
         req = requests.get(
-            f'{self.golmi_address}/slurk/grip/{self.rooms.selector}/{x}/{y}/{block_size}'
+            f"{self.golmi_address}/slurk/grip/{self.rooms.selector}/{x}/{y}/{block_size}"
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
 
     def get_gripped_object(self):
         req = requests.get(
-            f'{self.golmi_address}/slurk/{self.rooms.wizard_working}/gripped'
+            f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/gripped"
         )
         return req.json() if req.ok else None
 
     def get_wizard_selection(self):
-        req = requests.get(
-            f'{self.golmi_address}/slurk/{self.rooms.selector}/gripped'
-        )
+        req = requests.get(f"{self.golmi_address}/slurk/{self.rooms.selector}/gripped")
         return req.json() if req.ok else None
 
     def get_gripper(self, gripper_id):
         req = requests.get(
-            f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}'
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}"
         )
         return req.json() if req.ok else None
 
@@ -160,13 +128,13 @@ class QuadrupleClient:
 
         mapping = {
             "wizard_working": self.rooms.wizard_working,
-            "target": self.rooms.target
+            "target": self.rooms.target,
         }
 
         room = mapping[board]
 
         req = requests.get(
-            f'{self.golmi_address}/slurk/cell/{room}/{x}/{y}/{block_size}'
+            f"{self.golmi_address}/slurk/cell/{room}/{x}/{y}/{block_size}"
         )
         return req.json() if req.ok else None
 
@@ -187,13 +155,13 @@ class QuadrupleClient:
 
     def remove_gripper(self, gripper):
         req = requests.delete(
-            f'{self.golmi_address}/slurk/gripper/{self.rooms.selector}/{gripper}'
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.selector}/{gripper}"
         )
         return req.json() if req.ok else None
 
     def remove_working_gripper(self, gripper):
         req = requests.delete(
-            f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper}'
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper}"
         )
         return req.json() if req.ok else None
 
@@ -210,7 +178,7 @@ class QuadrupleClient:
                 if this_obj in tile:
                     if tile[-1] != this_obj:
                         return False, None
-                
+
         response = requests.delete(
             f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/object",
             json=obj,
@@ -227,7 +195,7 @@ class QuadrupleClient:
     def remove_selection(self, room, gripper_id):
         rooms = {
             "wizard_selection": self.rooms.selector,
-            "wizard_working": self.rooms.wizard_working
+            "wizard_working": self.rooms.wizard_working,
         }
 
         response = requests.delete(
@@ -239,11 +207,10 @@ class QuadrupleClient:
 
     def get_mouse_gripper(self):
         req = requests.get(
-            f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/mouse'
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/mouse"
         )
         return req.json() if req.ok else None
 
-        
 
 class GolmiClient:
     def __init__(self):
