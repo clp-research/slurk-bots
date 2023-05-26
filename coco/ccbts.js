@@ -115,6 +115,20 @@ function start_golmi(url, password, role, golmi_rooms) {
             grLayer_t
         );
 
+        grLayer_t.onclick = (event) => {
+            socket.emit("mouse", {
+                type: "click",
+                coordinates: {
+                    event: "click",
+                    x: event.offsetX,
+                    y: event.offsetY,
+                    block_size: targetlayerView.blockSize,
+                    board: "player_target"
+                },
+                room: self_room
+            });
+        }
+
         golmi_socket_target.connect()
         golmi_socket_target.emit("join", { "room_id": golmi_rooms.target });
     }
@@ -156,7 +170,8 @@ function set_player(description) {
     "redo",
     "next_state",
     "revert_session",
-    "ok"
+    "ok",
+    "inspect"
 ].forEach(element => {
     $(`#${element}_button`).click(() => {
         socket.emit("message_command",

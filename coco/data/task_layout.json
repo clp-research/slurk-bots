@@ -87,6 +87,14 @@
                   "id": "delete_object_button",
                   "layout-content": "Delete Object",
                   "style": "padding: 10px; margin: 5px;"
+                },
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "inspect_button",
+                  "layout-content": "Inspect Cell",
+                  "style": "padding: 10px; margin: 5px;"
                 }
               ]
             },

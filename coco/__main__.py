@@ -104,8 +104,11 @@ class MoveEvaluator:
 
     def is_allowed(self, this_obj, client, x, y, block_size):
         # last item on cell cannot be a screw
-        cell_objs = client.get_wizard_working_cell(
-            x, y, block_size
+        cell_objs = client.get_entire_cell(
+            x=x,
+            y=y,
+            block_size=block_size,
+            board="wizard_working"
         )
 
         if cell_objs:
@@ -125,8 +128,11 @@ class MoveEvaluator:
                 other_cell = (x, y + block_size)
 
             x, y = other_cell
-            other_cell_objs = client.get_wizard_working_cell(
-                x, y, block_size
+            other_cell_objs = client.get_entire_cell(
+                x=x,
+                y=y,
+                block_size=block_size,
+                board="wizard_working"
             )
             other_cell_height = len(other_cell_objs)
 
@@ -442,10 +448,11 @@ class CoCoBot(TaskBot):
                     gripper_on_board = this_client.get_gripper("cell")
 
                     if gripper_on_board:
-                        cell_objects = this_client.get_wizard_entire_cell(
+                        cell_objects = this_client.get_entire_cell(
                             x=gripper_on_board["x"],
                             y=gripper_on_board["y"],
                             block_size=1,
+                            board="wizard_working"
                         )
 
                         logging.debug(cell_objects)
@@ -542,6 +549,44 @@ class CoCoBot(TaskBot):
                     room_id,
                 )
                 return
+
+            if board == "player_target":
+                objects = this_client.get_entire_cell(
+                    x=data["coordinates"]["x"],
+                    y=data["coordinates"]["y"],
+                    block_size=data["coordinates"]["block_size"],
+                    board="target"
+                )
+
+                if objects:
+                    message = "Bottom to top: "
+                    obj_strings = list()
+                    for obj in objects:
+                        name = obj['type']
+                        if name == "vbridge":
+                            name = "vertical bridge"
+
+                        if name == "hbridge":
+                            name = "horizontal bridge"
+
+                        this_obj = f"{obj['color'][0]} {name}"
+                        obj_strings.append(this_obj)
+
+                    message += ", ".join(obj_strings)
+
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                message=message,
+                                color=STANDARD_COLOR,
+                            ),
+                            "room": room_id,
+                            "receiver_id": user_id,
+                            "html": True,
+                        },
+                    )
+                    return
 
         @self.sio.event
         def command(data):
@@ -750,6 +795,45 @@ class CoCoBot(TaskBot):
                                     "html": True,
                                 },
                             )
+
+                    elif event == "inspect":
+                        gripper = this_client.get_mouse_gripper()
+                        objects = this_client.get_entire_cell(
+                            x=gripper["x"],
+                            y=gripper["y"],
+                            block_size=1,
+                            board="wizard_working"
+                        )
+
+                        if objects:
+                            message = "Bottom to top: "
+                            obj_strings = list()
+                            for obj in objects:
+                                name = obj['type']
+                                if name == "vbridge":
+                                    name = "vertical bridge"
+
+                                if name == "hbridge":
+                                    name = "horizontal bridge"
+
+                                this_obj = f"{obj['color'][0]} {name}"
+                                obj_strings.append(this_obj)
+
+                            message += ", ".join(obj_strings)
+
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message=message,
+                                        color=STANDARD_COLOR,
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True,
+                                },
+                            )
+                            return
 
                 else:
                     # user command

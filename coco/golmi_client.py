@@ -150,21 +150,23 @@ class QuadrupleClient:
         )
         return req.json() if req.ok else None
 
-    def get_wizard_working_cell(self, x, y, block_size):
-        req = requests.get(
-            f'{self.golmi_address}/slurk/cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
-        )
-        return req.json() if req.ok else None
-
     def get_gripper(self, gripper_id):
         req = requests.get(
             f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}'
         )
         return req.json() if req.ok else None
 
-    def get_wizard_entire_cell(self, x, y, block_size):
+    def get_entire_cell(self, x, y, block_size, board):
+
+        mapping = {
+            "wizard_working": self.rooms.wizard_working,
+            "target": self.rooms.target
+        }
+
+        room = mapping[board]
+
         req = requests.get(
-            f'{self.golmi_address}/slurk/cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}'
+            f'{self.golmi_address}/slurk/cell/{room}/{x}/{y}/{block_size}'
         )
         return req.json() if req.ok else None
 
@@ -235,6 +237,13 @@ class QuadrupleClient:
             logging.error(f"Could not post new object: {response.status_code}")
             response.raise_for_status()
 
+    def get_mouse_gripper(self):
+        req = requests.get(
+            f'{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/mouse'
+        )
+        return req.json() if req.ok else None
+
+        
 
 class GolmiClient:
     def __init__(self):
