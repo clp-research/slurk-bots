@@ -64,7 +64,7 @@ docker run -e SLURK_TOKEN="$CONCIERGE_BOT_TOKEN" -e SLURK_USER=$CONCIERGE_BOT -e
 sleep 5
 
 # create cola bot
-WORDLE_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/wordle_bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
+WORDLE_BOT_TOKEN=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/bot_permissions.json | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo "Wordle Bot Token: "
 echo $WORDLE_BOT_TOKEN
 WORDLE_BOT=$(check_response scripts/create_user.sh "WordleBot" "$WORDLE_BOT_TOKEN" | jq .id)
@@ -74,11 +74,11 @@ docker run -e SLURK_TOKEN=$WORDLE_BOT_TOKEN -e SLURK_USER=$WORDLE_BOT -e SLURK_W
 sleep 5
 
 # create two users
-USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/wordle_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER1=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo $USER1
-USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/wordle_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER2=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo $USER2
-USER3=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/wordle_user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
+USER3=$(check_response scripts/create_room_token.sh $WAITING_ROOM ../slurk-bots/wordle/data/user_permissions.json 1 $TASK_ID | jq .id | sed 's/^"\(.*\)"$/\1/')
 echo $USER3
 
 cd ../slurk-bots

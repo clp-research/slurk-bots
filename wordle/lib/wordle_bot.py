@@ -269,7 +269,7 @@ class WordleBot:
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/mode",
                 json={"text": mode_message},
-                headers={"Authorization": f"Bearer {self.token}"},
+                headers={"Authorization": f"Bearer {self.token}"}
             )
             self.request_feedback(response, "add mode explanation")
 
