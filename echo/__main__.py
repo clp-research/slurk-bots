@@ -33,10 +33,27 @@ class RoomTimer:
 
 
 class EchoBot(TaskBot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.timers_per_room = dict()
-        self.register_callbacks()
+    timers_per_room = dict()
+
+    def join_task_room(self):
+        """Let the bot join an assigned task room."""
+
+        def join(data):
+            if self.task_id is None or data["task"] != self.task_id:
+                return
+
+            room_id = data["room"]
+
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, f"let {self.__class__.__name__}  join room")
+            self.timers_per_room[room_id] = RoomTimer(
+                self.close_room, room_id
+            )
+
+        return join
 
     def close_room(self, room_id):
         self.room_to_read_only(room_id)
@@ -95,31 +112,14 @@ class EchoBot(TaskBot):
 
     def register_callbacks(self):
         @self.sio.event
-        def new_task_room(data):
-            room_id = data["room"]
-            task_id = data["task"]
-
-            logging.debug(f"A new task room was created with id: {data['task']}")
-            logging.debug(f"This bot is looking for task id: {self.task_id}")
-
-            if task_id is not None and task_id == self.task_id:
-                response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "let echo bot join room")
-                self.timers_per_room[room_id] = RoomTimer(
-                    self.close_room, room_id
-                )
-
-        @self.sio.event
         def text_message(data):
             if self.user == data["user"]["id"]:
                 return
             else:
                 room_id = data["room"]
                 timer = self.timers_per_room.get(room_id)
-                timer.reset()
+                if timer is not None:
+                    timer.reset()
 
             logging.debug(f"I got a message, let's send it back!: {data}")
 
