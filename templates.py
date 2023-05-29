@@ -91,12 +91,12 @@ class Bot(ABC):
         task_bot_name = cls.__name__.upper().replace("BOT", "")
 
         # collect environment variables as defaults
-        if f"{task_bot_name}_TOKEN" in os.environ:
-            token = {"default": os.environ[f"{task_bot_name}_TOKEN"]}
+        if f"BOT_TOKEN" in os.environ:
+            token = {"default": os.environ["BOT_TOKEN"]}
         else:
             token = {"required": True}
-        if f"{task_bot_name}_USER" in os.environ:
-            user = {"default": os.environ[f"{task_bot_name}_USER"]}
+        if f"BOT_USER" in os.environ:
+            user = {"default": os.environ["BOT_USER"]}
         else:
             user = {"required": True}
 
@@ -186,12 +186,11 @@ class TaskBot(Bot):
             parents=[super().create_argparser()],
             add_help=False,
         )
-        task_bot_name = cls.__name__.upper().replace("BOT", "")
 
         parser.add_argument(
             "--task",
             type=int,
-            default=os.environ.get(f"{task_bot_name}_TASK_ID"),
+            default=os.environ.get(f"TASK_ID"),
             help="slurk task ID the bot should moderate",
         )
         return parser
