@@ -97,15 +97,20 @@ class EchoBot(TaskBot):
         @self.sio.event
         def new_task_room(data):
             room_id = data["room"]
-            response = requests.post(
-                f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "let echo bot join room")
-            logging.debug("############################")
-            self.timers_per_room[room_id] = RoomTimer(
-                self.close_room, room_id
-            )
+            task_id = data["task"]
+
+            logging.debug(f"A new task room was created with id: {data['task']}")
+            logging.debug(f"This bot is looking for task id: {self.task_id}")
+
+            if task_id is not None and task_id == self.task_id:
+                response = requests.post(
+                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "let echo bot join room")
+                self.timers_per_room[room_id] = RoomTimer(
+                    self.close_room, room_id
+                )
 
         @self.sio.event
         def text_message(data):
@@ -131,7 +136,11 @@ class EchoBot(TaskBot):
 
             self.sio.emit(
                 "text",
-                {"room": data["room"], "message": message, **options},
+                {
+                    "room": data["room"],
+                    "message": message,
+                    **options
+                },
                 callback=self.message_callback,
             )
 
