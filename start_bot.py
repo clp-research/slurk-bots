@@ -5,6 +5,7 @@ from time import sleep
 import subprocess
 from pathlib import Path
 import sys
+import shutil
 
 import requests
 
@@ -152,6 +153,8 @@ def create_task(name, num_users, layout_id):
 
 
 def main(args):
+    bot_base_path = Path(args.bot)
+
     if args.dev is True:
         if any([args.waiting_room_id, args.waiting_room_layout_id]):
             print("You provided a waiting room id or layout, cannot also start slurk server")
@@ -160,6 +163,19 @@ def main(args):
             print(
                 "slurk is missing, donwload it first: https://github.com/clp-research/slurk/"
             )
+            return
+
+        if args.copy_plugins is True:
+            # plugins must be all placed in the plugin directory
+            target_dir = Path("../slurk/slurk/views/static/plugins/")
+            plugins_path = Path(f"{bot_base_path}/plugins")
+
+            if not plugins_path.exists():
+                print("Your bot is missing a 'plugins' directory")
+                return
+
+            for filename in plugins_path.iterdir():
+                shutil.copy(filename, target_dir)
 
         # build image
         subprocess.run(
@@ -198,7 +214,7 @@ def main(args):
         waiting_room_id = create_room(waiting_room_layout)
 
         # create a concierge bot for this room
-        concierge_name = f"concierge-bot-{Path(args.bot)}"
+        concierge_name = f"concierge-bot-{bot_base_path}"
 
         concierge_permissions_dict = json.loads(
             Path("concierge/concierge_bot_permissions.json").read_text()
@@ -238,7 +254,7 @@ def main(args):
 
     # create task room
     # look for the task room layout (allow some options)
-    bot_base_path = Path(args.bot)
+    
     task_room_layout_path = find_task_layout_file(bot_base_path)
     if task_room_layout_path is None:
         return
@@ -297,9 +313,9 @@ def main(args):
             return
 
         user_permissions_dict = json.loads(user_permissions_path.read_text())
-        user_permissions_id = create_permissions(user_permissions_dict)
 
         for user in range(args.users):
+            user_permissions_id = create_permissions(user_permissions_dict)
             user_token = create_token(user_permissions_id, waiting_room_id, task_id)
             print(
                 f"Token: {user_token} | Link:{args.slurk_host}/login?name=user_{user}&token={user_token}"
@@ -355,6 +371,11 @@ if __name__ == "__main__":
         help="number of users for this task",
         required=all("concierge" not in arg for arg in sys.argv),
         type=int
+    )
+    parser.add_argument(
+        "--copy-plugins",
+        help="copy all the files in the plugins directory to slurk's plugins before starting the slurk server",
+        action="store_true"
     )
     args = parser.parse_args()
 

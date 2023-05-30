@@ -1,0 +1,5 @@
+{
+    "GOLMI_SERVER": "http://127.0.0.1:5001",
+    "GOLMI_PASSWORD": "GiveMeTheBigBluePasswordOnTheLeft",
+    "BOT_VERSION": "show_gripper"
+}
