@@ -343,12 +343,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run Click Bot.")
 
     # collect environment variables as defaults
-    if "SLURK_TOKEN" in os.environ:
-        token = {"default": os.environ["SLURK_TOKEN"]}
+    if "BOT_TOKEN" in os.environ:
+        token = {"default": os.environ["BOT_TOKEN"]}
     else:
         token = {"required": True}
-    if "SLURK_USER" in os.environ:
-        user = {"default": os.environ["SLURK_USER"]}
+    if "BOT_USER" in os.environ:
+        user = {"default": os.environ["BOT_USER"]}
     else:
         user = {"required": True}
     host = {"default": os.environ.get("SLURK_HOST", "http://localhost")}
@@ -358,7 +358,7 @@ if __name__ == "__main__":
         data = {"default": os.environ["CLICK_DATA"]}
     else:
         data = {"required": True}
-    task_id = {"default": os.environ.get("CLICK_TASK_ID")}
+    task_id = {"default": os.environ.get("TASK_ID")}
 
     # register commandline arguments
     parser.add_argument(
