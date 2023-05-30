@@ -111,6 +111,30 @@ class RecolageBot(TaskBot):
 
     def register_callbacks(self):
         @self.sio.event
+        def start_typing(data):
+            if data["user"]["id"] == self.user:
+                return
+
+            for room_id, session in self.sessions.items():
+                players_id = {player["id"] for player in session.players}
+                
+                if data["user"]["id"] in players_id:
+                    self.log_event("start_typing", data, room_id)
+                    return
+
+        @self.sio.event
+        def stop_typing(data):
+            if data["user"]["id"] == self.user:
+                return
+            
+            for room_id, session in self.sessions.items():
+                players_id = {player["id"] for player in session.players}
+                
+                if data["user"]["id"] in players_id:
+                    self.log_event("stop_typing", data, room_id)
+                    return
+
+        @self.sio.event
         def new_task_room(data):
             """Triggered after a new task room is created.
             An example scenario would be that the concierge
