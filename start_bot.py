@@ -323,30 +323,8 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--waiting-room-layout-id",
-        type=int,
-        help="layout_id of an existing layout. With this option will create a new waiting room",
-    )
-    parser.add_argument(
-        "--waiting-room-id",
-        type=int,
-        help="room_id of an existing waiting room. With this option will not create a new waiting room",
-    )
-    parser.add_argument(
-        "--slurk-api-token",
-        help="slurk token with api permissions",
-        default="00000000-0000-0000-0000-000000000000",
-    )
-    parser.add_argument(
-        "--slurk-host",
-        default="http://127.0.0.1:5000",
-        help="api address to your slurk server",
-    )
-    parser.add_argument(
-        "--bot-name",
-        help="the name of your bot. If omitted, the name of the directory will be used",
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         "bot",
@@ -357,20 +335,44 @@ if __name__ == "__main__":
         help="path to a json file containing extra variable to pass as environment variables to the bot docker",
     )
     parser.add_argument(
-        "--tokens",
-        action="store_true",
-        help="directly generate tokens to test your bot",
-    )
-    parser.add_argument(
-        "--dev",
-        action="store_true",
-        help="start a local slurk server for development",
+        "--bot-name",
+        help="the name of your bot. If omitted, the name of the directory will be used",
     )
     parser.add_argument(
         "--users",
         help="number of users for this task",
         required=all("concierge" not in arg for arg in sys.argv),
         type=int
+    )
+    parser.add_argument(
+        "--slurk-host",
+        default="http://127.0.0.1:5000",
+        help="api address to your slurk server",
+    )
+    parser.add_argument(
+        "--slurk-api-token",
+        help="slurk token with api permissions",
+        default="00000000-0000-0000-0000-000000000000",
+    )
+    parser.add_argument(
+        "--waiting-room-id",
+        type=int,
+        help="room_id of an existing waiting room. With this option will not create a new waiting room or a concierge bot",
+    )
+    parser.add_argument(
+        "--waiting-room-layout-id",
+        type=int,
+        help="layout_id of an existing layout for a waiting room.",
+    )
+    parser.add_argument(
+        "--tokens",
+        action="store_true",
+        help="generate and print tokens to test your bot",
+    )
+    parser.add_argument(
+        "--dev",
+        action="store_true",
+        help="start a local slurk server for development",
     )
     parser.add_argument(
         "--copy-plugins",
