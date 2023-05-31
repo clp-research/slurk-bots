@@ -203,8 +203,13 @@ def main(args):
     # create a waiting room if not provided
     if args.waiting_room_id is None:
         # create a waiting_room_layout (or read from args)
+        waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict) 
+        if not Path(waiting_room_layout_dict_path).exists():
+            print("could not find the layout file for the waiting room")
+            return
+
         waiting_room_layout_dict = json.loads(
-            Path("concierge/waiting_room_layout.json").read_text()
+            Path(waiting_room_layout_dict_path).read_text()
         )
         waiting_room_layout = args.waiting_room_layout_id or create_room_layout(
             waiting_room_layout_dict
@@ -254,7 +259,6 @@ def main(args):
 
     # create task room
     # look for the task room layout (allow some options)
-    
     task_room_layout_path = find_task_layout_file(bot_base_path)
     if task_room_layout_path is None:
         return
@@ -318,7 +322,7 @@ def main(args):
             user_permissions_id = create_permissions(user_permissions_dict)
             user_token = create_token(user_permissions_id, waiting_room_id, task_id)
             print(
-                f"Token: {user_token} | Link:{args.slurk_host}/login?name=user_{user}&token={user_token}"
+                f"Token: {user_token} | Link: {args.slurk_host}/login?name=user_{user}&token={user_token}"
             )
 
 
@@ -363,6 +367,11 @@ if __name__ == "__main__":
         "--waiting-room-layout-id",
         type=int,
         help="layout_id of an existing layout for a waiting room.",
+    )
+    parser.add_argument(
+        "--waiting-room-layout-dict",
+        default="concierge/waiting_room_layout.json",
+        help="path to a json file containing a layout for a waiting room",
     )
     parser.add_argument(
         "--tokens",
