@@ -20,24 +20,19 @@ This bot parrots user messages. If a private message is sent to the bot by a use
         "send_privately": true
     }
     ```
-    **To skip all this setup above, you could run a [setup script](https://github.com/clp-research/slurk-bots/blob/master/echo/setup.sh).** 
-    1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash echo/setup.sh``` 
-    This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/echo-bot```. At the end of the run there will a token printed in the shell that you will need to paste to access the waiting room. 
-5. Save the generated tokens!
-
-Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again. 
+ 4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
+ 5. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
+ ```$ python start_bot.py echo/ --users 1 --tokens --dev```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/echo```.
     
 ### Running and playing the bot
-
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
     --net="host" \
-    -e ECHO_TOKEN=$THIS_BOT_TOKEN \
-    -e ECHO_USER=$THIS_BOT \
-    -e ECHO_TASK_ID=$TASK_ID \
-    -e SLURK_WAITING_ROOM=$WAITING_ROOM \
+    -e BOT_TOKEN=$THIS_BOT_TOKEN \
+    -e BOT_USER=$THIS_BOT \
+    -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
     -d slurk/echo-bot
 ```

@@ -26,34 +26,23 @@ For this purpose the following commands are defined to manage the transition bet
         "send_privately": true
     }
     ```
-    **To skip all this setup above, you could run a [setup script](https://github.com/clp-research/slurk-bots/blob/master/dito/scripts/setup.sh).** 
-    1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash dito/scripts/setup.sh``` 
-    This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/dito-bot```. At the end of the run there will be two tokens printed in the shell that you will need to paste to access the waiting rooms. 
-4. Save the generated tokens!
+ 4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
+ 5. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
+ ```$ python start_bot.py dito/ --users 2 --tokens --dev --waiting-room-layout-dict dito/data/waiting_room_layout.json```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/dito```.
 
-Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again. 
-    
 ### Running and playing the bot
-
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
     --net="host" \
-    -e SLURK_TOKEN=$DITO_BOT_TOKEN \
-    -e SLURK_USER=$DITO_BOT \
-    -e SLURK_WAITING_ROOM=$WAITING_ROOM \
-    -e DITO_TASK_ID=$TASK_ID \
+    -e BOT_TOKEN=$DITO_BOT_TOKEN \
+    -e BOT_USER=$DITO_BOT \
+    -e WAITING_ROOM=$WAITING_ROOM \
+    -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
     -d slurk/dito-bot
 ```
-
-To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be two tokens towards the end that will look something like below.
-```
-2f42a98e-0a29-43c2-9f94-97b38f25c30f
-4cf0a403-c8d4-48fa-a7b0-b8ea7d52a364
-```
-
 
 #### Modifications
 Under `lib/config.py` you find a number of global variables that define experiment settings as well as short descriptions of their effect on the experiment.

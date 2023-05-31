@@ -960,8 +960,8 @@ if __name__ == "__main__":
 
     # create commandline parser
     parser = RecolageBot.create_argparser()
-    if "SLURK_WAITING_ROOM" in os.environ:
-        waiting_room = {"default": os.environ["SLURK_WAITING_ROOM"]}
+    if "WAITING_ROOM" in os.environ:
+        waiting_room = {"default": os.environ["WAITING_ROOM"]}
     else:
         waiting_room = {"required": True}
     parser.add_argument(

@@ -221,8 +221,12 @@ def main(args):
         # create a concierge bot for this room
         concierge_name = f"concierge-bot-{bot_base_path}"
 
+        concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
+        if concierge_bot_permissions_file is None:
+            return
+
         concierge_permissions_dict = json.loads(
-            Path("concierge/concierge_bot_permissions.json").read_text()
+            concierge_bot_permissions_file.read_text()
         )
         concierge_permissions = create_permissions(concierge_permissions_dict)
         concierge_bot_token = create_token(concierge_permissions, waiting_room_id)

@@ -7,8 +7,8 @@ To run the bot, you can run a command in a similar fashion as:
 ```bash
 docker run \
     --net="host" \
-    -e SLURK_TOKEN=$CONCIERGE_BOT_TOKEN \
-    -e SLURK_USER=$CONCIERGE_BOT \
+    -e BOT_TOKEN=$CONCIERGE_BOT_TOKEN \
+    -e BOT_USER=$CONCIERGE_BOT \
     -e SLURK_PORT=5000 \
     -d slurk/concierge-bot
 
@@ -16,3 +16,8 @@ docker run \
 
 The token has to be linked to a permissions entry that gives the bot at least the following rights: `api`, `send_html_message` and `send_privately`
 Please refer to [the documentation](https://clp-research.github.io/slurk/slurk_multibots.html) for more detailed information.
+
+To create a new waiting room and start a copy of the concierge bot you can use the `start_bot.py` script in the root directory of this repository:  
+`python start_bot.py concierge --dev --extra-args clickbot/extra-args.json`  
+ The script will then print to the console the waiting room id for your newly created waiting room
+ 

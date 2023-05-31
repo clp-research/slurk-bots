@@ -18,22 +18,18 @@ The bot works on a layout that treats all messages as commands, using the send-i
         "send_privately": true
     }
     ```
-    **To skip all this setup above, you could run a [setup script](https://github.com/clp-research/slurk-bots/blob/master/intervention/setup.sh).** 
-    1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash intervention/setup.sh``` 
-    This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/intervention-bot```. At the end of the run there will be two tokens printed in the shell that you will need to paste to access the waiting rooms. 
-4. Save the generated tokens!
-
-Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again. 
+ 4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
+ 5. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
+ ```$ python start_bot.py intervention/ --users 2 --tokens --dev```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/intervention```.
     
 ### Running and playing the bot
-
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
   --net="host" \
-  -e SLURK_TOKEN=$INT_TOKEN \
-  -e SLURK_USER=$INT_USER \
+  -e BOT_TOKEN=$INT_TOKEN \
+  -e BOT_USER=$INT_USER \
   -e SLURK_PORT=5000 \
   -e TASK_ID=$TASK_ID \
   -d slurk/intervention-bot
