@@ -31,8 +31,8 @@ Please refer to [the documentation](https://clp-research.github.io/slurk/slurk_m
  
  4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
  5. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
- ```python start_bot.py boxbot/ --users 1 --tokens --dev --extra-args boxbot/extra-args.json```.  
- This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/boxbot-bot```.
+ ```$ python start_bot.py boxbot/ --users 1 --tokens --dev --extra-args boxbot/extra-args.json```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/boxbot```.
 
     
 ### Running and playing the bot
@@ -46,7 +46,7 @@ docker run \
     -e BOX_DATA="test_items/shape-colors.json" \
     -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
-    -d slurk/box-bot
+    -d slurk/boxbot
 ```
 
 To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be a token towards the end that will look something like this: `2f42a98e-0a29-43c2-9f94-97b38f25c30f`
