@@ -35,25 +35,12 @@ class RoomTimer:
 class EchoBot(TaskBot):
     timers_per_room = dict()
 
-    def join_task_room(self):
-        """Let the bot join an assigned task room."""
+    def on_task_room_creation(self, data):
+        room_id = data["room"]
 
-        def join(data):
-            if self.task_id is None or data["task"] != self.task_id:
-                return
-
-            room_id = data["room"]
-
-            response = requests.post(
-                f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, f"let {self.__class__.__name__}  join room")
-            self.timers_per_room[room_id] = RoomTimer(
-                self.close_room, room_id
-            )
-
-        return join
+        self.timers_per_room[room_id] = RoomTimer(
+            self.close_room, room_id
+        )
 
     def close_room(self, room_id):
         self.room_to_read_only(room_id)
