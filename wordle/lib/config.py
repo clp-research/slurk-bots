@@ -36,8 +36,8 @@ PLATFORM = "Prolific"
 # They indicate how long a situation has to persist for something to happen.
 
 TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
-TIME_WAITING = 5  # how many minutes a user can wait for a partner
-TIME_ROUND = 15  # how many minutes users can play on a single image
+TIME_WAITING = 10  # how many minutes a user can wait for a partner
+TIME_ROUND = 20  # how many minutes users can play on a single image
 
 # colored messages
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
