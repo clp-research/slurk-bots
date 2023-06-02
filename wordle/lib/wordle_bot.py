@@ -987,15 +987,23 @@ class WordleBot:
         if self.data_collection == "AMT":
             self._show_amt_token(room_id, receiver_id, confirmation_token)
         elif self.data_collection == "Prolific":
-            self._show_prolific_link(room_id, receiver_id, confirmation_token)
+            self._show_prolific_link(room_id, receiver_id)
 
         self._hide_image(room_id)
         self._hide_image_desc(room_id)
 
         return confirmation_token
 
-    def _show_prolific_link(self, room, receiver, token):
-        # show token also in display area
+    def _show_prolific_link(self, room, receiver, token=None):
+
+        if token is None:
+            # use the username
+            response = requests.get(
+                f"{self.uri}/users/{receiver}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "get user")
+            token = response.json().get("name", f"{room}–{receiver}")
 
         url = f"{PROLIFIC_URL}{token}"
         self.sio.emit(
