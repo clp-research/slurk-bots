@@ -1007,13 +1007,6 @@ class WordleBot:
              }
         )
 
-        response = requests.patch(
-            f"{self.uri}/rooms/{room}/text/instr",
-            json={"text": "", "receiver_id": receiver},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "remove text from display area")
-
     def _show_amt_token(self, room, receiver, token):
         self.sio.emit(
             "text",
@@ -1041,21 +1034,7 @@ class WordleBot:
             },
         )
 
-        # show token also in display area
-        json = {
-            "text": f"Please enter the following token into the field "
-                    f"on the HIT webpage, and close this browser "
-                    f"window: {token}"
-        }
-        if receiver:
-            json.update({"receiver_id": receiver})
-
-        response = requests.patch(
-            f"{self.uri}/rooms/{room}/text/instr",
-            json=json,
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "show token in display area")
+        # TODO: show token also in display area
 
     def social_media_post(self, room_id, this_user_id, other_user_name):
         self.sio.emit(
