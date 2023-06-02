@@ -11,7 +11,7 @@ import requests
 
 
 def build_docker_image(path, name=None):
-    # if a name is not proved use the name
+    # if a name is not provided use the name
     # of the directory with a  "-bot" ending
     bot_path = Path(path)
     if name is None:

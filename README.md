@@ -44,22 +44,22 @@ The script will take care of building a docker image and starting it.
 Other options:
 * `--extra-args path/to/extra-arguments.json`: Some bots may need extra arguments which need to be passed to the docker container as environment variable. You can simply save these arguments and their values in a json file and pass it to the script.
 * `--bot-name NAME-OF-YOUR-BOT`: if omitted, the script will use the base directory name as name for the bot.
-* `--slurk-host http://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally
-* `--users N`: the number of users required for this task
-* `--slurk-api-token: YOUR-API-TOKEN`: a slurk token with api rights to create a new bot. The standard value is `00000000-0000-0000-0000-000000000000` so you can omit this option when developing locally
-* `--waiting-room-id N`: you can reuse an existing waiting room for your bot instead of creating a new one. When this option is passed, the script will not start an additional concierge bot
-* `--waiting-room-layout-id N`: similarly to `--waiting-room-id` you can reuse a waiting room layout id, this option will, however, start a concierge bot for the newly created waiting room
-* `--waiting-room-layout-dict`: with this argument you can specify which layout file you want to load for your waiting room. The default value will use the layout in the `concierge` directory
-* `--tokens`: a token for each user will be generated and printed to the console after starting the bot
-* `--dev`: before starting the bot, a slurk server will be started locally for development purposes
-* `--copy-pluging`: when this option is used, the script will copy all the files in the `directory-of-your-bot/plugins` directory to the slurk server before starting it. This option can only be used if `--dev` is also passed as argument. The script cannot copy the plugins to an already running instance of the slurk server, you will have to do this manually with the `docker cp` command.
+* `--slurk-host http://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally.
+* `--users N`: the number of users required for this task.
+* `--slurk-api-token: YOUR-API-TOKEN`: a slurk token with api rights to create a new bot. The standard value is `00000000-0000-0000-0000-000000000000` so you can omit this option when developing locally.
+* `--waiting-room-id N`: you can reuse an existing waiting room for your bot instead of creating a new one. When this option is passed, the script will not start an additional concierge bot.
+* `--waiting-room-layout-id N`: similarly to `--waiting-room-id` you can reuse a waiting room layout id, this option will, however, start a concierge bot for the newly created waiting room.
+* `--waiting-room-layout-dict`: with this argument you can specify which layout file you want to load for your waiting room. The default value will use the layout in the `concierge` directory.
+* `--tokens`: a token for each user will be generated and printed to the console after starting the bot.
+* `--dev`: before starting the bot, a slurk server will be started locally for development purposes.
+* `--copy-plugins`: when this option is used, the script will copy all the files in the `directory-of-your-bot/plugins` directory to the slurk server before starting it. This option can only be used if `--dev` is also passed as argument. The script cannot copy the plugins to an already running instance of the slurk server, you will have to do this manually with the `docker cp` command.
 
 
 ### Assumptions
 In order to correctly start your bot the script makes some assumptions about the name of some files needed for your bot to start. These files can be placed anywhere inside the directory containing your bot, but a suggested location would be the `data` directory:
 * `task_layout.json`: in this file you should save the layout for your task room. The script will look for a file ending in `.json` containing all the words: `task`, `layout`
-* `bot_permissions.json`: the file containing the permissions right for your bot. The script will look for a file ending in `.json` containing all the words: `bot`, `permissions`
-* `user_permissions.json`: the file containing the permissions right for your bot. The script will look for a file ending in `.json` containing all the words: `user`, `permissions`
+* `bot_permissions.json`: the file containing the permissions for your bot. The script will look for a file ending in `.json` containing all the words: `bot`, `permissions`
+* `user_permissions.json`: the file containing the permissions for your bot. The script will look for a file ending in `.json` containing all the words: `user`, `permissions`
 
 
 ### Examples
@@ -76,7 +76,7 @@ Token: 6aeb2b62-4f7b-49d8-92e0-448af0bee055 | Link: http://127.0.0.1:5000/login?
 
 ```
 
-The script will print out the waiting room id as well as the task id since these informations are needed to generate new tokens for users.
+The script will print out the waiting room id as well as the task id since this information is needed to generate new tokens for users.
 If the `--token` option was used, the script will also generate one token for each user. You can either copy the token and choose your own user name or directly open the link to automatically log into slurk with the generated token.
 
 Once your local slurk server is already running, you can start a new bot and recycle the waiting room and concierge bot that are already running:  
