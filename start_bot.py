@@ -110,10 +110,9 @@ def find_task_layout_file(path):
         if all(i in str(filename) for i in ["task", "layout"]):
             return filename
 
-    print(
+    raise FileNotFoundError(
         "no task layout file found. Consider naming your layout file: task_layout.json"
     )
-    return None
 
 
 def find_bot_permissions_file(path):
@@ -121,10 +120,9 @@ def find_bot_permissions_file(path):
         if all(i in str(filename) for i in ["bot", "permissions"]):
             return filename
 
-    print(
+    raise FileNotFoundError(
         "no bot permissions file found. Consider naming your layout file: bot_permissions.json"
     )
-    return None
 
 
 def find_user_permissions_file(path):
@@ -132,10 +130,9 @@ def find_user_permissions_file(path):
         if all(i in str(filename) for i in ["user", "permissions"]):
             return filename
 
-    print(
+    raise FileNotFoundError(
         "no user permissions file found. Consider naming your layout file: user_permissions.json"
     )
-    return None
 
 
 def create_task(name, num_users, layout_id):
@@ -157,13 +154,16 @@ def main(args):
 
     if args.dev is True:
         if any([args.waiting_room_id, args.waiting_room_layout_id]):
-            print("You provided a waiting room id or layout, cannot also start slurk server")
-            return
-        if not Path("../slurk").exists():
-            print(
-                "slurk is missing, donwload it first: https://github.com/clp-research/slurk/"
+            raise ValueError(
+                "You provided a waiting room id or layout, you cannot also start a new slurk server"
             )
-            return
+
+        if not Path("../slurk").exists():
+            raise FileNotFoundError(
+                "../slurk is missing, donwload it first: https://github.com/clp-research/slurk/"
+                " and make sure that slurk and slurk-bots are in the same directory"
+            )
+
 
         if args.copy_plugins is True:
             # plugins must be all placed in the plugin directory
@@ -171,8 +171,7 @@ def main(args):
             plugins_path = Path(f"{bot_base_path}/plugins")
 
             if not plugins_path.exists():
-                print("Your bot is missing a 'plugins' directory")
-                return
+                raise FileNotFoundError("Your bot is missing a 'plugins' directory")
 
             for filename in plugins_path.iterdir():
                 shutil.copy(filename, target_dir)
@@ -205,8 +204,7 @@ def main(args):
         # create a waiting_room_layout (or read from args)
         waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict) 
         if not Path(waiting_room_layout_dict_path).exists():
-            print("could not find the layout file for the waiting room")
-            return
+            raise FileNotFoundError("could not find the layout file for the waiting room")
 
         waiting_room_layout_dict = json.loads(
             Path(waiting_room_layout_dict_path).read_text()
@@ -222,9 +220,6 @@ def main(args):
         concierge_name = f"concierge-bot-{bot_base_path}"
 
         concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
-        if concierge_bot_permissions_file is None:
-            return
-
         concierge_permissions_dict = json.loads(
             concierge_bot_permissions_file.read_text()
         )
@@ -264,9 +259,6 @@ def main(args):
     # create task room
     # look for the task room layout (allow some options)
     task_room_layout_path = find_task_layout_file(bot_base_path)
-    if task_room_layout_path is None:
-        return
-
     task_room_layout_dict = json.loads(task_room_layout_path.read_text())
     task_room_layout_id = create_room_layout(task_room_layout_dict)
 
@@ -275,9 +267,6 @@ def main(args):
         f"{bot_name.capitalize()} Task", args.users, task_room_layout_id
     )
     task_bot_permissions_path = find_bot_permissions_file(bot_base_path)
-    if task_bot_permissions_path is None:
-        return
-
     task_bot_permissions_dict = json.loads(task_bot_permissions_path.read_text())
     task_bot_permissions_id = create_permissions(task_bot_permissions_dict)
     task_bot_token = create_token(task_bot_permissions_id, waiting_room_id)
@@ -317,9 +306,6 @@ def main(args):
 
     if any([args.tokens, args.dev]) is True:
         user_permissions_path = find_user_permissions_file(bot_base_path)
-        if user_permissions_path is None:
-            return
-
         user_permissions_dict = json.loads(user_permissions_path.read_text())
 
         for user in range(args.users):
