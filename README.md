@@ -49,7 +49,7 @@ Other options:
 * `--slurk-host https://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally.
 * `--users N`: the number of users required for this task.
 * `--slurk-api-token: YOUR-API-TOKEN`: a slurk token with api rights to create a new bot. The standard value is `00000000-0000-0000-0000-000000000000` so you can omit this option when developing locally.
-* `--credentials-from-file`: read slurk host and api token from a json file. See the Assumptions session for more information about the formatting for the credentials file.
+* `--credentials-from-file`: read slurk host and api token from a configuration file. See the Assumptions session for more information about the formatting for the credentials file.
 * `--waiting-room-id N`: you can reuse an existing waiting room for your bot instead of creating a new one. When this option is passed, the script will not start an additional concierge bot.
 * `--waiting-room-layout-id N`: similarly to `--waiting-room-id` you can reuse a waiting room layout id, this option will, however, start a concierge bot for the newly created waiting room.
 * `--waiting-room-layout-dict`: with this argument you can specify which layout file you want to load for your waiting room. The default value will use the layout in the `concierge` directory.
@@ -66,12 +66,11 @@ In order to correctly start your bot the script makes some assumptions about the
 
 
 #### Credentials file
-Instead of passing the address of your slurk server and an API-Token to the script as single arguments, you can instead use the `--credentials-from-file` option to pass a json file containing this information. Your file must have the following formatting:
+Instead of passing the address of your slurk server and an API-Token to the script as single arguments, you can instead use the `--credentials-from-file` option to pass a configuration file containing this information. Your file must have the following formatting:
 ```
-{
-  "host": "https://slurk.your-website.com",
-  "token": "00000000-0000-0000-0000-000000000000"
-}
+[SLURK CREDENTIALS]
+host = https://slurk.your-website.com
+token = 00000000-0000-0000-0000-000000000000
 ```
 
 ### Examples

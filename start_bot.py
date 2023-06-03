@@ -1,11 +1,12 @@
 import argparse
+import configparser
 import json
-import random
-from time import sleep
-import subprocess
 from pathlib import Path
-import sys
+import random
 import shutil
+import subprocess
+import sys
+from time import sleep
 
 import requests
 
@@ -393,13 +394,15 @@ if __name__ == "__main__":
         if not credentials_file.exists():
             raise FileNotFoundError("Missing file with slurk credentials")
 
-        credentials = json.loads(credentials_file.read_text(encoding="utf-8"))
+        config = configparser.ConfigParser()
+        config.read(Path(args.credentials_from_file))
+        config.sections()
 
-        if any(credentials.get(i) is None for i in ["host", "token"]):
+        if any(config["SLURK CREDENTIALS"].get(i) is None for i in ["host", "token"]):
             raise ValueError("Invalid formatting for credentials file")
 
-        SLURK_API = f"{credentials['host']}/slurk/api"
-        API_TOKEN = credentials["token"]
+        SLURK_API = f"{config['SLURK CREDENTIALS']['host']}/slurk/api"
+        API_TOKEN = config["SLURK CREDENTIALS"]["token"]
 
     # start bot
     main(args)
