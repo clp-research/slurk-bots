@@ -147,7 +147,6 @@ class CoCoBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager()
         self.move_evaluator = MoveEvaluator(RULES)
-        self.register_callbacks()
 
     def post_init(self, waiting_room, golmi_server, golmi_password):
         """
@@ -159,60 +158,53 @@ class CoCoBot(TaskBot):
         self.golmi_server = golmi_server
         self.golmi_password = golmi_password
 
+    def on_task_room_creation(self, data):
+        room_id = data["room"]
+        task_id = data["task"]
+
+        logging.debug(f"A new task room was created with id: {data['task']}")
+        logging.debug(f"This bot is looking for task id: {self.task_id}")
+
+        if task_id is not None and task_id == self.task_id:
+            # reduce height of sidebar
+            self.move_divider(room_id, chat_area=30, task_area=70)
+            sleep(0.5)
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+                headers={"Authorization": f"Bearer {self.token}"},
+                json={"attribute": "style", "value": f"height: 90%; width:70%"},
+            )
+            # sleep(0.5)
+
+            for usr in data["users"]:
+                self.received_waiting_token.discard(usr["id"])
+
+            # create image items for this room
+            logging.debug("Create data for the new task room...")
+
+            self.sessions.create_session(room_id)
+            for usr in data["users"]:
+                self.sessions[room_id].players.append(
+                    {**usr, "role": None, "status": "joined"}
+                )
+
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not let coco bot join room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Sending wordle bot to new room was successful.")
+
+            # create client
+            client = QuadrupleClient(str(room_id), self.golmi_server)
+            client.run(self.golmi_password)
+            self.sessions[room_id].golmi_client = client
+
     def register_callbacks(self):
-        @self.sio.event
-        def new_task_room(data):
-            """Triggered after a new task room is created.
-
-            An example scenario would be that the concierge
-            bot emitted a room_created event once enough
-            users for a task have entered the waiting room.
-            """
-            room_id = data["room"]
-            task_id = data["task"]
-
-            logging.debug(f"A new task room was created with id: {data['task']}")
-            logging.debug(f"This bot is looking for task id: {self.task_id}")
-
-            if task_id is not None and task_id == self.task_id:
-                # reduce height of sidebar
-                self.move_divider(room_id, chat_area=30, task_area=70)
-                sleep(0.5)
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                    json={"attribute": "style", "value": f"height: 90%; width:70%"},
-                )
-                # sleep(0.5)
-
-                for usr in data["users"]:
-                    self.received_waiting_token.discard(usr["id"])
-
-                # create image items for this room
-                logging.debug("Create data for the new task room...")
-
-                self.sessions.create_session(room_id)
-                for usr in data["users"]:
-                    self.sessions[room_id].players.append(
-                        {**usr, "role": None, "status": "joined"}
-                    )
-
-                response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not let coco bot join room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                logging.debug("Sending wordle bot to new room was successful.")
-
-                # create client
-                client = QuadrupleClient(str(room_id), self.golmi_server)
-                client.run(self.golmi_password)
-                self.sessions[room_id].golmi_client = client
-
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
