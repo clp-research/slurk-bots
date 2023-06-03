@@ -131,6 +131,11 @@ class TaskBot(Bot):
         self.task_id = task
         self.sio.on("new_task_room", self.join_task_room())
 
+    def on_task_room_creation(self, data):
+        """Each bot can define some actions to be performed upon
+        task room creation."""
+        pass
+
     def join_task_room(self):
         """Let the bot join an assigned task room."""
 
@@ -143,6 +148,7 @@ class TaskBot(Bot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, f"let {self.__class__.__name__}  join room")
+            self.on_task_room_creation(data)
 
         return join
 
