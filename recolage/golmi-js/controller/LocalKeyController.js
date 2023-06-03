@@ -141,60 +141,6 @@ $(document).ready(function () {
             });
         }
 
-        /**
-         *
-         * @param {reference to LocalKeyController instance (this)} thisArg
-         * @param {set to true to request a looped action on the model side} loop
-         */
-        rotateLeft(thisArg, loop) { thisArg._rotate(-1, loop); }
-
-        /**
-         *
-         * @param {reference to LocalKeyController instance (this)} thisArg
-         * @param {set to true to request a looped action on the model side} loop
-         */
-        rotateRight(thisArg, loop) { thisArg._rotate(1, loop); }
-
-        /**
-         * Helper function to notify models to rotate a gripped object in a specified direction.
-         * @param {number of units to turn. Pass negative value for leftwards rotation} direction
-         * @param {set to true to request a looped action on the model side} loop
-         */
-        _rotate(direction, loop) {
-            this.models.forEach(([socket, grId]) => {
-                socket.emit("rotate", {"id":grId, "direction":direction, "loop":loop});
-            });
-        }
-
-        /**
-         * Stop an ongoing looped rotation.
-         */
-        stopRotate(thisArg) {
-            thisArg.models.forEach(([socket, grId]) => {
-                socket.emit("stop_rotate", {"id":grId});
-            });
-        }
-
-        /**
-         * Notify models to flip a gripped object on a specified axis.
-         * @param {reference to LocalKeyController instance (this)} thisArg
-         * @param {set to true to request a looped action on the model side} loop
-         */
-        flip(thisArg, loop) {
-            thisArg.models.forEach(([socket, grId]) => {
-                socket.emit("flip", {"id":grId, "loop":loop});
-            });
-        }
-
-        /**
-         * Request stopping ongoing looped mirroring.
-         */
-        stopFlip(thisArg) {
-            thisArg.models.forEach(([socket, grId]) => {
-                socket.emit("stop_flip", {"id":grId});
-            });
-        }
-
         // --- Reacting to user events ---
 
         /**

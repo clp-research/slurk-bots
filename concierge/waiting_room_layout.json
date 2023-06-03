@@ -30,5 +30,8 @@
     "incoming-image": "display-image",
     "submit-message": "send-message",
     "print-history": "markdown-history"
-  }
+  },
+  "show_users": false,
+  "show_latency": false,
+  "read_only": true
 }

@@ -33,10 +33,14 @@ class RoomTimer:
 
 
 class EchoBot(TaskBot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.timers_per_room = dict()
-        self.register_callbacks()
+    timers_per_room = dict()
+
+    def on_task_room_creation(self, data):
+        room_id = data["room"]
+
+        self.timers_per_room[room_id] = RoomTimer(
+            self.close_room, room_id
+        )
 
     def close_room(self, room_id):
         self.room_to_read_only(room_id)
@@ -95,26 +99,14 @@ class EchoBot(TaskBot):
 
     def register_callbacks(self):
         @self.sio.event
-        def new_task_room(data):
-            room_id = data["room"]
-            response = requests.post(
-                f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "let echo bot join room")
-            logging.debug("############################")
-            self.timers_per_room[room_id] = RoomTimer(
-                self.close_room, room_id
-            )
-
-        @self.sio.event
         def text_message(data):
             if self.user == data["user"]["id"]:
                 return
             else:
                 room_id = data["room"]
                 timer = self.timers_per_room.get(room_id)
-                timer.reset()
+                if timer is not None:
+                    timer.reset()
 
             logging.debug(f"I got a message, let's send it back!: {data}")
 
@@ -131,7 +123,11 @@ class EchoBot(TaskBot):
 
             self.sio.emit(
                 "text",
-                {"room": data["room"], "message": message, **options},
+                {
+                    "room": data["room"],
+                    "message": message,
+                    **options
+                },
                 callback=self.message_callback,
             )
 

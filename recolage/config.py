@@ -2,7 +2,7 @@
 """File contains global variables meant to be used read-only."""
 
 from pathlib import Path
-
+import json
 
 ROOT = Path(__file__).parent.resolve()
 
@@ -23,7 +23,7 @@ def player_instr():
 
 
 BOARDS = Path(f"{ROOT}/data/boards.jsonl")
-BOARDS_PER_ROOM = -1  # -1 to load entire dataset
+BOARDS_PER_ROOM = 20  # -1 to load entire dataset
 
 
 TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
@@ -41,3 +41,6 @@ TYPES = "https://raw.githubusercontent.com/clp-research/golmi/exp-descrimage/app
 STARTING_POINTS = 0
 POSITIVE_REWARD = 10  # right piece selected
 NEGATIVE_REWARD = -5  # wrong piece selected
+
+
+DEMO_BOARD = json.loads(Path(f"{ROOT}/data/demoboard.json").read_text())

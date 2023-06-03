@@ -87,7 +87,6 @@ class RecolageBot(TaskBot):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.sessions = SessionManager()
-        self.register_callbacks()
 
     def post_init(self, waiting_room, golmi_server, golmi_password, version):
         """
@@ -109,51 +108,73 @@ class RecolageBot(TaskBot):
             "warning": version != "no_feedback",
         }
 
+    def on_task_room_creation(self, data):
+        room_id = data["room"]
+        task_id = data["task"]
+
+        logging.debug(f"A new task room was created with id: {data['task']}")
+        logging.debug(f"This bot is looking for task id: {self.task_id}")
+
+        if task_id is not None and task_id == self.task_id:
+            # reduce height of sidebar
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+                headers={"Authorization": f"Bearer {self.token}"},
+                json={"attribute": "style", "value": f"height: 90%"}
+            )
+
+            # log the version
+            self.log_event("bot_version_log", {"version": self.version}, room_id)
+
+            for usr in data["users"]:
+                self.received_waiting_token.discard(usr["id"])
+
+            # create session for these users
+            self.sessions.create_session(room_id)
+            timer = RoomTimer(self.timeout_close_game, room_id)
+            self.sessions[room_id].timer = timer
+
+            for usr in data["users"]:
+                self.sessions[room_id].players.append(
+                    {**usr, "role": None, "status": "joined"}
+                )
+
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "letting task bot join room")
+            logging.debug("Sending golmi bot to new room was successful.")
+
+            client = GolmiClient(self.sio, self, room_id)
+            client.run(self.golmi_server, str(room_id), self.golmi_password)
+            self.sessions[room_id].golmi_client = client
+
+
     def register_callbacks(self):
         @self.sio.event
-        def new_task_room(data):
-            """Triggered after a new task room is created.
-            An example scenario would be that the concierge
-            bot emitted a room_created event once enough
-            users for a task have entered the waiting room.
-            """
-            room_id = data["room"]
-            task_id = data["task"]
+        def start_typing(data):
+            if data["user"]["id"] == self.user:
+                return
 
-            logging.debug(f"A new task room was created with id: {data['task']}")
-            logging.debug(f"This bot is looking for task id: {self.task_id}")
+            for room_id, session in self.sessions.items():
+                players_id = {player["id"] for player in session.players}
+                
+                if data["user"]["id"] in players_id:
+                    self.log_event("start_typing", data, room_id)
+                    return
 
-            if task_id is not None and task_id == self.task_id:
-                # reduce height of sidebar
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                    json={"attribute": "style", "value": f"height: 90%"}
-                )
-
-                for usr in data["users"]:
-                    self.received_waiting_token.discard(usr["id"])
-
-                # create session for these users
-                self.sessions.create_session(room_id)
-                timer = RoomTimer(self.timeout_close_game, room_id)
-                self.sessions[room_id].timer = timer
-
-                for usr in data["users"]:
-                    self.sessions[room_id].players.append(
-                        {**usr, "role": None, "status": "joined"}
-                    )
-
-                response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "letting task bot join room")
-                logging.debug("Sending golmi bot to new room was successful.")
-
-                client = GolmiClient(self.sio, self, room_id)
-                client.run(self.golmi_server, str(room_id), self.golmi_password)
-                self.sessions[room_id].golmi_client = client
+        @self.sio.event
+        def stop_typing(data):
+            if data["user"]["id"] == self.user:
+                return
+            
+            for room_id, session in self.sessions.items():
+                players_id = {player["id"] for player in session.players}
+                
+                if data["user"]["id"] in players_id:
+                    self.log_event("stop_typing", data, room_id)
+                    return
 
         @self.sio.event
         def joined_room(data):
@@ -231,6 +252,21 @@ class RecolageBot(TaskBot):
                                 },
                                 "room": room_id,
                                 "receiver_id": data["user"]["id"],
+                            },
+                        )
+                    else:
+                        sleep(0.5)
+                        #start demo
+                        self.sio.emit(
+                            "message_command",
+                            {
+                                "command": {
+                                    "url": self.golmi_server,
+                                    "event": "demo",
+                                    "password": self.golmi_password,
+                                    "room": f"{room_id}_demo"
+                                },
+                                "room": room_id,
                             },
                         )
 
@@ -446,6 +482,17 @@ class RecolageBot(TaskBot):
                                 )
                                 self.request_feedback(response, "removing mouse gripper")
 
+                            else:
+                                # reset the gripper to its original position
+                                req = requests.get(f"{self.golmi_server}/slurk/{room_id}/state")
+                                self.request_feedback(req, "retrieving state")
+
+                                state = req.json()
+                                grippers = state["grippers"]
+                                gr_id = list(grippers.keys())[0]
+
+                                req = requests.patch(f"{self.golmi_server}/slurk/gripper/reset/{room_id}/{gr_id}")
+
                             # allow the player to send a second description
                             self.sessions[room_id].description = False
                             self.set_message_privilege(user_id, True)
@@ -574,6 +621,29 @@ class RecolageBot(TaskBot):
                     elif data["command"] == "abort":
                         self.terminate_experiment(room_id)
 
+                    elif data["command"] == "reset:description":
+                        if curr_usr["role"] == "wizard":
+                            # Allow player to send a new message
+                            self.sessions[room_id].description = False
+                            self.set_message_privilege(other_usr["id"], True)
+                            self.log_event("reset_description", dict(), room_id)
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "Your partner can now send a new description",
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                },
+                            )
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "You can now send a new message, remember you can only send one message per board",
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                },
+                            )
+
                     else:
                         self.sio.emit(
                             "text",
@@ -641,9 +711,11 @@ class RecolageBot(TaskBot):
         if result == "right":
             self.update_reward(room_id, POSITIVE_REWARD)
             self.sessions[room_id].points["history"][-1]["correct"] += 1
+            result_emoji = "✅"
         else:
             self.update_reward(room_id, NEGATIVE_REWARD)
             self.sessions[room_id].points["history"][-1]["wrong"] += 1
+            result_emoji = "❌"
 
         player, wizard = self.sessions[room_id].players
         if player["role"] != "player":
@@ -680,7 +752,17 @@ class RecolageBot(TaskBot):
             )
             message = "Let's get you to the next board"
             if self.version != "no_feedback":
-                message = f"That was the {result} piece! {message}"
+                message = f"That was the {result} piece {result_emoji} {message}"
+
+            # limited number of boards, inform the user that how many left
+            if BOARDS_PER_ROOM > 0:
+                boards_left = len(self.sessions[room_id].boards)
+                if boards_left % 5 == 0:
+                    message = f"{message}. Still {boards_left} to go"
+
+                    if boards_left < 10:
+                        message = f"{message}. You almost made it!"
+
             self.sio.emit(
                 "text",
                 {
