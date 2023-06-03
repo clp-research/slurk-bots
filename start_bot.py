@@ -111,7 +111,7 @@ def find_task_layout_file(path):
             return filename
 
     raise FileNotFoundError(
-        "no task layout file found. Consider naming your layout file: task_layout.json"
+        "Missing task layout file. Consider naming your layout file: task_layout.json"
     )
 
 
@@ -121,7 +121,7 @@ def find_bot_permissions_file(path):
             return filename
 
     raise FileNotFoundError(
-        "no bot permissions file found. Consider naming your layout file: bot_permissions.json"
+        "Missing bot permissions file. Consider naming your layout file: bot_permissions.json"
     )
 
 
@@ -131,7 +131,7 @@ def find_user_permissions_file(path):
             return filename
 
     raise FileNotFoundError(
-        "no user permissions file found. Consider naming your layout file: user_permissions.json"
+        "Missing user permissions file. Consider naming your layout file: user_permissions.json"
     )
 
 
@@ -204,10 +204,10 @@ def main(args):
         # create a waiting_room_layout (or read from args)
         waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict) 
         if not Path(waiting_room_layout_dict_path).exists():
-            raise FileNotFoundError("could not find the layout file for the waiting room")
+            raise FileNotFoundError("Missing layout file for the waiting room")
 
         waiting_room_layout_dict = json.loads(
-            Path(waiting_room_layout_dict_path).read_text()
+            Path(waiting_room_layout_dict_path).read_text(encoding="utf-8")
         )
         waiting_room_layout = args.waiting_room_layout_id or create_room_layout(
             waiting_room_layout_dict
@@ -221,7 +221,7 @@ def main(args):
 
         concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
         concierge_permissions_dict = json.loads(
-            concierge_bot_permissions_file.read_text()
+            concierge_bot_permissions_file.read_text(encoding="utf-8")
         )
         concierge_permissions = create_permissions(concierge_permissions_dict)
         concierge_bot_token = create_token(concierge_permissions, waiting_room_id)
@@ -259,7 +259,7 @@ def main(args):
     # create task room
     # look for the task room layout (allow some options)
     task_room_layout_path = find_task_layout_file(bot_base_path)
-    task_room_layout_dict = json.loads(task_room_layout_path.read_text())
+    task_room_layout_dict = json.loads(task_room_layout_path.read_text(encoding="utf-8"))
     task_room_layout_id = create_room_layout(task_room_layout_dict)
 
     bot_name = args.bot_name or str(bot_base_path)
@@ -267,7 +267,7 @@ def main(args):
         f"{bot_name.capitalize()} Task", args.users, task_room_layout_id
     )
     task_bot_permissions_path = find_bot_permissions_file(bot_base_path)
-    task_bot_permissions_dict = json.loads(task_bot_permissions_path.read_text())
+    task_bot_permissions_dict = json.loads(task_bot_permissions_path.read_text(encoding="utf-8"))
     task_bot_permissions_id = create_permissions(task_bot_permissions_dict)
     task_bot_token = create_token(task_bot_permissions_id, waiting_room_id)
     task_bot_user_id = create_user(bot_name, task_bot_token)
@@ -290,7 +290,7 @@ def main(args):
 
     if args.extra_args is not None:
         extra_args_list = list()
-        extra_args = json.loads(Path(args.extra_args).read_text())
+        extra_args = json.loads(Path(args.extra_args).read_text(encoding="utf-8"))
         for key, value in extra_args.items():
             extra_args_list.append(f"-e {key}={value}")
 
@@ -306,7 +306,7 @@ def main(args):
 
     if any([args.tokens, args.dev]) is True:
         user_permissions_path = find_user_permissions_file(bot_base_path)
-        user_permissions_dict = json.loads(user_permissions_path.read_text())
+        user_permissions_dict = json.loads(user_permissions_path.read_text(encoding="utf-8"))
 
         for user in range(args.users):
             user_permissions_id = create_permissions(user_permissions_dict)
@@ -349,6 +349,10 @@ if __name__ == "__main__":
         default="00000000-0000-0000-0000-000000000000",
     )
     parser.add_argument(
+        "--credentials-from-file",
+        help="read slurk host and api token from a json file"
+    )
+    parser.add_argument(
         "--waiting-room-id",
         type=int,
         help="room_id of an existing waiting room. With this option will not create a new waiting room or a concierge bot",
@@ -383,6 +387,19 @@ if __name__ == "__main__":
     # define some variables here
     SLURK_API = f"{args.slurk_host}/slurk/api"
     API_TOKEN = args.slurk_api_token
+
+    if args.credentials_from_file:
+        credentials_file = Path(args.credentials_from_file)
+        if not credentials_file.exists():
+            raise FileNotFoundError("Missing file with slurk credentials")
+
+        credentials = json.loads(credentials_file.read_text(encoding="utf-8"))
+
+        if any(credentials.get(i) is None for i in ["host", "token"]):
+            raise ValueError("Invalid formatting for credentials file")
+
+        SLURK_API = f"{credentials['host']}/slurk/api"
+        API_TOKEN = credentials["token"]
 
     # start bot
     main(args)
