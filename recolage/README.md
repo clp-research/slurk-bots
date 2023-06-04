@@ -24,7 +24,7 @@ There are 4 versions of this bot:
     ```
 4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
 5. Copy the content of the [```plugins```] directory to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins).
-6. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
+6. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:  
  ```$ python start_bot.py recolage --users 2 --extra-args recolage/args_feedback.ini --copy-plugins --dev```.  
  This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/recolage```.
 

@@ -27,7 +27,7 @@ For this purpose the following commands are defined to manage the transition bet
     }
     ```
  4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
- 5. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
+ 5. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:  
  ```$ python start_bot.py dito/ --users 2 --tokens --dev --waiting-room-layout-dict dito/data/waiting_room_layout.json```.  
  This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/dito```.
 

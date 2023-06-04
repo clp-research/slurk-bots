@@ -28,7 +28,7 @@ Please refer to [the documentation](https://clp-research.github.io/slurk/slurk_m
     }
     ```
  4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
- 5. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like this:  
+ 5. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:  
  ```$ python start_bot.py clickbot/ --users 1 --tokens --dev --extra-args clickbot/args.json```.  
  This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/clickbot```.
 
