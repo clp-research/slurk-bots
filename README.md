@@ -10,8 +10,7 @@ To start any bot you can use the `start_bot.py` script. The script can be used t
 
 ### Synopsis
 ```
-usage: start_bot.py [-h] [--extra-args EXTRA_ARGS] [--bot-name BOT_NAME] --users USERS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--credentials-from-file CREDENTIALS_FROM_FILE] [--waiting-room-id WAITING_ROOM_ID]
-                    [--waiting-room-layout-id WAITING_ROOM_LAYOUT_ID] [--waiting-room-layout-dict WAITING_ROOM_LAYOUT_DICT] [--tokens] [--dev] [--copy-plugins]
+usage: start_bot.py [-h] [--extra-args EXTRA_ARGS] [--bot-name BOT_NAME] --users USERS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--credentials-from-file CREDENTIALS_FROM_FILE] [--waiting-room-id WAITING_ROOM_ID] [--waiting-room-layout-id WAITING_ROOM_LAYOUT_ID] [--waiting-room-layout-dict WAITING_ROOM_LAYOUT_DICT] [--tokens] [--dev] [--copy-plugins]
                     bot
 
 positional arguments:
@@ -20,7 +19,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --extra-args EXTRA_ARGS
-                        path to a json file containing extra variable to pass as environment variables to the bot docker (default: None)
+                        path to a configuration file containing extra variable to pass as environment variables to the bot docker (default: None)
   --bot-name BOT_NAME   the name of your bot. If omitted, the name of the directory will be used (default: None)
   --users USERS         number of users for this task (default: None)
   --slurk-host SLURK_HOST
@@ -44,7 +43,7 @@ The folder containing the code of your bot must be passed to the script as posit
 The script will take care of building a docker image and starting it.
 
 Other options:
-* `--extra-args path/to/extra-arguments.json`: Some bots may need extra arguments which need to be passed to the docker container as environment variable. You can simply save these arguments and their values in a json file and pass it to the script.
+* `--extra-args path/to/extra-arguments.ini`: Some bots may need extra arguments which need to be passed to the docker container as environment variable. You can simply save these arguments and their values in a configuration file (.ini) and pass it to the script.
 * `--bot-name NAME-OF-YOUR-BOT`: if omitted, the script will use the base directory name as name for the bot.
 * `--slurk-host https://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally.
 * `--users N`: the number of users required for this task.
@@ -64,6 +63,14 @@ In order to correctly start your bot the script makes some assumptions about the
 * `bot_permissions.json`: the file containing the permissions for your bot. The script will look for a file ending in `.json` containing all the words: `bot`, `permissions`
 * `user_permissions.json`: the file containing the permissions for your bot. The script will look for a file ending in `.json` containing all the words: `user`, `permissions`
 
+
+#### Extra arguments file
+The file containing the extra variables for your bot must follow the following formatting:
+```
+[ARGS]
+GOLMI_SERVER = http://127.0.0.1:5001
+GOLMI_PASSWORD = GiveMeTheBigBluePasswordOnTheLeft
+```
 
 #### Credentials file
 Instead of passing the address of your slurk server and an API-Token to the script as single arguments, you can instead use the `--credentials-from-file` option to pass a configuration file containing this information. Your file must have the following formatting:
@@ -91,4 +98,5 @@ The script will print out the waiting room id as well as the task id since this 
 If the `--token` option was used, the script will also generate one token for each user. You can either copy the token and choose your own user name or directly open the link to automatically log into slurk with the generated token.
 
 Once your local slurk server is already running, you can start a new bot and recycle the waiting room and concierge bot that are already running:  
-`$  python start_bot.py clickbot/ --users 1 --tokens --waiting-room-id 1 --extra-args clickbot/extra-args.json`
+`$  python start_bot.py clickbot/ --users 1 --tokens --waiting-room-id 1 --extra-args clickbot/args.ini`
+

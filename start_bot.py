@@ -290,14 +290,27 @@ def main(args):
     ]
 
     if args.extra_args is not None:
-        extra_args_list = list()
-        extra_args = json.loads(Path(args.extra_args).read_text(encoding="utf-8"))
-        for key, value in extra_args.items():
-            extra_args_list.append(f"-e {key}={value}")
+        extra_args_path = Path(args.extra_args)
+        # make sure extra-args config file exists:
+        if not extra_args_path.exists():
+            raise FileNotFoundError("Extra argument file missing")
 
-        docker_args.extend(extra_args_list)
+        # read config file
+        extra_args = configparser.ConfigParser()
+        extra_args.optionxform=str  # arg names should be case sensitive
+        extra_args.read(extra_args_path)
+        extra_args.sections()
+
+        # make sure it has the right structure
+        if dict(extra_args).get("ARGS") is None:
+            raise ValueError("Invalid formatting for extra argument file")
+
+        # collect arguments
+        for key, value in extra_args["ARGS"].items():
+            docker_args.append(f"-e {key}={value}")
 
     docker_args.append(f"slurk/{bot_name}")
+    print(docker_args)
     subprocess.run(docker_args)
 
     print("---------------------------")
@@ -327,7 +340,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--extra-args",
-        help="path to a json file containing extra variable to pass as environment variables to the bot docker",
+        help="path to a configuration file containing extra variable to pass as environment variables to the bot docker",
     )
     parser.add_argument(
         "--bot-name",
@@ -401,8 +414,9 @@ if __name__ == "__main__":
         if any(config["SLURK CREDENTIALS"].get(i) is None for i in ["host", "token"]):
             raise ValueError("Invalid formatting for credentials file")
 
-        SLURK_API = f"{config['SLURK CREDENTIALS']['host']}/slurk/api"
-        API_TOKEN = config["SLURK CREDENTIALS"]["token"]
+        sulrk_address = config.get("SLURK CREDENTIALS", "host")
+        SLURK_API = f"{sulrk_address}/slurk/api"
+        API_TOKEN = config.get("SLURK CREDENTIALS", "token")
 
     # start bot
     main(args)
