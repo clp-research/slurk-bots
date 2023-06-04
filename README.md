@@ -100,3 +100,11 @@ If the `--token` option was used, the script will also generate one token for ea
 Once your local slurk server is already running, you can start a new bot and recycle the waiting room and concierge bot that are already running:  
 `$  python start_bot.py clickbot/ --users 1 --tokens --waiting-room-id 1 --extra-args clickbot/args.ini`
 
+Once your bot is ready and you want to deploy on your production slurk server you can pass the arguments `--slurk-host` and `--slurk-api-token`:  
+```
+$ python start_bot.py echo/ --users 1 --tokens \
+    --slurk-host https://slurk.mywebsite.com \
+    --slurk-api-token 01234567-8901-2345-6789-012345678901
+```
+or save your credentials in a configuration file and pass this as an argument to the script:  
+`$ python start_bot.py echo/ --users 1 --tokens --credentials-from-file path/to/credentials.ini`
