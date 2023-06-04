@@ -95,8 +95,8 @@ class Bot(ABC):
             token = {"default": os.environ["BOT_TOKEN"]}
         else:
             token = {"required": True}
-        if f"BOT_USER" in os.environ:
-            user = {"default": os.environ["BOT_USER"]}
+        if f"BOT_ID" in os.environ:
+            user = {"default": os.environ["BOT_ID"]}
         else:
             user = {"required": True}
 

@@ -31,7 +31,7 @@ If you have everything already set up, you can run the bot using the following c
 docker run \
     --net="host" \
     -e BOT_TOKEN=$THIS_BOT_TOKEN \
-    -e BOT_USER=$THIS_BOT \
+    -e BOT_ID=$THIS_BOT \
     -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
     -d slurk/echo-bot

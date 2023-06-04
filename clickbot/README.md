@@ -38,7 +38,7 @@ If you have everything already set up, you can run the bot using the following c
 docker run \
     --net="host" \
     -e BOT_TOKEN=$CLICK_BOT_TOKEN \
-    -e BOT_USER=$CLICK_BOT \
+    -e BOT_ID=$CLICK_BOT \
     -e CLICK_DATA="test_items/shape-colors.json" \
     -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \

@@ -37,7 +37,7 @@ If you have everything already set up, you can run the bot using the following c
 docker run \
     --net="host" \
     -e BOT_TOKEN=$DITO_BOT_TOKEN \
-    -e BOT_USER=$DITO_BOT \
+    -e BOT_ID=$DITO_BOT \
     -e WAITING_ROOM=$WAITING_ROOM \
     -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \

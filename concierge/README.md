@@ -8,7 +8,7 @@ To run the bot, you can run a command in a similar fashion as:
 docker run \
     --net="host" \
     -e BOT_TOKEN=$CONCIERGE_BOT_TOKEN \
-    -e BOT_USER=$CONCIERGE_BOT \
+    -e BOT_ID=$CONCIERGE_BOT \
     -e SLURK_PORT=5000 \
     -d slurk/concierge-bot
 

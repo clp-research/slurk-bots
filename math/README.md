@@ -36,7 +36,7 @@ If you have everything already set up, you can run the bot using the following c
 docker run \
     --net="host" \
     -e BOT_TOKEN=$MATH_BOT_TOKEN \
-    -e BOT_USER=$MATH_BOT \
+    -e BOT_ID=$MATH_BOT \
     -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
     -d slurk/math-bot

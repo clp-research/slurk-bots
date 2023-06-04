@@ -243,7 +243,7 @@ def main(args):
                 "host",
                 "-d",
                 f"-e BOT_TOKEN={concierge_bot_token}",
-                f"-e BOT_USER={concierge_bot_user_id}",
+                f"-e BOT_ID={concierge_bot_user_id}",
                 f"-e SLURK_HOST={args.slurk_host}",
                 f"slurk/{concierge_name}",
             ]
@@ -283,7 +283,7 @@ def main(args):
         "host",
         "-d",
         f"-e BOT_TOKEN={task_bot_token}",
-        f"-e BOT_USER={task_bot_user_id}",
+        f"-e BOT_ID={task_bot_user_id}",
         f"-e TASK_ID={task_id}",
         f"-e WAITING_ROOM={waiting_room_id}",
         f"-e SLURK_HOST={args.slurk_host}",

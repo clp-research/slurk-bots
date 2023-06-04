@@ -40,7 +40,7 @@ If you have everything already set up, you can run the bot using the following c
 docker run \
     --net="host" \
     -e BOT_TOKEN=$BOX_BOT_TOKEN \
-    -e BOT_USER=$BOX_BOT \
+    -e BOT_ID=$BOX_BOT \
     -e BOX_DATA="test_items/shape-colors.json" \
     -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \

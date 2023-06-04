@@ -29,7 +29,7 @@ If you have everything already set up, you can run the bot using the following c
 docker run \
   --net="host" \
   -e BOT_TOKEN=$INT_TOKEN \
-  -e BOT_USER=$INT_USER \
+  -e BOT_ID=$INT_USER \
   -e SLURK_PORT=5000 \
   -e TASK_ID=$TASK_ID \
   -d slurk/intervention-bot

@@ -21,8 +21,8 @@ if __name__ == "__main__":
         token = {"default": os.environ["BOT_TOKEN"]}
     else:
         token = {"required": True}
-    if "BOT_USER" in os.environ:
-        user = {"default": os.environ["BOT_USER"]}
+    if "BOT_ID" in os.environ:
+        user = {"default": os.environ["BOT_ID"]}
     else:
         user = {"required": True}
     if "WAITING_ROOM" in os.environ:
