@@ -68,8 +68,8 @@ In order to correctly start your bot the script makes some assumptions about the
 The file containing the extra variables for your bot must follow the following formatting:
 ```
 [ARGS]
-GOLMI_SERVER = http://127.0.0.1:5001
-GOLMI_PASSWORD = GiveMeTheBigBluePasswordOnTheLeft
+IMPORTANT_VARIABLE = Hello
+OTHER_VARIABLE = World 
 ```
 
 #### Credentials file
