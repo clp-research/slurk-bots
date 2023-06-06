@@ -147,6 +147,7 @@ class CoCoBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager()
         self.move_evaluator = MoveEvaluator(RULES)
+        self.patterns = get_patterns()
 
     def post_init(self, waiting_room, golmi_server, golmi_password):
         """
@@ -547,17 +548,17 @@ class CoCoBot(TaskBot):
                 return
 
             if board == "player_target":
-                objects = this_client.get_entire_cell(
+                cell = this_client.get_entire_cell(
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],
                     block_size=data["coordinates"]["block_size"],
                     board="target",
                 )
 
-                if objects:
+                if cell:
                     message = "Bottom to top: "
                     obj_strings = list()
-                    for obj in objects:
+                    for obj in cell:
                         name = obj["type"]
                         if name == "vbridge":
                             name = "vertical bridge"
@@ -569,6 +570,24 @@ class CoCoBot(TaskBot):
                         obj_strings.append(this_obj)
 
                     message += ", ".join(obj_strings)
+
+                    # detect patterns
+                    state = this_client.get_target_state()
+                    cell_ids = [obj["id_n"] for obj in cell]
+
+                    x = int(data["coordinates"]["x"] // data["coordinates"]["block_size"])
+                    y = int(data["coordinates"]["y"] // data["coordinates"]["block_size"])
+                    coordinates = f"{y}:{x}"
+
+                    logging.debug(coordinates)
+                    for pattern in self.patterns:
+                        if pattern.detect((coordinates, cell_ids), state):
+                            message += " | detected patterns:"
+                            
+                            if pattern.cells > 1:
+                                message += f" part of a {pattern.name}"
+                            else:
+                                message += f" {pattern.name}"
 
                     self.sio.emit(
                         "text",
@@ -794,17 +813,17 @@ class CoCoBot(TaskBot):
 
                     elif event == "inspect":
                         gripper = this_client.get_mouse_gripper()
-                        objects = this_client.get_entire_cell(
+                        cell = this_client.get_entire_cell(
                             x=gripper["x"],
                             y=gripper["y"],
                             block_size=1,
                             board="wizard_working",
                         )
 
-                        if objects:
+                        if cell:
                             message = "Bottom to top: "
                             obj_strings = list()
-                            for obj in objects:
+                            for obj in cell:
                                 name = obj["type"]
                                 if name == "vbridge":
                                     name = "vertical bridge"

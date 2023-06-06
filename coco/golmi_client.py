@@ -83,6 +83,15 @@ class QuadrupleClient:
 
         return req.json()
 
+    def get_target_state(self):
+        req = requests.get(
+            f"{self.golmi_address}/slurk/{self.rooms.target}/state"
+        )
+        if req.ok is not True:
+            print("Could not retrieve state")
+
+        return req.json()
+
     def grip_object(self, x, y, block_size):
         req = requests.get(
             f"{self.golmi_address}/slurk/grip/{self.rooms.wizard_working}/{x}/{y}/{block_size}"
