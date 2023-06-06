@@ -136,27 +136,27 @@
               "layout-content": [
                 {
                   "layout-type": "button",
-                  "class": "button",
+                  "class": "button green_button",
                   "role": "button",
                   "id": "work_in_progress_button",
                   "layout-content": "Send: working on it",
-                  "style": "padding: 10px; margin: 5px; background: #2A7632"
+                  "style": "padding: 10px; margin: 5px;"
                 },
                 {
                   "layout-type": "button",
-                  "class": "button",
+                  "class": "button green_button",
                   "role": "button",
                   "id": "ok_button",
                   "layout-content": "Send: ready",
-                  "style": "padding: 10px; margin: 5px; background: #2A7632"
+                  "style": "padding: 10px; margin: 5px;"
                 },
                 {
                   "layout-type": "button",
-                  "class": "button",
+                  "class": "button red_button",
                   "role": "button",
                   "id": "show_progress_button",
                   "layout-content": "Execute for player",
-                  "style": "padding: 10px; margin: 5px; background: #CF7713"
+                  "style": "padding: 10px; margin: 5px;"
                 }
               ]
             }
@@ -381,6 +381,22 @@
     ".button:hover": {
       "content": "''",
       "background": "#818BAC"
+    },
+    ".green_button": {
+      "@extend .button;": "",
+      "background": "#2A7632"
+    },
+    ".green_button:hover": {
+      "content": "''",
+      "background": "#75bf7d"
+    },
+    ".red_button": {
+      "@extend .button;": "",
+      "background": "#d92e2e"
+    },
+    ".red_button:hover": {
+      "content": "''",
+      "background": "#cf8f8f"
     }
   },
   "scripts": {

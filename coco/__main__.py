@@ -169,12 +169,13 @@ class CoCoBot(TaskBot):
             # reduce height of sidebar
             self.move_divider(room_id, chat_area=30, task_area=70)
             sleep(0.5)
+
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
                 headers={"Authorization": f"Bearer {self.token}"},
                 json={"attribute": "style", "value": f"height: 90%; width:70%"},
             )
-            # sleep(0.5)
+            sleep(0.5)
 
             for usr in data["users"]:
                 self.received_waiting_token.discard(usr["id"])
