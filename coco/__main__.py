@@ -579,7 +579,6 @@ class CoCoBot(TaskBot):
                     y = int(data["coordinates"]["y"] // data["coordinates"]["block_size"])
                     coordinates = f"{y}:{x}"
 
-                    logging.debug(coordinates)
                     for pattern in self.patterns:
                         if pattern.detect((coordinates, cell_ids), state):
                             message += " | detected patterns:"
@@ -835,6 +834,22 @@ class CoCoBot(TaskBot):
                                 obj_strings.append(this_obj)
 
                             message += ", ".join(obj_strings)
+
+                            state = this_client.get_working_state()
+                            cell_ids = [obj["id_n"] for obj in cell]
+
+                            x = int(gripper["x"])
+                            y = int(gripper["y"])
+                            coordinates = f"{y}:{x}"
+
+                            for pattern in self.patterns:
+                                if pattern.detect((coordinates, cell_ids), state):
+                                    message += " | detected patterns:"
+                                    
+                                    if pattern.cells > 1:
+                                        message += f" part of a {pattern.name}"
+                                    else:
+                                        message += f" {pattern.name}"
 
                             self.sio.emit(
                                 "text",
