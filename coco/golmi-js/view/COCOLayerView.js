@@ -176,7 +176,19 @@ $(document).ready(function () {
          * The gripper is used to navigate on the canvas and move objects.
          */
         drawGr() {
-            console.log("placeholder gripper")
+            let ctx = this.grCanvas.getContext("2d");
+            for (const [grId, gripper] of Object.entries(this.grippers)) {
+                // modify style depending on whether an object is gripped
+                if (grId === "cell"){
+
+                    // call drawing helper functions with additional infos
+                    let params = {
+                        x: gripper.x,
+                        y: gripper.y,
+                    }
+                    this._drawBB(ctx, [[1]], params, "red");
+                }
+            }
         }
 
         /**
