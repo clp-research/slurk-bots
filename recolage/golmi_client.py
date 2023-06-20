@@ -25,9 +25,9 @@ class GolmiClient:
                 return
 
             piece = list(grippers.values())[0]["gripped"]
+            gripper = list(grippers.values())[0]
             if piece is None:
                 # record movement, no object was gripped
-                gripper = list(grippers.values())[0]
                 self.bot.log_event(
                     "gripper_movement",
                     {
@@ -39,7 +39,12 @@ class GolmiClient:
                     self.room_id
                 )
             else:
-                self.bot.piece_selection(self.room_id, piece)
+                coordinates = dict(
+                    type="gripper",
+                    x=gripper["x"],
+                    y=gripper["y"]
+                )
+                self.bot.piece_selection(self.room_id, piece, coordinates)
 
     def run(self, address, room_id, auth):
         self.socket.connect(address, auth={"password": auth})

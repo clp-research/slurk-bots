@@ -432,7 +432,13 @@ class RecolageBot(TaskBot):
 
                 piece = req.json()
                 if piece:
-                    self.piece_selection(room_id, piece)
+                    coordinates = dict(
+                        type="mouse",
+                        x=data["coordinates"]["x"],
+                        y=data["coordinates"]["y"],
+                        block_size=data["coordinates"]["block_size"]
+                    )
+                    self.piece_selection(room_id, piece, coordinates)
 
         @self.sio.event
         def command(data):
@@ -661,7 +667,7 @@ class RecolageBot(TaskBot):
         self.sessions[room_id].points["score"] = max(0, score)
 
 
-    def piece_selection(self, room_id, piece):
+    def piece_selection(self, room_id, piece, coordinates):
         # get users
         wizard, player = self.sessions[room_id].players
         if wizard["role"] != "wizard":
@@ -672,7 +678,14 @@ class RecolageBot(TaskBot):
         result = "right" if piece.keys() == target.keys() else "wrong"
 
         # add selected piece to logs
-        self.log_event("wizard_piece_selection", piece, room_id)
+        self.log_event(
+            "wizard_piece_selection",
+            {
+                "piece": piece,
+                "coordinates": coordinates
+            },
+            room_id
+        )
 
         # load next state
         if self.version not in {"confirm_selection", "show_gripper"}:
