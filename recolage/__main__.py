@@ -157,24 +157,19 @@ class RecolageBot(TaskBot):
             if data["user"]["id"] == self.user:
                 return
 
-            for room_id, session in self.sessions.items():
-                players_id = {player["id"] for player in session.players}
-                
-                if data["user"]["id"] in players_id:
-                    self.log_event("start_typing", data, room_id)
-                    return
+            room_id = data["room"]
+
+            if room_id in self.sessions:
+                self.log_event("start_typing", data, room_id)
 
         @self.sio.event
         def stop_typing(data):
             if data["user"]["id"] == self.user:
                 return
             
-            for room_id, session in self.sessions.items():
-                players_id = {player["id"] for player in session.players}
-                
-                if data["user"]["id"] in players_id:
-                    self.log_event("stop_typing", data, room_id)
-                    return
+            room_id = data["room"]
+            if room_id in self.sessions:
+                self.log_event("stop_typing", data, room_id)
 
         @self.sio.event
         def joined_room(data):
