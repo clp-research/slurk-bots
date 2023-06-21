@@ -34,7 +34,8 @@ EMPTYSTATE = json.loads(Path(f"{ROOT}/data/empty_state.json").read_text())
 SELECTIONSTATE = json.loads(Path(f"{ROOT}/data/selection_state.json").read_text())
 STATES = Path(f"{ROOT}/data/states.jsonl")
 RULES = json.loads(Path(f"{ROOT}/data/allowed_moves.json").read_text())
-
+BOARDS_PER_ROOM = 20
+BOARDS_PER_LEVEL = 2
 
 def load_states():
     pool = list()

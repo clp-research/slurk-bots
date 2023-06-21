@@ -9,6 +9,7 @@ import requests
 from templates import TaskBot
 from .config import *
 from .golmi_client import *
+from .dataloader import Dataloader
 
 
 class RoomTimers:
@@ -72,7 +73,7 @@ class Session:
         self.timer = RoomTimers()
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
-        self.states = load_states()
+        self.states = Dataloader(BOARDS, BOARDS_PER_ROOM, BOARDS_PER_LEVEL)
         self.game_over = False
         self.checkpoint = dict()
 
