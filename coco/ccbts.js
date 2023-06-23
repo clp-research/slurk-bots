@@ -102,35 +102,38 @@ function start_golmi(url, password, role, golmi_rooms) {
             auth: { "password": password }
         });
 
+        $("#target_image").show()
+        $("#target_board").hide()
+
         // --- view --- // 
         // Get references to the three canvas layers
-        let bgLayer_t = document.getElementById("target_background");
-        let objLayer_t = document.getElementById("target_objects");
-        let grLayer_t = document.getElementById("target_gripper");
+        // let bgLayer_t = document.getElementById("target_background");
+        // let objLayer_t = document.getElementById("target_objects");
+        // let grLayer_t = document.getElementById("target_gripper");
 
-        targetlayerView = new document.CocoLayerView(
-            golmi_socket_target,
-            bgLayer_t,
-            objLayer_t,
-            grLayer_t
-        );
+        // targetlayerView = new document.CocoLayerView(
+        //     golmi_socket_target,
+        //     bgLayer_t,
+        //     objLayer_t,
+        //     grLayer_t
+        // );
 
-        grLayer_t.onclick = (event) => {
-            socket.emit("mouse", {
-                type: "click",
-                coordinates: {
-                    event: "click",
-                    x: event.offsetX,
-                    y: event.offsetY,
-                    block_size: targetlayerView.blockSize,
-                    board: "player_target"
-                },
-                room: self_room
-            });
-        }
+        // grLayer_t.onclick = (event) => {
+        //     socket.emit("mouse", {
+        //         type: "click",
+        //         coordinates: {
+        //             event: "click",
+        //             x: event.offsetX,
+        //             y: event.offsetY,
+        //             block_size: targetlayerView.blockSize,
+        //             board: "player_target"
+        //         },
+        //         room: self_room
+        //     });
+        // }
 
-        golmi_socket_target.connect()
-        golmi_socket_target.emit("join", { "room_id": golmi_rooms.target });
+        // golmi_socket_target.connect()
+        // golmi_socket_target.emit("join", { "room_id": golmi_rooms.target });
     }
 }
 

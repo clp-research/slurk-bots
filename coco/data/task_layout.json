@@ -260,6 +260,24 @@
                   "layout-content": [
                     {
                       "layout-type": "div",
+                      "id": "target_image",
+                      "class": "hidden_card",
+                      "style": "padding: 6px; margin: 0px auto",
+                      "layout-content": [
+                        {
+                          "layout-type": "center",
+                          "layout-content": [
+                            {
+                              "layout-type": "image",
+                              "id": "current-image",
+                              "style": "max-width: 300px; max-height: 300px; object-fit: contain;"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "layout-type": "div",
                       "id": "target_board",
                       "style": "width: 100%",
                       "layout-content": [

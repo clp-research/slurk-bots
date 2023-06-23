@@ -73,7 +73,7 @@ class Session:
         self.timer = RoomTimers()
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
-        self.states = Dataloader(BOARDS, BOARDS_PER_ROOM, BOARDS_PER_LEVEL)
+        self.states = Dataloader(STATES, BOARDS_PER_ROOM, BOARDS_PER_LEVEL)
         self.game_over = False
         self.checkpoint = dict()
 
@@ -1006,10 +1006,19 @@ class CoCoBot(TaskBot):
         client.load_selector()
 
         # load new target state
-        client.load_target_state(this_state)
+        #client.load_target_state(this_state)
+        player, wizard = self.sessions[room_id].players
+        if player["role"] != "player":
+            player, wizard = wizard, player
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+            json={"attribute": "src", "value": this_state, "receiver_id": player["id"]},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
         client.clear_working_states()
 
-        self.log_event("target_board_log", this_state, room_id)
+        #self.log_event("target_board_log", this_state, room_id)
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
