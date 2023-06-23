@@ -216,7 +216,12 @@ $(document).ready(() => {
                     $(`#shape_${shape}`).prop('checked', true);
                     $(`#color_${color}`).prop('checked', true);
                     clear_others(`shape_${shape}`)
-                    clear_others(`color_${color}`)
+                    clear_others(`color_${color}`);
+                    break;
+
+                case "typing":
+                    socket.emit("keypress", {"typing": data.command.value})
+                    break;
             }
         }
     });

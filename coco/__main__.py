@@ -207,6 +207,33 @@ class CoCoBot(TaskBot):
             client.run(self.golmi_password)
             self.sessions[room_id].golmi_client = client
 
+    def send_typing_input(self, room_id):
+
+        player, wizard = self.sessions[room_id].players
+        if player["role"] != "player":
+            player, wizard = wizard, player
+
+        def send_typing(value, room_id, user):
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "typing",
+                        "value": value
+                    },
+                    "room": room_id,
+                    "receiver_id": user["id"],
+                },
+            )
+
+        send_typing(True, room_id, wizard)
+
+        timer = Timer(3,
+            send_typing,
+            args=[False, room_id, wizard]
+        )
+        timer.start()
+
     def register_callbacks(self):
         @self.sio.event
         def joined_room(data):
@@ -360,6 +387,9 @@ class CoCoBot(TaskBot):
             board = data["coordinates"]["board"]
             if board == "wizard_working":
                 if data["coordinates"]["button"] == "left":
+                    # send typing message
+                    self.send_typing_input(room_id)
+
                     # check if the user selected an object on his selection board
                     selected = this_client.get_wizard_selection()
                     if selected:
@@ -525,6 +555,7 @@ class CoCoBot(TaskBot):
                         )
 
             if board == "wizard_selection":
+                self.send_typing_input(room_id)
                 this_client.wizard_select_object(
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],

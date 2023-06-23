@@ -425,8 +425,8 @@
     "typing-users": "typing-users",
     "plain": [
       "ccbts",
-      "golmi-js/view/View",
-      "golmi-js/view/COCOLayerView"
+      "View",
+      "COCOLayerView"
     ]
   },
   "show_latency": false

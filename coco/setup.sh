@@ -37,8 +37,7 @@ docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
 # run slurk
 # copy plugins
-cp -r coco/golmi-js/ ../slurk/slurk/views/static/plugins/
-cp -r coco/ccbts.js ../slurk/slurk/views/static/plugins/
+cp -r coco/plugins/* ../slurk/slurk/views/static/plugins/
 
 cd ../slurk
 docker build --tag="slurk/server" -f Dockerfile .
@@ -46,9 +45,6 @@ export SLURK_DOCKER=slurk
 scripts/start_server.sh
 sleep 1
 
-# remove plogins
-rm -r slurk/views/static/plugins/golmi-js
-rm slurk/views/static/plugins/ccbts.js
 
 # create admin token
 SLURK_TOKEN=$(check_response scripts/read_admin_token.sh)
