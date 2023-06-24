@@ -45,21 +45,25 @@ function start_golmi(url, password, role, golmi_rooms) {
             });
         }
 
-        grLayer.oncontextmenu = (event) => {
-            socket.emit("mouse", {
-                type: "click",
-                coordinates: {
-                    event: "click",
-                    button: "right",
-                    x: event.offsetX,
-                    y: event.offsetY,
-                    block_size: workinglayerView.blockSize,
-                    board: "wizard_working",
-                },
-                room: self_room
-            });
-            return false
-        }
+        // quick hack hide working on it button
+        $("#work_in_progress_button").hide()
+
+        // right click
+        // grLayer.oncontextmenu = (event) => {
+        //     socket.emit("mouse", {
+        //         type: "click",
+        //         coordinates: {
+        //             event: "click",
+        //             button: "right",
+        //             x: event.offsetX,
+        //             y: event.offsetY,
+        //             block_size: workinglayerView.blockSize,
+        //             board: "wizard_working",
+        //         },
+        //         room: self_room
+        //     });
+        //     return false
+        // }
 
         golmi_socket_target = io(url, {
             auth: { "password": password }
