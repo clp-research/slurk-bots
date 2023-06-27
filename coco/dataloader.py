@@ -34,4 +34,4 @@ class Dataloader(list):
     def get_boards(self):
         """sample random boards for a room"""
         self._sample_boards()
-        random.shuffle(self)
+        #random.shuffle(self)
