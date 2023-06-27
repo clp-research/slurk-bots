@@ -28,8 +28,8 @@ class Dataloader(list):
         for board_links in boards.values():
             for board in random.sample(board_links, self.boards_per_level):
                 self.append(board)
-                if len(self) == self._n:
-                    return
+                # if len(self) == self._n:
+                #     return
 
     def get_boards(self):
         """sample random boards for a room"""
