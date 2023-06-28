@@ -755,7 +755,7 @@ class CoCoBot(TaskBot):
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
-                                    message="... ok...",
+                                    message="ready",
                                     color=SUCCESS_COLOR,
                                 ),
                                 "room": room_id,
