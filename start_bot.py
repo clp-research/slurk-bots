@@ -190,7 +190,6 @@ def main(args):
                 " and make sure that slurk and slurk-bots are in the same directory"
             )
 
-
         if args.copy_plugins is True:
             # plugins must be all placed in the plugin directory
             target_dir = Path("../slurk/slurk/views/static/plugins/")
@@ -231,7 +230,7 @@ def main(args):
     # create a waiting room if not provided
     if args.waiting_room_id is None:
         # create a waiting_room_layout (or read from args)
-        waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict) 
+        waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict)
         if not Path(waiting_room_layout_dict_path).exists():
             raise FileNotFoundError("Missing layout file for the waiting room")
 
@@ -259,7 +258,7 @@ def main(args):
         # start a concierge bot
         if "concierge" in args.bot:
             concierge_name = "concierge"
-        
+
         build_docker_image("concierge", concierge_name)
         subprocess.run(
             [
@@ -291,7 +290,9 @@ def main(args):
     # create task room
     # look for the task room layout (allow some options)
     task_room_layout_path = find_task_layout_file(bot_base_path)
-    task_room_layout_dict = json.loads(task_room_layout_path.read_text(encoding="utf-8"))
+    task_room_layout_dict = json.loads(
+        task_room_layout_path.read_text(encoding="utf-8")
+    )
     task_room_layout_id = create_room_layout(task_room_layout_dict)
 
     bot_name = args.bot_name or str(bot_base_path)
@@ -299,7 +300,9 @@ def main(args):
         f"{bot_name.capitalize()} Task", args.users, task_room_layout_id
     )
     task_bot_permissions_path = find_bot_permissions_file(bot_base_path)
-    task_bot_permissions_dict = json.loads(task_bot_permissions_path.read_text(encoding="utf-8"))
+    task_bot_permissions_dict = json.loads(
+        task_bot_permissions_path.read_text(encoding="utf-8")
+    )
     task_bot_permissions_id = create_permissions(task_bot_permissions_dict)
     task_bot_token = create_token(task_bot_permissions_id, waiting_room_id)
     task_bot_user_id = create_user(bot_name, task_bot_token)
@@ -333,7 +336,7 @@ def main(args):
 
         # read config file
         extra_args = configparser.ConfigParser()
-        extra_args.optionxform=str  # arg names should be case sensitive
+        extra_args.optionxform = str  # arg names should be case sensitive
         extra_args.read(extra_args_path)
         extra_args.sections()
 
@@ -355,7 +358,9 @@ def main(args):
 
     if any([args.tokens, args.dev]) is True:
         user_permissions_path = find_user_permissions_file(bot_base_path)
-        user_permissions_dict = json.loads(user_permissions_path.read_text(encoding="utf-8"))
+        user_permissions_dict = json.loads(
+            user_permissions_path.read_text(encoding="utf-8")
+        )
 
         for user in range(args.users):
             user_permissions_id = create_permissions(user_permissions_dict)
@@ -385,7 +390,7 @@ if __name__ == "__main__":
         "--users",
         help="number of users for this task",
         required=all("concierge" not in arg for arg in sys.argv),
-        type=int
+        type=int,
     )
     parser.add_argument(
         "--slurk-host",
@@ -398,8 +403,7 @@ if __name__ == "__main__":
         default="00000000-0000-0000-0000-000000000000",
     )
     parser.add_argument(
-        "--credentials-from-file",
-        help="read slurk host and api token from a json file"
+        "--credentials-from-file", help="read slurk host and api token from a json file"
     )
     parser.add_argument(
         "--waiting-room-id",
@@ -429,7 +433,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--copy-plugins",
         help="copy all the files in the plugins directory to slurk's plugins before starting the slurk server",
-        action="store_true"
+        action="store_true",
     )
     args = parser.parse_args()
 
