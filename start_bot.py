@@ -244,7 +244,7 @@ def main(args):
         waiting_room_id = create_room(waiting_room_layout)
 
         # create a concierge bot for this room
-        concierge_name = f"concierge-bot-{bot_base_path}"
+        concierge_name = f"concierge-bot-{waiting_room_id}"
 
         concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
         concierge_permissions_dict = json.loads(
@@ -253,10 +253,6 @@ def main(args):
         concierge_permissions = create_permissions(concierge_permissions_dict)
         concierge_bot_token = create_token(concierge_permissions, waiting_room_id)
         concierge_bot_user_id = create_user(concierge_name, concierge_bot_token)
-
-        # start a concierge bot
-        if "concierge" in args.bot:
-            concierge_name = "concierge"
 
         build_docker_image("concierge", concierge_name)
         subprocess.run(
