@@ -75,7 +75,7 @@ class Session:
         self.current_action = ActionNode.new_tree()
         self.states = Dataloader(STATES, BOARDS_PER_ROOM, BOARDS_PER_LEVEL)
         self.game_over = False
-        self.checkpoint = None
+        self.checkpoint = EMPTYSTATE
 
     def close(self):
         self.golmi_client.disconnect()
