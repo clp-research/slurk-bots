@@ -75,7 +75,7 @@ class Session:
         self.current_action = ActionNode.new_tree()
         self.states = Dataloader(STATES, BOARDS_PER_ROOM, BOARDS_PER_LEVEL)
         self.game_over = False
-        self.checkpoint = dict()
+        self.checkpoint = None
 
     def close(self):
         self.golmi_client.disconnect()
@@ -208,7 +208,6 @@ class CoCoBot(TaskBot):
             self.sessions[room_id].golmi_client = client
 
     def send_typing_input(self, room_id):
-
         player, wizard = self.sessions[room_id].players
         if player["role"] != "player":
             player, wizard = wizard, player
@@ -1021,15 +1020,12 @@ class CoCoBot(TaskBot):
         self.sessions[room_id].game_over = False
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
-
-        if not self.sessions[room_id].states:
-            self.sessions[room_id].states.get_boards()
         self.load_state(room_id)
 
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
         if not self.sessions[room_id].states:
-            self.sessions[room_id].states = load_states()
+            self.sessions[room_id].states.get_boards()
 
         # get current state
         this_state = self.sessions[room_id].states[0]
