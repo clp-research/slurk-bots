@@ -258,7 +258,7 @@ $(document).ready(function () {
         _drawCircle(ctx, x, y, color){
             ctx.beginPath()
             let circle = new Path2D();
-            let padding = this.blockSize / 10;
+            let padding = this.blockSize / 5;
             let radius = this.blockSize / 2;
 
             circle.arc(
@@ -347,37 +347,37 @@ $(document).ready(function () {
             let y = params.y * this.grid_factor
             // Draw blocks       
             for (let i=0; i< bMatrix[0].length * this.grid_factor; i++) {
-                this._drawUpperBorder(ctx, x+i, y, color);
-                this._drawLowerBorder(ctx, x+i, (y + bMatrix.length * this.grid_factor -1), color);
+                this._drawCellUpperBorder(ctx, x+i, y, color);
+                this._drawCellLowerBorder(ctx, x+i, (y + bMatrix.length * this.grid_factor -1), color);
             }
 
             for (let i=0; i< bMatrix.length * this.grid_factor; i++) {
-                this._drawLeftBorder(ctx, x, y + i, color);
-                this._drawRightBorder(ctx, x + bMatrix[0].length * this.grid_factor -1, y + i, color);
+                this._drawCellLeftBorder(ctx, x, y + i, color);
+                this._drawCellRightBorder(ctx, x + bMatrix[0].length * this.grid_factor -1, y + i, color);
             }
         }
 
-        _drawUpperBorder(
+        _drawCellUpperBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x+1, y, highlight, borderColor, borderWidth);
+            this._drawCellBorder(ctx, x, y, x+1, y, highlight, borderColor, borderWidth);
         }
 
-        _drawLowerBorder(
+        _drawCellLowerBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight, borderColor, borderWidth);
+            this._drawCellBorder(ctx, x, y+1, x+1, y+1, highlight, borderColor, borderWidth);
         }
 
-        _drawLeftBorder(
+        _drawCellLeftBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x, y+1, highlight, borderColor, borderWidth);
+            this._drawCellBorder(ctx, x, y, x, y+1, highlight, borderColor, borderWidth);
         }
 
-        _drawRightBorder(
+        _drawCellRightBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight, borderColor, borderWidth);
+            this._drawCellBorder(ctx, x+1, y, x+1, y+1, highlight, borderColor, borderWidth);
         }
 
-        _drawBorder(ctx, x1, y1, x2, y2, highlight=false, borderColor="black",
+        _drawCellBorder(ctx, x1, y1, x2, y2, highlight=false, borderColor="black",
             borderWidth=2) {
             // --- config ---
             // for no highlight, shadowBlur is set to 0 (= invisible)
@@ -398,11 +398,20 @@ $(document).ready(function () {
             // --- config ---
             ctx.beginPath();
             ctx.fillStyle = color;
+            let padding = this.blockSize / 8;
             let px = this._toPxl(x);
             let py = this._toPxl(y);
-            let w = Math.abs(px - this._toPxl(x+1));
-            let h =  Math.abs(py - this._toPxl(y+1));
-            ctx.fillRect(px, py, w, h);
+            let w = Math.abs(px - this._toPxl(x+1)) - padding*2;
+            let h =  Math.abs(py - this._toPxl(y+1)) - padding*2;
+
+            ctx.fillRect(
+                px + padding,
+                py + padding,
+                w,
+                h
+            );
+
+            // draw borders
             this._drawUpperBorder(ctx, x, y, false)
             this._drawLowerBorder(ctx, x, y, false)
             this._drawLeftBorder(ctx, x, y, false)
@@ -411,37 +420,86 @@ $(document).ready(function () {
 
         _drawUpperBorder(
             ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x+1, y, highlight);
-        }
-
-        _drawLowerBorder(
-            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y+1, x+1, y+1, highlight);
-        }
-
-        _drawLeftBorder(
-            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x, y, x, y+1, highlight);
-        }
-
-        _drawRightBorder(
-            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
-            this._drawBorder(ctx, x+1, y, x+1, y+1, highlight);
-        }
-
-        _drawBorder(ctx, x1, y1, x2, y2, highlight=false, borderColor="black",
-            borderWidth=2) {
-            // --- config ---
-            // for no highlight, shadowBlur is set to 0 (= invisible)
-            // ctx.beginPath();
+            let x1 = x
+            let y1 = y
+            let x2 = x+1
+            let y2 = y
+            
             ctx.shadowBlur = highlight ? 5 : 0;
             ctx.shadowColor = highlight;
             ctx.lineStyle = borderColor;
             ctx.lineWidth = borderWidth;
 
+            let padding = this.blockSize / 8;
+
             ctx.beginPath();
-            ctx.moveTo(this._toPxl(x1), this._toPxl(y1));
-            ctx.lineTo(this._toPxl(x2), this._toPxl(y2));
+            ctx.moveTo(this._toPxl(x1) + padding, this._toPxl(y1) + padding);
+            ctx.lineTo(this._toPxl(x2) - padding, this._toPxl(y2) + padding);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.closePath();
+        }
+
+        _drawLowerBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            let x1 = x
+            let y1 = y+1
+            let x2 = x+1
+            let y2 = y+1
+
+            ctx.shadowBlur = highlight ? 5 : 0;
+            ctx.shadowColor = highlight;
+            ctx.lineStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+
+            let padding = this.blockSize / 8;
+
+            ctx.beginPath();
+            ctx.moveTo(this._toPxl(x1) + padding, this._toPxl(y1) - padding);
+            ctx.lineTo(this._toPxl(x2) - padding, this._toPxl(y2) - padding);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.closePath();
+        }
+
+        _drawLeftBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            let x1 = x
+            let y1 = y
+            let x2 = x
+            let y2 = y+1
+
+            ctx.shadowBlur = highlight ? 5 : 0;
+            ctx.shadowColor = highlight;
+            ctx.lineStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+
+            let padding = this.blockSize / 8;
+
+            ctx.beginPath();
+            ctx.moveTo(this._toPxl(x1) + padding, this._toPxl(y1) + padding);
+            ctx.lineTo(this._toPxl(x2) + padding, this._toPxl(y2) - padding);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.closePath();
+        }
+
+        _drawRightBorder(
+            ctx, x, y, highlight=false, borderColor="black", borderWidth=2) {
+            let x1 = x+1
+            let y1 = y
+            let x2 = x+1
+            let y2 = y+1
+            ctx.shadowBlur = highlight ? 5 : 0;
+            ctx.shadowColor = highlight;
+            ctx.lineStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+
+            let padding = this.blockSize / 8;
+
+            ctx.beginPath();
+            ctx.moveTo(this._toPxl(x1) - padding, this._toPxl(y1) + padding);
+            ctx.lineTo(this._toPxl(x2) - padding, this._toPxl(y2) - padding);
             ctx.stroke();
             ctx.shadowBlur = 0;
             ctx.closePath();
