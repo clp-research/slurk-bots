@@ -45,8 +45,9 @@ function start_golmi(url, password, role, golmi_rooms) {
             });
         }
 
-        // quick hack hide working on it button
+        // quick hack hide buttons
         $("#work_in_progress_button").hide()
+        $("#inspect_button").hide()
 
         // right click
         // grLayer.oncontextmenu = (event) => {
