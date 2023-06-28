@@ -1021,6 +1021,9 @@ class CoCoBot(TaskBot):
         self.sessions[room_id].game_over = False
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
+
+        if not self.sessions[room_id].states:
+            self.sessions[room_id].states.get_boards()
         self.load_state(room_id)
 
     def load_state(self, room_id, from_disconnect=False):
