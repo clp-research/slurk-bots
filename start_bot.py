@@ -216,9 +216,12 @@ def main(args):
                 "-d",
                 "-p",
                 "5000:80",
-                f"-e SLURK_SECRET_KEY={random.randint(0, 100000)}",
-                "-e SLURK_DISABLE_ETAG=False",
-                "-e FLASK_ENV=development",
+                "-e",
+                f"SLURK_SECRET_KEY={random.randint(0, 100000)}",
+                "-e",
+                "SLURK_DISABLE_ETAG=False",
+                "-e",
+                "FLASK_ENV=development",
                 "slurk/server:latest",
             ]
         )
@@ -267,9 +270,12 @@ def main(args):
                 "--network",
                 "host",
                 "-d",
-                f"-e BOT_TOKEN={concierge_bot_token}",
-                f"-e BOT_ID={concierge_bot_user_id}",
-                f"-e SLURK_HOST={SLURK_HOST}",
+                "-e",
+                f"BOT_TOKEN={concierge_bot_token}",
+                "-e",
+                f"BOT_ID={concierge_bot_user_id}",
+                "-e",
+                f"SLURK_HOST={SLURK_HOST}",
                 f"slurk/{concierge_name}",
             ]
         )
@@ -307,11 +313,16 @@ def main(args):
         "--network",
         "host",
         "-d",
-        f"-e BOT_TOKEN={task_bot_token}",
-        f"-e BOT_ID={task_bot_user_id}",
-        f"-e TASK_ID={task_id}",
-        f"-e WAITING_ROOM={waiting_room_id}",
-        f"-e SLURK_HOST={SLURK_HOST}",
+        "-e",
+        f"BOT_TOKEN={task_bot_token}",
+        "-e",
+        f"BOT_ID={task_bot_user_id}",
+        "-e",
+        f"TASK_ID={task_id}",
+        "-e",
+        f"WAITING_ROOM={waiting_room_id}",
+        "-e",
+        f"SLURK_HOST={SLURK_HOST}",
     ]
 
     if args.extra_args is not None:
@@ -332,7 +343,7 @@ def main(args):
 
         # collect arguments
         for key, value in extra_args["ARGS"].items():
-            docker_args.append(f"-e {key}={value}")
+            docker_args.extend(["-e", f"{key}={value}"])
 
     docker_args.append(f"slurk/{bot_name}")
     print(docker_args)
