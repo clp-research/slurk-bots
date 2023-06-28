@@ -224,7 +224,6 @@ def main(args):
                 "slurk/server:latest",
             ]
         )
-
         sleep(1)
 
     # create a waiting room if not provided
