@@ -269,7 +269,7 @@ def main(args):
                 "-d",
                 f"-e BOT_TOKEN={concierge_bot_token}",
                 f"-e BOT_ID={concierge_bot_user_id}",
-                f"-e SLURK_HOST={args.slurk_host}",
+                f"-e SLURK_HOST={SLURK_HOST}",
                 f"slurk/{concierge_name}",
             ]
         )
@@ -311,7 +311,7 @@ def main(args):
         f"-e BOT_ID={task_bot_user_id}",
         f"-e TASK_ID={task_id}",
         f"-e WAITING_ROOM={waiting_room_id}",
-        f"-e SLURK_HOST={args.slurk_host}",
+        f"-e SLURK_HOST={SLURK_HOST}",
     ]
 
     if args.extra_args is not None:
@@ -351,7 +351,7 @@ def main(args):
             user_permissions_id = create_permissions(user_permissions_dict)
             user_token = create_token(user_permissions_id, waiting_room_id, task_id)
             print(
-                f"Token: {user_token} | Link: {args.slurk_host}/login?name=user_{user}&token={user_token}"
+                f"Token: {user_token} | Link: {SLURK_HOST}/login?name=user_{user}&token={user_token}"
             )
 
 
@@ -424,6 +424,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # define some variables here
+    SLURK_HOST = args.slurk_host
     SLURK_API = f"{args.slurk_host}/slurk/api"
     API_TOKEN = args.slurk_api_token
 
@@ -440,6 +441,7 @@ if __name__ == "__main__":
             raise ValueError("Invalid formatting for credentials file")
 
         sulrk_address = config.get("SLURK CREDENTIALS", "host")
+        SLURK_HOST = sulrk_address
         SLURK_API = f"{sulrk_address}/slurk/api"
         API_TOKEN = config.get("SLURK CREDENTIALS", "token")
 
