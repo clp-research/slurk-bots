@@ -17,21 +17,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run Wordle Bot.")
 
     # collect environment variables as defaults
-    if "SLURK_TOKEN" in os.environ:
-        token = {"default": os.environ["SLURK_TOKEN"]}
+    if "BOT_TOKEN" in os.environ:
+        token = {"default": os.environ["BOT_TOKEN"]}
     else:
         token = {"required": True}
-    if "SLURK_USER" in os.environ:
-        user = {"default": os.environ["SLURK_USER"]}
+    if "BOT_ID" in os.environ:
+        user = {"default": os.environ["BOT_ID"]}
     else:
         user = {"required": True}
-    if "SLURK_WAITING_ROOM" in os.environ:
-        waiting_room = {"default": os.environ["SLURK_WAITING_ROOM"]}
+    if "WAITING_ROOM" in os.environ:
+        waiting_room = {"default": os.environ["WAITING_ROOM"]}
     else:
         waiting_room = {"required": True}
     host = {"default": os.environ.get("SLURK_HOST", "http://localhost")}
     port = {"default": os.environ.get("SLURK_PORT")}
-    task_id = {"default": os.environ.get("WORDLE_TASK_ID")}
+    task_id = {"default": os.environ.get("TASK_ID")}
 
     # register commandline arguments
     parser.add_argument("-t", "--token", help="token for logging in as bot", **token)

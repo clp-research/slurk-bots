@@ -129,11 +129,11 @@
         "print-history": ["attribute-history", "markdown-history"],
         "plain": [
             "recolage",
-            "golmi-js/view/View",
-            "golmi-js/view/RecolageLayerView",
-            "golmi-js/view/GiverLayerView",
-            "golmi-js/view/ReceiverLayerView",
-            "golmi-js/controller/LocalKeyController"
+            "View",
+            "RecolageLayerView",
+            "GiverLayerView",
+            "ReceiverLayerView",
+            "LocalKeyController"
         ]
     },
     "show_latency": false

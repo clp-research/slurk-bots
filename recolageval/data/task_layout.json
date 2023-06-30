@@ -96,9 +96,9 @@
         "print-history": ["attribute-history", "markdown-history"],
         "plain": [
             "recolageval",
-            "golmi-js/view/View",
-            "golmi-js/view/RecolageLayerView",
-            "golmi-js/view/RecolageEvalLayerView"
+            "View",
+            "RecolageLayerView",
+            "RecolageEvalLayerView"
         ]
     }
 }
