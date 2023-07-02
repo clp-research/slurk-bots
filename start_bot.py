@@ -344,6 +344,9 @@ def main(args):
             docker_args.extend(["-e", f"{key}={value}"])
 
     docker_args.append(f"slurk/{bot_name}")
+
+
+    print(docker_args)
     subprocess.run(docker_args)
 
     print("---------------------------")
