@@ -20,13 +20,11 @@ This repository contains the source code for a collaborative Image-Wordle game. 
         "send_command": true
     }
     ```
-    **To skip all this setup above, you could run a [setup script](https://github.com/clp-research/slurk-bots/blob/master/wordle/scripts/setup.sh).**
-    1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash wordle/scripts/setup.sh```
-    This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/wordle-bot```. At the end of the run there will be two tokens printed in the shell that you will need to paste to access the waiting rooms.
-5. Save the generated tokens!
-
-Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again.
+4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
+5. Copy the content of the [```plugins```] directory to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins).
+6. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:  
+ ```$ python start_bot.py wordle/ --users 2 --copy-plugins --dev --waiting-room-layout-dict wordle/data/waiting_room_layout.json```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/wordle```.
 
 ### Running and playing the bot
 
@@ -34,18 +32,12 @@ If you have everything already set up, you can run the bot using the following c
 ```bash
 docker run \
     --net="host" \
-    -e SLURK_TOKEN=$WORDLE_BOT_TOKEN \
-    -e SLURK_USER=$WORDLE_BOT \
-    -e SLURK_WAITING_ROOM=$WAITING_ROOM \
-    -e WORDLE_TASK_ID=$TASK_ID \
+    -e BOT_TOKEN=$WORDLE_BOT_TOKEN \
+    -e BOT_ID=$WORDLE_BOT \
+    -e WAITING_ROOM=$WAITING_ROOM \
+    -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
     -d slurk/wordle-bot
-```
-
-To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be two tokens towards the end that will look something like below. You could use one for each instance of the bots playing Wordle together.
-```
-2f42a98e-0a29-43c2-9f94-97b38f25c30f
-4cf0a403-c8d4-48fa-a7b0-b8ea7d52a364
 ```
 
 ## Modifications and Game Variants

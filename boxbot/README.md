@@ -18,7 +18,6 @@ Please refer to [the documentation](https://clp-research.github.io/slurk/slurk_m
 ## Setting up and running
 
 ### Setup 
-
 1. Install [Docker](https://docs.docker.com/get-docker/). You might also need the [jq package](https://stedolan.github.io/jq/download/) too. 
 2. Clone the [slurk](https://github.com/clp-research/slurk) repository.
 3. Before running the bot, several environmental variables would need to be generated and assigned. This process is detailed in the [documentation](https://clp-research.github.io/slurk/slurk_gettingstarted.html), which details both the general preparation and the [bot specific initialisations](https://clp-research.github.io/slurk/slurk_gettingstarted.html#chatting-with-a-bot). The bot also needs to have specific permissions, listed below this paragraph. The above permissions can be found in [this example permissions file](https://github.com/clp-research/slurk-bots/blob/master/boxbot/box_bot_permissions.json) already.  
@@ -29,26 +28,23 @@ Please refer to [the documentation](https://clp-research.github.io/slurk/slurk_m
         "receive_bounding_box": true
     }
     ```
-    **To skip all this setup above, you could run a [setup script](https://github.com/clp-research/slurk-bots/blob/master/boxbot/setup.sh).** 
-    1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash boxbot/setup.sh``` 
-    This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/boxbot-bot```. At the end of the run there will a token printed in the shell that you will need to paste to access the waiting room. 
-5. Save the generated tokens!
+ 
+ 4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
+ 5. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:  
+ ```$ python start_bot.py boxbot/ --users 1 --tokens --dev --extra-args boxbot/args.ini```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/boxbot```.
 
-Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again. 
-    
 ### Running and playing the bot
-
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
     --net="host" \
-    -e SLURK_TOKEN=$BOX_BOT_TOKEN \
-    -e SLURK_USER=$BOX_BOT \
+    -e BOT_TOKEN=$BOX_BOT_TOKEN \
+    -e BOT_ID=$BOX_BOT \
     -e BOX_DATA="test_items/shape-colors.json" \
-    -e BOX_TASK_ID=$TASK_ID \
+    -e TASK_ID=$TASK_ID \
     -e SLURK_PORT=5000 \
-    -d slurk/box-bot
+    -d slurk/boxbot
 ```
 
 To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be a token towards the end that will look something like this: `2f42a98e-0a29-43c2-9f94-97b38f25c30f`

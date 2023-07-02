@@ -33,7 +33,7 @@ function start_golmi(url, password) {
                     "offset_y": event.offsetY,
                     "x": event.x,
                     "y": event.y,
-                    "block_size": layerView.blockSize,
+                    "block_size": layerView.blockSize * layerView.grid_factor,
                 },
                 "room": self_room
             }

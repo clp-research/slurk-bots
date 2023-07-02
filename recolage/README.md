@@ -22,38 +22,28 @@ There are 4 versions of this bot:
         "send_command": true
     }
     ```
-    **To skip all this setup above, you could run a setup script:**  
-    * [no feedback](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_no_feedback.sh)  
-    * [feedback](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_feedback.sh)  
-    * [confirm selection](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_confirm_selection.sh)  
-    * [gripper](https://github.com/clp-research/slurk-bots/blob/golmi/golmi/setup_gripper.sh)  
-    
-    
-    1. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
-    2. Copy the [```golmi-js```](golmi-js) directory and [```recolage.js```](recolage.js) file to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins). 
-    3. Navigate to the base directory of this repository and run the script to launch this bot, your command should look like ```bash golmi/setup_no_feedback.sh``` 
-    This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set up two bots that can talk to each other locally on your computer. The bot will appear in your containers list as ```slurk/golmi-bot```. At the end of the run there will a token printed in the shell that you will need to paste to access the waiting room. 
-    4. Save the generated tokens!
+4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
+5. Copy the content of the [```plugins```] directory to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins).
+6. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:  
+ ```$ python start_bot.py recolage --users 2 --extra-args recolage/args_feedback.ini --copy-plugins --dev```.  
+ This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/recolage```.
 
-Note: Every time a new terminal session is started, the env variables will need to be set up again. You can just run the script again. 
-    
 ### Running and playing the bot
-
 A [GOLMI server](https://github.com/clp-research/golmi) is needed to run this bot. Make sure that golmi is on the `slurk` branch.
 
 If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
 ```bash
 docker run \
     --net="host" \
-    -e GOLMI_TOKEN=$THIS_BOT_TOKEN \
-    -e GOLMI_USER=$THIS_BOT \
-    -e GOLMI_TASK_ID=$TASK_ID \
-    -e SLURK_WAITING_ROOM=$WAITING_ROOM \
+    -e BOT_TOKEN=$THIS_BOT_TOKEN \
+    -e BOT_ID=$THIS_BOT \
+    -e TASK_ID=$TASK_ID \
+    -e WAITING_ROOM=$WAITING_ROOM \
     -e SLURK_PORT=5000 \
     -e GOLMI_SERVER=$GOLMI_SERVER \
     -e GOLMI_PASSWORD=$GOLMI_PASSWORD \
     -e VERSION=$BOT_VERSION \
-    -d slurk/golmi-bot
+    -d slurk/recolage
 ```
 
-To access the waiting rooms, you will need to input the saved tokes as well as any string as username. If you ran the setup script, there will be a token towards the end that will look something like this: `2f42a98e-0a29-43c2-9f94-97b38f25c30f`
+This bot has different versions, you can choose the one you want by selecting the according `args_{version}.json` with the `--extra-args path/to/args-file.json` option.
