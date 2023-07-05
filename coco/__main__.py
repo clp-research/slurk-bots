@@ -24,8 +24,10 @@ class RoomTimers:
 
     def __init__(self):
         self.left_room = dict()
+        self.typing_timer = None
 
     def cancel(self):
+        self.typing_timer.cancel()
         for timer in self.left_room.values():
             timer.cancel()
 
@@ -227,11 +229,15 @@ class CoCoBot(TaskBot):
 
         send_typing(True, room_id, wizard)
 
-        timer = Timer(3,
+        timer = self.sessions[room_id].timer.typing_timer
+        if timer is not None:
+            timer.cancel()
+
+        self.sessions[room_id].timer.typing_timer = Timer(3,
             send_typing,
             args=[False, room_id, wizard]
         )
-        timer.start()
+        self.sessions[room_id].timer.typing_timer.start()
 
     def register_callbacks(self):
         @self.sio.event
