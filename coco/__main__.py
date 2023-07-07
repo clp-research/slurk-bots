@@ -36,6 +36,11 @@ class RoomTimers:
 
 
 class ActionNode:
+    """Base class for the linked list representing
+    the action history, every action performed by the wizard
+    if saved as a node in this linked list to allow for
+    the redo and undo button
+    """
     def __init__(self, action, obj):
         self.action = action
         self.obj = obj
@@ -75,7 +80,7 @@ class Session:
         self.timer = RoomTimers()
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
-        self.states = Dataloader(STATES, BOARDS_PER_ROOM, BOARDS_PER_LEVEL)
+        self.states = load_states()
         self.game_over = False
         self.checkpoint = EMPTYSTATE
 
@@ -95,6 +100,9 @@ class SessionManager(dict):
 
 
 class MoveEvaluator:
+    """Given a json file containing the placing rules
+    this class decides if a move is allowed or not
+    """
     def __init__(self, rules):
         self.rules = rules
 
@@ -163,6 +171,9 @@ class CoCoBot(TaskBot):
         self.golmi_password = golmi_password
 
     def on_task_room_creation(self, data):
+        """This function is executed as soon as 2 users are paired and a new
+        task took is created
+        """
         room_id = data["room"]
         task_id = data["task"]
 
@@ -170,10 +181,11 @@ class CoCoBot(TaskBot):
         logging.debug(f"This bot is looking for task id: {self.task_id}")
 
         if task_id is not None and task_id == self.task_id:
-            # reduce height of sidebar
+            # move the chat | task area divider
             self.move_divider(room_id, chat_area=30, task_area=70)
             sleep(0.5)
 
+            # reduce height of sidebar
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
                 headers={"Authorization": f"Bearer {self.token}"},
@@ -184,15 +196,15 @@ class CoCoBot(TaskBot):
             for usr in data["users"]:
                 self.received_waiting_token.discard(usr["id"])
 
-            # create image items for this room
+            # create a new session for these users
             logging.debug("Create data for the new task room...")
-
             self.sessions.create_session(room_id)
             for usr in data["users"]:
                 self.sessions[room_id].players.append(
                     {**usr, "role": None, "status": "joined"}
                 )
 
+            # join the newly created room
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
                 headers={"Authorization": f"Bearer {self.token}"},
@@ -204,12 +216,14 @@ class CoCoBot(TaskBot):
                 response.raise_for_status()
             logging.debug("Sending wordle bot to new room was successful.")
 
-            # create client
+            # create and connect the golmi client
             client = QuadrupleClient(str(room_id), self.golmi_server)
             client.run(self.golmi_password)
             self.sessions[room_id].golmi_client = client
 
     def send_typing_input(self, room_id):
+        """Send typing events when the wizard is working on the boards
+        """
         player, wizard = self.sessions[room_id].players
         if player["role"] != "player":
             player, wizard = wizard, player
@@ -227,12 +241,16 @@ class CoCoBot(TaskBot):
                 },
             )
 
-        send_typing(True, room_id, wizard)
-
+        # no need to send a new start typing event if the old one is still running
         timer = self.sessions[room_id].timer.typing_timer
+        if timer is None or timer.is_alive() is False:
+            send_typing(True, room_id, wizard)
+
+        # cancel old timer to avoid overlapping events
         if timer is not None:
             timer.cancel()
 
+        # start a new timer for the stop typing event
         self.sessions[room_id].timer.typing_timer = Timer(3,
             send_typing,
             args=[False, room_id, wizard]
@@ -373,6 +391,8 @@ class CoCoBot(TaskBot):
 
         @self.sio.event
         def mouse(data):
+            """capture mouse clicks on the board
+            """
             room_id = data["room"]
             user_id = data["user"]["id"]
 
@@ -908,11 +928,6 @@ class CoCoBot(TaskBot):
                     if data["command"] == "role:wizard":
                         self.set_wizard_role(room_id, user_id)
 
-                    # elif data["command"] == "game:over":
-                    #     right_user = self.check_role(user_id, "player", room_id)
-                    #     if right_user is True:
-                    #         self.close_game(room_id)
-
                     elif data["command"] == "episode:over":
                         right_user = self.check_role(user_id, "player", room_id)
                         if right_user is False:
@@ -1042,19 +1057,9 @@ class CoCoBot(TaskBot):
         client.load_selector()
 
         # load new target state
-        #client.load_target_state(this_state)
-        player, wizard = self.sessions[room_id].players
-        if player["role"] != "player":
-            player, wizard = wizard, player
-
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-            json={"attribute": "src", "value": this_state, "receiver_id": player["id"]},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
+        client.load_target_state(this_state)
         client.clear_working_states()
-
-        #self.log_event("target_board_log", this_state, room_id)
+        self.log_event("target_board_log", this_state, room_id)
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
