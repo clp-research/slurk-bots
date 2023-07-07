@@ -263,18 +263,6 @@ class CoCoBot(TaskBot):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
             if room_id in self.sessions:
-                # add description title
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": "Please wait for the roles to be assigned"},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
-
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
@@ -1014,17 +1002,6 @@ class CoCoBot(TaskBot):
                     "html": True,
                 },
             )
-
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr_title",
-            json={"text": "Please wait for the roles to be assigned"},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            logging.error(
-                f"Could not set task instruction title: {response.status_code}"
-            )
-            response.raise_for_status()
 
     def load_next_state(self, room_id):
         self.sio.emit(
