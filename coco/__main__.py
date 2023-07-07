@@ -81,7 +81,6 @@ class Session:
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
         self.states = load_states()
-        self.game_over = False
         self.checkpoint = EMPTYSTATE
 
     def close(self):
@@ -836,24 +835,21 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        if self.sessions[room_id].game_over is True:
-                            self.load_next_state(room_id)
-                        else:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message=(
-                                            "The game is not over yet, you can only load the next "
-                                            "episode once this is over (command: /episode:over)."
-                                        ),
-                                        color=WARNING_COLOR,
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message=(
+                                        "The game is not over yet, you can only load the next "
+                                        "episode once this is over (command: /episode:over)."
                                     ),
-                                    "room": room_id,
-                                    "receiver_id": curr_usr["id"],
-                                    "html": True,
-                                },
-                            )
+                                    color=WARNING_COLOR,
+                                ),
+                                "room": room_id,
+                                "receiver_id": curr_usr["id"],
+                                "html": True,
+                            },
+                        )
 
                     elif event == "inspect":
                         gripper = this_client.get_mouse_gripper()
@@ -921,7 +917,8 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        self.sessions[room_id].game_over = True
+                        # load next state
+                        self.load_next_state(room_id)
 
                     else:
                         self.sio.emit(
@@ -1014,8 +1011,6 @@ class CoCoBot(TaskBot):
                 "html": True,
             },
         )
-
-        self.sessions[room_id].game_over = False
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
         self.load_state(room_id)
