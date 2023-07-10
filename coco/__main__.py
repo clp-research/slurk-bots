@@ -518,6 +518,9 @@ class CoCoBot(TaskBot):
                                         translation_x = first_x - old_x
                                         translation_y = first_y - old_y
 
+                                        if i >= len(cell):
+                                            continue
+
                                         obj = cell[i]
 
                                         if obj["id_n"] not in already_placed:
