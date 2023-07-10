@@ -29,7 +29,7 @@ function start_golmi(url, password, role, golmi_rooms) {
 
     if (role === "wizard"){
         golmi_socket_working.emit("join", { "room_id": golmi_rooms.wizard_working });
-
+        
         grLayer.onclick = (event) => {
             socket.emit("mouse", {
                 type: "click",
@@ -40,6 +40,7 @@ function start_golmi(url, password, role, golmi_rooms) {
                     y: event.offsetY,
                     block_size: workinglayerView.blockSize,
                     board: "wizard_working",
+                    ctrl: event.ctrlKey
                 },
                 room: self_room
             });

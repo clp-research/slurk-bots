@@ -396,19 +396,20 @@ class CoCoBot(TaskBot):
 
             this_client = self.sessions[room_id].golmi_client
 
+            logging.debug(data)
+
             board = data["coordinates"]["board"]
             if board == "wizard_working":
-                if data["coordinates"]["button"] == "left":
+                if data["coordinates"]["ctrl"] is False:
                     # send typing message
                     self.send_typing_input(room_id)
 
                     # check if the user selected an object on his selection board
                     selected = this_client.get_wizard_selection()
+                    current_state = this_client.get_working_state()
                     if selected:
                         # wizard wants to place a new object
                         obj = list(selected.values()).pop()
-
-                        current_state = this_client.get_working_state()
                         id_n = new_obj_name(current_state)
 
                         x = data["coordinates"]["x"]
@@ -452,17 +453,16 @@ class CoCoBot(TaskBot):
 
                         # ungrip any selected object
                         this_client.remove_selection("wizard_selection", "mouse")
-                        this_client.remove_selection("wizard_working", "cell")
+                        this_client.remove_cell_grippers()
 
                     else:
                         # no object is selected, we can select this object
-                        this_client.remove_selection("wizard_working", "cell")
-
                         piece = this_client.grip_object(
                             x=data["coordinates"]["x"],
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"],
                         )
+
                         self.log_event(
                             "user_selection",
                             dict(
@@ -475,96 +475,136 @@ class CoCoBot(TaskBot):
                             room_id,
                         )
 
-                elif data["coordinates"]["button"] == "right":
+                        if piece:
+                            this_client.remove_cell_grippers()
+                        else:
+                            current_state = this_client.get_working_state()
+                            if any("cell" in i for i in current_state["grippers"].keys()):
+                                cells_to_copy = list()
+                                positions = list()
+                                clicks = list()
+                                for name, gripper in current_state["grippers"].items():
+                                    if "cell" in name:
+                                        cell_index = int(name.split("_")[-1])
+                                        clicks.append((cell_index, (gripper["x"], gripper["y"])))
+                                        cell_objects = this_client.get_entire_cell(
+                                            x=gripper["x"],
+                                            y=gripper["y"],
+                                            block_size=1,
+                                            board="wizard_working",
+                                        )
+                                        cells_to_copy.append(cell_objects)
+                                        positions.append((gripper["x"], gripper["y"]))
+
+                                # build structure bottom up
+                                highest_index = max(len(i) for i in cells_to_copy)
+
+                                # check first click
+                                clicks.sort()
+                                first_x, first_y = clicks[0][-1]
+
+                                # anchor coordinates for copying
+                                block_size = data["coordinates"]["block_size"]
+                                new_x = data["coordinates"]["x"] // block_size
+                                new_y = data["coordinates"]["y"] // block_size
+                                already_placed = set()
+
+                                for i in range(highest_index):
+                                    for cell, position in zip(cells_to_copy, positions):
+                                        current_state = this_client.get_working_state()
+                                        id_n = new_obj_name(current_state)
+
+                                        old_x, old_y = position
+                                        translation_x = first_x - old_x
+                                        translation_y = first_y - old_y
+
+                                        obj = cell[i]
+
+                                        if obj["id_n"] not in already_placed:
+                                            already_placed.add(obj["id_n"])
+                                            obj["id_n"] = id_n
+                                            obj["x"] = obj["x"] - old_x + new_x - translation_x
+                                            obj["y"] = obj["y"] - old_y + new_y - translation_y
+                                            obj["gripped"] = None
+
+                                            allowed_move = self.move_evaluator.is_allowed(
+                                                obj, this_client, obj["x"], obj["y"], 1
+                                            )
+                                            if allowed_move is False:
+                                                self.sio.emit(
+                                                    "text",
+                                                    {
+                                                        "message": COLOR_MESSAGE.format(
+                                                            message="This move is not allowed",
+                                                            color=WARNING_COLOR,
+                                                        ),
+                                                        "room": room_id,
+                                                        "receiver_id": user_id,
+                                                        "html": True,
+                                                    },
+                                                )
+                                                this_client.remove_working_gripper("cell")
+                                                return
+
+                                            action, obj = this_client.add_object(obj)
+                                            if action is not False:
+                                                current_action = self.sessions[room_id].current_action
+                                                self.sessions[
+                                                    room_id
+                                                ].current_action = current_action.add_action(
+                                                    action, obj
+                                                )
+
+                                                # the state changes, log it
+                                                current_state = this_client.get_working_state()
+                                                self.log_event(
+                                                    "working_board_log", current_state, room_id
+                                                )
+                                            else:
+                                                # invalid positioning, stop
+                                                return
+
+                                this_client.remove_cell_grippers()
+
+                elif data["coordinates"]["ctrl"] is True:
                     this_client.remove_selection("wizard_selection", "mouse")
                     this_client.remove_selection("wizard_working", "mouse")
 
                     gripper_on_board = this_client.get_gripper("cell")
+                    current_state = this_client.get_working_state()
 
-                    if gripper_on_board:
-                        cell_objects = this_client.get_entire_cell(
-                            x=gripper_on_board["x"],
-                            y=gripper_on_board["y"],
-                            block_size=1,
-                            board="wizard_working",
-                        )
+                    # obtain new name for this gripper
+                    taken = [int(i.split("_")[-1]) for i in current_state["grippers"]]
+                    taken.sort()
 
-                        logging.debug(cell_objects)
-
-                        old_x = gripper_on_board["x"]
-                        old_y = gripper_on_board["y"]
-
-                        for obj in cell_objects:
-                            current_state = this_client.get_working_state()
-                            id_n = new_obj_name(current_state)
-
-                            block_size = data["coordinates"]["block_size"]
-                            new_x = data["coordinates"]["x"] // block_size
-                            new_y = data["coordinates"]["y"] // block_size
-
-                            # update object parameters
-                            obj["id_n"] = id_n
-                            obj["x"] = obj["x"] - old_x + new_x
-                            obj["y"] = obj["y"] - old_y + new_y
-                            obj["gripped"] = None
-
-                            allowed_move = self.move_evaluator.is_allowed(
-                                obj, this_client, obj["x"], obj["y"], 1
-                            )
-                            if allowed_move is False:
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            message="This move is not allowed",
-                                            color=WARNING_COLOR,
-                                        ),
-                                        "room": room_id,
-                                        "receiver_id": user_id,
-                                        "html": True,
-                                    },
-                                )
-                                this_client.remove_working_gripper("cell")
-                                return
-
-                            action, obj = this_client.add_object(obj)
-                            if action is not False:
-                                current_action = self.sessions[room_id].current_action
-                                self.sessions[
-                                    room_id
-                                ].current_action = current_action.add_action(
-                                    action, obj
-                                )
-
-                                # the state changes, log it
-                                current_state = this_client.get_working_state()
-                                self.log_event(
-                                    "working_board_log", current_state, room_id
-                                )
-                            else:
-                                # invalid positioning, stop
-                                return
-
-                        this_client.remove_working_gripper("cell")
-
+                    if not taken:
+                        gripper_id = 0
                     else:
-                        this_client.grip_cell(
+                        highest = taken[-1]
+                        possible = set(range(highest + 2))
+                        new_ids = list(possible - set(taken))
+                        new_ids.sort()
+                        gripper_id = new_ids[0]
+
+
+                    this_client.add_gripper(
+                        gripper=f"cell_{gripper_id}",
+                        x=data["coordinates"]["x"],
+                        y=data["coordinates"]["y"],
+                        block_size=data["coordinates"]["block_size"],
+                    )
+
+                    self.log_event(
+                        "user_selection",
+                        dict(
                             x=data["coordinates"]["x"],
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"],
-                        )
-
-                        self.log_event(
-                            "user_selection",
-                            dict(
-                                x=data["coordinates"]["x"],
-                                y=data["coordinates"]["y"],
-                                block_size=data["coordinates"]["block_size"],
-                                selection="entire_cell",
-                                board="wizard_working",
-                            ),
-                            room_id,
-                        )
+                            selection="entire_cell",
+                            board="wizard_working",
+                        ),
+                        room_id,
+                    )
 
             if board == "wizard_selection":
                 self.send_typing_input(room_id)
@@ -576,7 +616,7 @@ class CoCoBot(TaskBot):
 
                 # remove selected objects from wizard's working board
                 this_client.remove_selection("wizard_working", "mouse")
-                this_client.remove_selection("wizard_working", "cell")
+                this_client.remove_cell_grippers()
 
                 self.log_event(
                     "user_selection",

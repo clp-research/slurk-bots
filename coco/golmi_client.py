@@ -63,6 +63,7 @@ class QuadrupleClient:
 
     def copy_working_state(self):
         state = self.get_working_state()
+        state["grippers"] = dict()
         self.player_working.load_state(state)
 
     def load_selector(self):
@@ -167,6 +168,21 @@ class QuadrupleClient:
             f"{self.golmi_address}/slurk/gripper/{self.rooms.selector}/{gripper}"
         )
         return req.json() if req.ok else None
+
+    def add_gripper(self, gripper, x, y, block_size):
+        req = requests.post(
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper}",
+            json={"x": x, "y": y, "block_size": block_size}
+        )
+        return req.json() if req.ok else None
+
+    def remove_cell_grippers(self):
+        current_state = self.get_working_state()
+        for gr_id in current_state["grippers"].keys():
+            if "cell" in gr_id:
+                req = requests.delete(
+                    f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gr_id}"
+                )
 
     def remove_working_gripper(self, gripper):
         req = requests.delete(

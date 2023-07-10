@@ -179,7 +179,7 @@ $(document).ready(function () {
             let ctx = this.grCanvas.getContext("2d");
             for (const [grId, gripper] of Object.entries(this.grippers)) {
                 // modify style depending on whether an object is gripped
-                if (grId === "cell"){
+                if (grId.split("_")[0] === "cell"){
 
                     // call drawing helper functions with additional infos
                     let params = {
