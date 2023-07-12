@@ -113,6 +113,16 @@ class MoveEvaluator:
         return True
 
     def is_allowed(self, this_obj, client, x, y, block_size):
+        # coordinates must be on the board
+        board_x = x // block_size
+        board_y = y // block_size
+
+        if board_x < 0 or board_x > CONFIG["width"]:
+            return False
+
+        if board_y < 0 or board_y > CONFIG["height"]:
+            return False
+
         # last item on cell cannot be a screw
         cell_objs = client.get_entire_cell(
             x=x, y=y, block_size=block_size, board="wizard_working"
@@ -396,8 +406,6 @@ class CoCoBot(TaskBot):
 
             this_client = self.sessions[room_id].golmi_client
 
-            logging.debug(data)
-
             board = data["coordinates"]["board"]
             if board == "wizard_working":
                 if data["coordinates"]["ctrl"] is False:
@@ -533,6 +541,8 @@ class CoCoBot(TaskBot):
                                             allowed_move = self.move_evaluator.is_allowed(
                                                 obj, this_client, obj["x"], obj["y"], 1
                                             )
+                                            logging.debug("**********************************")
+                                            logging.debug(allowed_move)
                                             if allowed_move is False:
                                                 self.sio.emit(
                                                     "text",
@@ -546,7 +556,7 @@ class CoCoBot(TaskBot):
                                                         "html": True,
                                                     },
                                                 )
-                                                this_client.remove_working_gripper("cell")
+                                                this_client.remove_cell_grippers()
                                                 return
 
                                             action, obj = this_client.add_object(obj)
@@ -565,6 +575,7 @@ class CoCoBot(TaskBot):
                                                 )
                                             else:
                                                 # invalid positioning, stop
+                                                logging.debug("**********************************")
                                                 return
 
                                 this_client.remove_cell_grippers()
