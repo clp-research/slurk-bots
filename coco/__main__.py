@@ -541,8 +541,6 @@ class CoCoBot(TaskBot):
                                             allowed_move = self.move_evaluator.is_allowed(
                                                 obj, this_client, obj["x"], obj["y"], 1
                                             )
-                                            logging.debug("**********************************")
-                                            logging.debug(allowed_move)
                                             if allowed_move is False:
                                                 self.sio.emit(
                                                     "text",
@@ -575,7 +573,6 @@ class CoCoBot(TaskBot):
                                                 )
                                             else:
                                                 # invalid positioning, stop
-                                                logging.debug("**********************************")
                                                 return
 
                                 this_client.remove_cell_grippers()
