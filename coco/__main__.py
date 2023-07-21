@@ -80,7 +80,7 @@ class Session:
         self.timer = RoomTimers()
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
-        self.states = load_states()
+        self.states = Dataloader(STATES)
         self.checkpoint = EMPTYSTATE
 
     def close(self):
@@ -1072,7 +1072,7 @@ class CoCoBot(TaskBot):
             self.sessions[room_id].states.get_boards()
 
         # get current state
-        this_state = self.sessions[room_id].states[0]
+        this_state, descriptions = self.sessions[room_id].states[0]
         client = self.sessions[room_id].golmi_client
 
         # load configuration and selector board
@@ -1083,6 +1083,22 @@ class CoCoBot(TaskBot):
         client.load_target_state(this_state)
         client.clear_working_states()
         self.log_event("target_board_log", this_state, room_id)
+
+        # send to frontend instructions
+        for user in self.sessions[room_id].players:
+            role = user["role"]
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "instruction",
+                        "base": INSTRUCTIONS[role],
+                        "extra": descriptions[role],
+                    },
+                    "room": room_id,
+                    "receiver_id": user["id"],
+                },
+            )
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""

@@ -3,35 +3,38 @@ from itertools import cycle
 import json
 import random
 
+import requests
+
+from .config import *
+
 
 class Dataloader(list):
-    def __init__(self, path, n, boards_per_level):
-        self._path = path
-        self._n = n
-        self.boards_per_level = boards_per_level
+    def __init__(self, path):
+        self.path = path
+        self.base_link = INSTRUCTION_BASE_LINK
         self.get_boards()
 
-    def _read_board_file(self):
-        """read boards and divide by level"""
-        boards = defaultdict(list)
-        with self._path.open('r', encoding="utf-8") as infile:
-            for index, line in enumerate(infile, start=1):
-                diff_level, link = line.strip().split("\t")
-                boards[diff_level].append(link)
+    def get_instructions_link(self, level):
+        level_mapping = requests.get(
+            f"{self.base_link}/{level}/instructions.json"
+        ).json()
 
-        return dict(sorted(boards.items()))
+        return dict(
+            player=[f"{self.base_link}/{level}/{i}" for i in level_mapping["player"]],
+            wizard=[f"{self.base_link}/{level}/{i}" for i in level_mapping["wizard"]],
+        )
 
-    def _sample_boards(self):
-        self.clear()
-        boards = self._read_board_file()
 
-        for board_links in boards.values():
-            for board in random.sample(board_links, self.boards_per_level):
-                self.append(board)
-                # if len(self) == self._n:
-                #     return
+    def read_boards(self):
+        with self.path.open(encoding="utf-8") as infile:
+            for i, line in enumerate(infile):
+
+                instructions = self.get_instructions_link(i)
+                self.append(
+                    (json.loads(line), instructions)
+                )
 
     def get_boards(self):
         """sample random boards for a room"""
-        self._sample_boards()
+        self.read_boards()
         #random.shuffle(self)

@@ -176,7 +176,6 @@ function set_player(description) {
     "redo",
     "next_state",
     "revert_session",
-    "ok",
     "inspect"
 ].forEach(element => {
     $(`#${element}_button`).click(() => {
@@ -225,6 +224,14 @@ $(document).ready(() => {
                 case "typing":
                     socket.emit("keypress", {"typing": data.command.value})
                     break;
+
+                case "instruction":
+                    $("#instr").html(data.command.base);
+                    data.command.extra.forEach(element => {
+                        $('#instr').append("<hr>")
+                        $('#instr').append(`<img id="theImg" src="${element}" />`)
+                    });                    
+                    break
             }
         }
     });

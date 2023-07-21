@@ -36,17 +36,7 @@ STATES = Path(f"{ROOT}/data/states.jsonl")
 RULES = json.loads(Path(f"{ROOT}/data/allowed_moves.json").read_text())
 BOARDS_PER_ROOM = 20
 BOARDS_PER_LEVEL = 2
-
-def load_states():
-    pool = list()
-    with STATES.open(encoding="utf-8") as infile:
-        for line in infile:
-            pool.append(
-                json.loads(line)
-            )
-
-    random.shuffle(pool)
-    return pool
+INSTRUCTION_BASE_LINK = "http://0.0.0.0:8000"
 
 
 def new_obj_name(state):

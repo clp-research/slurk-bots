@@ -7,7 +7,26 @@
       "layout-content": [
         {
           "layout-type": "div",
-          "id": "instr"
+          "style": "overflow-y: scroll; height: 150px",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                  "layout-type": "div",
+                  "style": "border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%;",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "style": "margin: 5px",
+                      "id": "instr"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "layout-type": "div",
@@ -122,14 +141,6 @@
                 },
                 {
                   "layout-type": "button",
-                  "class": "button green_button",
-                  "role": "button",
-                  "id": "ok_button",
-                  "layout-content": "Send: ready",
-                  "style": "padding: 10px; margin: 5px;"
-                },
-                {
-                  "layout-type": "button",
                   "class": "button red_button",
                   "role": "button",
                   "id": "show_progress_button",
@@ -184,7 +195,7 @@
                 },
                 {
                   "layout-type": "div",
-                  "style": "border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%;",
+                  "class": "board_container",
                   "layout-content": [
                     {
                       "layout-type": "div",
@@ -234,7 +245,7 @@
                 },
                 {
                   "layout-type": "div",
-                  "style": "border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%;",
+                  "class": "board_container",
                   "layout-content": [
                     {
                       "layout-type": "div",
@@ -374,6 +385,14 @@
     ".red_button:hover": {
       "content": "''",
       "background": "#cf8f8f"
+    },
+    ".board_container": {
+      "border-style": "rounded",
+      "border": "1px solid #CECDCD",
+      "border-radius": "5px",
+      "margin-top": "10px",
+      "margin-right": "10px",
+      "width": "100%"
     }
   },
   "scripts": {
