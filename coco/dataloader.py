@@ -16,14 +16,13 @@ class Dataloader(list):
 
     def get_instructions_link(self, level):
         level_mapping = requests.get(
-            f"{self.base_link}/{level}/instructions.json"
+            f"{self.base_link}/{level}.json"
         ).json()
 
         return dict(
-            player=[f"{self.base_link}/{level}/{i}" for i in level_mapping["player"]],
-            wizard=[f"{self.base_link}/{level}/{i}" for i in level_mapping["wizard"]],
+            player=[f"{self.base_link}/{i}" for i in level_mapping["player"]],
+            wizard=[f"{self.base_link}/{i}" for i in level_mapping["wizard"]],
         )
-
 
     def read_boards(self):
         with self.path.open(encoding="utf-8") as infile:

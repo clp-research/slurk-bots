@@ -36,7 +36,7 @@ STATES = Path(f"{ROOT}/data/states.jsonl")
 RULES = json.loads(Path(f"{ROOT}/data/allowed_moves.json").read_text())
 BOARDS_PER_ROOM = 20
 BOARDS_PER_LEVEL = 2
-INSTRUCTION_BASE_LINK = "http://0.0.0.0:8000"
+INSTRUCTION_BASE_LINK = "https://expdata.ling.uni-potsdam.de/cocobot"
 
 
 def new_obj_name(state):
