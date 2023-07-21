@@ -3,7 +3,7 @@ var config = {
     width: 800,
     height: 600,
     backgroundColor: '#eeeeee',
-    parent: 'game-area',
+    parent: 'tracking-area',
     scene: {
         preload: preload,
         create: create
@@ -63,4 +63,39 @@ function create ()
         gameObject.x = dragX;
         gameObject.y = dragY;
     });
+
+    this.input.on('dragend', function () {
+        my_objects = get_object_position()
+        socket.emit("message_command",
+            {
+                "command": {
+                    "event": "board_logging",
+                    "board": my_objects
+                },
+                "room": self_room
+            }
+        )
+    });
 }
+
+function get_object_position(){
+    return [{"name": "knife", "x": 4, "y": 52}]
+}
+
+
+$(document).ready(function () {
+    socket.on("command", (data) => {
+        if (typeof (data.command) === "object") {
+            switch(data.command.event){
+                // define if needed
+                case "dummy 1":
+                    console.log("something might happen here")
+                    break;
+
+                case "dummy 2":
+                    console.log("something else")
+                    break;
+            }
+        }
+    });
+});

@@ -38,7 +38,7 @@
         },
         {
           "layout-type": "div",
-          "id": "game-area",
+          "id": "tracking-area",
           "style": "width: 800px; height: 600px"
         }
       ]
@@ -51,7 +51,8 @@
     "print-history": "plain-history",
     "plain": [
       "phaser",
-      "placement"
+      "placement",
+      "mouse-tracking"
     ]
   },
   "show_latency": false

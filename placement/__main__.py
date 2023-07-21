@@ -1,4 +1,5 @@
 import logging
+import random
 from threading import Timer
 
 import requests
@@ -34,17 +35,74 @@ class RoomTimer:
 
 class Placement(TaskBot):
     timers_per_room = dict()
+    latest_board_per_room = dict()
 
     def on_task_room_creation(self, data):
         room_id = data["room"]
+
+        logging.debug(data)
 
         self.timers_per_room[room_id] = RoomTimer(
             self.close_room, room_id
         )
 
+        # map a dictionary user_id: last board
+        self.latest_board_per_room[room_id] = dict()
+        for user in data["users"]:
+            self.latest_board_per_room[room_id][user["id"]] = None
+
     def close_room(self, room_id):
         self.room_to_read_only(room_id)
+
+        # delete data structures
         self.timers_per_room.pop(room_id)
+        self.latest_board_per_room.pop(room_id)
+
+    def calculate_score(self, board1, board2):
+        return random.randint(0, 100)
+
+    def register_callbacks(self):
+        @self.sio.event
+        def command(data):
+            """Parse user commands."""
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            # do not process commands from itself
+            if user_id == self.user:
+                return
+
+            logging.debug(
+                f"Received a command from {data['user']['name']}: {data['command']}"
+            )
+
+            if isinstance(data["command"], dict):
+                if data["command"]["event"] == "board_logging":
+                    board = data["command"]["board"]
+
+                    # update latest board for this user
+                    self.latest_board_per_room[room_id][user_id] = board
+
+            else:
+                if data["command"] == "stop":
+                    # retrieve latest board and calculate score
+                    board1, board2 = list(self.latest_board_per_room[room_id].values())
+                    score = self.calculate_score(board1, board2)
+
+                    # log extra event
+                    self.log_event("score", {"score": score}, room_id)
+
+                    # inform users the game is over
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"your score is {score}. The experiment is over.",
+                            "room": room_id,
+                            "html": True,
+                        },
+                    )
+
+                    self.close_room(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
