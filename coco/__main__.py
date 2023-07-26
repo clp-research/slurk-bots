@@ -208,9 +208,13 @@ class CoCoBot(TaskBot):
             # create a new session for these users
             logging.debug("Create data for the new task room...")
             self.sessions.create_session(room_id)
-            for usr in data["users"]:
+
+            roles = ["player", "wizard"]
+            random.shuffle(roles)
+
+            for usr, role in zip(data["users"], roles):
                 self.sessions[room_id].players.append(
-                    {**usr, "role": None, "status": "joined"}
+                    {**usr, "role": role, "status": "joined"}
                 )
 
             # join the newly created room
@@ -229,6 +233,9 @@ class CoCoBot(TaskBot):
             client = QuadrupleClient(str(room_id), self.golmi_server)
             client.run(self.golmi_password)
             self.sessions[room_id].golmi_client = client
+
+            # send roles
+            self.send_roles(room_id)
 
     def send_typing_input(self, room_id):
         """Send typing events when the wizard is working on the boards
@@ -1009,47 +1016,30 @@ class CoCoBot(TaskBot):
 
             return False
 
-    def set_wizard_role(self, room_id, user_id):
+    def send_roles(self, room_id):
         curr_usr, other_usr = self.sessions[room_id].players
-        if curr_usr["id"] != user_id:
-            curr_usr, other_usr = other_usr, curr_usr
 
-        # users have no roles so we can assign them
-        if curr_usr["role"] is None and other_usr["role"] is None:
-            golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
-            for role, user in zip(["wizard", "player"], [curr_usr, other_usr]):
-                user["role"] = role
+        golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
+        for user in self.sessions[room_id].players:
+            role = user["role"]
 
-                self.sio.emit(
-                    "message_command",
-                    {
-                        "command": {
-                            "event": "init",
-                            "url": self.golmi_server,
-                            "password": self.golmi_password,
-                            "instruction": INSTRUCTIONS[role],
-                            "role": role,
-                            "room_id": str(room_id),
-                            "golmi_rooms": golmi_rooms,
-                        },
-                        "room": room_id,
-                        "receiver_id": user["id"],
-                    },
-                )
-            self.load_state(room_id)
-
-        else:
             self.sio.emit(
-                "text",
+                "message_command",
                 {
-                    "message": COLOR_MESSAGE.format(
-                        message="Roles have already be assigned", color=WARNING_COLOR
-                    ),
+                    "command": {
+                        "event": "init",
+                        "url": self.golmi_server,
+                        "password": self.golmi_password,
+                        "instruction": INSTRUCTIONS[role],
+                        "role": role,
+                        "room_id": str(room_id),
+                        "golmi_rooms": golmi_rooms,
+                    },
                     "room": room_id,
-                    "receiver_id": user_id,
-                    "html": True,
+                    "receiver_id": user["id"],
                 },
             )
+        self.load_state(room_id)
 
     def load_next_state(self, room_id):
         self.sio.emit(
