@@ -135,7 +135,6 @@ class QuadrupleClient:
         return req.json() if req.ok else None
 
     def get_entire_cell(self, x, y, block_size, board):
-
         mapping = {
             "wizard_working": self.rooms.wizard_working,
             "target": self.rooms.target,
