@@ -967,8 +967,8 @@ class CoCoBot(TaskBot):
                 else:
                     # user command
                     # set wizard
-                    if data["command"] == "role:wizard":
-                        self.set_wizard_role(room_id, user_id)
+                    if data["command"] == "role:switch":
+                        self.switch_roles(room_id)
 
                     elif data["command"] == "episode:over":
                         right_user = self.check_role(user_id, "player", room_id)
@@ -1028,6 +1028,35 @@ class CoCoBot(TaskBot):
                 {
                     "command": {
                         "event": "init",
+                        "url": self.golmi_server,
+                        "password": self.golmi_password,
+                        "instruction": INSTRUCTIONS[role],
+                        "role": role,
+                        "room_id": str(room_id),
+                        "golmi_rooms": golmi_rooms,
+                    },
+                    "room": room_id,
+                    "receiver_id": user["id"],
+                },
+            )
+        self.load_state(room_id)
+
+    def switch_roles(self, room_id):
+        golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
+        curr_usr, other_usr = self.sessions[room_id].players
+
+        logging.debug(self.sessions[room_id].players)
+        curr_usr["role"], other_usr["role"] = other_usr["role"], curr_usr["role"]
+        logging.debug(self.sessions[room_id].players)
+
+        for user in self.sessions[room_id].players:
+            role = user["role"]
+
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "switch",
                         "url": self.golmi_server,
                         "password": self.golmi_password,
                         "instruction": INSTRUCTIONS[role],

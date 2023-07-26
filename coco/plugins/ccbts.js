@@ -1,4 +1,3 @@
-let session = [];
 let golmi_socket_working = null
 let golmi_socket_target = null
 let targetlayerView = null
@@ -232,6 +231,28 @@ $(document).ready(() => {
                         $('#instr').append(`<img id="theImg" src="${element}" />`)
                     });                    
                     break
+
+                case "switch":
+                    try{
+                        golmi_socket_working.disconnect();
+                        golmi_socket_target.disconnect();
+                        targetlayerView.disconnect();
+                        workinglayerView.disconnect();
+                    } finally {
+                        if (data.command.role === "wizard") {
+                            set_wizard(data.command.instruction)
+                        } else if (data.command.role === "player"){
+                            set_player(data.command.instruction)
+                        }
+    
+                        start_golmi(
+                            data.command.url,
+                            data.command.password,
+                            data.command.role,
+                            data.command.golmi_rooms,
+                        );
+                    }
+                    break;
             }
         }
     });
