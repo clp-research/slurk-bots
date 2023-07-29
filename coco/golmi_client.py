@@ -54,6 +54,15 @@ class QuadrupleClient:
             {"width": 10.0, "height": 10.0, "move_step": 1, "prevent_overlap": False}
         )
 
+    def load_state(self, state, board):
+        mapping = {
+            "wizard_working": self.wizard_working,
+            "target": self.target,
+        }
+
+        room = mapping[board]
+        room.load_state(state)
+
     def clear_working_state(self):
         self.wizard_working.load_state(EMPTYSTATE)
 

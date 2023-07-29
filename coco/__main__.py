@@ -529,6 +529,8 @@ class CoCoBot(TaskBot):
                                 new_y = data["coordinates"]["y"] // block_size
                                 already_placed = set()
 
+                                backup_state = this_client.get_working_state()
+
                                 for i in range(highest_index):
                                     for cell, position in zip(cells_to_copy, positions):
                                         current_state = this_client.get_working_state()
@@ -567,6 +569,9 @@ class CoCoBot(TaskBot):
                                                     },
                                                 )
                                                 this_client.remove_cell_grippers()
+
+                                                # load the state before positioning any object
+                                                this_client.load_state(backup_state, "wizard_working")
                                                 return
 
                                             action, obj = this_client.add_object(obj)
@@ -585,6 +590,7 @@ class CoCoBot(TaskBot):
                                                 )
                                             else:
                                                 # invalid positioning, stop
+                                                this_client.load_state(backup_state, "wizard_working")
                                                 return
 
                                 this_client.remove_cell_grippers()
