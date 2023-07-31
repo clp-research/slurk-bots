@@ -239,12 +239,18 @@ $(document).ready(() => {
                         targetlayerView.disconnect();
                         workinglayerView.disconnect();
                     } finally {
+                        // reset interface
+                        $("#intro-image").hide();
+                        $("#golmi_card").hide();
+                        $("#wizard_interface").hide()
+                        $("#player_interface").hide()
+
                         if (data.command.role === "wizard") {
                             set_wizard(data.command.instruction)
                         } else if (data.command.role === "player"){
                             set_player(data.command.instruction)
                         }
-    
+
                         start_golmi(
                             data.command.url,
                             data.command.password,
