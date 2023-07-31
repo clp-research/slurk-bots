@@ -171,9 +171,9 @@ class QuadrupleClient:
 
         return "add", obj
 
-    def remove_gripper(self, gripper):
+    def remove_gripper(self, gripper_id):
         req = requests.delete(
-            f"{self.golmi_address}/slurk/gripper/{self.rooms.selector}/{gripper}"
+            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}"
         )
         return req.json() if req.ok else None
 
