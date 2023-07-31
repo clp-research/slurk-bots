@@ -1,3 +1,6 @@
 {
-    "screw": []
+    "screw": {
+        "rule": [],
+        "reason": "you cannot place any object on top of screws"
+    }
 }

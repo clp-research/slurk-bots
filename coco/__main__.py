@@ -82,6 +82,7 @@ class Session:
         self.current_action = ActionNode.new_tree()
         self.states = Dataloader(STATES)
         self.checkpoint = EMPTYSTATE
+        self.game_over = False
 
     def close(self):
         self.golmi_client.disconnect()
@@ -107,21 +108,28 @@ class MoveEvaluator:
 
     def can_place_on_top(self, this_obj, top_obj):
         if top_obj["type"] in self.rules:
-            allowed_objs_on_top = self.rules[top_obj["type"]]
+            allowed_objs_on_top = self.rules[top_obj["type"]]["rule"]
             if this_obj["type"] not in allowed_objs_on_top:
-                return False
-        return True
+                return False, self.rules[top_obj["type"]]["reason"]
+        return True, ""
+
+    def on_board(self, x, y):
+        if x < 0 or x >= CONFIG["width"]:
+            return False, "object outside of board"
+
+        if y < 0 or y >= CONFIG["height"]:
+            return False, "object outside of board"
+
+        return True, ""
 
     def is_allowed(self, this_obj, client, x, y, block_size):
         # coordinates must be on the board
         board_x = x // block_size
         board_y = y // block_size
 
-        if board_x < 0 or board_x > CONFIG["width"]:
-            return False
-
-        if board_y < 0 or board_y > CONFIG["height"]:
-            return False
+        allowed, reason = self.on_board(board_x, board_y)
+        if allowed is False:
+            return False, reason
 
         # last item on cell cannot be a screw
         cell_objs = client.get_entire_cell(
@@ -131,9 +139,9 @@ class MoveEvaluator:
         if cell_objs:
             # make sure this object can be placed on the last one on this cell
             top_obj = cell_objs[-1]
-            valid_placement = self.can_place_on_top(this_obj, top_obj)
+            valid_placement, reason = self.can_place_on_top(this_obj, top_obj)
             if valid_placement is False:
-                return False
+                return False, reason
 
         if "bridge" in this_obj["type"]:
             # make sure bridges are levled on board
@@ -145,20 +153,29 @@ class MoveEvaluator:
                 other_cell = (x, y + block_size)
 
             x, y = other_cell
+            logging.debug("other cell")
+            logging.debug(x // block_size)
+            logging.debug(y // block_size)
+
+            # make sure other cell is on board
+            allowed, reason = self.on_board(x // block_size, y // block_size)
+            if allowed is False:
+                return False, reason
+
             other_cell_objs = client.get_entire_cell(
                 x=x, y=y, block_size=block_size, board="wizard_working"
             )
             other_cell_height = len(other_cell_objs)
 
             if this_cell_height != other_cell_height:
-                return False
+                return False, "a bridge must be positioned on cells of the same height"
 
             if other_cell_objs:
                 # make sure bridge is not resting on a screw
-                allowed_placement = self.can_place_on_top(this_obj, other_cell_objs[-1])
-                if allowed_placement is False:
-                    return False
-        return True
+                valid_placement, reason = self.can_place_on_top(this_obj, other_cell_objs[-1])
+                if valid_placement is False:
+                    return False, reason
+        return True, ""
 
 
 class CoCoBot(TaskBot):
@@ -368,21 +385,22 @@ class CoCoBot(TaskBot):
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                message=(
-                                    f"{curr_usr['name']} has left the game. "
-                                    "Please wait a bit, your partner may rejoin."
+                    if self.sessions[room_id].game_over is False:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message=(
+                                        f"{curr_usr['name']} has left the game. "
+                                        "Please wait a bit, your partner may rejoin."
+                                    ),
+                                    color=STANDARD_COLOR,
                                 ),
-                                color=STANDARD_COLOR,
-                            ),
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                            "html": True,
-                        },
-                    )
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                                "html": True,
+                            },
+                        )
 
                     # start timer since user left the room
                     logging.debug(
@@ -463,7 +481,7 @@ class CoCoBot(TaskBot):
                             obj["y"] = y // block_size
                             obj["gripped"] = None
 
-                            allowed_move = self.move_evaluator.is_allowed(
+                            allowed_move, reason = self.move_evaluator.is_allowed(
                                 obj, this_client, x, y, block_size
                             )
                             if allowed_move is False:
@@ -471,7 +489,7 @@ class CoCoBot(TaskBot):
                                     "text",
                                     {
                                         "message": COLOR_MESSAGE.format(
-                                            message="This move is not allowed",
+                                            message=f"This move is not allowed: {reason}",
                                             color=WARNING_COLOR,
                                         ),
                                         "room": room_id,
@@ -552,7 +570,7 @@ class CoCoBot(TaskBot):
                                             obj["y"] = obj["y"] - old_y + new_y - translation_y
                                             obj["gripped"] = None
 
-                                            allowed_move = self.move_evaluator.is_allowed(
+                                            allowed_move, reason = self.move_evaluator.is_allowed(
                                                 obj, this_client, obj["x"], obj["y"], 1
                                             )
                                             if allowed_move is False:
@@ -560,7 +578,7 @@ class CoCoBot(TaskBot):
                                                     "text",
                                                     {
                                                         "message": COLOR_MESSAGE.format(
-                                                            message="This move is not allowed",
+                                                            message=f"This move is not allowed: {reason}",
                                                             color=WARNING_COLOR,
                                                         ),
                                                         "room": room_id,
@@ -589,7 +607,7 @@ class CoCoBot(TaskBot):
                                                     "working_board_log", current_state, room_id
                                                 )
                                             else:
-                                                # invalid positioning, stop
+                                                # invalid positioning, stop (probably not needed)
                                                 this_client.load_state(backup_state, "wizard_working")
                                                 return
 
@@ -1120,6 +1138,7 @@ class CoCoBot(TaskBot):
                 "html": True,
             },
         )
+        self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
