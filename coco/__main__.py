@@ -41,6 +41,7 @@ class ActionNode:
     if saved as a node in this linked list to allow for
     the redo and undo button
     """
+
     def __init__(self, action, obj):
         self.action = action
         self.obj = obj
@@ -103,6 +104,7 @@ class MoveEvaluator:
     """Given a json file containing the placing rules
     this class decides if a move is allowed or not
     """
+
     def __init__(self, rules):
         self.rules = rules
 
@@ -153,9 +155,6 @@ class MoveEvaluator:
                 other_cell = (x, y + block_size)
 
             x, y = other_cell
-            logging.debug("other cell")
-            logging.debug(x // block_size)
-            logging.debug(y // block_size)
 
             # make sure other cell is on board
             allowed, reason = self.on_board(x // block_size, y // block_size)
@@ -172,7 +171,9 @@ class MoveEvaluator:
 
             if other_cell_objs:
                 # make sure bridge is not resting on a screw
-                valid_placement, reason = self.can_place_on_top(this_obj, other_cell_objs[-1])
+                valid_placement, reason = self.can_place_on_top(
+                    this_obj, other_cell_objs[-1]
+                )
                 if valid_placement is False:
                     return False, reason
         return True, ""
@@ -255,8 +256,7 @@ class CoCoBot(TaskBot):
             self.send_roles(room_id)
 
     def send_typing_input(self, room_id):
-        """Send typing events when the wizard is working on the boards
-        """
+        """Send typing events when the wizard is working on the boards"""
         player, wizard = self.sessions[room_id].players
         if player["role"] != "player":
             player, wizard = wizard, player
@@ -265,10 +265,7 @@ class CoCoBot(TaskBot):
             self.sio.emit(
                 "message_command",
                 {
-                    "command": {
-                        "event": "typing",
-                        "value": value
-                    },
+                    "command": {"event": "typing", "value": value},
                     "room": room_id,
                     "receiver_id": user["id"],
                 },
@@ -284,9 +281,8 @@ class CoCoBot(TaskBot):
             timer.cancel()
 
         # start a new timer for the stop typing event
-        self.sessions[room_id].timer.typing_timer = Timer(3,
-            send_typing,
-            args=[False, room_id, wizard]
+        self.sessions[room_id].timer.typing_timer = Timer(
+            3, send_typing, args=[False, room_id, wizard]
         )
         self.sessions[room_id].timer.typing_timer.start()
 
@@ -413,8 +409,7 @@ class CoCoBot(TaskBot):
 
         @self.sio.event
         def mouse(data):
-            """capture mouse clicks on the board
-            """
+            """capture mouse clicks on the board"""
             room_id = data["room"]
             user_id = data["user"]["id"]
 
@@ -438,7 +433,7 @@ class CoCoBot(TaskBot):
                         x=data["coordinates"]["x"],
                         y=data["coordinates"]["y"],
                         block_size=data["coordinates"]["block_size"],
-                        board="wizard_working"
+                        board="wizard_working",
                     )
 
                     if selected:
@@ -449,15 +444,11 @@ class CoCoBot(TaskBot):
                             current_action = self.sessions[room_id].current_action
                             self.sessions[
                                 room_id
-                            ].current_action = current_action.add_action(
-                                action, obj
-                            )
+                            ].current_action = current_action.add_action(action, obj)
 
                             # the state changes, log it
                             current_state = this_client.get_working_state()
-                            self.log_event(
-                                "working_board_log", current_state, room_id
-                            )
+                            self.log_event("working_board_log", current_state, room_id)
                 else:
                     if data["coordinates"]["ctrl"] is False:
                         # send typing message
@@ -504,11 +495,15 @@ class CoCoBot(TaskBot):
                                 current_action = self.sessions[room_id].current_action
                                 self.sessions[
                                     room_id
-                                ].current_action = current_action.add_action(action, obj)
+                                ].current_action = current_action.add_action(
+                                    action, obj
+                                )
 
                                 # the state changes, log it
                                 current_state = this_client.get_working_state()
-                                self.log_event("working_board_log", current_state, room_id)
+                                self.log_event(
+                                    "working_board_log", current_state, room_id
+                                )
 
                             # ungrip any selected object
                             this_client.remove_selection("wizard_selection", "mouse")
@@ -517,14 +512,18 @@ class CoCoBot(TaskBot):
                         else:
                             # no object is selected, we can select this object
                             current_state = this_client.get_working_state()
-                            if any("cell" in i for i in current_state["grippers"].keys()):
+                            if any(
+                                "cell" in i for i in current_state["grippers"].keys()
+                            ):
                                 cells_to_copy = list()
                                 positions = list()
                                 clicks = list()
                                 for name, gripper in current_state["grippers"].items():
                                     if "cell" in name:
                                         cell_index = int(name.split("_")[-1])
-                                        clicks.append((cell_index, (gripper["x"], gripper["y"])))
+                                        clicks.append(
+                                            (cell_index, (gripper["x"], gripper["y"]))
+                                        )
                                         cell_objects = this_client.get_entire_cell(
                                             x=gripper["x"],
                                             y=gripper["y"],
@@ -566,11 +565,18 @@ class CoCoBot(TaskBot):
                                         if obj["id_n"] not in already_placed:
                                             already_placed.add(obj["id_n"])
                                             obj["id_n"] = id_n
-                                            obj["x"] = obj["x"] - old_x + new_x - translation_x
-                                            obj["y"] = obj["y"] - old_y + new_y - translation_y
+                                            obj["x"] = (
+                                                obj["x"] - old_x + new_x - translation_x
+                                            )
+                                            obj["y"] = (
+                                                obj["y"] - old_y + new_y - translation_y
+                                            )
                                             obj["gripped"] = None
 
-                                            allowed_move, reason = self.move_evaluator.is_allowed(
+                                            (
+                                                allowed_move,
+                                                reason,
+                                            ) = self.move_evaluator.is_allowed(
                                                 obj, this_client, obj["x"], obj["y"], 1
                                             )
                                             if allowed_move is False:
@@ -589,12 +595,16 @@ class CoCoBot(TaskBot):
                                                 this_client.remove_cell_grippers()
 
                                                 # load the state before positioning any object
-                                                this_client.load_state(backup_state, "wizard_working")
+                                                this_client.load_state(
+                                                    backup_state, "wizard_working"
+                                                )
                                                 return
 
                                             action, obj = this_client.add_object(obj)
                                             if action is not False:
-                                                current_action = self.sessions[room_id].current_action
+                                                current_action = self.sessions[
+                                                    room_id
+                                                ].current_action
                                                 self.sessions[
                                                     room_id
                                                 ].current_action = current_action.add_action(
@@ -602,13 +612,19 @@ class CoCoBot(TaskBot):
                                                 )
 
                                                 # the state changes, log it
-                                                current_state = this_client.get_working_state()
+                                                current_state = (
+                                                    this_client.get_working_state()
+                                                )
                                                 self.log_event(
-                                                    "working_board_log", current_state, room_id
+                                                    "working_board_log",
+                                                    current_state,
+                                                    room_id,
                                                 )
                                             else:
                                                 # invalid positioning, stop (probably not needed)
-                                                this_client.load_state(backup_state, "wizard_working")
+                                                this_client.load_state(
+                                                    backup_state, "wizard_working"
+                                                )
                                                 return
 
                                 this_client.remove_cell_grippers()
@@ -621,7 +637,9 @@ class CoCoBot(TaskBot):
                         current_state = this_client.get_working_state()
 
                         # obtain new name for this gripper
-                        taken = [int(i.split("_")[-1]) for i in current_state["grippers"]]
+                        taken = [
+                            int(i.split("_")[-1]) for i in current_state["grippers"]
+                        ]
                         taken.sort()
 
                         if not taken:
@@ -632,7 +650,6 @@ class CoCoBot(TaskBot):
                             new_ids = list(possible - set(taken))
                             new_ids.sort()
                             gripper_id = new_ids[0]
-
 
                         this_client.add_gripper(
                             gripper=f"cell_{gripper_id}",
@@ -706,14 +723,18 @@ class CoCoBot(TaskBot):
                     state = this_client.get_target_state()
                     cell_ids = [obj["id_n"] for obj in cell]
 
-                    x = int(data["coordinates"]["x"] // data["coordinates"]["block_size"])
-                    y = int(data["coordinates"]["y"] // data["coordinates"]["block_size"])
+                    x = int(
+                        data["coordinates"]["x"] // data["coordinates"]["block_size"]
+                    )
+                    y = int(
+                        data["coordinates"]["y"] // data["coordinates"]["block_size"]
+                    )
                     coordinates = f"{y}:{x}"
 
                     for pattern in self.patterns:
                         if pattern.detect((coordinates, cell_ids), state):
                             message += " | detected patterns:"
-                            
+
                             if pattern.cells > 1:
                                 message += f" part of a {pattern.name}"
                             else:
@@ -949,7 +970,7 @@ class CoCoBot(TaskBot):
                             for pattern in self.patterns:
                                 if pattern.detect((coordinates, cell_ids), state):
                                     message += " | detected patterns:"
-                                    
+
                                     if pattern.cells > 1:
                                         message += f" part of a {pattern.name}"
                                     else:
