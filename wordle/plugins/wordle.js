@@ -2,6 +2,7 @@ const NUMBER_OF_GUESSES = 6;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
+let submitted = false;  // whether a guess was submitted
 
 
 function initBoard() {
@@ -47,10 +48,12 @@ function shadeKeyBoard(letter, color) {
 function deleteLetter() {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let box = row.children[nextLetter - 1]
-    box.textContent = ""
-    box.classList.remove("filled-box")
-    currentGuess.pop()
-    nextLetter -= 1
+    if (box){
+        box.textContent = ""
+        box.classList.remove("filled-box")
+        currentGuess.pop()
+        nextLetter -= 1
+    }
 }
 
 
@@ -172,12 +175,13 @@ function getKeyPressed(letter) {
 
     let pressedKey = String(letter)
 
-    if (pressedKey === "DEL" && nextLetter !== 0) {
+    if (pressedKey === "DEL" && nextLetter !== 0 && !submitted) {
         deleteLetter()
         return
     }
 
     if (pressedKey === "ENTER") {
+        submitted = true;
         sendGuess()
         return
     }
@@ -208,17 +212,20 @@ $(document).ready(() => {
 
         if (typeof (data.command) === "object") {
             if (data.command.command === "wordle_init") {
-
                 guessesRemaining = NUMBER_OF_GUESSES;
                 currentGuess = [];
                 $("#keyboard-cont").show()
                 initBoard();
-                for (let i = 0; i < 5; i++) {
+                for (let i=0; i<5; i++) {
                     deleteLetter()
                 }
 
             } else if (data.command.command === "wordle_guess") {
                 checkGuess(data.command.guess, data.command.correct_word);
+                submitted = false;
+            } else if (data.command.command === "unsubmit") {
+                // happens when players submit different guesses
+                submitted = false;
             }
         }
     });

@@ -9,8 +9,13 @@ import requests  # NOQA
 import socketio
 
 
+# limit logging of every http call, comment to allow more logging
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
 class Bot(ABC):
-    sio = socketio.Client(logger=True)
+    # set logger=True for extensive logging of events
+    sio = socketio.Client(logger=False)
 
     def __init__(self, token, user, host, port):
         """Serves as a template for bots.
