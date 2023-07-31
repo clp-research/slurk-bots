@@ -15,9 +15,7 @@ class Dataloader(list):
         self.get_boards()
 
     def get_instructions_link(self, level):
-        level_mapping = requests.get(
-            f"{self.base_link}/{level}.json"
-        ).json()
+        level_mapping = requests.get(f"{self.base_link}/{level}.json").json()
 
         return dict(
             player=[f"{self.base_link}/{i}" for i in level_mapping["player"]],
@@ -26,14 +24,16 @@ class Dataloader(list):
 
     def read_boards(self):
         with self.path.open(encoding="utf-8") as infile:
-            for i, line in enumerate(infile):
-
-                instructions = self.get_instructions_link(i)
-                self.append(
-                    (json.loads(line), instructions)
-                )
+            for line in infile:
+                if line.strip() == "switch":
+                    self.append("switch")
+                else:
+                    board = json.loads(line)
+                    state_id = board["state_id"]
+                    instructions = self.get_instructions_link(state_id)
+                    self.append((board, instructions))
 
     def get_boards(self):
         """sample random boards for a room"""
         self.read_boards()
-        #random.shuffle(self)
+        # random.shuffle(self)

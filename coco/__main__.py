@@ -993,10 +993,10 @@ class CoCoBot(TaskBot):
                 else:
                     # user command
                     # set wizard
-                    if data["command"] == "role:switch":
-                        self.switch_roles(room_id)
+                    # if data["command"] == "role:switch":
+                    #     self.switch_roles(room_id)
 
-                    elif data["command"] == "episode:over":
+                    if data["command"] == "episode:over":
                         right_user = self.check_role(user_id, "player", room_id)
                         if right_user is False:
                             return
@@ -1071,10 +1071,8 @@ class CoCoBot(TaskBot):
         golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
         curr_usr, other_usr = self.sessions[room_id].players
 
-        logging.debug(self.sessions[room_id].players)
+        # switch roles
         curr_usr["role"], other_usr["role"] = other_usr["role"], curr_usr["role"]
-        logging.debug(self.sessions[room_id].players)
-
         for user in self.sessions[room_id].players:
             role = user["role"]
 
@@ -1094,7 +1092,7 @@ class CoCoBot(TaskBot):
                     "receiver_id": user["id"],
                 },
             )
-        self.load_state(room_id)
+        # self.load_state(room_id)
 
     def load_next_state(self, room_id):
         self.sio.emit(
@@ -1109,6 +1107,13 @@ class CoCoBot(TaskBot):
         )
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
+
+        if isinstance(self.sessions[room_id].states[0], str) is True:
+            if self.sessions[room_id].states[0] == "switch":
+                self.switch_roles(room_id)
+                self.sessions[room_id].states.pop(0)
+
+        logging.debug(self.sessions[room_id].states)
         self.load_state(room_id)
 
     def load_state(self, room_id, from_disconnect=False):
