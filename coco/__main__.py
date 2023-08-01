@@ -551,7 +551,9 @@ class CoCoBot(TaskBot):
 
                                 for i in range(highest_index):
                                     for cell, position in zip(cells_to_copy, positions):
-                                        current_state = this_client.get_state("wizard_working")
+                                        current_state = this_client.get_state(
+                                            "wizard_working"
+                                        )
                                         id_n = new_obj_name(current_state)
 
                                         old_x, old_y = position
@@ -613,8 +615,8 @@ class CoCoBot(TaskBot):
                                                 )
 
                                                 # the state changes, log it
-                                                current_state = (
-                                                    this_client.get_state("wizard_working")
+                                                current_state = this_client.get_state(
+                                                    "wizard_working"
                                                 )
                                                 self.log_event(
                                                     "working_board_log",
@@ -634,7 +636,9 @@ class CoCoBot(TaskBot):
                         this_client.remove_selection("wizard_selection", "mouse")
                         this_client.remove_selection("wizard_working", "mouse")
 
-                        gripper_on_board = this_client.get_gripper("cell", "wizard_working")
+                        gripper_on_board = this_client.get_gripper(
+                            "cell", "wizard_working"
+                        )
                         current_state = this_client.get_state("wizard_working")
 
                         # coordinates
@@ -662,7 +666,9 @@ class CoCoBot(TaskBot):
                                 gripper["x"] == this_x // block_size
                                 and gripper["y"] == this_y // block_size
                             ):
-                                this_client.remove_gripper(gripper["id_n"], "wizard_working")
+                                this_client.remove_gripper(
+                                    gripper["id_n"], "wizard_working"
+                                )
                                 return
 
                         this_client.add_gripper(
@@ -670,7 +676,7 @@ class CoCoBot(TaskBot):
                             x=data["coordinates"]["x"],
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"],
-                            board="wizard_working"
+                            board="wizard_working",
                         )
 
                         self.log_event(
@@ -691,7 +697,7 @@ class CoCoBot(TaskBot):
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],
                     block_size=data["coordinates"]["block_size"],
-                    board="selector"
+                    board="selector",
                 )
 
                 # remove selected objects from wizard's working board
@@ -866,7 +872,9 @@ class CoCoBot(TaskBot):
                         self.sessions[room_id].current_action = ActionNode.new_tree()
 
                         client = self.sessions[room_id].golmi_client
-                        client.load_state(self.sessions[room_id].checkpoint, "wizard_working")
+                        client.load_state(
+                            self.sessions[room_id].checkpoint, "wizard_working"
+                        )
 
                         self.sio.emit(
                             "text",
@@ -1203,11 +1211,11 @@ class CoCoBot(TaskBot):
 
         # load new target state
         client.load_state(this_state, "target")
-        
+
         # clear working states
         for to_clear in ["wizard_working", "player_working"]:
             client.clear_state(to_clear)
-        
+
         self.log_event("target_board_log", this_state, room_id)
 
         # send to frontend instructions
