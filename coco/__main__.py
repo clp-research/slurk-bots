@@ -448,7 +448,7 @@ class CoCoBot(TaskBot):
                             ].current_action = current_action.add_action(action, obj)
 
                             # the state changes, log it
-                            current_state = this_client.get_working_state()
+                            current_state = this_client.get_state("wizard_working")
                             self.log_event("working_board_log", current_state, room_id)
                 else:
                     if data["coordinates"]["ctrl"] is False:
@@ -456,8 +456,8 @@ class CoCoBot(TaskBot):
                         self.send_typing_input(room_id)
 
                         # check if the user selected an object on his selection board
-                        selected = this_client.get_wizard_selection()
-                        current_state = this_client.get_working_state()
+                        selected = this_client.get_gripped_object("selector")
+                        current_state = this_client.get_state("wizard_working")
                         if selected:
                             # wizard wants to place a new object
                             obj = list(selected.values()).pop()
@@ -501,7 +501,7 @@ class CoCoBot(TaskBot):
                                 )
 
                                 # the state changes, log it
-                                current_state = this_client.get_working_state()
+                                current_state = this_client.get_state("wizard_working")
                                 self.log_event(
                                     "working_board_log", current_state, room_id
                                 )
@@ -512,7 +512,7 @@ class CoCoBot(TaskBot):
 
                         else:
                             # no object is selected, we can select this object
-                            current_state = this_client.get_working_state()
+                            current_state = this_client.get_state("wizard_working")
                             if any(
                                 "cell" in i for i in current_state["grippers"].keys()
                             ):
@@ -547,11 +547,11 @@ class CoCoBot(TaskBot):
                                 new_y = data["coordinates"]["y"] // block_size
                                 already_placed = set()
 
-                                backup_state = this_client.get_working_state()
+                                backup_state = this_client.get_state("wizard_working")
 
                                 for i in range(highest_index):
                                     for cell, position in zip(cells_to_copy, positions):
-                                        current_state = this_client.get_working_state()
+                                        current_state = this_client.get_state("wizard_working")
                                         id_n = new_obj_name(current_state)
 
                                         old_x, old_y = position
@@ -614,7 +614,7 @@ class CoCoBot(TaskBot):
 
                                                 # the state changes, log it
                                                 current_state = (
-                                                    this_client.get_working_state()
+                                                    this_client.get_state("wizard_working")
                                                 )
                                                 self.log_event(
                                                     "working_board_log",
@@ -634,8 +634,8 @@ class CoCoBot(TaskBot):
                         this_client.remove_selection("wizard_selection", "mouse")
                         this_client.remove_selection("wizard_working", "mouse")
 
-                        gripper_on_board = this_client.get_gripper("cell")
-                        current_state = this_client.get_working_state()
+                        gripper_on_board = this_client.get_gripper("cell", "wizard_working")
+                        current_state = this_client.get_state("wizard_working")
 
                         # coordinates
                         this_x = data["coordinates"]["x"]
@@ -662,7 +662,7 @@ class CoCoBot(TaskBot):
                                 gripper["x"] == this_x // block_size
                                 and gripper["y"] == this_y // block_size
                             ):
-                                this_client.remove_gripper(gripper["id_n"])
+                                this_client.remove_gripper(gripper["id_n"], "wizard_working")
                                 return
 
                         this_client.add_gripper(
@@ -670,6 +670,7 @@ class CoCoBot(TaskBot):
                             x=data["coordinates"]["x"],
                             y=data["coordinates"]["y"],
                             block_size=data["coordinates"]["block_size"],
+                            board="wizard_working"
                         )
 
                         self.log_event(
@@ -686,10 +687,11 @@ class CoCoBot(TaskBot):
 
             if board == "wizard_selection":
                 self.send_typing_input(room_id)
-                this_client.wizard_select_object(
+                this_client.grip_object(
                     x=data["coordinates"]["x"],
                     y=data["coordinates"]["y"],
                     block_size=data["coordinates"]["block_size"],
+                    board="selector"
                 )
 
                 # remove selected objects from wizard's working board
@@ -734,7 +736,7 @@ class CoCoBot(TaskBot):
                     message += ", ".join(obj_strings)
 
                     # detect patterns
-                    state = this_client.get_target_state()
+                    state = this_client.get_state("target")
                     cell_ids = [obj["id_n"] for obj in cell]
 
                     x = int(
@@ -798,7 +800,7 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        this_client.clear_working_state()
+                        this_client.clear_state("wizard_working")
                         self.sessions[room_id].current_action = ActionNode.new_tree()
 
                     elif event == "show_progress":
@@ -807,7 +809,7 @@ class CoCoBot(TaskBot):
                             return
 
                         this_client.copy_working_state()
-                        current_state = this_client.get_working_state()
+                        current_state = this_client.get_state("wizard_working")
                         self.sessions[room_id].checkpoint = current_state
 
                     elif event == "revert_session":
@@ -819,7 +821,7 @@ class CoCoBot(TaskBot):
                         self.sessions[room_id].current_action = ActionNode.new_tree()
 
                         client = self.sessions[room_id].golmi_client
-                        client.load_working_state(self.sessions[room_id].checkpoint)
+                        client.load_state(self.sessions[room_id].checkpoint, "wizard_working")
 
                         self.sio.emit(
                             "text",
@@ -835,7 +837,7 @@ class CoCoBot(TaskBot):
                         )
 
                         # the state changes, log it
-                        current_state = this_client.get_working_state()
+                        current_state = this_client.get_state("wizard_working")
                         self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "confirm_next_episode":
@@ -892,7 +894,7 @@ class CoCoBot(TaskBot):
                                 self.sessions[room_id].current_action = current_state
 
                                 # the state changes, log it
-                                current_state = this_client.get_working_state()
+                                current_state = this_client.get_state("wizard_working")
                                 self.log_event(
                                     "working_board_log", current_state, room_id
                                 )
@@ -919,7 +921,7 @@ class CoCoBot(TaskBot):
                             if action is not False:
 
                                 # the state changes, log it
-                                current_state = this_client.get_working_state()
+                                current_state = this_client.get_state("wizard_working")
                                 self.log_event(
                                     "working_board_log", current_state, room_id
                                 )
@@ -970,7 +972,7 @@ class CoCoBot(TaskBot):
 
                             message += ", ".join(obj_strings)
 
-                            state = this_client.get_working_state()
+                            state = this_client.get_state("wizard_working")
                             cell_ids = [obj["id_n"] for obj in cell]
 
                             x = int(gripper["x"])
@@ -1152,11 +1154,15 @@ class CoCoBot(TaskBot):
 
         # load configuration and selector board
         client.load_config(CONFIG)
-        client.load_selector()
+        client.load_state(SELECTIONSTATE, "selector")
 
         # load new target state
-        client.load_target_state(this_state)
-        client.clear_working_states()
+        client.load_state(this_state, "target")
+        
+        # clear working states
+        for to_clear in ["wizard_working", "player_working"]:
+            client.clear_state(to_clear)
+        
         self.log_event("target_board_log", this_state, room_id)
 
         # send to frontend instructions

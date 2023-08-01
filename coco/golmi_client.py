@@ -7,6 +7,34 @@ import socketio
 from .config import EMPTYSTATE, SELECTIONSTATE
 
 
+class GolmiClient:
+    def __init__(self):
+        self.socket = socketio.Client()
+
+    def run(self, address, room_id, auth):
+        self.socket.connect(address, auth={"password": auth})
+        self.socket.call("join", {"room_id": room_id})
+
+    def random_init(self, random_config):
+        self.socket.emit("random_init", random_config)
+
+    def load_config(self, config):
+        self.socket.emit("load_config", config)
+
+    def update_config(self, config):
+        self.socket.emit("update_config", config)
+
+    def disconnect(self):
+        self.socket.emit("disconnect")
+        self.socket.disconnect()
+
+    def load_state(self, state):
+        self.socket.emit("load_state", state)
+
+    def emit(self, *args, **kwargs):
+        self.socket.emit(*args, **kwargs)
+
+
 @dataclass
 class Rooms:
     target: str
@@ -34,6 +62,18 @@ class QuadrupleClient:
             selector=f"{self.room_id}_selector",
         )
 
+    def get_client(self, board):
+        mapping = {
+            "target": self.target,
+            "player_working": self.player_working,
+            "wizard_working": self.wizard_working,
+            "selector": self.selector
+        }
+        return mapping[board]
+
+    def get_room_id(self, board):
+        return asdict(self.rooms)[board]
+
     def run(self, auth):
         self.target.run(self.golmi_address, self.rooms.target, auth)
         self.player_working.run(self.golmi_address, self.rooms.player_working, auth)
@@ -55,91 +95,42 @@ class QuadrupleClient:
         )
 
     def load_state(self, state, board):
-        mapping = {
-            "wizard_working": self.wizard_working,
-            "target": self.target,
-        }
-
-        room = mapping[board]
+        room = self.get_client(board)
         room.load_state(state)
 
-    def clear_working_state(self):
-        self.wizard_working.load_state(EMPTYSTATE)
+    def clear_state(self, board):
+        room = self.get_client(board)
+        room.load_state(EMPTYSTATE)
 
-    def clear_working_states(self):
-        self.wizard_working.load_state(EMPTYSTATE)
-        self.player_working.load_state(EMPTYSTATE)
+    def get_state(self, board):
+        room = self.get_room_id(board)
+        req = requests.get(
+            f"{self.golmi_address}/slurk/{room}/state"
+        )
+        if req.ok is not True:
+            print("Could not retrieve state")
+
+        return req.json()
 
     def copy_working_state(self):
-        state = self.get_working_state()
+        state = self.get_state("wizard_working")
         state["grippers"] = dict()
         self.player_working.load_state(state)
 
-    def load_selector(self):
-        self.selector.load_state(SELECTIONSTATE)
-
-    def load_target_state(self, state):
-        self.target.load_state(state)
-
-    def load_working_state(self, state):
-        self.wizard_working.load_state(state)
-
-    def get_working_state(self):
+    def grip_object(self, x, y, block_size, board):
+        room = self.get_room_id(board)
         req = requests.get(
-            f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/state"
-        )
-        if req.ok is not True:
-            print("Could not retrieve state")
-
-        return req.json()
-
-    def get_target_state(self):
-        req = requests.get(
-            f"{self.golmi_address}/slurk/{self.rooms.target}/state"
-        )
-        if req.ok is not True:
-            print("Could not retrieve state")
-
-        return req.json()
-
-    def grip_object(self, x, y, block_size):
-        req = requests.get(
-            f"{self.golmi_address}/slurk/grip/{self.rooms.wizard_working}/{x}/{y}/{block_size}"
+            f"{self.golmi_address}/slurk/grip/{room}/{x}/{y}/{block_size}"
         )
         if req.ok is not True:
             print("Could not retrieve gripped piece")
 
         return req.json()
 
-    def grip_cell(self, x, y, block_size):
+    def get_gripped_object(self, board):
+        room = self.get_room_id(board)
         req = requests.get(
-            f"{self.golmi_address}/slurk/grip_cell/{self.rooms.wizard_working}/{x}/{y}/{block_size}"
-        )
-        if req.ok is not True:
-            print("Could not retrieve gripped piece")
-
-        return req.json()
-
-    def wizard_select_object(self, x, y, block_size):
-        req = requests.get(
-            f"{self.golmi_address}/slurk/grip/{self.rooms.selector}/{x}/{y}/{block_size}"
-        )
-        if req.ok is not True:
-            print("Could not retrieve gripped piece")
-
-    def get_gripped_object(self):
-        req = requests.get(
-            f"{self.golmi_address}/slurk/{self.rooms.wizard_working}/gripped"
-        )
-        return req.json() if req.ok else None
-
-    def get_wizard_selection(self):
-        req = requests.get(f"{self.golmi_address}/slurk/{self.rooms.selector}/gripped")
-        return req.json() if req.ok else None
-
-    def get_gripper(self, gripper_id):
-        req = requests.get(
-            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}"
+            f"{self.golmi_address}/slurk/{room}/gripped"
         )
         return req.json() if req.ok else None
 
@@ -171,32 +162,35 @@ class QuadrupleClient:
 
         return "add", obj
 
-    def remove_gripper(self, gripper_id):
-        req = requests.delete(
-            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper_id}"
+    def get_gripper(self, gripper_id, board):
+        room = self.get_room_id(board)
+        req = requests.get(
+            f"{self.golmi_address}/slurk/gripper/{room}/{gripper_id}"
         )
         return req.json() if req.ok else None
 
-    def add_gripper(self, gripper, x, y, block_size):
+    def remove_gripper(self, gripper_id, board):
+        room = self.get_room_id(board)
+        req = requests.delete(
+            f"{self.golmi_address}/slurk/gripper/{room}/{gripper_id}"
+        )
+        return req.json() if req.ok else None
+
+    def add_gripper(self, gripper, x, y, block_size, board):
+        room = self.get_room_id(board)
         req = requests.post(
-            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper}",
+            f"{self.golmi_address}/slurk/gripper/{room}/{gripper}",
             json={"x": x, "y": y, "block_size": block_size}
         )
         return req.json() if req.ok else None
 
     def remove_cell_grippers(self):
-        current_state = self.get_working_state()
+        current_state = self.get_state("wizard_working")
         for gr_id in current_state["grippers"].keys():
             if "cell" in gr_id:
                 req = requests.delete(
                     f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gr_id}"
                 )
-
-    def remove_working_gripper(self, gripper):
-        req = requests.delete(
-            f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/{gripper}"
-        )
-        return req.json() if req.ok else None
 
     def delete_object(self, obj):
         """
@@ -205,7 +199,7 @@ class QuadrupleClient:
         # bridges can span over 2 blocks, make sure that no
         # other piece is placed on this bridge
         if obj["type"] in {"vbridge", "hbridge"}:
-            state = self.get_working_state()
+            state = self.get_state("wizard_working")
             this_obj = obj["id_n"]
             for tile in state["objs_grid"].values():
                 if this_obj in tile:
@@ -243,31 +237,3 @@ class QuadrupleClient:
             f"{self.golmi_address}/slurk/gripper/{self.rooms.wizard_working}/mouse"
         )
         return req.json() if req.ok else None
-
-
-class GolmiClient:
-    def __init__(self):
-        self.socket = socketio.Client()
-
-    def run(self, address, room_id, auth):
-        self.socket.connect(address, auth={"password": auth})
-        self.socket.call("join", {"room_id": room_id})
-
-    def random_init(self, random_config):
-        self.socket.emit("random_init", random_config)
-
-    def load_config(self, config):
-        self.socket.emit("load_config", config)
-
-    def update_config(self, config):
-        self.socket.emit("update_config", config)
-
-    def disconnect(self):
-        self.socket.emit("disconnect")
-        self.socket.disconnect()
-
-    def load_state(self, state):
-        self.socket.emit("load_state", state)
-
-    def emit(self, *args, **kwargs):
-        self.socket.emit(*args, **kwargs)
