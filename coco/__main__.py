@@ -640,7 +640,7 @@ class CoCoBot(TaskBot):
                         # coordinates
                         this_x = data["coordinates"]["x"]
                         this_y = data["coordinates"]["y"]
-                        block_size=data["coordinates"]["block_size"]
+                        block_size = data["coordinates"]["block_size"]
 
                         # obtain new name for this gripper
                         taken = [
@@ -658,7 +658,10 @@ class CoCoBot(TaskBot):
                             gripper_id = new_ids[0]
 
                         for gripper in current_state["grippers"].values():
-                            if gripper["x"] == this_x // block_size and gripper["y"] == this_y // block_size:
+                            if (
+                                gripper["x"] == this_x // block_size
+                                and gripper["y"] == this_y // block_size
+                            ):
                                 this_client.remove_gripper(gripper["id_n"])
                                 return
 
