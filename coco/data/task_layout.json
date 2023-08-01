@@ -27,24 +27,6 @@
               ]
             }
           ]
-        },
-        {
-          "layout-type": "div",
-          "style": "text-align: center; display: grid",
-          "id": "intro-image",
-          "layout-content": [
-            {
-              "layout-type": "div",
-              "id": "image-area",
-              "layout-content": [
-                {
-                  "layout-type": "image",
-                  "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
-                  "style": "width: 100%; height: auto; object-fit: contain;"
-                }
-              ]
-            }
-          ]
         }
       ]
     },

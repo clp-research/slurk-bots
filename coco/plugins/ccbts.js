@@ -128,7 +128,6 @@ function stop() {
 
 
 function set_wizard(description) {
-    $("#intro-image").hide();
     $("#golmi_card").show();
     $("#wizard_interface").show()
     $("#instr_title").html("Wizard");
@@ -138,7 +137,6 @@ function set_wizard(description) {
 
 
 function set_player(description) {
-    $("#intro-image").hide();
     $("#golmi_card").show();
     $("#player_interface").show()
     $("#variable_board_description").html("Target Board");
