@@ -84,7 +84,7 @@ class Session:
         self.states = Dataloader(STATES)
         self.checkpoint = EMPTYSTATE
         self.game_over = False
-        self.can_move_to_next_episode = False
+        self.can_load_next_episode = False
 
     def close(self):
         self.golmi_client.disconnect()
@@ -896,7 +896,7 @@ class CoCoBot(TaskBot):
                         self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "confirm_next_episode":
-                        if self.can_move_to_next_episode is False:
+                        if self.can_load_next_episode is False:
                             self.sio.emit(
                                 "text",
                                 {
@@ -910,7 +910,7 @@ class CoCoBot(TaskBot):
                                 },
                             )
                         else:
-                            self.can_move_to_next_episode = False
+                            self.can_load_next_episode = False
                             if data["command"]["answer"] == "no":
                                 self.sio.emit(
                                     "text",
@@ -1065,7 +1065,7 @@ class CoCoBot(TaskBot):
                             return
 
                         # user thinks players can move to next episode
-                        self.can_move_to_next_episode = True
+                        self.can_load_next_episode = True
 
                         curr_usr, other_usr = self.sessions[room_id].players
                         if curr_usr["id"] != user_id:
