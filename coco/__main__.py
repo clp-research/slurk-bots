@@ -430,6 +430,7 @@ class CoCoBot(TaskBot):
             board = data["coordinates"]["board"]
             if board == "wizard_working":
                 if data["coordinates"]["button"] == "right":
+                    # right click actions
                     selected = this_client.get_entire_cell(
                         x=data["coordinates"]["x"],
                         y=data["coordinates"]["y"],
@@ -451,6 +452,7 @@ class CoCoBot(TaskBot):
                             current_state = this_client.get_state("wizard_working")
                             self.log_event("working_board_log", current_state, room_id)
                 else:
+                    # left click actions
                     if data["coordinates"]["ctrl"] is False:
                         # send typing message
                         self.send_typing_input(room_id)
@@ -1172,7 +1174,6 @@ class CoCoBot(TaskBot):
                     "receiver_id": user["id"],
                 },
             )
-        # self.load_state(room_id)
 
     def load_next_state(self, room_id):
         self.sio.emit(
