@@ -719,65 +719,6 @@ class CoCoBot(TaskBot):
                 )
                 return
 
-            if board == "player_target":
-                cell = this_client.get_entire_cell(
-                    x=data["coordinates"]["x"],
-                    y=data["coordinates"]["y"],
-                    block_size=data["coordinates"]["block_size"],
-                    board="target",
-                )
-
-                if cell:
-                    message = "Bottom to top: "
-                    obj_strings = list()
-                    for obj in cell:
-                        name = obj["type"]
-                        if name == "vbridge":
-                            name = "vertical bridge"
-
-                        if name == "hbridge":
-                            name = "horizontal bridge"
-
-                        this_obj = f"{obj['color'][0]} {name}"
-                        obj_strings.append(this_obj)
-
-                    message += ", ".join(obj_strings)
-
-                    # detect patterns
-                    state = this_client.get_state("target")
-                    cell_ids = [obj["id_n"] for obj in cell]
-
-                    x = int(
-                        data["coordinates"]["x"] // data["coordinates"]["block_size"]
-                    )
-                    y = int(
-                        data["coordinates"]["y"] // data["coordinates"]["block_size"]
-                    )
-                    coordinates = f"{y}:{x}"
-
-                    for pattern in self.patterns:
-                        if pattern.detect((coordinates, cell_ids), state):
-                            message += " | detected patterns:"
-
-                            if pattern.cells > 1:
-                                message += f" part of a {pattern.name}"
-                            else:
-                                message += f" {pattern.name}"
-
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                message=message,
-                                color=STANDARD_COLOR,
-                            ),
-                            "room": room_id,
-                            "receiver_id": user_id,
-                            "html": True,
-                        },
-                    )
-                    return
-
         @self.sio.event
         def command(data):
             """Parse user commands."""

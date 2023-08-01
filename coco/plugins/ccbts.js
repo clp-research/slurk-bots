@@ -45,10 +45,6 @@ function start_golmi(url, password, role, golmi_rooms) {
             });
         }
 
-        // quick hack hide buttons
-        $("#work_in_progress_button").hide()
-        $("#inspect_button").hide()
-
         // right click
         grLayer.oncontextmenu = (event) => {
             socket.emit("mouse", {
@@ -120,20 +116,6 @@ function start_golmi(url, password, role, golmi_rooms) {
             grLayer_t
         );
 
-        grLayer_t.onclick = (event) => {
-            socket.emit("mouse", {
-                type: "click",
-                coordinates: {
-                    event: "click",
-                    x: event.offsetX,
-                    y: event.offsetY,
-                    block_size: targetlayerView.blockSize,
-                    board: "player_target"
-                },
-                room: self_room
-            });
-        }
-
         golmi_socket_target.connect()
         golmi_socket_target.emit("join", { "room_id": golmi_rooms.target });
     }
@@ -180,15 +162,12 @@ function confirm_selection(answer){
 
 // add listener for each button
 [
-    "delete_object",
     "clear_board",
-    "work_in_progress",
     "show_progress",
     "undo",
     "redo",
     "next_state",
-    "revert_session",
-    "inspect"
+    "revert_session"
 ].forEach(element => {
     $(`#${element}_button`).click(() => {
         socket.emit("message_command",
