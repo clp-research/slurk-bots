@@ -808,9 +808,54 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
+                        # only show update if board has changed since last checkpoint
+                        current_state = this_client.get_state("wizard_working")
+                        logging.debug(current_state)
+                        logging.debug(self.sessions[room_id].checkpoint)
+                        if current_state == self.sessions[room_id].checkpoint:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message="No changes detected since the last checkpoint, you have to make some modifications before you can send another update to your partner",
+                                        color=WARNING_COLOR,
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True,
+                                },
+                            )
+                            return
+
                         this_client.copy_working_state()
                         current_state = this_client.get_state("wizard_working")
                         self.sessions[room_id].checkpoint = current_state
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="The current working board was updated for your partner",
+                                    color=STANDARD_COLOR,
+                                ),
+                                "room": room_id,
+                                "receiver_id": curr_usr["id"],
+                                "html": True,
+                            },
+                        )
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="Your working board was updated",
+                                    color=STANDARD_COLOR,
+                                ),
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                                "html": True,
+                            },
+                        )
 
                     elif event == "revert_session":
                         right_user = self.check_role(user_id, "wizard", room_id)

@@ -1,8 +1,14 @@
 {
+  "grid_config": {
+    "height": 7.0,
+    "move_step": 1,
+    "prevent_overlap": false,
+    "width": 7.0
+  },
   "grippers": {},
   "objs": {},
+  "objs_grid": {},
   "state_id": null,
   "targets": {},
-  "targets_grid": {},
-  "objs_grid": {}
+  "targets_grid": {}
 }
