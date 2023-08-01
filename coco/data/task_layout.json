@@ -354,7 +354,7 @@
       "height": "50%",
       "display": "flex"
     },
-    ".button": {
+    ".button, .message_button": {
       "text-transform": "uppercase",
       "border-radius": "5px",
       "border": "none",
@@ -366,7 +366,12 @@
       "padding": "5px",
       "cursor": "pointer"
     },
-    ".button:hover": {
+    ".message_button": {
+      "margin-top": "3px",
+      "padding": "5px",
+      "width":"49%"
+    },
+    ".button:hover, .message_button:hover": {
       "content": "''",
       "background": "#818BAC"
     },

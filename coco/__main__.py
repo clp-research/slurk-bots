@@ -84,6 +84,7 @@ class Session:
         self.states = Dataloader(STATES)
         self.checkpoint = EMPTYSTATE
         self.game_over = False
+        self.can_move_to_next_episode = False
 
     def close(self):
         self.golmi_client.disconnect()
@@ -784,8 +785,8 @@ class CoCoBot(TaskBot):
 
             if room_id in self.sessions:
                 if isinstance(data["command"], dict):
+                    # commands from the front end
                     event = data["command"]["event"]
-                    # interface = self.sessions[room_id].robot_interface
                     this_client = self.sessions[room_id].golmi_client
 
                     # clear board
@@ -834,41 +835,37 @@ class CoCoBot(TaskBot):
                         current_state = this_client.get_working_state()
                         self.log_event("working_board_log", current_state, room_id)
 
-                    elif event == "work_in_progress":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message="... processing...",
-                                    color=STANDARD_COLOR,
-                                ),
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                                "html": True,
-                            },
-                        )
-
-                    elif event == "ok":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message="ready",
-                                    color=SUCCESS_COLOR,
-                                ),
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                                "html": True,
-                            },
-                        )
+                    elif event == "confirm_next_episode":
+                        if self.can_move_to_next_episode is False:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message="You have to wait for your partner to terminate this episode",
+                                        color=WARNING_COLOR,
+                                    ),
+                                    "room": room_id,
+                                    "receiver_id": curr_usr["id"],
+                                    "html": True,
+                                },
+                            )
+                        else:
+                            self.can_move_to_next_episode = False
+                            if data["command"]["answer"] == "no":
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "message": COLOR_MESSAGE.format(
+                                            message="Before you can move to the next episode you have to agree wether this one is over",
+                                            color=WARNING_COLOR,
+                                        ),
+                                        "room": room_id,
+                                        "html": True,
+                                    },
+                                )
+                            elif data["command"]["answer"] == "yes":
+                                # load next state
+                                self.load_next_state(room_id)
 
                     elif event == "undo":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -1001,18 +998,33 @@ class CoCoBot(TaskBot):
                             return
 
                 else:
-                    # user command
-                    # set wizard
-                    # if data["command"] == "role:switch":
-                    #     self.switch_roles(room_id)
-
+                    # commands from the user
                     if data["command"] == "episode:over":
                         right_user = self.check_role(user_id, "player", room_id)
                         if right_user is False:
                             return
 
-                        # load next state
-                        self.load_next_state(room_id)
+                        # user thinks players can move to next episode
+                        self.can_move_to_next_episode = True
+
+                        curr_usr, other_usr = self.sessions[room_id].players
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+
+                        # ask other user if the episode is really over
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": (
+                                    "Your partner thinks this episode is over, do you agree? <br>"
+                                    "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
+                                    "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
+                                ),
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                                "html": True,
+                            },
+                        )
 
                     else:
                         self.sio.emit(

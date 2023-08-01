@@ -165,6 +165,19 @@ function set_player(description) {
 };
 
 
+function confirm_selection(answer){
+    socket.emit("message_command",
+        {
+            "command": {
+                "event": "confirm_next_episode",
+                "answer": answer
+            },
+            "room": self_room
+        }
+    )
+}
+
+
 // add listener for each button
 [
     "delete_object",
