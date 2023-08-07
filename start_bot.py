@@ -244,7 +244,11 @@ def main(args):
         waiting_room_id = create_room(waiting_room_layout)
 
         # create a concierge bot for this room
-        concierge_name = f"concierge-bot-{waiting_room_id}"
+        if "concierge" in args.bot:
+            bot_name = args.bot_name or str(bot_base_path)
+            concierge_name = f"{bot_name}-{waiting_room_id}"
+        else:
+            concierge_name = f"concierge-{waiting_room_id}"
 
         concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
         concierge_permissions_dict = json.loads(
@@ -264,6 +268,8 @@ def main(args):
                 "--network",
                 "host",
                 "-d",
+                "-e",
+                f"WAITING_ROOM={waiting_room_id}",
                 "-e",
                 f"BOT_TOKEN={concierge_bot_token}",
                 "-e",

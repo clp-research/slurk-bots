@@ -108,3 +108,57 @@ $ python start_bot.py echo/ --users 1 --tokens \
 ```
 or save your credentials in a configuration file and pass this as an argument to the script:  
 `$ python start_bot.py echo/ --users 1 --tokens --credentials-from-file path/to/credentials.ini`
+
+
+## generate extra tokens  
+If you need to generate extra tokens for a bot that is already running you can use the `generate_tokens.py` file
+
+### Synopsis
+```
+usage: generate_tokens.py [-h] [--user-permissions USER_PERMISSIONS] --n-tokens N_TOKENS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--credentials-from-file CREDENTIALS_FROM_FILE]
+                          --waiting-room-id WAITING_ROOM_ID --task-id TASK_ID
+
+options:
+  -h, --help            show this help message and exit
+  --user-permissions USER_PERMISSIONS
+                        path to the file containing the user permissions (default: None)
+  --n-tokens N_TOKENS   number of tokens to generate (default: None)
+  --slurk-host SLURK_HOST
+                        api address to your slurk server (default: http://127.0.0.1:5000)
+  --slurk-api-token SLURK_API_TOKEN
+                        slurk token with api permissions (default: 00000000-0000-0000-0000-000000000000)
+  --credentials-from-file CREDENTIALS_FROM_FILE
+                        read slurk host and api token from a json file (default: None)
+  --waiting-room-id WAITING_ROOM_ID
+                        room_id of an existing waiting room. (default: None)
+  --task-id TASK_ID     task_id of an existing task (default: None)
+```
+
+
+Other options:
+* `--user-permissions PATH/TO/PERMISSIONS.JSON`: you can pass a json file containing the user's permissions. If omitted, the standard permissions will be loaded: `{"send_message": True, "send_command": True}`
+* `--n-tokens INT`: number of tokens to generate.
+* `--slurk-host https://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally.
+* `--slurk-api-token: YOUR-API-TOKEN`: a slurk token with api rights to create a new bot. The standard value is `00000000-0000-0000-0000-000000000000` so you can omit this option when developing locally.
+* `--credentials-from-file`: read slurk host and api token from a configuration file. See the Assumptions session for more information about the formatting for the credentials file.
+* `--waiting-room-id N`: you can reuse an existing waiting room for your bot instead of creating a new one. When this option is passed, the script will not start an additional concierge bot.
+* `--task-id N`: similarly to `--waiting-room-id` you can reuse a waiting room layout id, this option will, however, start a concierge bot for the newly created waiting room.
+
+
+### Examples
+Generate 10 new tokens for the task_id 15 with waiting room 12  
+`$ python generate_tokens.py --task-id 15 --waiting-room-id 12 --n-tokens 10`
+
+output: 
+```
+f88f4ef5-8f3c-4ed0-b99c-702edc5d1199
+1ba266d9-b30a-4869-9674-cb08227a5ea3
+ef28b628-6eae-495c-bc17-67c073fa1202
+1fbe5aec-2e83-46d9-b1b7-988e7b17075a
+afbdcf81-5676-42cf-bdd4-7f9cb0308f70
+506bf0e2-80a6-4b00-9f84-588459fd7634
+966dd82f-a835-47b4-a878-3b6521353154
+35fb09a7-6a84-4348-b837-11a532d7cb92
+62c8f625-64a6-4be6-b3e7-3125fcb13a32
+e20c03ca-d4e4-4efd-af1a-c97bcc610c7b
+```
