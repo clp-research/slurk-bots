@@ -23,15 +23,28 @@ class Dataloader(list):
         )
 
     def read_boards(self):
+        # group all boards by difficoulty level
+        mapping = defaultdict(list)
         with self.path.open(encoding="utf-8") as infile:
             for line in infile:
-                if line.strip() == "switch":
-                    self.append("switch")
-                else:
-                    board = json.loads(line)
-                    state_id = board["state_id"]
-                    instructions = self.get_instructions_link(state_id)
-                    self.append((board, instructions))
+                level, board = line.strip().split("\t")
+                board = json.loads(board)
+                mapping[int(level)].append(board)
+
+        # sample boards
+        added = 0
+        for level in cycle(mapping.keys()):
+            sample = random.sample(mapping[level], BOARDS_PER_LEVEL)
+            for board in sample:
+                state_id = board["state_id"]
+                instructions = self.get_instructions_link(state_id)
+                self.append((board, instructions))
+                added += 1
+
+                if added == BOARDS_PER_ROOM:
+                    return
+
+            self.append("switch")
 
     def get_boards(self):
         """sample random boards for a room"""

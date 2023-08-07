@@ -1141,7 +1141,7 @@ class CoCoBot(TaskBot):
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
         if not self.sessions[room_id].states:
-            self.sessions[room_id].states.get_boards()
+            self.close_game(room_id)
 
         # get current state
         this_state, descriptions = self.sessions[room_id].states[0]
