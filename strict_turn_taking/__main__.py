@@ -70,8 +70,8 @@ class StrictTurnTakingBot(TaskBot):
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/attribute/id/text",
                     json={
-                        "attribute": "style",
-                        "value": "pointer-events: none",
+                        "attribute": "readonly",
+                        "value": "true",
                         "receiver_id": usr["id"],
                     },
                     headers={"Authorization": f"Bearer {self.token}"},
@@ -182,8 +182,8 @@ class StrictTurnTakingBot(TaskBot):
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/attribute/id/text",
                 json={
-                    "attribute": "style",
-                    "value": "pointer-events: none",
+                    "attribute": "readonly",
+                    "value": "true",
                     "receiver_id": curr_usr["id"],
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
@@ -200,11 +200,11 @@ class StrictTurnTakingBot(TaskBot):
 
             # assign writing rights to other user
             self.set_message_privilege(other_usr["id"], True)
-            response = requests.patch(
+            response = requests.delete(
                 f"{self.uri}/rooms/{room_id}/attribute/id/text",
                 json={
-                    "attribute": "style",
-                    "value": "pointer-events: auto",
+                    "attribute": "readonly",
+                    "value": "placeholder",
                     "receiver_id": other_usr["id"],
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
