@@ -72,6 +72,17 @@ class StrictTurnTakingBot(TaskBot):
                     }
                 )
 
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={"attribute": "style", "value": "pointer-events: none", "receiver_id": usr["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={"attribute": "placeholder", "value": "Wait for a message from your partner", "receiver_id": usr["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+
     def close_room(self, room_id):
         self.room_to_read_only(room_id)
         self.timers_per_room.pop(room_id)
@@ -102,6 +113,7 @@ class StrictTurnTakingBot(TaskBot):
     def room_to_read_only(self, room_id):
         """Set room to read only."""
         # set room to read-only
+        # TODO: comments
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "readonly", "value": "True"},
@@ -166,8 +178,31 @@ class StrictTurnTakingBot(TaskBot):
             if curr_usr["id"] != data["user"]["id"]:
                 curr_usr, other_usr = other_usr, curr_usr
 
+            # revoke writing rights to current user
             self.set_message_privilege(curr_usr["id"], False)
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={"attribute": "style", "value": "pointer-events: none", "receiver_id": curr_usr["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={"attribute": "placeholder", "value": "Wait for a message from your partner", "receiver_id": curr_usr["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            
+            # assign writing rights to other user
             self.set_message_privilege(other_usr["id"], True)
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={"attribute": "style", "value": "pointer-events: auto", "receiver_id": other_usr["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={"attribute": "placeholder", "value": "Enter your message here!", "receiver_id": other_usr["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
 
 
 if __name__ == "__main__":
