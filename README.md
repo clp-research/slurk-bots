@@ -114,7 +114,7 @@ or save your credentials in a configuration file and pass this as an argument to
 If you need to generate extra tokens for a bot that is already running you can use the `generate_tokens.py` file.
 
 ### Requirements
-This script requires the [`randomname`](https://github.com/beasteers/randomname) package
+This script requires the [`randomname`](https://github.com/beasteers/randomname) package.
 
 ### Synopsis
 ```
