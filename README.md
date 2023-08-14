@@ -75,7 +75,7 @@ OTHER_VARIABLE = World
 #### Credentials file
 Instead of passing the address of your slurk server and an API-Token to the script as single arguments, you can instead use the `--credentials-from-file` option to pass a configuration file containing this information. Your file must have the following formatting:
 ```
-[SLURK CREDENTIALS]
+[SLURK]
 host = https://slurk.your-website.com
 token = 00000000-0000-0000-0000-000000000000
 ```
@@ -115,23 +115,24 @@ If you need to generate extra tokens for a bot that is already running you can u
 
 ### Synopsis
 ```
-usage: generate_tokens.py [-h] [--user-permissions USER_PERMISSIONS] --n-tokens N_TOKENS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--credentials-from-file CREDENTIALS_FROM_FILE]
-                          --waiting-room-id WAITING_ROOM_ID --task-id TASK_ID
+usage: generate_tokens.py [-h] [--user-permissions USER_PERMISSIONS] --n-tokens N_TOKENS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--waiting-room-id WAITING_ROOM_ID] [--task-id TASK_ID]
+                          [--complete-links] [--config-file CONFIG_FILE]
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   --user-permissions USER_PERMISSIONS
                         path to the file containing the user permissions (default: None)
   --n-tokens N_TOKENS   number of tokens to generate (default: None)
   --slurk-host SLURK_HOST
-                        api address to your slurk server (default: http://127.0.0.1:5000)
+                        address to your slurk server (default: http://127.0.0.1:5000)
   --slurk-api-token SLURK_API_TOKEN
                         slurk token with api permissions (default: 00000000-0000-0000-0000-000000000000)
-  --credentials-from-file CREDENTIALS_FROM_FILE
-                        read slurk host and api token from a json file (default: None)
   --waiting-room-id WAITING_ROOM_ID
                         room_id of an existing waiting room. (default: None)
   --task-id TASK_ID     task_id of an existing task (default: None)
+  --complete-links      The script will print out complete links with random names instead of tokens alone (default: False)
+  --config-file CONFIG_FILE
+                        read slurk and bot parameters from a configuration file (default: None)
 ```
 
 
@@ -140,10 +141,21 @@ Other options:
 * `--n-tokens INT`: number of tokens to generate.
 * `--slurk-host https://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally.
 * `--slurk-api-token: YOUR-API-TOKEN`: a slurk token with api rights to create a new bot. The standard value is `00000000-0000-0000-0000-000000000000` so you can omit this option when developing locally.
-* `--credentials-from-file`: read slurk host and api token from a configuration file. See the Assumptions session for more information about the formatting for the credentials file.
 * `--waiting-room-id N`: you can reuse an existing waiting room for your bot instead of creating a new one. When this option is passed, the script will not start an additional concierge bot.
 * `--task-id N`: similarly to `--waiting-room-id` you can reuse a waiting room layout id, this option will, however, start a concierge bot for the newly created waiting room.
+* `--complete-links`: instead of printing only tokens, the script will generate random names and print out a complete slurk link for anonymous login.
+* `--config-file`: slurk credentials (host and api) and bot information (task id and waiting room id) are read from a configuration file. An example of the configuration file can be seen in the section below.
 
+### Configuration file
+```
+[SLURK]
+host = https://slurk.your-website.com
+token = 00000000-0000-0000-0000-000000000000
+
+[BOT]
+task_id = 1
+waiting_room_id = 1
+```
 
 ### Examples
 Generate 10 new tokens for the task_id 15 with waiting room 12  

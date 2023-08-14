@@ -396,7 +396,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--slurk-host",
         default="http://127.0.0.1:5000",
-        help="api address to your slurk server",
+        help="address to your slurk server",
     )
     parser.add_argument(
         "--slurk-api-token",
@@ -452,13 +452,13 @@ if __name__ == "__main__":
         config.read(Path(args.credentials_from_file))
         config.sections()
 
-        if any(config["SLURK CREDENTIALS"].get(i) is None for i in ["host", "token"]):
+        if any(config["SLURK"].get(i) is None for i in ["host", "token"]):
             raise ValueError("Invalid formatting for credentials file")
 
-        sulrk_address = config.get("SLURK CREDENTIALS", "host")
+        sulrk_address = config.get("SLURK", "host")
         SLURK_HOST = sulrk_address
         SLURK_API = f"{sulrk_address}/slurk/api"
-        API_TOKEN = config.get("SLURK CREDENTIALS", "token")
+        API_TOKEN = config.get("SLURK", "token")
 
     # start bot
     main(args)
