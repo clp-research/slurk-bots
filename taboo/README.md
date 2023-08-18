@@ -27,7 +27,7 @@ If you have everything already set up, you can run the bot using the following c
 ```bash
 docker run \
     --net="host" \
-    -e TABOO_DATA=taboo_words.json \
+    -e TABOO_DATA=data/taboo_words.json \
     -e BOT_TOKEN=$TABOO_BOT_TOKEN \
     -e BOT_ID=$TABOO_BOT \
     -e WAITING_ROOM=$WAITING_ROOM \
