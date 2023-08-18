@@ -22,6 +22,7 @@ class TabooBot:
     - Solution has been said: end the game, record the winner, start a new game.
     - When new users enter while the game is in progress: make them guessers.
     """
+
     sio = socketio.Client(logger=True)
     task_id = None
     taboo_data = None
@@ -44,17 +45,8 @@ class TabooBot:
         self.word_to_guess = dict()
         # read the game data
         self.taboo_data = {
-            "Applesauce": [
-                "fruit",
-                "tree",
-                "glass",
-                "preserving"
-            ],
-            "Beef patty": [
-                "pork",
-                "ground",
-                "steak"
-            ]
+            "Applesauce": ["fruit", "tree", "glass", "preserving"],
+            "Beef patty": ["pork", "ground", "steak"],
         }
 
     def run(self):
@@ -84,17 +76,10 @@ class TabooBot:
             LOG.debug("Received a user_message.")
             LOG.debug(data)
 
-
             user = data["user"]
             message = data["message"]
             room_id = data["room"]
-            self.sio.emit(
-                "text",
-                {"message": message,
-                 "room": room_id
-                }
-            )
-
+            self.sio.emit("text", {"message": message, "room": room_id})
 
         @self.sio.event
         def status(data):
@@ -104,7 +89,7 @@ class TabooBot:
             user = data["user"]
 
             # don't do this for the bot itself
-            if user['id'] == self.user:
+            if user["id"] == self.user:
                 return
 
             # someone joined a task room
@@ -112,9 +97,10 @@ class TabooBot:
                 # inform everyone about the join event
                 self.sio.emit(
                     "text",
-                    {"message": f"{user['name']} has joined the game. ",
-                     "room": room_id
-                    }
+                    {
+                        "message": f"{user['name']} has joined the game. ",
+                        "room": room_id,
+                    },
                 )
 
                 # keep track of users per room
@@ -129,55 +115,59 @@ class TabooBot:
                 if len(self.players_per_room[room_id]) < 2:
                     self.sio.emit(
                         "text",
-                        {"message": "Let's wait for more players.",
-                         "room": room_id
-                        }
+                        {"message": "Let's wait for more players.", "room": room_id},
                     )
                 else:
                     # TODO: check whether a game is already in progress
                     # start a game
                     # 1) Choose a word
-                    self.word_to_guess[room_id] = random.choice(list(self.taboo_data.keys()))
+                    self.word_to_guess[room_id] = random.choice(
+                        list(self.taboo_data.keys())
+                    )
                     # 2) Choose an explainer
                     self.explainer_per_room[room_id] = random.choice(
-                        self.players_per_room[room_id])['id']
+                        self.players_per_room[room_id]
+                    )["id"]
                     # 3) Tell the explainer about the word
                     self.sio.emit(
                         "text",
-                        {"message": f"Your task is to explain the word {self.word_to_guess[room_id]}. You cannot use the following words: {self.taboo_data[self.word_to_guess[room_id]]}",
-                         "room": room_id,
-                         "receiver_id": self.explainer_per_room[room_id]
-                        }
+                        {
+                            "message": f"Your task is to explain the word {self.word_to_guess[room_id]}. You cannot use the following words: {self.taboo_data[self.word_to_guess[room_id]]}",
+                            "room": room_id,
+                            "receiver_id": self.explainer_per_room[room_id],
+                        },
                     )
                     # 4) Tell everyone else that the game has started
                     for player in self.players_per_room[room_id]:
-                        if player['id'] != self.explainer_per_room[room_id]:
+                        if player["id"] != self.explainer_per_room[room_id]:
                             self.sio.emit(
                                 "text",
-                                {"message": "The game has started. Try to guess the word!",
-                                 "room": room_id,
-                                 "receiver_id": player['id']
-                                }
+                                {
+                                    "message": "The game has started. Try to guess the word!",
+                                    "room": room_id,
+                                    "receiver_id": player["id"],
+                                },
                             )
 
             elif event == "leave":
                 self.sio.emit(
                     "text",
-                    {"message": f"{user['name']} has left the game.",
-                     "room": room_id
-                    }
+                    {"message": f"{user['name']} has left the game.", "room": room_id},
                 )
 
                 self.players_per_room[room_id] = {
-                    player for player in self.players_per_room[room_id].keys() if player['id'] != user['id']
+                    player
+                    for player in self.players_per_room[room_id].keys()
+                    if player["id"] != user["id"]
                 }
 
                 if len(self.players_per_room[room_id]) < 2:
                     self.sio.emit(
                         "text",
-                        {"message": "You are alone in the room, let's wait for some more players.",
-                         "room": room_id
-                        }
+                        {
+                            "message": "You are alone in the room, let's wait for some more players.",
+                            "room": room_id,
+                        },
                     )
 
         @self.sio.event
@@ -201,17 +191,21 @@ class TabooBot:
 
                 # check whether the user used a forbidden word
                 for taboo_word in self.taboo_data[self.word_to_guess[room_id]]:
-                    if taboo_word in data['message']:
+                    if taboo_word in data["message"]:
                         self.sio.emit(
                             "text",
-                            {"message": f"You used the taboo word {taboo_word}!",
-                             "room": room_id}
+                            {
+                                "message": f"You used the taboo word {taboo_word}!",
+                                "room": room_id,
+                            },
                         )
-            elif self.word_to_guess[room_id] in data['message']:
+            elif self.word_to_guess[room_id] in data["message"]:
                 self.sio.emit(
                     "text",
-                    {"message": f"{self.word_to_guess[room_id]} was correct!",
-                     "room": room_id}
+                    {
+                        "message": f"{self.word_to_guess[room_id]} was correct!",
+                        "room": room_id,
+                    },
                 )
 
 
@@ -236,9 +230,7 @@ if __name__ == "__main__":
     taboo_data = {"default": os.environ.get("TABOO_DATA")}
 
     # register commandline arguments
-    parser.add_argument(
-        "-t", "--token", help="token for logging in as bot", **token
-    )
+    parser.add_argument("-t", "--token", help="token for logging in as bot", **token)
     parser.add_argument("-u", "--user", help="user id for the bot", **user)
     parser.add_argument(
         "-c", "--host", help="full URL (protocol, hostname) of chat server", **host
