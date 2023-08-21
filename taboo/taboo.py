@@ -43,7 +43,7 @@ class TabooBot:
         self.players_per_room = dict()
         self.explainer_per_room = dict()
         self.word_to_guess = dict()
-        # read the game data
+        # TODO: read the game data from file
         self.taboo_data = {
             "Applesauce": ["fruit", "tree", "glass", "preserving"],
             "Beef patty": ["pork", "ground", "steak"],
@@ -217,12 +217,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run Taboo Bot.")
 
     # collect environment variables as defaults
-    if "SLURK_TOKEN" in os.environ:
-        token = {"default": os.environ["SLURK_TOKEN"]}
+    if "BOT_TOKEN" in os.environ:
+        token = {"default": os.environ["BOT_TOKEN"]}
     else:
         token = {"required": True}
-    if "SLURK_USER" in os.environ:
-        user = {"default": os.environ["SLURK_USER"]}
+    if "BOT_ID" in os.environ:
+        user = {"default": os.environ["BOT_ID"]}
     else:
         user = {"required": True}
     host = {"default": os.environ.get("SLURK_HOST", "http://localhost")}

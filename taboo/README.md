@@ -18,25 +18,14 @@ This bot manages a game of taboo in which participants have to guess a word that
     ```
 4. Make sure that the [slurk](https://github.com/clp-research/slurk) and slurk-bots repositories live next to each other on the same level.
 5. Navigate to the base directory of the slurk-bots repository and run the script to launch this bot, your command should look like this:
- ```$ python start_bot.py taboo/ --users 2 --dev --waiting-room-layout-dict taboo/data/waiting_room_layout.json --extra-args taboo/args.ini```.
+ ```$ python start_bot.py taboo/ --users 2 --dev --extra-args taboo/args.ini```.
  This script will build and run the docker images, it will initialise all the env variables with the right permissions and it will set everything up for testing locally on your computer. The bot will appear in your containers list as ```slurk/taboo```.
 
 ### Running and playing the bot
 
-If you have everything already set up, you can run the bot using the following command (take notice of the right env variable names):    
-```bash
-docker run \
-    --net="host" \
-    -e TABOO_DATA=data/taboo_words.json \
-    -e BOT_TOKEN=$TABOO_BOT_TOKEN \
-    -e BOT_ID=$TABOO_BOT \
-    -e WAITING_ROOM=$WAITING_ROOM \
-    -e TASK_ID=$TASK_ID \
-    -e SLURK_PORT=5000 \
-    -d slurk/taboo
-```
-
 Game data – a list of words to guess – is supplied via a json file that has the following pattern:
+
+TODO: Currently, the list of words is not yet read from file.
 
 ```json
 {
