@@ -221,7 +221,7 @@ class StrictTurnTakingBot(TaskBot):
 
 
 if __name__ == "__main__":
-    # set up loggingging configuration
+    # set up logging configuration
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
