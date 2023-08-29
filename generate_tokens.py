@@ -134,9 +134,9 @@ if __name__ == "__main__":
         if any(config["BOT"].get(i) is None for i in ["task_id", "waiting_room_id"]):
             raise ValueError("Config file is missing slurk entries")
 
-        sulrk_address = config.get("SLURK", "host")
-        SLURK_HOST = sulrk_address
-        SLURK_API = f"{sulrk_address}/slurk/api"
+        slurk_address = config.get("SLURK", "host")
+        SLURK_HOST = slurk_address
+        SLURK_API = f"{slurk_address}/slurk/api"
         API_TOKEN = config.get("SLURK", "token")
 
         TASK_ID = int(config.get("BOT", "task_id"))

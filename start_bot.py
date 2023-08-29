@@ -455,9 +455,9 @@ if __name__ == "__main__":
         if any(config["SLURK"].get(i) is None for i in ["host", "token"]):
             raise ValueError("Invalid formatting for credentials file")
 
-        sulrk_address = config.get("SLURK", "host")
-        SLURK_HOST = sulrk_address
-        SLURK_API = f"{sulrk_address}/slurk/api"
+        slurk_address = config.get("SLURK", "host")
+        SLURK_HOST = slurk_address
+        SLURK_API = f"{slurk_address}/slurk/api"
         API_TOKEN = config.get("SLURK", "token")
 
     # start bot
