@@ -10,7 +10,7 @@ To start any bot you can use the `start_bot.py` script. The script can be used t
 
 ### Synopsis
 ```
-usage: start_bot.py [-h] [--extra-args EXTRA_ARGS] [--bot-name BOT_NAME] --users USERS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--credentials-from-file CREDENTIALS_FROM_FILE] [--waiting-room-id WAITING_ROOM_ID] [--waiting-room-layout-id WAITING_ROOM_LAYOUT_ID] [--waiting-room-layout-dict WAITING_ROOM_LAYOUT_DICT] [--tokens] [--dev] [--copy-plugins]
+usage: start_bot.py [-h] [--extra-args EXTRA_ARGS] [--bot-name BOT_NAME] --users USERS [--slurk-host SLURK_HOST] [--slurk-api-token SLURK_API_TOKEN] [--config_file CONFIG_FILE] [--waiting-room-id WAITING_ROOM_ID] [--waiting-room-layout-id WAITING_ROOM_LAYOUT_ID] [--waiting-room-layout-dict WAITING_ROOM_LAYOUT_DICT] [--tokens] [--dev] [--copy-plugins]
                     bot
 
 positional arguments:
@@ -26,7 +26,7 @@ options:
                         api address to your slurk server (default: http://127.0.0.1:5000)
   --slurk-api-token SLURK_API_TOKEN
                         slurk token with api permissions (default: 00000000-0000-0000-0000-000000000000)
-  --credentials-from-file CREDENTIALS_FROM_FILE
+  --config_file CREDENTIALS_FROM_FILE
                         read slurk host and api token from a json file (default: None)
   --waiting-room-id WAITING_ROOM_ID
                         room_id of an existing waiting room. With this option will not create a new waiting room or a concierge bot (default: None)
@@ -48,7 +48,7 @@ Other options:
 * `--slurk-host https://slurk.your-website.com`: the address of your slurk server. Since the standard value is localhost:5000, you can omit this when developing locally.
 * `--users N`: the number of users required for this task.
 * `--slurk-api-token: YOUR-API-TOKEN`: a slurk token with api rights to create a new bot. The standard value is `00000000-0000-0000-0000-000000000000` so you can omit this option when developing locally.
-* `--credentials-from-file`: read slurk host and api token from a configuration file. See the Assumptions session for more information about the formatting for the credentials file.
+* `--config_file`: read slurk host and api token from a configuration file. See the Assumptions session for more information about the formatting for the configuration file.
 * `--waiting-room-id N`: you can reuse an existing waiting room for your bot instead of creating a new one. When this option is passed, the script will not start an additional concierge bot.
 * `--waiting-room-layout-id N`: similarly to `--waiting-room-id` you can reuse a waiting room layout id, this option will, however, start a concierge bot for the newly created waiting room.
 * `--waiting-room-layout-dict`: with this argument you can specify which layout file you want to load for your waiting room. The default value will use the layout in the `concierge` directory.
@@ -73,7 +73,7 @@ OTHER_VARIABLE = World
 ```
 
 #### Credentials file
-Instead of passing the address of your slurk server and an API-Token to the script as single arguments, you can instead use the `--credentials-from-file` option to pass a configuration file containing this information. Your file must have the following formatting:
+Instead of passing the address of your slurk server and an API-Token to the script as single arguments, you can instead use the `--config-file` option to pass a configuration file containing this information. Your file must have the following formatting:
 ```
 [SLURK]
 host = https://slurk.your-website.com
@@ -107,7 +107,7 @@ $ python start_bot.py echo/ --users 1 --tokens \
     --slurk-api-token 01234567-8901-2345-6789-012345678901
 ```
 or save your credentials in a configuration file and pass this as an argument to the script:  
-`$ python start_bot.py echo/ --users 1 --tokens --credentials-from-file path/to/credentials.ini`
+`$ python start_bot.py echo/ --users 1 --tokens --config_file path/to/config.ini`
 
 
 ## generate extra tokens  

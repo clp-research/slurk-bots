@@ -120,9 +120,9 @@ if __name__ == "__main__":
     WAITING_ROOM_ID = args.waiting_room_id
 
     if args.config_file:
-        credentials_file = Path(args.config_file)
-        if not credentials_file.exists():
-            raise FileNotFoundError("Missing file with slurk credentials")
+        config_file = Path(args.config_file)
+        if not config_file.exists():
+            raise FileNotFoundError("Missing configuration file with slurk credentials")
 
         config = configparser.ConfigParser()
         config.read(Path(args.config_file))

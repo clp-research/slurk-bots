@@ -20,7 +20,7 @@ Examples:
 
     or save your credentials in a configuration file and pass this as an argument to the script:
     $ python start_bot.py echo/ --users 1 --tokens \
-        --credentials-from-file path/to/credentials.ini
+        --config-file path/to/config.ini
 """
 
 import argparse
@@ -404,7 +404,7 @@ if __name__ == "__main__":
         default="00000000-0000-0000-0000-000000000000",
     )
     parser.add_argument(
-        "--credentials-from-file", help="read slurk host and api token from a json file"
+        "--config-file", help="read slurk host and api token from a configuration file"
     )
     parser.add_argument(
         "--waiting-room-id",
@@ -443,17 +443,17 @@ if __name__ == "__main__":
     SLURK_API = f"{args.slurk_host}/slurk/api"
     API_TOKEN = args.slurk_api_token
 
-    if args.credentials_from_file:
-        credentials_file = Path(args.credentials_from_file)
-        if not credentials_file.exists():
+    if args.config_file:
+        config_file = Path(args.config_file)
+        if not config_file.exists():
             raise FileNotFoundError("Missing file with slurk credentials")
 
         config = configparser.ConfigParser()
-        config.read(Path(args.credentials_from_file))
+        config.read(Path(args.config_file))
         config.sections()
 
         if any(config["SLURK"].get(i) is None for i in ["host", "token"]):
-            raise ValueError("Invalid formatting for credentials file")
+            raise ValueError("Invalid formatting for configuration file")
 
         slurk_address = config.get("SLURK", "host")
         SLURK_HOST = slurk_address
