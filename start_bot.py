@@ -1,4 +1,9 @@
 """
+TODO:
+- reorder the steps below so that any images and containers are only
+  built/started AFTER all the variables have been checked.
+- use more functions to declutter main()
+
 This script can be used to start any bot either locally for development or to connect to a remote slurk server (production).
 All the available options and arguments are explained in the README file of this repository.
 
@@ -175,60 +180,14 @@ def create_task(name, num_users, layout_id):
     return response.json()["id"]
 
 
-def main(args):
-    bot_base_path = Path(args.bot)
-
-    if args.dev is True:
-        if any([args.waiting_room_id, args.waiting_room_layout_id]):
-            raise ValueError(
-                "You provided a waiting room id or layout, you cannot also start a new slurk server"
-            )
-
-        if not Path("../slurk").exists():
-            raise FileNotFoundError(
-                "../slurk is missing, donwload it first: https://github.com/clp-research/slurk/"
-                " and make sure that slurk and slurk-bots are in the same directory"
-            )
-
-        if args.copy_plugins is True:
-            # plugins must be all placed in the plugin directory
-            target_dir = Path("../slurk/slurk/views/static/plugins/")
-            plugins_path = Path(f"{bot_base_path}/plugins")
-
-            if not plugins_path.exists():
-                raise FileNotFoundError("Your bot is missing a 'plugins' directory")
-
-            for filename in plugins_path.iterdir():
-                shutil.copy(filename, target_dir)
-
-        # build image
-        subprocess.run(
-            ["docker", "build", "--tag", "slurk/server", "-f", "Dockerfile", "."],
-            cwd=Path("../slurk"),
-        )
-
-        # run slurk server
-        subprocess.run(
-            [
-                "docker",
-                "run",
-                "-d",
-                "-p",
-                "5000:80",
-                "-e",
-                f"SLURK_SECRET_KEY={random.randint(0, 100000)}",
-                "-e",
-                "SLURK_DISABLE_ETAG=False",
-                "-e",
-                "FLASK_ENV=development",
-                "slurk/server:latest",
-            ]
-        )
-        sleep(1)
-
+def create_waiting_room(args):
     # create a waiting room if not provided
     if args.waiting_room_id is None:
         # create a waiting_room_layout (or read from args)
+        if args.waiting_room_layout_dict is None:
+            print("Skip waiting room creation")
+            return None
+
         waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict)
         if not Path(waiting_room_layout_dict_path).exists():
             raise FileNotFoundError("Missing layout file for the waiting room")
@@ -284,9 +243,64 @@ def main(args):
             print("---------------------------")
             print(f"waiting room id:\t{waiting_room_id}")
             print("---------------------------")
-            return
     else:
         waiting_room_id = args.waiting_room_id
+
+    return waiting_room_id
+
+
+def main(args):
+    bot_base_path = Path(args.bot)
+
+    if args.dev is True:
+        if any([args.waiting_room_id, args.waiting_room_layout_id]):
+            raise ValueError(
+                "You provided a waiting room id or layout, you cannot also start a new slurk server"
+            )
+
+        if not Path("../slurk").exists():
+            raise FileNotFoundError(
+                "../slurk is missing, download it first: https://github.com/clp-research/slurk/"
+                " and make sure that slurk and slurk-bots are in the same directory"
+            )
+
+        if args.copy_plugins is True:
+            # plugins must be all placed in the plugin directory
+            target_dir = Path("../slurk/slurk/views/static/plugins/")
+            plugins_path = Path(f"{bot_base_path}/plugins")
+
+            if not plugins_path.exists():
+                raise FileNotFoundError("Your bot is missing a 'plugins' directory")
+
+            for filename in plugins_path.iterdir():
+                shutil.copy(filename, target_dir)
+
+        # build image
+        subprocess.run(
+            ["docker", "build", "--tag", "slurk/server", "-f", "Dockerfile", "."],
+            cwd=Path("../slurk"),
+        )
+
+        # run slurk server
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "-d",
+                "-p",
+                "5000:80",
+                "-e",
+                f"SLURK_SECRET_KEY={random.randint(0, 100000)}",
+                "-e",
+                "SLURK_DISABLE_ETAG=False",
+                "-e",
+                "FLASK_ENV=development",
+                "slurk/server:latest",
+            ]
+        )
+        sleep(1)
+
+    waiting_room_id = create_waiting_room(args)
 
     # create task room
     # look for the task room layout (allow some options)
@@ -295,6 +309,12 @@ def main(args):
         task_room_layout_path.read_text(encoding="utf-8")
     )
     task_room_layout_id = create_room_layout(task_room_layout_dict)
+
+    # if there is no waiting room, create a task room instead
+    if not waiting_room_id:
+        room_id = create_room(task_room_layout_id)
+    else:
+        room_id = waiting_room_id
 
     bot_name = args.bot_name or str(bot_base_path)
     task_id = create_task(
@@ -305,7 +325,7 @@ def main(args):
         task_bot_permissions_path.read_text(encoding="utf-8")
     )
     task_bot_permissions_id = create_permissions(task_bot_permissions_dict)
-    task_bot_token = create_token(task_bot_permissions_id, waiting_room_id)
+    task_bot_token = create_token(task_bot_permissions_id, room_id)
     task_bot_user_id = create_user(bot_name, task_bot_token)
 
     build_docker_image(args.bot, bot_name)
@@ -353,8 +373,8 @@ def main(args):
     subprocess.run(docker_args)
 
     print("---------------------------")
-    print(f"waiting room id:\t{waiting_room_id}")
-    print(f"task id:\t\t{task_id}")
+    print(f"room id:\t{room_id}")
+    print(f"task id:\t{task_id}")
     print("---------------------------")
 
     if any([args.tokens, args.dev]) is True:
@@ -365,7 +385,7 @@ def main(args):
 
         for user in range(args.users):
             user_permissions_id = create_permissions(user_permissions_dict)
-            user_token = create_token(user_permissions_id, waiting_room_id, task_id)
+            user_token = create_token(user_permissions_id, room_id, task_id)
             print(
                 f"Token: {user_token} | Link: {SLURK_HOST}/login?name=user_{user}&token={user_token}"
             )
@@ -418,7 +438,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--waiting-room-layout-dict",
-        default="concierge/waiting_room_layout.json",
+        # FIXME(jg): The code above checks whether this variable has a value
+        #  when waiting-room-layout-id is None. That only makes sense if it
+        #  can actually be None. So I removed the default here.
         help="path to a json file containing a layout for a waiting room",
     )
     parser.add_argument(
