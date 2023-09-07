@@ -15,7 +15,7 @@ class Session:
     def __init__(self):
         self.players = list()
         self.explainer = None
-        self.word = None
+        self.word_to_guess = None
 
     def close(self):
         pass
