@@ -45,6 +45,7 @@ class TabooBot(TaskBot):
     - Solution has been said: end the game, record the winner, start a new game.
     - When new users enter while the game is in progress: make them guessers.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
@@ -102,9 +103,7 @@ class TabooBot(TaskBot):
                     },
                 )
 
-                this_session.players.append(
-                    {**user, "status": "joined", "wins": 0}
-                )
+                this_session.players.append({**user, "status": "joined", "wins": 0})
 
                 if len(this_session.players) < 2:
                     self.sio.emit(
@@ -218,7 +217,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--taboo_data",
         help="json file containing words",
-        default=os.environ.get("TABOO_DATA")
+        default=os.environ.get("TABOO_DATA"),
     )
     args = parser.parse_args()
 
