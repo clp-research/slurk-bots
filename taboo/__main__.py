@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 import os
 
@@ -24,7 +25,7 @@ class Session:
         self.explainer = random.choice(self.players)["id"]
 
 
-class SessionManager(dict):
+class SessionManager(defaultdict):
     def create_session(self, room_id):
         self[room_id] = Session()
 
@@ -49,7 +50,7 @@ class TabooBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
-        self.sessions = SessionManager()
+        self.sessions = SessionManager(Session)
 
         # TODO: read the game data from file
         self.taboo_data = {
@@ -82,10 +83,7 @@ class TabooBot(TaskBot):
             event = data["type"]
             user = data["user"]
 
-            # create this room if not already present
-            if room_id not in self.sessions:
-                self.sessions.create_session(room_id)
-
+            # automatically creates a new session if not present
             this_session = self.sessions[room_id]
 
             # don't do this for the bot itself
