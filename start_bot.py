@@ -1,4 +1,9 @@
 """
+TODO:
+- reorder the steps below so that any images and containers are only
+  built/started AFTER all the variables have been checked.
+- use more functions to declutter main()
+
 This script can be used to start any bot either locally for development or to connect to a remote slurk server (production).
 All the available options and arguments are explained in the README file of this repository.
 
@@ -20,7 +25,7 @@ Examples:
 
     or save your credentials in a configuration file and pass this as an argument to the script:
     $ python start_bot.py echo/ --users 1 --tokens \
-        --credentials-from-file path/to/credentials.ini
+        --config-file path/to/config.ini
 """
 
 import argparse
@@ -175,6 +180,75 @@ def create_task(name, num_users, layout_id):
     return response.json()["id"]
 
 
+def create_waiting_room(args):
+    # create a waiting room if not provided
+    if args.waiting_room_id is None:
+        # create a waiting_room_layout (or read from args)
+        if args.waiting_room_layout_dict is None:
+            print("Skip waiting room creation")
+            return None
+
+        waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict)
+        if not Path(waiting_room_layout_dict_path).exists():
+            raise FileNotFoundError("Missing layout file for the waiting room")
+
+        waiting_room_layout_dict = json.loads(
+            Path(waiting_room_layout_dict_path).read_text(encoding="utf-8")
+        )
+        waiting_room_layout = args.waiting_room_layout_id or create_room_layout(
+            waiting_room_layout_dict
+        )
+
+        # create a new waiting room
+        waiting_room_id = create_room(waiting_room_layout)
+
+        # create a concierge bot for this room
+        if "concierge" in args.bot:
+            bot_name = args.bot_name or str(bot_base_path)
+            concierge_name = f"{bot_name}-{waiting_room_id}"
+        else:
+            concierge_name = f"concierge-{waiting_room_id}"
+
+        concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
+        concierge_permissions_dict = json.loads(
+            concierge_bot_permissions_file.read_text(encoding="utf-8")
+        )
+        concierge_permissions = create_permissions(concierge_permissions_dict)
+        concierge_bot_token = create_token(concierge_permissions, waiting_room_id)
+        concierge_bot_user_id = create_user(concierge_name, concierge_bot_token)
+
+        build_docker_image("concierge", concierge_name)
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "--restart",
+                "unless-stopped",
+                "--network",
+                "host",
+                "-d",
+                "-e",
+                f"WAITING_ROOM={waiting_room_id}",
+                "-e",
+                f"BOT_TOKEN={concierge_bot_token}",
+                "-e",
+                f"BOT_ID={concierge_bot_user_id}",
+                "-e",
+                f"SLURK_HOST={SLURK_HOST}",
+                f"slurk/{concierge_name}",
+            ]
+        )
+
+        if "concierge" in args.bot:
+            print("---------------------------")
+            print(f"waiting room id:\t{waiting_room_id}")
+            print("---------------------------")
+    else:
+        waiting_room_id = args.waiting_room_id
+
+    return waiting_room_id
+
+
 def main(args):
     bot_base_path = Path(args.bot)
 
@@ -186,7 +260,7 @@ def main(args):
 
         if not Path("../slurk").exists():
             raise FileNotFoundError(
-                "../slurk is missing, donwload it first: https://github.com/clp-research/slurk/"
+                "../slurk is missing, download it first: https://github.com/clp-research/slurk/"
                 " and make sure that slurk and slurk-bots are in the same directory"
             )
 
@@ -226,61 +300,7 @@ def main(args):
         )
         sleep(1)
 
-    # create a waiting room if not provided
-    if args.waiting_room_id is None:
-        # create a waiting_room_layout (or read from args)
-        waiting_room_layout_dict_path = Path(args.waiting_room_layout_dict)
-        if not Path(waiting_room_layout_dict_path).exists():
-            raise FileNotFoundError("Missing layout file for the waiting room")
-
-        waiting_room_layout_dict = json.loads(
-            Path(waiting_room_layout_dict_path).read_text(encoding="utf-8")
-        )
-        waiting_room_layout = args.waiting_room_layout_id or create_room_layout(
-            waiting_room_layout_dict
-        )
-
-        # create a new waiting room
-        waiting_room_id = create_room(waiting_room_layout)
-
-        # create a concierge bot for this room
-        concierge_name = f"concierge-bot-{waiting_room_id}"
-
-        concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
-        concierge_permissions_dict = json.loads(
-            concierge_bot_permissions_file.read_text(encoding="utf-8")
-        )
-        concierge_permissions = create_permissions(concierge_permissions_dict)
-        concierge_bot_token = create_token(concierge_permissions, waiting_room_id)
-        concierge_bot_user_id = create_user(concierge_name, concierge_bot_token)
-
-        build_docker_image("concierge", concierge_name)
-        subprocess.run(
-            [
-                "docker",
-                "run",
-                "--restart",
-                "unless-stopped",
-                "--network",
-                "host",
-                "-d",
-                "-e",
-                f"BOT_TOKEN={concierge_bot_token}",
-                "-e",
-                f"BOT_ID={concierge_bot_user_id}",
-                "-e",
-                f"SLURK_HOST={SLURK_HOST}",
-                f"slurk/{concierge_name}",
-            ]
-        )
-
-        if "concierge" in args.bot:
-            print("---------------------------")
-            print(f"waiting room id:\t{waiting_room_id}")
-            print("---------------------------")
-            return
-    else:
-        waiting_room_id = args.waiting_room_id
+    waiting_room_id = create_waiting_room(args)
 
     # create task room
     # look for the task room layout (allow some options)
@@ -289,6 +309,12 @@ def main(args):
         task_room_layout_path.read_text(encoding="utf-8")
     )
     task_room_layout_id = create_room_layout(task_room_layout_dict)
+
+    # if there is no waiting room, create a task room instead
+    if not waiting_room_id:
+        room_id = create_room(task_room_layout_id)
+    else:
+        room_id = waiting_room_id
 
     bot_name = args.bot_name or str(bot_base_path)
     task_id = create_task(
@@ -299,7 +325,7 @@ def main(args):
         task_bot_permissions_path.read_text(encoding="utf-8")
     )
     task_bot_permissions_id = create_permissions(task_bot_permissions_dict)
-    task_bot_token = create_token(task_bot_permissions_id, waiting_room_id)
+    task_bot_token = create_token(task_bot_permissions_id, room_id)
     task_bot_user_id = create_user(bot_name, task_bot_token)
 
     build_docker_image(args.bot, bot_name)
@@ -347,8 +373,8 @@ def main(args):
     subprocess.run(docker_args)
 
     print("---------------------------")
-    print(f"waiting room id:\t{waiting_room_id}")
-    print(f"task id:\t\t{task_id}")
+    print(f"room id:\t{room_id}")
+    print(f"task id:\t{task_id}")
     print("---------------------------")
 
     if any([args.tokens, args.dev]) is True:
@@ -359,7 +385,7 @@ def main(args):
 
         for user in range(args.users):
             user_permissions_id = create_permissions(user_permissions_dict)
-            user_token = create_token(user_permissions_id, waiting_room_id, task_id)
+            user_token = create_token(user_permissions_id, room_id, task_id)
             print(
                 f"Token: {user_token} | Link: {SLURK_HOST}/login?name=user_{user}&token={user_token}"
             )
@@ -390,7 +416,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--slurk-host",
         default="http://127.0.0.1:5000",
-        help="api address to your slurk server",
+        help="address to your slurk server",
     )
     parser.add_argument(
         "--slurk-api-token",
@@ -398,7 +424,7 @@ if __name__ == "__main__":
         default="00000000-0000-0000-0000-000000000000",
     )
     parser.add_argument(
-        "--credentials-from-file", help="read slurk host and api token from a json file"
+        "--config-file", help="read slurk host and api token from a configuration file"
     )
     parser.add_argument(
         "--waiting-room-id",
@@ -412,7 +438,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--waiting-room-layout-dict",
-        default="concierge/waiting_room_layout.json",
+        # FIXME(jg): The code above checks whether this variable has a value
+        #  when waiting-room-layout-id is None. That only makes sense if it
+        #  can actually be None. So I removed the default here.
         help="path to a json file containing a layout for a waiting room",
     )
     parser.add_argument(
@@ -437,22 +465,22 @@ if __name__ == "__main__":
     SLURK_API = f"{args.slurk_host}/slurk/api"
     API_TOKEN = args.slurk_api_token
 
-    if args.credentials_from_file:
-        credentials_file = Path(args.credentials_from_file)
-        if not credentials_file.exists():
+    if args.config_file:
+        config_file = Path(args.config_file)
+        if not config_file.exists():
             raise FileNotFoundError("Missing file with slurk credentials")
 
         config = configparser.ConfigParser()
-        config.read(Path(args.credentials_from_file))
+        config.read(Path(args.config_file))
         config.sections()
 
-        if any(config["SLURK CREDENTIALS"].get(i) is None for i in ["host", "token"]):
-            raise ValueError("Invalid formatting for credentials file")
+        if any(config["SLURK"].get(i) is None for i in ["host", "token"]):
+            raise ValueError("Invalid formatting for configuration file")
 
-        sulrk_address = config.get("SLURK CREDENTIALS", "host")
-        SLURK_HOST = sulrk_address
-        SLURK_API = f"{sulrk_address}/slurk/api"
-        API_TOKEN = config.get("SLURK CREDENTIALS", "token")
+        slurk_address = config.get("SLURK", "host")
+        SLURK_HOST = slurk_address
+        SLURK_API = f"{slurk_address}/slurk/api"
+        API_TOKEN = config.get("SLURK", "token")
 
     # start bot
     main(args)
