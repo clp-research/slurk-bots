@@ -14,12 +14,12 @@ class Dataloader(list):
         self.base_link = INSTRUCTION_BASE_LINK
         self.get_boards()
 
-    def get_instructions_link(self, level):
-        level_mapping = requests.get(f"{self.base_link}/{level}.json").json()
+    def get_instructions_link(self, state_id):
+        state_mapping = requests.get(f"{self.base_link}/{state_id}.json").json()
 
         return dict(
-            player=[f"{self.base_link}/{i}" for i in level_mapping["player"]],
-            wizard=[f"{self.base_link}/{i}" for i in level_mapping["wizard"]],
+            player=[f"{self.base_link}/{i}" for i in state_mapping["player"]],
+            wizard=[f"{self.base_link}/{i}" for i in state_mapping["wizard"]],
         )
 
     def read_boards(self):
