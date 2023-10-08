@@ -58,3 +58,18 @@ If an object has an entry in this file (in this example, the `screw` object), yo
     "screw": ["washer"]
 }
 ```
+
+### Extra Instructions
+For each level it is possible to show additional instructions in form of images for both the player and the wizard. In order for the bot to retrieve the correct images for any given board, the bot will try to access a json file containing this information, this file should be named `{status_id}.json` and have the following structure:
+
+```
+{
+    "wizard": ["path_to_img.png"],
+    "player: []
+}
+```
+
+where `path_to_img` must be relative to the json file.  
+**if no file can be found, the bot will assume that this board has no additional instruction**  
+
+Both the images and the json files must be hosted online and the address must be saved in the `INSTRUCTION_BASE_LINK` in `config.py`
