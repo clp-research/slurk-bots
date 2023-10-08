@@ -10,6 +10,7 @@ from templates import TaskBot
 from .config import *
 from .golmi_client import *
 from .dataloader import Dataloader
+from .utils import *
 
 
 class RoomTimers:
