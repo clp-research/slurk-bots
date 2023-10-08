@@ -21,6 +21,8 @@ class Dataloader(list):
         if not state_mapping.ok:
             return {"player": [], "wizard": []}
 
+        state_mapping = state_mapping.json()
+
         return dict(
             player=[f"{self.base_link}/{i}" for i in state_mapping["player"]],
             wizard=[f"{self.base_link}/{i}" for i in state_mapping["wizard"]],
