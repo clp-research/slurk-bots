@@ -7,6 +7,13 @@ This repository contains the source code for a collaborative CoCobot session. It
 
 ### Setup 
 
+
+#### GOLMI
+before starting this bot you will need a running [golmi server](https://github.com/clp-research/golmi) on the `slurk` branch.  
+While deploying locally, the bot will look for the golmi server on `127.0.0.1:5001`, you can modify this value in `args.ini`.  
+Golmi and the CocoBot must not run on the same machine, both the bot and the frontend page can connect to the golmi server remotely over the internet, in this case you will need to specify the full golmi address (eg. `https://golmi.mywebsite.com`)
+
+#### CocoBot
 1. Install [Docker](https://docs.docker.com/get-docker/). You might also need the [jq package](https://stedolan.github.io/jq/download/) too. 
 2. Clone the [slurk](https://github.com/clp-research/slurk) repository.
 3. Copy the [```ccbts.js```](ccbts.js) file to [```slurk/slurk/views/static/plugins```](https://github.com/clp-research/slurk/tree/master/slurk/views/static/plugins). 
@@ -41,7 +48,7 @@ To access the waiting rooms, you will need to input the saved tokes as well as a
 
 
 ## Modifications
-Under `lib/config.py` you find a number of global variables that define experiment settings as well as short descriptions of their effect on the experiment.
+Under `config.py` you find a number of global variables that define experiment settings as well as short descriptions of their effect on the experiment.
 
 ### Allowed moves  
 you can modify which moves are allowed to execute by modifying `allowed_moves.json`. The file has following structure:
