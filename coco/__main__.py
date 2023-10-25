@@ -758,18 +758,24 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
+                        # user thinks players can move to next episode
+                        self.can_load_next_episode = True
+
+                        curr_usr, other_usr = self.sessions[room_id].players
+                        if curr_usr["id"] != user_id:
+                            curr_usr, other_usr = other_usr, curr_usr
+
+                        # ask other user if the episode is really over
                         self.sio.emit(
                             "text",
                             {
-                                "message": COLOR_MESSAGE.format(
-                                    message=(
-                                        "The game is not over yet, you can only load the next "
-                                        "episode once this is over (command: /episode:over)."
-                                    ),
-                                    color=WARNING_COLOR,
+                                "message": (
+                                    "Your partner thinks this episode is over, do you agree? <br>"
+                                    "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
+                                    "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
                                 ),
                                 "room": room_id,
-                                "receiver_id": curr_usr["id"],
+                                "receiver_id": other_usr["id"],
                                 "html": True,
                             },
                         )
@@ -831,46 +837,18 @@ class CoCoBot(TaskBot):
 
                 else:
                     # commands from the user
-                    if data["command"] == "episode:over":
-                        right_user = self.check_role(user_id, "player", room_id)
-                        if right_user is False:
-                            return
-
-                        # user thinks players can move to next episode
-                        self.can_load_next_episode = True
-
-                        curr_usr, other_usr = self.sessions[room_id].players
-                        if curr_usr["id"] != user_id:
-                            curr_usr, other_usr = other_usr, curr_usr
-
-                        # ask other user if the episode is really over
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": (
-                                    "Your partner thinks this episode is over, do you agree? <br>"
-                                    "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
-                                    "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
-                                ),
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                                "html": True,
-                            },
-                        )
-
-                    else:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message="Sorry, but I do not understand this command.",
-                                    color=STANDARD_COLOR,
-                                ),
-                                "room": room_id,
-                                "receiver_id": user_id,
-                                "html": True,
-                            },
-                        )
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                message="Sorry, but I do not understand this command.",
+                                color=STANDARD_COLOR,
+                            ),
+                            "room": room_id,
+                            "receiver_id": user_id,
+                            "html": True,
+                        },
+                    )
 
     def check_role(self, user_id, wanted_role, room_id):
         curr_usr, other_usr = self.sessions[room_id].players
