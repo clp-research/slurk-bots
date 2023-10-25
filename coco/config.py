@@ -29,8 +29,8 @@ INSTRUCTION_BASE_LINK = "https://expdata.ling.uni-potsdam.de/cocobot"
 
 # data
 CONFIG = {
-    "width": 7.0,
-    "height": 7.0,
+    "width": 8.0,
+    "height": 8.0,
     "move_step": 1,
     "prevent_overlap": False,
 }  # golmi config for working boards
