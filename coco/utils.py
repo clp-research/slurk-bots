@@ -83,8 +83,11 @@ class Session:
         self.can_load_next_episode = False
 
     def close(self):
-        self.golmi_client.disconnect()
-        self.timer.cancel()
+        try:
+            self.golmi_client.disconnect()
+            self.timer.cancel()
+        except:
+            pass
 
 
 class SessionManager(dict):

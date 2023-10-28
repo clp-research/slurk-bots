@@ -59,13 +59,18 @@ class CoCoBot(TaskBot):
             logging.debug("Create data for the new task room...")
             self.sessions.create_session(room_id)
 
-            roles = ["player", "wizard"]
+            roles = [
+                {"role": "player", "name": "Programmer"},
+                {"role": "wizard", "name": "Program Editor"},
+            ]
             random.shuffle(roles)
 
             for usr, role in zip(data["users"], roles):
                 self.sessions[room_id].players.append(
-                    {**usr, "role": role, "status": "joined"}
+                    {**usr, "role": role["role"], "status": "joined"}
                 )
+
+                self.rename_user(usr["id"], role["name"])
 
             # join the newly created room
             response = requests.post(
@@ -86,6 +91,27 @@ class CoCoBot(TaskBot):
 
             # send roles
             self.send_roles(room_id)
+
+    def rename_user(self, user_id, name):
+        response = requests.get(
+            f"{self.uri}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+            response.raise_for_status()
+        etag = response.headers["ETag"]
+
+        response = requests.patch(
+            f"{self.uri}/users/{user_id}",
+            headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            json={"name": name},
+        )
+        if not response.ok:
+            logging.error(
+                f"Could not rename user: {user_id}"
+            )
+            response.raise_for_status()
 
     def send_typing_input(self, room_id):
         """Send typing events when the wizard is working on the boards"""
@@ -569,10 +595,12 @@ class CoCoBot(TaskBot):
                 curr_usr, other_usr = other_usr, curr_usr
 
             if room_id in self.sessions:
+                this_session = self.sessions[room_id]
+
                 if isinstance(data["command"], dict):
                     # commands from the front end
                     event = data["command"]["event"]
-                    this_client = self.sessions[room_id].golmi_client
+                    this_client = this_session.golmi_client
 
                     # clear board
                     if event == "clear_board":
@@ -581,7 +609,7 @@ class CoCoBot(TaskBot):
                             return
 
                         this_client.clear_state("wizard_working")
-                        self.sessions[room_id].current_action = ActionNode.new_tree()
+                        sthis_session.current_action = ActionNode.new_tree()
 
                     elif event == "show_progress":
                         right_user = self.check_role(user_id, "wizard", room_id)
@@ -590,9 +618,7 @@ class CoCoBot(TaskBot):
 
                         # only show update if board has changed since last checkpoint
                         current_state = this_client.get_state("wizard_working")
-                        logging.debug(current_state)
-                        logging.debug(self.sessions[room_id].checkpoint)
-                        if current_state == self.sessions[room_id].checkpoint:
+                        if current_state == this_session.checkpoint:
                             self.sio.emit(
                                 "text",
                                 {
@@ -609,7 +635,7 @@ class CoCoBot(TaskBot):
 
                         this_client.copy_working_state()
                         current_state = this_client.get_state("wizard_working")
-                        self.sessions[room_id].checkpoint = current_state
+                        this_session.checkpoint = current_state
 
                         self.sio.emit(
                             "text",
@@ -643,11 +669,11 @@ class CoCoBot(TaskBot):
                             return
 
                         # undo should not work anymore after reverting
-                        self.sessions[room_id].current_action = ActionNode.new_tree()
+                        this_session.current_action = ActionNode.new_tree()
 
-                        client = self.sessions[room_id].golmi_client
+                        client = this_session.golmi_client
                         client.load_state(
-                            self.sessions[room_id].checkpoint, "wizard_working"
+                            this_session.checkpoint, "wizard_working"
                         )
 
                         self.sio.emit(
@@ -668,7 +694,7 @@ class CoCoBot(TaskBot):
                         self.log_event("working_board_log", current_state, room_id)
 
                     elif event == "confirm_next_episode":
-                        if self.can_load_next_episode is False:
+                        if this_session.can_load_next_episode is False:
                             self.sio.emit(
                                 "text",
                                 {
@@ -682,7 +708,7 @@ class CoCoBot(TaskBot):
                                 },
                             )
                         else:
-                            self.can_load_next_episode = False
+                            this_session.can_load_next_episode = False
                             if data["command"]["answer"] == "no":
                                 self.sio.emit(
                                     "text",
@@ -704,7 +730,7 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        last_command = self.sessions[room_id].current_action
+                        last_command = this_session.current_action
 
                         if last_command.action == "root":
                             return
@@ -718,7 +744,7 @@ class CoCoBot(TaskBot):
                         if action is not False:
                             current_state = last_command.previous_state()
                             if current_state is not None:
-                                self.sessions[room_id].current_action = current_state
+                                this_session.current_action = current_state
 
                                 # the state changes, log it
                                 current_state = this_client.get_state("wizard_working")
@@ -731,11 +757,11 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        current_state = self.sessions[room_id].current_action
+                        current_state = this_session.current_action
                         current_state = current_state.next_state()
 
                         if current_state is not None:
-                            self.sessions[room_id].current_action = current_state
+                            this_session.current_action = current_state
 
                             if current_state.action == "add":
                                 action, obj = this_client.add_object(current_state.obj)
@@ -758,10 +784,25 @@ class CoCoBot(TaskBot):
                         if right_user is False:
                             return
 
-                        # user thinks players can move to next episode
-                        self.can_load_next_episode = True
+                        if this_session.can_load_next_episode is True:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": COLOR_MESSAGE.format(
+                                        message=f"Give the Program Editor the time to check the boards",
+                                        color=WARNING_COLOR,
+                                    ),
+                                    "room": room_id,
+                                    "html": True,
+                                    "receiver_id": user_id,
+                                },
+                            )
+                            return
 
-                        curr_usr, other_usr = self.sessions[room_id].players
+                        # user thinks players can move to next episode
+                        this_session.can_load_next_episode = True
+
+                        curr_usr, other_usr = this_session.players
                         if curr_usr["id"] != user_id:
                             curr_usr, other_usr = other_usr, curr_usr
 
@@ -777,6 +818,19 @@ class CoCoBot(TaskBot):
                                 "room": room_id,
                                 "receiver_id": other_usr["id"],
                                 "html": True,
+                            },
+                        )
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message=f"Waiting for confirmation from the Program Editor",
+                                    color=STANDARD_COLOR,
+                                ),
+                                "room": room_id,
+                                "html": True,
+                                "receiver_id": curr_usr["id"],
                             },
                         )
 
@@ -903,6 +957,11 @@ class CoCoBot(TaskBot):
         golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
         curr_usr, other_usr = self.sessions[room_id].players
 
+        names = {
+            "wizard": "Program Editor",
+            "player": "Programmer"
+        }
+
         # switch roles
         curr_usr["role"], other_usr["role"] = other_usr["role"], curr_usr["role"]
         for user in self.sessions[room_id].players:
@@ -921,6 +980,20 @@ class CoCoBot(TaskBot):
                         "golmi_rooms": golmi_rooms,
                     },
                     "room": room_id,
+                    "receiver_id": user["id"],
+                },
+            )
+
+            self.rename_user(user["id"], names[role])
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        message=f"The roles have been switched, you are now the {names[role]}",
+                        color=STANDARD_COLOR,
+                    ),
+                    "room": room_id,
+                    "html": True,
                     "receiver_id": user["id"],
                 },
             )
@@ -1000,11 +1073,12 @@ class CoCoBot(TaskBot):
                 "html": True,
             },
         )
-        self.sessions[room_id].game_over = True
-        self.room_to_read_only(room_id)
+        if room_id in self.sessions:
+            self.sessions[room_id].game_over = True
+            self.room_to_read_only(room_id)
 
-        # remove any task room specific objects
-        self.sessions.clear_session(room_id)
+            # remove any task room specific objects
+            self.sessions.clear_session(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""

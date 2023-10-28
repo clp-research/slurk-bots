@@ -102,7 +102,7 @@
                   "class": "button red_button",
                   "role": "button",
                   "id": "show_progress_button",
-                  "layout-content": "Execute for player",
+                  "layout-content": "Execute for Programmer",
                   "style": "padding: 10px; margin: 5px;"
                 }
               ]
