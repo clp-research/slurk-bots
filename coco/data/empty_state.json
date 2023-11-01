@@ -1,9 +1,9 @@
 {
   "grid_config": {
-    "height": 7.0,
+    "height": 8.0,
     "move_step": 1,
     "prevent_overlap": false,
-    "width": 7.0
+    "width": 8.0
   },
   "grippers": {},
   "objs": {},
