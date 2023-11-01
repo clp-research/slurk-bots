@@ -29,6 +29,27 @@ class CoCoBot(TaskBot):
         self.golmi_server = golmi_server
         self.golmi_password = golmi_password
 
+    def modify_layout(self, room_id, receiver_id=None):
+        base_json = {"receiver_id": receiver_id} if receiver_id is not None else {}
+        
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/header",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"height: 40px", **base_json}
+        )
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"height: 90%; width:70%; top: 40px", **base_json},
+        )
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/content",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width:30%; top: 40px", **base_json},
+        )
+
     def on_task_room_creation(self, data):
         """This function is executed as soon as 2 users are paired and a new
         task took is created
@@ -41,15 +62,7 @@ class CoCoBot(TaskBot):
 
         if task_id is not None and task_id == self.task_id:
             # move the chat | task area divider
-            self.move_divider(room_id, chat_area=30, task_area=70)
-            sleep(0.5)
-
-            # reduce height of sidebar
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
-                headers={"Authorization": f"Bearer {self.token}"},
-                json={"attribute": "style", "value": f"height: 90%; width:70%"},
-            )
+            self.modify_layout(room_id)
             sleep(0.5)
 
             for usr in data["users"]:
@@ -108,9 +121,7 @@ class CoCoBot(TaskBot):
             json={"name": name},
         )
         if not response.ok:
-            logging.error(
-                f"Could not rename user: {user_id}"
-            )
+            logging.error(f"Could not rename user: {user_id}")
             response.raise_for_status()
 
     def send_typing_input(self, room_id):
@@ -207,6 +218,9 @@ class CoCoBot(TaskBot):
                             "html": True,
                         },
                     )
+
+                    # update layout
+                    self.modify_layout(room_id, curr_usr["id"])
 
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
@@ -672,9 +686,7 @@ class CoCoBot(TaskBot):
                         this_session.current_action = ActionNode.new_tree()
 
                         client = this_session.golmi_client
-                        client.load_state(
-                            this_session.checkpoint, "wizard_working"
-                        )
+                        client.load_state(this_session.checkpoint, "wizard_working")
 
                         self.sio.emit(
                             "text",
@@ -957,10 +969,7 @@ class CoCoBot(TaskBot):
         golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
         curr_usr, other_usr = self.sessions[room_id].players
 
-        names = {
-            "wizard": "Program Editor",
-            "player": "Programmer"
-        }
+        names = {"wizard": "Program Editor", "player": "Programmer"}
 
         # switch roles
         curr_usr["role"], other_usr["role"] = other_usr["role"], curr_usr["role"]
