@@ -23,6 +23,28 @@
                       "id": "instr"
                     }
                   ]
+                },
+                {
+                  "layout-type": "div",
+                  "class": "hidden_card",
+                  "id": "player_interface",
+                  "style": "margin: 10px; border: 1px solid #CECDCD",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "style": "padding: 10px; display: flex;",
+                      "layout-content": [
+                        {
+                          "layout-type": "button",
+                          "class": "button",
+                          "role": "button",
+                          "layout-content": "next episode",
+                          "id": "next_state_button",
+                          "style": "padding: 10px; width: 100%; margin: 10px;"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -106,27 +128,6 @@
                   "style": "padding: 10px; margin: 5px;"
                 }
               ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "layout-type": "div",
-      "class": "hidden_card",
-      "id": "player_interface",
-      "layout-content": [
-        {
-          "layout-type": "div",
-          "style": "padding: 10px; display: flex",
-          "layout-content": [
-            {
-              "layout-type": "button",
-              "class": "button",
-              "role": "button",
-              "layout-content": "next episode",
-              "id": "next_state_button",
-              "style": "padding: 10px; margin: 5px; width: 100%"
             }
           ]
         }
