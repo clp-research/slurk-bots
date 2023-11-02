@@ -25,7 +25,7 @@ Examples:
 
     or save your credentials in a configuration file and pass this as an argument to the script:
     $ python start_bot.py echo/ --users 1 --tokens \
-        --credentials-from-file path/to/credentials.ini
+        --config-file path/to/config.ini
 """
 
 import argparse
@@ -203,7 +203,11 @@ def create_waiting_room(args):
         waiting_room_id = create_room(waiting_room_layout)
 
         # create a concierge bot for this room
-        concierge_name = f"concierge-bot-{waiting_room_id}"
+        if "concierge" in args.bot:
+            bot_name = args.bot_name or str(bot_base_path)
+            concierge_name = f"{bot_name}-{waiting_room_id}"
+        else:
+            concierge_name = f"concierge-{waiting_room_id}"
 
         concierge_bot_permissions_file = find_bot_permissions_file(Path("concierge"))
         concierge_permissions_dict = json.loads(
@@ -223,6 +227,8 @@ def create_waiting_room(args):
                 "--network",
                 "host",
                 "-d",
+                "-e",
+                f"WAITING_ROOM={waiting_room_id}",
                 "-e",
                 f"BOT_TOKEN={concierge_bot_token}",
                 "-e",
@@ -410,7 +416,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--slurk-host",
         default="http://127.0.0.1:5000",
-        help="api address to your slurk server",
+        help="address to your slurk server",
     )
     parser.add_argument(
         "--slurk-api-token",
@@ -418,7 +424,7 @@ if __name__ == "__main__":
         default="00000000-0000-0000-0000-000000000000",
     )
     parser.add_argument(
-        "--credentials-from-file", help="read slurk host and api token from a json file"
+        "--config-file", help="read slurk host and api token from a configuration file"
     )
     parser.add_argument(
         "--waiting-room-id",
@@ -459,21 +465,22 @@ if __name__ == "__main__":
     SLURK_API = f"{args.slurk_host}/slurk/api"
     API_TOKEN = args.slurk_api_token
 
-    if args.credentials_from_file:
-        credentials_file = Path(args.credentials_from_file)
-        if not credentials_file.exists():
+    if args.config_file:
+        config_file = Path(args.config_file)
+        if not config_file.exists():
             raise FileNotFoundError("Missing file with slurk credentials")
 
         config = configparser.ConfigParser()
-        config.read(Path(args.credentials_from_file))
+        config.read(Path(args.config_file))
         config.sections()
 
-        if any(config["SLURK CREDENTIALS"].get(i) is None for i in ["host", "token"]):
-            raise ValueError("Invalid formatting for credentials file")
+        if any(config["SLURK"].get(i) is None for i in ["host", "token"]):
+            raise ValueError("Invalid formatting for configuration file")
 
-        SLURK_HOST = config.get("SLURK CREDENTIALS", "host")
-        SLURK_API = f"{SLURK_HOST}/slurk/api"
-        API_TOKEN = config.get("SLURK CREDENTIALS", "token")
+        slurk_address = config.get("SLURK", "host")
+        SLURK_HOST = slurk_address
+        SLURK_API = f"{slurk_address}/slurk/api"
+        API_TOKEN = config.get("SLURK", "token")
 
     # start bot
     main(args)
