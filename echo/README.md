@@ -41,4 +41,4 @@ To access the waiting rooms, you will need to input the saved tokes as well as a
 
 
 ## Echo Bot as a Blueprint  
-Because of its simplicity, the Echo Bot can be used as a blueprint for writing your own bot. Once you have defined your Bot in `__main__.py` along with `data/user_permissions.json`, `data/bot_permissions.json` and `data/task_layout.json`, you can modify the 2 variables `BOT_NAME` and `NUMBER_USERS` (lines 18 and 19) in the [setup script](https://github.com/clp-research/slurk-bots/blob/master/echo/setup.sh). Remember that the `BOT_NAME` should also reflect the name of the folder of your bot within the [slurk-bots](https://github.com/clp-research/slurk-bots) repository.
+Because of its simplicity, the Echo Bot can be used as a blueprint for writing your own bot. Once you have defined your Bot in `__main__.py` along with `data/user_permissions.json`, `data/bot_permissions.json` and `data/task_layout.json`, you can start your bot and test it.
