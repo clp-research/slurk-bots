@@ -17,6 +17,8 @@ class Session:
         self.players = list()
         self.explainer = None
         self.word_to_guess = None
+        self.game_over = False
+        self.win = False
 
     def close(self):
         pass
@@ -194,12 +196,28 @@ class TabooBot(TaskBot):
                                 "room": room_id,
                             },
                         )
+                        self.sessions.game_over = True
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"GAME OVER, {data['user']['name']}",
+                                "room": room_id,
+                            },
+                        )
 
             elif this_session.word_to_guess.lower() in data["message"].lower():
                 self.sio.emit(
                     "text",
                     {
                         "message": f"{this_session.word_to_guess} was correct!",
+                        "room": room_id,
+                    },
+                )
+                self.sessions.win = True
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": f"YOU WON, {data['user']['name']} :)",
                         "room": room_id,
                     },
                 )
