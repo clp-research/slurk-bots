@@ -195,7 +195,7 @@ class TabooBot(TaskBot):
                             },
                         )
 
-            elif this_session.word_to_guess in data["message"]:
+            elif this_session.word_to_guess.lower() in data["message"].lower():
                 self.sio.emit(
                     "text",
                     {
