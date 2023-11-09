@@ -186,7 +186,7 @@ class TabooBot(TaskBot):
 
                 # check whether the user used a forbidden word
                 for taboo_word in self.taboo_data[this_session.word_to_guess]:
-                    if taboo_word in data["message"]:
+                    if taboo_word in data["message"].lower():
                         self.sio.emit(
                             "text",
                             {
