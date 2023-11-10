@@ -1,6 +1,7 @@
 from collections import defaultdict
 import logging
 import os
+import string
 
 import requests
 
@@ -178,6 +179,8 @@ class TabooBot(TaskBot):
             user_id = data["user"]["id"]
 
             this_session = self.sessions[room_id]
+            word_to_guess = this_session.word_to_guess
+            new_line = '\n'
 
             if user_id == self.user:
                 return
@@ -185,10 +188,10 @@ class TabooBot(TaskBot):
             # explainer or guesser?
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
-
+                message = data["message"].lower()
                 # check whether the user used a forbidden word
-                for taboo_word in self.taboo_data[this_session.word_to_guess]:
-                    if taboo_word in data["message"].lower():
+                for taboo_word in self.taboo_data[word_to_guess]:
+                    if taboo_word.lower() in message:
                         self.sio.emit(
                             "text",
                             {
@@ -197,30 +200,30 @@ class TabooBot(TaskBot):
                             },
                         )
                         self.sessions.game_over = True
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"GAME OVER, {data['user']['name']}",
-                                "room": room_id,
-                            },
-                        )
+                # check whether the user used the word to guess
+                if word_to_guess.lower() in message:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"You used the word to guess '{word_to_guess}'! {new_line}GAME OVER",
+                            "room": room_id,
+                        },
+                    )
+                    self.sessions.game_over = True
 
-            elif this_session.word_to_guess.lower() in data["message"].lower():
+            elif word_to_guess.lower() in data["message"].lower():
                 self.sio.emit(
                     "text",
                     {
-                        "message": f"{this_session.word_to_guess} was correct!",
+                        "message": f"{word_to_guess} was correct! {new_line}YOU WON :)",
                         "room": room_id,
                     },
                 )
                 self.sessions.win = True
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": f"YOU WON, {data['user']['name']} :)",
-                        "room": room_id,
-                    },
-                )
+
+        def remove_punctuation(text: str) -> str:
+            text = text.translate(str.maketrans("", "", string.punctuation))
+            return text
 
 
 if __name__ == "__main__":
