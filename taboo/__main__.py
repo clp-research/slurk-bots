@@ -6,11 +6,54 @@ import string
 import requests
 
 from templates import TaskBot
+from time import sleep
+from threading import Timer
 
 import random
 
 
 LOG = logging.getLogger(__name__)
+
+TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 3  # minutes if a user is alone in a room
+
+
+class RoomTimer:
+    def __init__(self, function, room_id):
+        self.function = function
+        self.room_id = room_id
+        self.start_timer()
+        self.left_room = dict()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
+
+    def cancel_all_timers(self):
+        self.timer.cancel()
+        for timer in self.left_room.values():
+            timer.cancel()
+
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
+        )
+        self.left_room[user].start()
 
 
 class Session:
@@ -20,12 +63,18 @@ class Session:
         self.word_to_guess = None
         self.game_over = False
         self.win = False
+        self.guesser = None
 
     def close(self):
         pass
 
     def pick_explainer(self):
         self.explainer = random.choice(self.players)["id"]
+
+    def pick_guesser(self):
+        for player in self.players:
+            if player["id"] != self.explainer:
+                self.guesser = player["id"]
 
 
 class SessionManager(defaultdict):
@@ -118,8 +167,9 @@ class TabooBot(TaskBot):
                     this_session.word_to_guess = random.choice(
                         list(self.taboo_data.keys())
                     )
-                    # 2) Choose an explainer
+                    # 2) Choose an explainer and a guesser
                     this_session.pick_explainer()
+                    this_session.pick_guesser()
 
                     # 3) Tell the explainer about the word
                     word_to_guess = this_session.word_to_guess
@@ -185,7 +235,7 @@ class TabooBot(TaskBot):
             if user_id == self.user:
                 return
 
-            # explainer or guesser?
+            # explainer
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
                 message = data["message"].lower()
@@ -195,8 +245,17 @@ class TabooBot(TaskBot):
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"You used the taboo word {taboo_word}!",
+                                "message": f"You used the taboo word {taboo_word}! GAME OVER :(",
                                 "room": room_id,
+                                "receiver_id": this_session.explainer,
+                            },
+                        )
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"{data['user']['name']} used a taboo word. You both lose!",
+                                "room": room_id,
+                                "receiver_id": this_session.guesser,
                             },
                         )
                         self.sessions.game_over = True
@@ -210,7 +269,7 @@ class TabooBot(TaskBot):
                         },
                     )
                     self.sessions.game_over = True
-
+            # Guesser
             elif word_to_guess.lower() in data["message"].lower():
                 self.sio.emit(
                     "text",
