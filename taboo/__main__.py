@@ -1,28 +1,39 @@
 from collections import defaultdict
 import logging
 import os
+import json
 
 import requests
+from time import sleep
 
+from taboo.config import TABOO_WORDS
 from templates import TaskBot
 
 import random
+
+import os
+
+
 
 
 LOG = logging.getLogger(__name__)
 
 
 class Session:
+    # what happens between 2 players
     def __init__(self):
         self.players = list()
         self.explainer = None
         self.word_to_guess = None
+        self.guesses = 0
 
     def close(self):
         pass
 
     def pick_explainer(self):
         self.explainer = random.choice(self.players)["id"]
+
+#     game over
 
 
 class SessionManager(defaultdict):
@@ -52,11 +63,15 @@ class TabooBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
 
+
         # TODO: read the game data from file
-        self.taboo_data = {
-            "Applesauce": ["fruit", "tree", "glass", "preserving"],
-            "Beef patty": ["pork", "ground", "steak"],
-        }
+        self.taboo_data = TABOO_WORDS
+        # self.taboo_data = {
+        #             "Applesauce": ["fruit", "tree", "glass", "preserving"],
+        #             "Beef patty": ["pork", "ground", "steak"],
+        #         }
+
+
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -96,7 +111,7 @@ class TabooBot(TaskBot):
                 self.sio.emit(
                     "text",
                     {
-                        "message": f"{user['name']} has joined the game. ",
+                        "message": f"{user['name']} has joined the game.",
                         "room": room_id,
                     },
                 )
@@ -163,14 +178,58 @@ class TabooBot(TaskBot):
                         },
                     )
 
+        # @self.sio.event
+        # def text_message(data):
+        #     """Triggered when a text message is sent.
+        #     Check that it didn't contain any forbidden words if sent
+        #     by explainer or whether it was the correct answer when sent
+        #     by a guesser.
+        #     """
+        #     LOG.debug(f"Received a message from {data['user']['name']}.")
+        #
+        #     room_id = data["room"]
+        #     user_id = data["user"]["id"]
+        #
+        #     this_session = self.sessions[room_id]
+        #
+        #     if user_id == self.user:
+        #         return
+        #
+        #     # explainer or guesser?
+        #     if this_session.explainer == user_id:
+        #         LOG.debug(f"{data['user']['name']} is the explainer.")
+        #
+        #         # check whether the user used a forbidden word
+        #         for taboo_word in self.taboo_data[this_session.word_to_guess]:
+        #             if taboo_word in data["message"]:
+        #                 self.sio.emit(
+        #                     "text",
+        #                     {
+        #                         "message": f"You used the taboo word {taboo_word}!",
+        #                         "room": room_id,
+        #                         "receiver_id": this_session.explainer
+        #
+        #                     },
+        #                 )
+        #
+        #     elif this_session.word_to_guess.lower() in data["message"].lower():
+        #         self.sio.emit(
+        #             "text",
+        #             {
+        #                 "message": f"{this_session.word_to_guess} was correct!",
+        #                 "room": room_id,
+        #             },
+        #         )
+
+
+
+
         @self.sio.event
-        def text_message(data):
-            """Triggered when a text message is sent.
-            Check that it didn't contain any forbidden words if sent
-            by explainer or whether it was the correct answer when sent
-            by a guesser.
-            """
-            LOG.debug(f"Received a message from {data['user']['name']}.")
+        def command(data):
+            """Parse user commands."""
+            LOG.debug(
+                f"Received a command from {data['user']['name']}: {data['command']}"
+            )
 
             room_id = data["room"]
             user_id = data["user"]["id"]
@@ -180,29 +239,93 @@ class TabooBot(TaskBot):
             if user_id == self.user:
                 return
 
-            # explainer or guesser?
+            # EXPLAINER sent a command
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
 
-                # check whether the user used a forbidden word
-                for taboo_word in self.taboo_data[this_session.word_to_guess]:
-                    if taboo_word in data["message"]:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"You used the taboo word {taboo_word}!",
-                                "room": room_id,
-                            },
-                        )
+            # check whether the user used a forbidden word
+                explanation_legal = check_explanation(data['command'],
+                                                       self.taboo_data[this_session.word_to_guess])
+                if explanation_legal:
+                    for player in this_session.players:
+                        if player["id"] != this_session.explainer:
+                            send_message_to_user(self.sio, f"{data['command']}",
+                                                 room_id, player["id"])
+                else:
+                    send_message_to_user(self.sio, f"You used the taboo word. You lost.",
+                                         room_id, this_session.explainer)
 
-            elif this_session.word_to_guess in data["message"]:
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": f"{this_session.word_to_guess} was correct!",
-                        "room": room_id,
-                    },
-                )
+            else:
+                #guesser sent the command
+
+                this_session.guesses += 1
+
+                while this_session.guesses < 3:
+
+                    if this_session.word_to_guess in data["command"]:
+                        for player in this_session.players:
+                            if player["id"] != this_session.explainer:
+                                send_message_to_user(self.sio,f"{this_session.word_to_guess} was correct!",
+                                             room_id, player["id"])
+                        sleep(1)
+                        self.close_room(room_id)
+
+                # why does it get printed 3 times??
+                for player in this_session.players:
+                    if player["id"] != this_session.explainer:
+                        send_message_to_user(self.sio, f"You already used 3 guesses. You lost.",
+                                         room_id, player["id"])
+                sleep(1)
+                self.close_room(room_id)
+
+
+    def close_room(self, room_id):
+        # print message to close
+
+        self.room_to_read_only(room_id)
+
+        # remove any task room specific objects
+        self.sessions.clear_session(room_id)
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set room to read_only: {response.status_code}")
+            response.raise_for_status()
+
+
+def send_message_to_user(sio_object, message, room, receiver):
+    sio_object.emit(
+        "text",
+        {
+            "message": f"{message}",
+            "room": room,
+            "receiver_id": receiver
+        },
+    )
+
+
+
+def check_explanation(explanation, taboo_words):
+    explanation_legal = True
+    for word in taboo_words:
+        if word in explanation:
+            explanation_legal = False
+            return explanation_legal
+    return explanation_legal
 
 
 if __name__ == "__main__":
@@ -216,11 +339,14 @@ if __name__ == "__main__":
         "--taboo_data",
         help="json file containing words",
         default=os.environ.get("TABOO_DATA"),
+        # default="data/taboo_words.json",
     )
     args = parser.parse_args()
 
     # create bot instance
     taboo_bot = TabooBot(args.token, args.user, args.task, args.host, args.port)
+
+
     # taboo_bot.taboo_data = args.taboo_data
     # connect to chat server
     taboo_bot.run()

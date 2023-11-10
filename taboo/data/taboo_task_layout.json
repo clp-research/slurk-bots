@@ -16,7 +16,7 @@
         "incoming-text": "markdown",
         "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
-        "typing-users": "live-typing"
+        "typing-users": "typing-users"
     },
     "show_latency": false
 }
