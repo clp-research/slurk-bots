@@ -16,6 +16,8 @@ LOG = logging.getLogger(__name__)
 TIMEOUT_TIMER = 1  # minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 3  # minutes if a user is alone in a room
 
+STARTING_POINTS = 0
+
 
 class RoomTimer:
     def __init__(self, function, room_id):
@@ -64,6 +66,12 @@ class Session:
         self.win = False
         self.guesser = None
         self.timer = None
+        self.points = {
+            "score": STARTING_POINTS,
+            "history": [
+                {"correct": 0, "wrong": 0, "warnings": 0}
+            ]
+        }
 
     def close(self):
         pass
@@ -263,6 +271,8 @@ class TabooBot(TaskBot):
                             },
                         )
                         self.sessions.game_over = True
+                        self.update_reward(room_id, 0)
+                        self.update_title_points(room_id, 0)
                 # check whether the user used the word to guess
                 if word_to_guess.lower() in message:
                     self.sio.emit(
@@ -282,13 +292,16 @@ class TabooBot(TaskBot):
                         },
                     )
                     self.sessions.game_over = True
-            # Guesser
+                    self.update_reward(room_id, 0)
+                    self.update_title_points(room_id, 0)
+            # Guesser guesses word
             elif word_to_guess.lower() in data["message"].lower():
                 self.sio.emit(
                     "text",
                     {
                         "message": f"{word_to_guess} was correct! {new_line}YOU WON :)",
                         "room": room_id,
+                        "receiver_id": this_session.guesser
                     },
                 )
                 self.sio.emit(
@@ -300,6 +313,8 @@ class TabooBot(TaskBot):
                     },
                 )
                 self.sessions.win = True
+                self.update_reward(room_id, 1)
+                self.update_title_points(room_id, 1)
 
     def remove_punctuation(text: str) -> str:
         text = text.translate(str.maketrans("", "", string.punctuation))
@@ -323,6 +338,32 @@ class TabooBot(TaskBot):
         self.sessions[room_id].game_over = True
         # self.room_to_read_only(room_id)
         self.sessions.clear_session(room_id)
+
+
+    def update_reward(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        score += reward
+        score = round(score, 2)
+        self.sessions[room_id].points["score"] = max(0, score)
+
+    def update_title_points(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        correct = 0
+        wrong = 0
+        if reward == 0:
+            wrong += 1
+        elif reward == 1:
+            correct += 1
+        # for board in self.sessions[room_id].points["history"]:
+        #     if board["wrong"] == 0:
+        #         correct += board["correct"]
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "setting point stand in title")
 
 
 if __name__ == "__main__":
