@@ -11,7 +11,6 @@ from .config import *
 class Dataloader(list):
     def __init__(self, path):
         self.path = path
-        self.base_link = INSTRUCTION_BASE_LINK
         self.get_boards()
 
     def get_instructions_link(self, state_id):
@@ -33,9 +32,8 @@ class Dataloader(list):
         mapping = defaultdict(list)
         with self.path.open(encoding="utf-8") as infile:
             for line in infile:
-                level, board = line.strip().split("\t")
-                board = json.loads(board)
-                mapping[int(level)].append(board)
+                state = json.loads(line)
+                mapping[int(state["level"])].append(state)
 
         # sort levels
         mapping = dict(sorted(mapping.items()))
@@ -45,9 +43,7 @@ class Dataloader(list):
         for level in cycle(mapping.keys()):
             sample = random.sample(mapping[level], BOARDS_PER_LEVEL)
             for board in sample:
-                state_id = board["state_id"]
-                instructions = self.get_instructions_link(state_id)
-                self.append((board, instructions))
+                self.append((board["state"], board["instructions"]))
                 added += 1
 
                 if added == BOARDS_PER_ROOM:
