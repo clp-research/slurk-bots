@@ -1021,20 +1021,20 @@ class CoCoBot(TaskBot):
         self.sessions[room_id].timer.reset()
         self.sessions[room_id].states.pop(0)
 
+        if not self.sessions[room_id].states:
+            # self.close_game(room_id)
+            self.switch_roles(room_id)
+            self.sessions[room_id].states.get_boards()
+
         if isinstance(self.sessions[room_id].states[0], str) is True:
             if self.sessions[room_id].states[0] == "switch":
                 self.switch_roles(room_id)
                 self.sessions[room_id].states.pop(0)
 
-        logging.debug(self.sessions[room_id].states)
         self.load_state(room_id)
 
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
-        if not self.sessions[room_id].states:
-            # self.close_game(room_id)
-            self.sessions[room_id].states.get_boards()
-
         # get current state
         this_state, descriptions = self.sessions[room_id].states[0]
         client = self.sessions[room_id].golmi_client
