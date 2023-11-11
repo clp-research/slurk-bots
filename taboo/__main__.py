@@ -11,10 +11,9 @@ from threading import Timer
 
 import random
 
-
 LOG = logging.getLogger(__name__)
 
-TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
+TIMEOUT_TIMER = 1  # minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 3  # minutes if a user is alone in a room
 
 
@@ -64,6 +63,7 @@ class Session:
         self.game_over = False
         self.win = False
         self.guesser = None
+        self.timer = None
 
     def close(self):
         pass
@@ -126,7 +126,9 @@ class TabooBot(TaskBot):
             user = data["user"]
             message = data["message"]
             room_id = data["room"]
-            self.sio.emit("text", {"message": message, "room": room_id})
+            self.sio.emit(
+                "text", {"message": message, "room": room_id, }
+            )
 
         @self.sio.event
         def status(data):
@@ -137,6 +139,8 @@ class TabooBot(TaskBot):
 
             # automatically creates a new session if not present
             this_session = self.sessions[room_id]
+            timer = RoomTimer(self.timeout_close_game, room_id)
+            self.sessions[room_id].timer = timer
 
             # don't do this for the bot itself
             if user["id"] == self.user:
@@ -266,6 +270,15 @@ class TabooBot(TaskBot):
                         {
                             "message": f"You used the word to guess '{word_to_guess}'! {new_line}GAME OVER",
                             "room": room_id,
+                            "receiver_id": this_session.explainer,
+                        },
+                    )
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"{data['user']['name']} used the word to guess. You both lose!",
+                            "room": room_id,
+                            "receiver_id": this_session.guesser,
                         },
                     )
                     self.sessions.game_over = True
@@ -278,11 +291,38 @@ class TabooBot(TaskBot):
                         "room": room_id,
                     },
                 )
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": f"{data['user']['name']} guessed the word. You both win :)",
+                        "room": room_id,
+                        "receiver_id": this_session.explainer,
+                    },
+                )
                 self.sessions.win = True
 
-        def remove_punctuation(text: str) -> str:
-            text = text.translate(str.maketrans("", "", string.punctuation))
-            return text
+    def remove_punctuation(text: str) -> str:
+        text = text.translate(str.maketrans("", "", string.punctuation))
+        return text
+
+    def timeout_close_game(self, room_id, status):
+        self.sio.emit(
+            "text",
+            {"message": "The room is closing because of inactivity", "room": room_id},
+        )
+        # self.confirmation_code(room_id, status)
+        self.close_game(room_id)
+
+    def close_game(self, room_id):
+        """Erase any data structures no longer necessary."""
+        self.sio.emit(
+            "text",
+            {"message": "The room is closing, see you next time 👋", "room": room_id},
+        )
+
+        self.sessions[room_id].game_over = True
+        # self.room_to_read_only(room_id)
+        self.sessions.clear_session(room_id)
 
 
 if __name__ == "__main__":
