@@ -119,6 +119,16 @@ class TabooBot(TaskBot):
             "Applesauce": ["fruit", "tree", "glass", "preserving"],
             "Beef patty": ["pork", "ground", "steak"],
         }
+        # self.json_data = self.get_taboo_data()
+
+    def get_taboo_data(self):
+        # experiments = load_json("data/instances.json", "taboo")
+        # experiment_1 = experiments["experiments"][0]
+        # game_1 = experiment_1["game_instances"][0]
+        # return game_1
+        data = json.load("/Users/sandrasanchezp/Desktop/slurk-bots/taboo/data/instances.json")
+        return data
+
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -366,40 +376,6 @@ class TabooBot(TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "setting point stand in title")
-
-def load_json(file_name: str, game_name: str, is_results_file=False) -> Dict:
-    data = load_file(file_name, game_name, file_ending=".json", is_results_file=is_results_file)
-    data = json.loads(data)
-    return data
-
-
-def load_file(file_name: str, game_name: str = None, file_ending: str = None, is_results_file=False) -> str:
-    if file_ending and not file_name.endswith(file_ending):
-        file_name = file_name + file_ending
-    fp = file_path(file_name, game_name, is_results_file)
-    with open(fp, encoding='utf8') as f:
-        data = f.read()
-    return data
-
-
-def file_path(file_name: str, game_name: str = None, is_results_file=False) -> str:
-    if is_results_file:
-        return os.path.join(results_dir(game_name), file_name)
-    if game_name:
-        return os.path.join(game_dir(game_name), file_name)
-    return os.path.join(project_root(), file_name)
-
-
-def game_dir(game_name: str) -> str:
-    return os.path.join(project_root(), "games", game_name)
-
-
-def results_dir(game_name: str) -> str:
-    return os.path.join(project_root(), "results", game_name)
-
-
-def project_root():
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 if __name__ == "__main__":
