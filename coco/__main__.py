@@ -31,17 +31,21 @@ class CoCoBot(TaskBot):
 
     def modify_layout(self, room_id, receiver_id=None):
         base_json = {"receiver_id": receiver_id} if receiver_id is not None else {}
-        
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/header",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"height: 40px", **base_json}
+            json={"attribute": "style", "value": f"height: 40px", **base_json},
         )
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"height: 90%; width:70%; top: 40px", **base_json},
+            json={
+                "attribute": "style",
+                "value": f"height: 90%; width:70%; top: 40px",
+                **base_json,
+            },
         )
 
         response = requests.patch(
