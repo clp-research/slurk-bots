@@ -72,6 +72,70 @@ class TabooBot(TaskBot):
         #             "Beef patty": ["pork", "ground", "steak"],
         #         }
 
+    def post_init(self, waiting_room):
+        """
+        save extra variables after the __init__() method has been called
+        and create the init_base_dict: a dictionary containing
+        needed arguments for the init event to send to the JS frontend
+        """
+        self.waiting_room = waiting_room
+
+    def on_task_room_creation(self, data):
+        """This function is executed as soon as 2 users are paired and a new
+              task took is created
+              """
+        room_id = data["room"]
+        task_id = data["task"]
+
+        logging.debug(f"A new task room was created with id: {data['task']}")
+        logging.debug(f"This bot is looking for task id: {self.task_id}")
+        if task_id is not None and task_id == self.task_id:
+            # modify layout
+            for usr in data["users"]:
+                self.received_waiting_token.discard(usr["id"])
+                # create a new session for these users
+            logging.debug("Create data for the new task room...")
+            this_session = self.sessions[room_id]
+
+
+            # join the newly created room
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+    #         roles
+            for user in data["users"]:
+                this_session.players.append({**user, "status": "joined", "wins": 0})
+
+            this_session.word_to_guess = random.choice(
+                list(self.taboo_data.keys())
+            )
+            # 2) Choose an explainer
+            this_session.pick_explainer()
+
+            # 3) Tell the explainer about the word
+            word_to_guess = this_session.word_to_guess
+            taboo_words = ", ".join(self.taboo_data[word_to_guess])
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"Your task is to explain the word {word_to_guess}. You cannot use the following words: {taboo_words}",
+                    "room": room_id,
+                    "receiver_id": this_session.explainer,
+                },
+            )
+            # 4) Tell everyone else that the game has started
+            for player in this_session.players:
+                if player["id"] != this_session.explainer:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": "The game has started. Try to guess the word!",
+                            "room": room_id,
+                            "receiver_id": player["id"],
+                        },
+                    )
+
 
 
     @staticmethod
@@ -100,8 +164,9 @@ class TabooBot(TaskBot):
             user = data["user"]
 
             # automatically creates a new session if not present
-            this_session = self.sessions[room_id]
+            # this_session = self.sessions[room_id]
 
+            # ???
             # don't do this for the bot itself
             if user["id"] == self.user:
                 return
@@ -117,45 +182,45 @@ class TabooBot(TaskBot):
                     },
                 )
 
-                this_session.players.append({**user, "status": "joined", "wins": 0})
+                # this_session.players.append({**user, "status": "joined", "wins": 0})
 
-                if len(this_session.players) < 2:
-                    self.sio.emit(
-                        "text",
-                        {"message": "Let's wait for more players.", "room": room_id},
-                    )
-                else:
+                # if len(this_session.players) < 2:
+                #     self.sio.emit(
+                #         "text",
+                #         {"message": "Let's wait for more players.", "room": room_id},
+                #     )
+                # else:
                     # TODO: check whether a game is already in progress
                     # start a game
                     # 1) Choose a word
-                    this_session.word_to_guess = random.choice(
-                        list(self.taboo_data.keys())
-                    )
-                    # 2) Choose an explainer
-                    this_session.pick_explainer()
-
-                    # 3) Tell the explainer about the word
-                    word_to_guess = this_session.word_to_guess
-                    taboo_words = ", ".join(self.taboo_data[word_to_guess])
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"Your task is to explain the word {word_to_guess}. You cannot use the following words: {taboo_words}",
-                            "room": room_id,
-                            "receiver_id": this_session.explainer,
-                        },
-                    )
-                    # 4) Tell everyone else that the game has started
-                    for player in this_session.players:
-                        if player["id"] != this_session.explainer:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": "The game has started. Try to guess the word!",
-                                    "room": room_id,
-                                    "receiver_id": player["id"],
-                                },
-                            )
+                    # this_session.word_to_guess = random.choice(
+                    #     list(self.taboo_data.keys())
+                    # )
+                    # # 2) Choose an explainer
+                    # this_session.pick_explainer()
+                    #
+                    # # 3) Tell the explainer about the word
+                    # word_to_guess = this_session.word_to_guess
+                    # taboo_words = ", ".join(self.taboo_data[word_to_guess])
+                    # self.sio.emit(
+                    #     "text",
+                    #     {
+                    #         "message": f"Your task is to explain the word {word_to_guess}. You cannot use the following words: {taboo_words}",
+                    #         "room": room_id,
+                    #         "receiver_id": this_session.explainer,
+                    #     },
+                    # )
+                    # # 4) Tell everyone else that the game has started
+                    # for player in this_session.players:
+                    #     if player["id"] != this_session.explainer:
+                    #         self.sio.emit(
+                    #             "text",
+                    #             {
+                    #                 "message": "The game has started. Try to guess the word!",
+                    #                 "room": room_id,
+                    #                 "receiver_id": player["id"],
+                    #             },
+                    #         )
 
             elif event == "leave":
                 self.sio.emit(
@@ -163,21 +228,21 @@ class TabooBot(TaskBot):
                     {"message": f"{user['name']} has left the game.", "room": room_id},
                 )
 
-                # remove this user from current session
-                this_session.players = list(
-                    filter(
-                        lambda player: player["id"] != user["id"], this_session.players
-                    )
-                )
-
-                if len(this_session.players) < 2:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "You are alone in the room, let's wait for some more players.",
-                            "room": room_id,
-                        },
-                    )
+                # # remove this user from current session
+                # this_session.players = list(
+                #     filter(
+                #         lambda player: player["id"] != user["id"], this_session.players
+                #     )
+                # )
+                #
+                # if len(this_session.players) < 2:
+                #     self.sio.emit(
+                #         "text",
+                #         {
+                #             "message": "You are alone in the room, let's wait for some more players.",
+                #             "room": room_id,
+                #         },
+                #     )
 
         # @self.sio.event
         # def text_message(data):
@@ -363,6 +428,18 @@ if __name__ == "__main__":
     # create commandline parser
     parser = TabooBot.create_argparser()
 
+
+    if "WAITING_ROOM" in os.environ:
+        waiting_room = {"default": os.environ["WAITING_ROOM"]}
+    else:
+        waiting_room = {"required": True}
+    parser.add_argument(
+        "--waiting_room",
+        type=int,
+        help="room where users await their partner",
+        **waiting_room,
+    )
+
     parser.add_argument(
         "--taboo_data",
         help="json file containing words",
@@ -373,6 +450,8 @@ if __name__ == "__main__":
 
     # create bot instance
     taboo_bot = TabooBot(args.token, args.user, args.task, args.host, args.port)
+
+    taboo_bot.post_init(args.waiting_room)
 
 
     # taboo_bot.taboo_data = args.taboo_data
