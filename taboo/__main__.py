@@ -26,6 +26,7 @@ class Session:
         self.explainer = None
         self.word_to_guess = None
         self.guesses = 0
+        self.guessed = False
 
     def close(self):
         pass
@@ -249,34 +250,48 @@ class TabooBot(TaskBot):
                 if explanation_legal:
                     for player in this_session.players:
                         if player["id"] != this_session.explainer:
-                            send_message_to_user(self.sio, f"{data['command']}",
+                            send_message_to_user(self.sio, f"HINT: {data['command']}",
                                                  room_id, player["id"])
                 else:
                     send_message_to_user(self.sio, f"You used the taboo word. You lost.",
                                          room_id, this_session.explainer)
 
             else:
-                #guesser sent the command
+                #GUESSER sent the command
 
-                this_session.guesses += 1
-
-                while this_session.guesses < 3:
-
-                    if this_session.word_to_guess in data["command"]:
+                #  before 2 guesses were made
+                if this_session.guesses < 2:
+                    this_session.guesses += 1
+                    if check_guess(this_session.word_to_guess, data["command"]):
                         for player in this_session.players:
-                            if player["id"] != this_session.explainer:
-                                send_message_to_user(self.sio,f"{this_session.word_to_guess} was correct!",
+                            send_message_to_user(self.sio,f"GUESS {this_session.guesses}: '{this_session.word_to_guess}' was correct! "
+                                                          f"You both win",
                                              room_id, player["id"])
                         sleep(1)
                         self.close_room(room_id)
+                    else:
+                        for player in this_session.players:
+                            send_message_to_user(self.sio, f"GUESS {this_session.guesses} '{data['command']}' was false",
+                                                 room_id, player["id"])
 
-                # why does it get printed 3 times??
-                for player in this_session.players:
-                    if player["id"] != this_session.explainer:
-                        send_message_to_user(self.sio, f"You already used 3 guesses. You lost.",
-                                         room_id, player["id"])
-                sleep(1)
-                self.close_room(room_id)
+                            if player["id"] == this_session.explainer:
+                                send_message_to_user(self.sio, f"Please provide a new description",
+                                                     room_id, this_session.explainer)
+
+                else:
+                    # last guess (guess 3)
+                    this_session.guesses += 1
+                    if check_guess(this_session.word_to_guess, data["command"]):
+                        for player in this_session.players:
+                            send_message_to_user(self.sio,f" GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
+                                                              f"You both win.",
+                                             room_id, player["id"])
+                    else:
+                        for player in this_session.players:
+                            send_message_to_user(self.sio, f"3 guesses have been already used. You lost.",
+                                                     room_id, player["id"])
+                    sleep(1)
+                    self.close_room(room_id)
 
 
     def close_room(self, room_id):
@@ -316,6 +331,15 @@ def send_message_to_user(sio_object, message, room, receiver):
             "receiver_id": receiver
         },
     )
+
+
+def check_guess(correct_answer, user_guess):
+    if correct_answer in user_guess:
+        return True
+    return False
+
+
+
 
 
 
