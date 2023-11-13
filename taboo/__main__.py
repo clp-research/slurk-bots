@@ -253,8 +253,12 @@ class TabooBot(TaskBot):
                             send_message_to_user(self.sio, f"HINT: {data['command']}",
                                                  room_id, player["id"])
                 else:
-                    send_message_to_user(self.sio, f"You used the taboo word. You lost.",
-                                         room_id, this_session.explainer)
+                    for player in this_session.players:
+                        send_message_to_user(self.sio, f"The taboo word was used in the explanation. You lost.",
+                                         room_id, player["id"])
+                    sleep(1)
+                    self.close_room(room_id)
+
 
             else:
                 #GUESSER sent the command
