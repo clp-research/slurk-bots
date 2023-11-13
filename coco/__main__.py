@@ -623,7 +623,7 @@ class CoCoBot(TaskBot):
                             return
 
                         this_client.clear_state("wizard_working")
-                        sthis_session.current_action = ActionNode.new_tree()
+                        this_session.current_action = ActionNode.new_tree()
 
                     elif event == "show_progress":
                         right_user = self.check_role(user_id, "wizard", room_id)
