@@ -336,18 +336,22 @@ class TabooBot(TaskBot):
 
     def update_title_points(self, room_id, reward):
         score = self.sessions[room_id].points["score"]
-        correct = self.sessions[room_id].points["history"][-1]["correct"]
-        wrong = self.sessions[room_id].points["history"][-1]["wrong"]
+        correct = self.sessions[room_id].points["history"][0]["correct"]
+        wrong = self.sessions[room_id].points["history"][0]["wrong"]
         if reward == 0:
             wrong += 1
         elif reward == 1:
             correct += 1
+
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
             json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
+        self.sessions[room_id].points["history"][0]["correct"] = correct
+        self.sessions[room_id].points["history"][0]["wrong"] = wrong
+
         self.request_feedback(response, "setting point stand in title")
 
     def next_round(self, room_id):
