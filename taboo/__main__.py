@@ -152,17 +152,20 @@ class TabooBot(TaskBot):
 
         @self.sio.event
         def command(data):
-            """Parse user commands."""
+            """Parse user commands, which are typed with a preceding '/'."""
+            LOG.debug(f"Received a command from {data['user']['name']}.")
+
             room_id = data["room"]
             user_id = data["user"]["id"]
+
+            this_session = self.sessions[room_id]
+            this_session.timer.reset()
+            word_to_guess = this_session.word_to_guess
 
             # do not process commands from itself
             if user_id == self.user:
                 return
 
-            self.sessions[room_id].timer.reset()
-            this_session = self.sessions[room_id]
-            word_to_guess = this_session.word_to_guess
             # explainer
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
@@ -178,6 +181,7 @@ class TabooBot(TaskBot):
                         "receiver_id": this_session.guesser,
                     },
                 )
+                # check whether the user used a forbidden word
                 for taboo_word in self.taboo_data[word_to_guess]:
                     if taboo_word.lower() in command:
                         self.sio.emit(
@@ -196,11 +200,29 @@ class TabooBot(TaskBot):
                                 "receiver_id": this_session.guesser,
                             },
                         )
-                        this_session.played_words.append(word_to_guess)
-                        this_session.rounds_left -= 1
-                        self.update_reward(room_id, 0)
-                        self.update_title_points(room_id, 0)
-                        self.next_round(room_id)
+                        self.process_move(room_id, 0)
+                        #todo: process_explainer_move
+
+                    # check whether the user used the word to guess
+                    elif word_to_guess.lower() in command:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"You used the word to guess '{word_to_guess}'! GAME OVER",
+                                "room": room_id,
+                                "receiver_id": this_session.explainer,
+                            },
+                        )
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"{data['user']['name']} used the word to guess. You both lose!",
+                                "room": room_id,
+                                "receiver_id": this_session.guesser,
+                            },
+                        )
+                        self.process_move(room_id, 0)
+                    # If the hint is valid it gets sent to the guesser
                     else:
                         self.sio.emit(
                             "text",
@@ -413,7 +435,40 @@ class TabooBot(TaskBot):
                 #                 "receiver_id": user_id,
                 #             },
                 #         )
-
+            elif this_session.guesser == user_id:
+                LOG.debug(f"{data['user']['name']} is the guesser.")
+                command = data['command'].lower()
+                logging.debug(
+                    f"Received a command from {data['user']['name']}: {data['command']}"
+                )
+                if word_to_guess.lower() in data["command"].lower():
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"{word_to_guess} was correct! YOU WON :)",
+                            "room": room_id,
+                            "receiver_id": this_session.guesser
+                        },
+                    )
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"{data['user']['name']} guessed the word. You both win :)",
+                            "room": room_id,
+                            "receiver_id": this_session.explainer,
+                        },
+                    )
+                    self.process_move(room_id, 1)
+                else:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"{command} was not correct.",
+                            "room": room_id,
+                            "receiver_id": this_session.guesser
+                        },
+                    )
+                    self.process_move(room_id, 0)
         @self.sio.event
         def status(data):
             """Triggered when a user enters or leaves a room."""
@@ -485,9 +540,10 @@ class TabooBot(TaskBot):
             user_id = data["user"]["id"]
 
             this_session = self.sessions[room_id]
+            this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
-            new_line = '\n'
 
+            # do not process commands from itself
             if user_id == self.user:
                 return
 
@@ -514,19 +570,14 @@ class TabooBot(TaskBot):
                                 "receiver_id": this_session.guesser,
                             },
                         )
-                        this_session.played_words.append(word_to_guess)
-                        this_session.rounds_left -= 1
-                        self.update_reward(room_id, 0)
-                        self.update_title_points(room_id, 0)
-                        self.next_round(room_id)
-
+                        self.process_move(room_id, 0)
 
                 # check whether the user used the word to guess
                 if word_to_guess.lower() in message:
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"You used the word to guess '{word_to_guess}'! {new_line}GAME OVER",
+                            "message": f"You used the word to guess '{word_to_guess}'! GAME OVER",
                             "room": room_id,
                             "receiver_id": this_session.explainer,
                         },
@@ -540,17 +591,13 @@ class TabooBot(TaskBot):
                         },
                     )
 
-                    this_session.played_words.append(word_to_guess)
-                    this_session.rounds_left -= 1
-                    self.update_reward(room_id, 0)
-                    self.update_title_points(room_id, 0)
-                    self.next_round(room_id)
+                    self.process_move(room_id, 0)
             # Guesser guesses word
             elif word_to_guess.lower() in data["message"].lower():
                 self.sio.emit(
                     "text",
                     {
-                        "message": f"{word_to_guess} was correct! {new_line}YOU WON :)",
+                        "message": f"{word_to_guess} was correct! YOU WON :)",
                         "room": room_id,
                         "receiver_id": this_session.guesser
                     },
@@ -563,11 +610,7 @@ class TabooBot(TaskBot):
                         "receiver_id": this_session.explainer,
                     },
                 )
-                this_session.played_words.append(word_to_guess)
-                this_session.rounds_left -= 1
-                self.update_reward(room_id, 1)
-                self.update_title_points(room_id, 1)
-                self.next_round(room_id)
+                self.process_move(room_id, 1)
 
     def remove_punctuation(text: str) -> str:
         text = text.translate(str.maketrans("", "", string.punctuation))
@@ -661,6 +704,16 @@ class TabooBot(TaskBot):
                         },
                     )
 
+    def validate_input(self, room_id):
+        pass
+
+    def process_move(self, room_id, reward: int):
+        this_session = self.sessions[room_id]
+        this_session.played_words.append(this_session.word_to_guess)
+        this_session.rounds_left -= 1
+        self.update_reward(room_id, reward)
+        self.update_title_points(room_id, reward)
+        self.next_round(room_id)
 
 if __name__ == "__main__":
     # set up logging configuration
