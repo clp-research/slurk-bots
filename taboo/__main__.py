@@ -1,12 +1,10 @@
 from collections import defaultdict
 import logging
-import os
-import json
 
 import requests
 from time import sleep
 
-from taboo.config import TABOO_WORDS
+from taboo.config import TABOO_WORDS, EXPLAINER_PROMPT, GUESSER_PROMPT
 from templates import TaskBot
 
 import random
@@ -116,25 +114,23 @@ class TabooBot(TaskBot):
             # 3) Tell the explainer about the word
             word_to_guess = this_session.word_to_guess
             taboo_words = ", ".join(self.taboo_data[word_to_guess])
+
+            send_message_to_user(self.sio, EXPLAINER_PROMPT,
+                                 room_id, this_session.explainer)
             self.sio.emit(
                 "text",
                 {
-                    "message": f"Your task is to explain the word {word_to_guess}. You cannot use the following words: {taboo_words}",
+                    "message": f"Your task is to explain the word '{word_to_guess}'."
+                               f" You cannot use the following words: {taboo_words}",
                     "room": room_id,
                     "receiver_id": this_session.explainer,
                 },
             )
-            # 4) Tell everyone else that the game has started
+            # 4) Provide the instructions to the guesser
             for player in this_session.players:
                 if player["id"] != this_session.explainer:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "The game has started. Try to guess the word!",
-                            "room": room_id,
-                            "receiver_id": player["id"],
-                        },
-                    )
+                    send_message_to_user(self.sio, GUESSER_PROMPT,
+                                         room_id, player["id"])
 
 
 
@@ -310,8 +306,9 @@ class TabooBot(TaskBot):
                 LOG.debug(f"{data['user']['name']} is the explainer.")
 
             # check whether the user used a forbidden word
-                explanation_legal = check_explanation(data['command'],
-                                                       self.taboo_data[this_session.word_to_guess])
+                explanation_legal = check_explanation(data['command'].lower(),
+                                                       self.taboo_data[this_session.word_to_guess],
+                                                      this_session.word_to_guess)
                 if explanation_legal:
                     for player in this_session.players:
                         if player["id"] != this_session.explainer:
@@ -331,7 +328,7 @@ class TabooBot(TaskBot):
                 #  before 2 guesses were made
                 if this_session.guesses < 2:
                     this_session.guesses += 1
-                    if check_guess(this_session.word_to_guess, data["command"]):
+                    if check_guess(this_session.word_to_guess, data['command'].lower()):
                         for player in this_session.players:
                             send_message_to_user(self.sio,f"GUESS {this_session.guesses}: '{this_session.word_to_guess}' was correct! "
                                                           f"You both win",
@@ -350,7 +347,7 @@ class TabooBot(TaskBot):
                 else:
                     # last guess (guess 3)
                     this_session.guesses += 1
-                    if check_guess(this_session.word_to_guess, data["command"]):
+                    if check_guess(this_session.word_to_guess, data['command'].lower()):
                         for player in this_session.players:
                             send_message_to_user(self.sio,f" GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
                                                               f"You both win.",
@@ -412,13 +409,12 @@ def check_guess(correct_answer, user_guess):
 
 
 
-def check_explanation(explanation, taboo_words):
-    explanation_legal = True
+def check_explanation(explanation, taboo_words, word):
+    taboo_words.append(word)
     for word in taboo_words:
         if word in explanation:
-            explanation_legal = False
-            return explanation_legal
-    return explanation_legal
+            return False
+    return True
 
 
 if __name__ == "__main__":
