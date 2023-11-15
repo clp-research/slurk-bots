@@ -122,12 +122,9 @@ class TabooBot(TaskBot):
         }
         # self.json_data = self.get_taboo_data()
 
-    def get_taboo_data(self):
-        # experiments = load_json("data/instances.json", "taboo")
-        # experiment_1 = experiments["experiments"][0]
-        # game_1 = experiment_1["game_instances"][0]
-        # return game_1
-        data = json.load("/Users/sandrasanchezp/Desktop/slurk-bots/taboo/data/taboo_words.json")
+    def get_taboo_data(self, json_file):
+        file = open(json_file)
+        data = json.load(file)
         return data
 
     @staticmethod
@@ -457,12 +454,13 @@ class TabooBot(TaskBot):
         return text
 
     def timeout_close_game(self, room_id, status):
-        self.sio.emit(
-            "text",
-            {"message": "The room is closing because of inactivity", "room": room_id},
-        )
-        # self.confirmation_code(room_id, status)
-        self.close_game(room_id)
+        while self.sessions[room_id].game_over is False:
+            self.sio.emit(
+                "text",
+                {"message": "The room is closing because of inactivity", "room": room_id},
+            )
+            # self.confirmation_code(room_id, status)
+            self.close_game(room_id)
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
@@ -524,7 +522,7 @@ class TabooBot(TaskBot):
                  "room": room_id,
                  "receiver_id": this_session.guesser}
             )
-
+            
 
     def validate_input(self, room_id):
         pass
