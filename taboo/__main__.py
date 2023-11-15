@@ -26,11 +26,17 @@ class Session:
         self.guesses = 0
         self.guessed = False
 
+        # self.guesser = None
+
     def close(self):
         pass
 
     def pick_explainer(self):
+        # assuming there are only 2 players
         self.explainer = random.choice(self.players)["id"]
+        for player in self.players:
+            if player["id"] != self.explainer:
+                self.guesser = player["id"]
 
 #     game over
 
@@ -115,22 +121,14 @@ class TabooBot(TaskBot):
             word_to_guess = this_session.word_to_guess
             taboo_words = ", ".join(self.taboo_data[word_to_guess])
 
-            send_message_to_user(self.sio, EXPLAINER_PROMPT,
+            self.send_message_to_user(EXPLAINER_PROMPT,
                                  room_id, this_session.explainer)
-            self.sio.emit(
-                "text",
-                {
-                    "message": f"Your task is to explain the word '{word_to_guess}'."
+
+            self.send_message_to_user(f"Your task is to explain the word '{word_to_guess}'."
                                f" You cannot use the following words: {taboo_words}",
-                    "room": room_id,
-                    "receiver_id": this_session.explainer,
-                },
-            )
+                                      room_id, this_session.explainer)
             # 4) Provide the instructions to the guesser
-            for player in this_session.players:
-                if player["id"] != this_session.explainer:
-                    send_message_to_user(self.sio, GUESSER_PROMPT,
-                                         room_id, player["id"])
+            self.send_message_to_user(GUESSER_PROMPT, room_id, this_session.guesser)
 
 
 
@@ -150,6 +148,7 @@ class TabooBot(TaskBot):
             user = data["user"]
             message = data["message"]
             room_id = data["room"]
+            # to whom is it sent?
             self.sio.emit("text", {"message": message, "room": room_id})
 
         @self.sio.event
@@ -162,7 +161,7 @@ class TabooBot(TaskBot):
             # automatically creates a new session if not present
             # this_session = self.sessions[room_id]
 
-            # ???
+
             # don't do this for the bot itself
             if user["id"] == self.user:
                 return
@@ -170,13 +169,16 @@ class TabooBot(TaskBot):
             # someone joined a task room
             if event == "join":
                 # inform everyone about the join event
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": f"{user['name']} has joined the game.",
-                        "room": room_id,
-                    },
-                )
+
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": f"{user['name']} has joined the game.",
+                #         "room": room_id
+                #     },
+                # )
+                self.send_message_to_user(f"{user['name']} has joined the game.",
+                                          room_id)
 
                 # this_session.players.append({**user, "status": "joined", "wins": 0})
 
@@ -219,10 +221,13 @@ class TabooBot(TaskBot):
                     #         )
 
             elif event == "leave":
-                self.sio.emit(
-                    "text",
-                    {"message": f"{user['name']} has left the game.", "room": room_id},
-                )
+                # self.sio.emit(
+                #     "text",
+                #     {"message": f"{user['name']} has left the game.", "room": room_id}
+                #
+                # )
+                self.send_message_to_user(f"{user['name']} has left the game.",
+                                          room_id)
 
                 # # remove this user from current session
                 # this_session.players = list(
@@ -296,10 +301,10 @@ class TabooBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            this_session = self.sessions[room_id]
-
             if user_id == self.user:
                 return
+
+            this_session = self.sessions[room_id]
 
             # EXPLAINER sent a command
             if this_session.explainer == user_id:
@@ -310,13 +315,11 @@ class TabooBot(TaskBot):
                                                        self.taboo_data[this_session.word_to_guess],
                                                       this_session.word_to_guess)
                 if explanation_legal:
-                    for player in this_session.players:
-                        if player["id"] != this_session.explainer:
-                            send_message_to_user(self.sio, f"HINT: {data['command']}",
-                                                 room_id, player["id"])
+                    self.send_message_to_user(f"HINT: {data['command']}",
+                                                 room_id, this_session.guesser)
                 else:
                     for player in this_session.players:
-                        send_message_to_user(self.sio, f"The taboo word was used in the explanation. You lost.",
+                        self.send_message_to_user(f"The taboo word was used in the explanation. You both lost.",
                                          room_id, player["id"])
                     sleep(1)
                     self.close_room(room_id)
@@ -330,18 +333,19 @@ class TabooBot(TaskBot):
                     this_session.guesses += 1
                     if check_guess(this_session.word_to_guess, data['command'].lower()):
                         for player in this_session.players:
-                            send_message_to_user(self.sio,f"GUESS {this_session.guesses}: '{this_session.word_to_guess}' was correct! "
-                                                          f"You both win",
-                                             room_id, player["id"])
+                            self.send_message_to_user(f"GUESS {this_session.guesses}: "
+                                                    f"'{this_session.word_to_guess}' was correct! "
+                                                    f"You both win",
+                            room_id, player["id"])
                         sleep(1)
                         self.close_room(room_id)
                     else:
                         for player in this_session.players:
-                            send_message_to_user(self.sio, f"GUESS {this_session.guesses} '{data['command']}' was false",
+                            self.send_message_to_user(f"GUESS {this_session.guesses} '{data['command']}' was false",
                                                  room_id, player["id"])
 
                             if player["id"] == this_session.explainer:
-                                send_message_to_user(self.sio, f"Please provide a new description",
+                                self.send_message_to_user(f"Please provide a new description",
                                                      room_id, this_session.explainer)
 
                 else:
@@ -349,12 +353,12 @@ class TabooBot(TaskBot):
                     this_session.guesses += 1
                     if check_guess(this_session.word_to_guess, data['command'].lower()):
                         for player in this_session.players:
-                            send_message_to_user(self.sio,f" GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
+                            self.send_message_to_user(f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
                                                               f"You both win.",
                                              room_id, player["id"])
                     else:
                         for player in this_session.players:
-                            send_message_to_user(self.sio, f"3 guesses have been already used. You lost.",
+                            self.send_message_to_user(f"3 guesses have been already used. You lost.",
                                                      room_id, player["id"])
                     sleep(1)
                     self.close_room(room_id)
@@ -387,16 +391,25 @@ class TabooBot(TaskBot):
             LOG.error(f"Could not set room to read_only: {response.status_code}")
             response.raise_for_status()
 
+    def send_message_to_user(self, message, room, receiver=None):
+        if receiver:
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"{message}",
+                    "room": room,
+                    "receiver_id": receiver
+                },
+            )
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"{message}",
+                    "room": room
+                },
+            )
 
-def send_message_to_user(sio_object, message, room, receiver):
-    sio_object.emit(
-        "text",
-        {
-            "message": f"{message}",
-            "room": room,
-            "receiver_id": receiver
-        },
-    )
 
 
 def check_guess(correct_answer, user_guess):
