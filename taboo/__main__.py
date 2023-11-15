@@ -1,4 +1,5 @@
 from collections import defaultdict
+from .config import *
 import logging
 import os
 import string
@@ -19,6 +20,7 @@ TIMEOUT_TIMER = 1  # minutes of inactivity before the room is closed automatical
 LEAVE_TIMER = 3  # minutes if a user is alone in a room
 
 STARTING_POINTS = 0
+
 
 
 class RoomTimer:
@@ -114,12 +116,7 @@ class TabooBot(TaskBot):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
-
-        # TODO: read the game data from file
-        self.taboo_data = {
-            "Applesauce": ["fruit", "tree", "glass", "preserving"],
-            "Beef patty": ["pork", "ground", "steak"],
-        }
+        self.taboo_data = json.loads(wordlist.read_text())
         # self.json_data = self.get_taboo_data()
 
     def get_taboo_data(self, json_file):
@@ -156,7 +153,7 @@ class TabooBot(TaskBot):
             user_id = data["user"]["id"]
 
             this_session = self.sessions[room_id]
-            this_session.timer.reset()
+            # this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
 
             # do not process commands from itself
