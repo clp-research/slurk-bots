@@ -116,13 +116,21 @@ class TabooBot(TaskBot):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
-        self.taboo_data = json.loads(wordlist.read_text())
+        self.taboo_data = self.get_taboo_data()
         # self.json_data = self.get_taboo_data()
 
-    def get_taboo_data(self, json_file):
-        file = open(json_file)
-        data = json.load(file)
-        return data
+    def get_taboo_data(self):
+        # Get all instances
+        all_taboo_data = json.loads(all_words.read_text())
+        # select one experiment and instance
+        experiment_1 = all_taboo_data["experiments"][0]
+        index = random.randint(0, 18)
+        game = experiment_1["game_instances"][index]  # {'game_id': 0, 'target_word': 'length', 'related_word': ['stretch', 'plain', 'expansion']}
+        game_id = game['game_id']
+        target_word = game['target_word']
+        related_words = game['related_word']
+        return game
+
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -169,7 +177,7 @@ class TabooBot(TaskBot):
                 )
 
                 # check whether the user used a forbidden word
-                forbidden_words = self.taboo_data[word_to_guess]
+                forbidden_words = self.taboo_data['related_word']
                 for taboo_word in forbidden_words:
                     if taboo_word.lower() in command.lower():
                         self.sio.emit(
@@ -277,7 +285,7 @@ class TabooBot(TaskBot):
                 self.sio.emit(
                     "text",
                     {
-                        "message": f"{user['name']} has joined the game. ",
+                        "message": f"{user['name']} has joined the game.",
                         "room": room_id,
                     },
                 )
@@ -293,16 +301,14 @@ class TabooBot(TaskBot):
                     # self.next_round(room_id)
                     # start a game
                     # 1) Choose a word
-                    this_session.word_to_guess = random.choice(
-                        list(self.taboo_data.keys())
-                    )
+                    this_session.word_to_guess = self.taboo_data['target_word']
                     # 2) Choose an explainer and a guesser
                     this_session.pick_explainer()
                     this_session.pick_guesser()
 
                     # 3) Tell the explainer about the word
                     word_to_guess = this_session.word_to_guess
-                    taboo_words = ", ".join(self.taboo_data[word_to_guess])
+                    taboo_words = ", ".join(self.taboo_data['related_word'])
                     self.sio.emit(
                         "text",
                         {
@@ -369,7 +375,7 @@ class TabooBot(TaskBot):
                 LOG.debug(f"{data['user']['name']} is the explainer.")
                 message = data["message"]
                 # check whether the user used a forbidden word
-                for taboo_word in self.taboo_data[word_to_guess]:
+                for taboo_word in self.taboo_data['related_word']:
                     if taboo_word.lower() in message.lower():
                         self.sio.emit(
                             "text",
