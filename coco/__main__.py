@@ -715,7 +715,7 @@ class CoCoBot(TaskBot):
                                 "text",
                                 {
                                     "message": COLOR_MESSAGE.format(
-                                        message="You have to wait for your partner to terminate this episode",
+                                        message="You can move to the next episode by clicking on the button 'NEXT EPISODE'",
                                         color=WARNING_COLOR,
                                     ),
                                     "room": room_id,
@@ -726,17 +726,18 @@ class CoCoBot(TaskBot):
                         else:
                             this_session.can_load_next_episode = False
                             if data["command"]["answer"] == "no":
-                                self.sio.emit(
-                                    "text",
-                                    {
-                                        "message": COLOR_MESSAGE.format(
-                                            message="Before you can move to the next episode you have to agree wether this one is over",
-                                            color=WARNING_COLOR,
-                                        ),
-                                        "room": room_id,
-                                        "html": True,
-                                    },
-                                )
+                                return
+                                # self.sio.emit(
+                                #     "text",
+                                #     {
+                                #         "message": COLOR_MESSAGE.format(
+                                #             message="Before you can move to the next episode you have to agree wether this one is over",
+                                #             color=WARNING_COLOR,
+                                #         ),
+                                #         "room": room_id,
+                                #         "html": True,
+                                #     },
+                                # )
                             elif data["command"]["answer"] == "yes":
                                 # load next state
                                 self.load_next_state(room_id)
@@ -827,28 +828,28 @@ class CoCoBot(TaskBot):
                             "text",
                             {
                                 "message": (
-                                    "Your partner thinks this episode is over, do you agree? <br>"
+                                    "Do you confirm that this episode is over? <br>"
                                     "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
                                     "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
                                 ),
                                 "room": room_id,
-                                "receiver_id": other_usr["id"],
+                                "receiver_id": curr_usr["id"],
                                 "html": True,
                             },
                         )
 
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message=f"Waiting for confirmation from the Cocobot",
-                                    color=STANDARD_COLOR,
-                                ),
-                                "room": room_id,
-                                "html": True,
-                                "receiver_id": curr_usr["id"],
-                            },
-                        )
+                        # self.sio.emit(
+                        #     "text",
+                        #     {
+                        #         "message": COLOR_MESSAGE.format(
+                        #             message=f"Waiting for confirmation from the Cocobot",
+                        #             color=STANDARD_COLOR,
+                        #         ),
+                        #         "room": room_id,
+                        #         "html": True,
+                        #         "receiver_id": curr_usr["id"],
+                        #     },
+                        # )
 
                     elif event == "inspect":
                         gripper = this_client.get_mouse_gripper()
