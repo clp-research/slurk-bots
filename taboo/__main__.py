@@ -152,13 +152,13 @@ class TabooBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            this_session = self.sessions[room_id]
-            # this_session.timer.reset()
-            word_to_guess = this_session.word_to_guess
-
             # do not process commands from itself
             if user_id == self.user:
                 return
+
+            this_session = self.sessions[room_id]
+            # this_session.timer.reset()
+            word_to_guess = this_session.word_to_guess
 
             # explainer
             if this_session.explainer == user_id:
@@ -281,8 +281,6 @@ class TabooBot(TaskBot):
 
             # automatically creates a new session if not present
             this_session = self.sessions[room_id]
-            timer = RoomTimer(self.timeout_close_game, room_id)
-            this_session.timer = timer
 
             # don't do this for the bot itself
             if user["id"] == self.user:
@@ -374,7 +372,7 @@ class TabooBot(TaskBot):
             user_id = data["user"]["id"]
 
             this_session = self.sessions[room_id]
-            this_session.timer.reset()
+            # this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
 
             # do not process commands from itself
@@ -384,10 +382,10 @@ class TabooBot(TaskBot):
             # explainer
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
-                message = data["message"].lower()
+                message = data["message"]
                 # check whether the user used a forbidden word
                 for taboo_word in self.taboo_data[word_to_guess]:
-                    if taboo_word.lower() in message:
+                    if taboo_word.lower() in message.lower():
                         self.sio.emit(
                             "text",
                             {
