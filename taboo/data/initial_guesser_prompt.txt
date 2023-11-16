@@ -1,9 +1,18 @@
-You are playing a collaborative word guessing game in which you have to guess a target word that another player describes to you.
+   Welcome!
 
-You can make one guess at each trial. You win when you guess the target word. You lose when you cannot guess it in 3 tries.
+   You are playing a collaborative word guessing game in which you have to guess a target word that
+   another player describes to you.
 
-After each trial you will get a new hint from the other player. Explanations from your partner will start with "HINT".
+    Rules:
 
-Make your guesses by just saying the word using the following form: / <a word>. Do not forget to start your message with "/".
+    1) You can make one guess at each trial. You win when you guess the target word.
 
-Let us start.
+    2) You lose when you cannot guess it in 3 tries.
+
+    3) After each trial you will get a new hint from the other player.
+
+    Explanations from your partner will start with "HINT".
+
+    Make your guesses by just saying the word using the following form:  <a word>.
+
+    Please type **ready** to begin the game.

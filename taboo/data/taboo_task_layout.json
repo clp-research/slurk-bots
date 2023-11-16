@@ -10,11 +10,17 @@
             "layout-type": "div",
             "id": "",
             "style": "margin: 5px 10px; min-height: 20px"
+        },
+
+        {
+          "layout-type": "div",
+          "id": "instr",
+          "style": "white-space: pre-wrap;"
         }
     ],
     "scripts": {
         "incoming-text": "markdown",
-        "submit-message": "send-message",
+        "submit-message": "send-intercepted-message",
         "print-history": ["attribute-history", "markdown-history"],
         "typing-users": "typing-users"
     },
