@@ -78,7 +78,7 @@ class CoCoBot(TaskBot):
 
             roles = [
                 {"role": "player", "name": "Programmer"},
-                {"role": "wizard", "name": "Program Editor"},
+                {"role": "wizard", "name": "Cocobot"},
             ]
             random.shuffle(roles)
 
@@ -805,7 +805,7 @@ class CoCoBot(TaskBot):
                                 "text",
                                 {
                                     "message": COLOR_MESSAGE.format(
-                                        message=f"Give the Program Editor the time to check the boards",
+                                        message=f"Give the Cocobot the time to check the boards",
                                         color=WARNING_COLOR,
                                     ),
                                     "room": room_id,
@@ -841,7 +841,7 @@ class CoCoBot(TaskBot):
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
-                                    message=f"Waiting for confirmation from the Program Editor",
+                                    message=f"Waiting for confirmation from the Cocobot",
                                     color=STANDARD_COLOR,
                                 ),
                                 "room": room_id,
@@ -973,7 +973,7 @@ class CoCoBot(TaskBot):
         golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
         curr_usr, other_usr = self.sessions[room_id].players
 
-        names = {"wizard": "Program Editor", "player": "Programmer"}
+        names = {"wizard": "Cocobot", "player": "Programmer"}
 
         # switch roles
         curr_usr["role"], other_usr["role"] = other_usr["role"], curr_usr["role"]
