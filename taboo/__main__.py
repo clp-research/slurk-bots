@@ -228,14 +228,7 @@ class TabooBot(TaskBot):
                 logging.debug(
                     f"Received a command from {data['user']['name']}: {data['command']}"
                 )
-                # self.sio.emit(
-                #     "message_command",
-                #     {
-                #         "command": command,
-                #         "room": room_id,
-                #         "receiver_id": this_session.explainer,
-                #     },
-                # )
+
                 if word_to_guess.lower() in command:
                     self.sio.emit(
                         "text",
@@ -261,14 +254,6 @@ class TabooBot(TaskBot):
                             "message": f"{command} was not correct.",
                             "room": room_id,
                             "receiver_id": this_session.guesser
-                        },
-                    )
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"Give a new hint.",
-                            "room": room_id,
-                            "receiver_id": this_session.explainer
                         },
                     )
                     self.process_move(room_id, 0)
