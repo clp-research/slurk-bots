@@ -9,7 +9,7 @@
 
     2) The same rules apply for the related words that you will be given.
 
-    3) You have to reply in the form: <some text>.
+    3) Type the description of the word in the chat at the bottom of the page.
 
     Guesses from the other player will start with "GUESS".
 
@@ -21,4 +21,4 @@
 
     Important: You are under time pressure, give short descriptions that are to the point!
 
-    Please type **ready** to begin the game.
+    Please type "ready" to begin the game!

@@ -23,7 +23,6 @@ class Session:
         self.word_to_guess = None
         self.guesses = 0
         self.guessed = False
-        self.ready = False
         self.guesser = None
 
     def close(self):
@@ -100,9 +99,7 @@ class TabooBot(TaskBot):
             this_session = self.sessions[room_id]
 
             for usr in data["users"]:
-                this_session.players.append(
-                    {**usr, "msg_n": 0, "status": "joined"}
-                )
+                this_session.players.append({**usr, "msg_n": 0, "status": "joined"})
 
             # join the newly created room
             response = requests.post(
@@ -138,9 +135,6 @@ class TabooBot(TaskBot):
             if not response_g.ok:
                 LOG.error(f"Could not set task instruction: {response.status_code}")
                 response_g.raise_for_status()
-
-
-
 
             # self.send_message_to_user(EXPLAINER_PROMPT, room_id, this_session.explainer)
             #
@@ -187,7 +181,6 @@ class TabooBot(TaskBot):
             # don't do this for the bot itself
             if user["id"] == self.user:
                 return
-
 
             # someone joined a task room
             if event == "join":
@@ -352,7 +345,9 @@ class TabooBot(TaskBot):
                     #  before 2 guesses were made
                     if this_session.guesses < 2:
                         this_session.guesses += 1
-                        if check_guess(this_session.word_to_guess, data["command"].lower()):
+                        if check_guess(
+                            this_session.word_to_guess, data["command"].lower()
+                        ):
                             for player in this_session.players:
                                 self.send_message_to_user(
                                     f"GUESS {this_session.guesses}: "
@@ -381,7 +376,9 @@ class TabooBot(TaskBot):
                     else:
                         # last guess (guess 3)
                         this_session.guesses += 1
-                        if check_guess(this_session.word_to_guess, data["command"].lower()):
+                        if check_guess(
+                            this_session.word_to_guess, data["command"].lower()
+                        ):
                             for player in this_session.players:
                                 self.send_message_to_user(
                                     f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
@@ -402,7 +399,6 @@ class TabooBot(TaskBot):
     def _command_ready(self, session, room_id, user_id):
         """Must be sent to begin a conversation."""
         # identify the user that has not sent this event
-
         curr_usr, other_usr = session.players
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
@@ -412,12 +408,13 @@ class TabooBot(TaskBot):
             # sleep(0.5)
             self.sio.emit(
                 "text",
-                    {
-                    "message": "You have already typed 'ready'.",
+                {
+                    "message": "You have already typed **ready**.",
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
-                    },
-                    )
+                    "html": True,
+                },
+            )
             return
         curr_usr["status"] = "ready"
 
@@ -426,14 +423,17 @@ class TabooBot(TaskBot):
             self.sio.emit(
                 "text",
                 {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
-                )
+            )
             self.sio.emit(
                 "text",
-                {"message": "Wait a bit for the first hint about the word you need to guess", "room": room_id, "receiver_id": session.guesser},
-                )
+                {
+                    "message": "Wait a bit for the first hint about the word you need to guess",
+                    "room": room_id,
+                    "receiver_id": session.guesser,
+                },
+            )
 
-        #     now send the word to the explainer?? Here?
-            session.ready = True
+            #     now send the word to the explainer?? Here?
             taboo_words = ", ".join(self.taboo_data[session.word_to_guess])
             self.send_message_to_user(
                 f"Your task is to explain the word '{session.word_to_guess}'."
