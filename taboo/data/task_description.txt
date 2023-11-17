@@ -1,1 +1,18 @@
-Guess the taboo word/Explain the taboo word without using the related words.
+Welcome!
+
+   You are playing a collaborative word guessing game in which you have to guess a target word that
+   another player describes to you.
+
+    Rules:
+
+    1) You can make one guess at each trial. You win when you guess the target word.
+
+    2) You lose when you cannot guess it in 3 tries.
+
+    3) After each trial you will get a new hint from the other player.
+
+    Explanations from your partner will start with "HINT".
+
+    Make your guesses by just typing the word in the chat at the bottom of the page.
+
+     Please type "ready" to begin the game!
