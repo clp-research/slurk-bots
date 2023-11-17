@@ -117,6 +117,11 @@ class TabooBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
         self.taboo_data = self.get_taboo_data()
+        self.instructions = self.read_instructions()
+
+    def read_instructions(self):
+        return task_description.read_text()
+
 
     def get_taboo_data(self, difficulty_level=None):
         # Get all instances
@@ -315,6 +320,7 @@ class TabooBot(TaskBot):
                     # 2) Choose an explainer and a guesser
                     this_session.pick_explainer()
                     this_session.pick_guesser()
+                    self.show_instructions(room_id)
 
                     # 3) Tell the explainer about the word
                     word_to_guess = this_session.word_to_guess
@@ -533,6 +539,46 @@ class TabooBot(TaskBot):
         self.update_reward(room_id, reward)
         self.update_title_points(room_id, reward)
         self.next_round(room_id)
+
+    def show_instructions(self, room_id):
+        """Update the task description for the players."""
+        LOG.debug("Update the task description for the players.")
+        # guarantee fixed user order - necessary for update due to rejoin
+        users = sorted(self.sessions[room_id].players, key=lambda x: x["id"])
+
+        if self.instructions:
+            instructions = self.instructions
+            # show a different image to each user
+            for usr in users:
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={"attribute": "src", "value": instructions, "receiver_id": usr["id"]},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(f"Could not set image: {response.status_code}")
+                    response.raise_for_status()
+
+            # the task for both users is the same - no special receiver
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/instr_title",
+                json={"text": TASK_TITLE},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not set task instruction title: {response.status_code}"
+                )
+                response.raise_for_status()
+
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/instr",
+                json={"text": "This should be the task description variable, read from file"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(f"Could not set task instruction: {response.status_code}")
+                response.raise_for_status()
 
 
 if __name__ == "__main__":
