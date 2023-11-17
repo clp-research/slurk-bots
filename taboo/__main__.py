@@ -409,10 +409,9 @@ class TabooBot(TaskBot):
             self.sio.emit(
                 "text",
                 {
-                    "message": "You have already typed **ready**.",
+                    "message": "You have already typed 'ready'.",
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
-                    "html": True,
                 },
             )
             return
