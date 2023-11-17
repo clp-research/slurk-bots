@@ -119,16 +119,27 @@ class TabooBot(TaskBot):
         self.taboo_data = self.get_taboo_data()
         # self.json_data = self.get_taboo_data()
 
-    def get_taboo_data(self):
+    def get_taboo_data(self, difficulty_level=None):
         # Get all instances
         all_taboo_data = json.loads(all_words.read_text())
-        # select one experiment and instance
-        experiment_1 = all_taboo_data["experiments"][0]
+        if difficulty_level is None:
+            # select one random difficulty level
+            random_level = random.randint(0, 2)
+            print(random_level)
+            experiment = all_taboo_data["experiments"][random_level]
+        if difficulty_level == 'beginner':
+            experiment = all_taboo_data["experiments"][0]
+        elif difficulty_level == 'intermediate':
+            experiment = all_taboo_data["experiments"][1]
+        elif difficulty_level == 'advanced':
+            experiment = all_taboo_data["experiments"][2]
+        # Select one random experiment and instance
         index = random.randint(0, 18)
-        game = experiment_1["game_instances"][index]  # {'game_id': 0, 'target_word': 'length', 'related_word': ['stretch', 'plain', 'expansion']}
-        game_id = game['game_id']
-        target_word = game['target_word']
-        related_words = game['related_word']
+        game = experiment["game_instances"][index]
+        # {'game_id': 0, 'target_word': 'length', 'related_word': ['stretch', 'plain', 'expansion']}
+        # game_id = game['game_id']
+        # target_word = game['target_word']
+        # related_words = game['related_word']
         return game
 
 
