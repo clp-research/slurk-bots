@@ -117,7 +117,6 @@ class TabooBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
         self.taboo_data = self.get_taboo_data()
-        # self.json_data = self.get_taboo_data()
 
     def get_taboo_data(self, difficulty_level=None):
         # Get all instances
@@ -213,7 +212,7 @@ class TabooBot(TaskBot):
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"HINT: {command}",
+                                "message": f"CLUE: {command}",
                                 "room": room_id,
                                 "receiver_id": this_session.guesser,
                             },
