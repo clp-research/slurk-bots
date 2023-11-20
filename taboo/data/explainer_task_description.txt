@@ -1,17 +1,24 @@
 Welcome!
 
-   You are the explainer
+    You are playing a collaborative word guessing game in which you have to describe
+    a target word for another player to guess.
 
     Rules:
 
-    1) You can make XXXX You win when XXXX
+    1) You cannot use the target word itself, parts or morphological variants of it in your description.
 
-    2) You lose when XXXX
+    2) The same rules apply for the related words that you will be given.
 
-    3) After each trial you will gIVE a new hint to the other player.
+    3) Type the description of the word in the chat at the bottom of the page.
 
-    Explanations to your partner will start with "CLUE".
+    Guesses from the other player will start with "GUESS".
 
-    Write your explanations by just typing the word in the chat at the bottom of the page.
+    End conditions:
 
-     Please type "ready" to begin the game!
+    i) If you use the target word or a related word in your description, then you lose.
+
+    ii) If the other player can guess the target word in 3 tries, you both win.
+
+    Important: You are under time pressure, give short descriptions that are to the point!
+
+    Please type "ready" to begin the game!

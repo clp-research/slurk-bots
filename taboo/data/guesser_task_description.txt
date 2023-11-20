@@ -1,4 +1,4 @@
-Welcome!
+ Welcome!
 
    You are playing a collaborative word guessing game in which you have to guess a target word that
    another player describes to you.
@@ -13,6 +13,6 @@ Welcome!
 
     Explanations from your partner will start with "HINT".
 
-    Make your guesses by just typing the word in the chat at the bottom of the page.
+    Make your guesses by just typing ONE word in the chat at the bottom of the page.
 
      Please type "ready" to begin the game!
