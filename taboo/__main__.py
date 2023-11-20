@@ -221,7 +221,7 @@ class TabooBot(TaskBot):
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"CLUE: {command} {forbidden_words}",
+                                "message": f"CLUE: {command}",
                                 "room": room_id,
                                 "receiver_id": this_session.guesser,
                             },
@@ -257,21 +257,32 @@ class TabooBot(TaskBot):
                     f"Received a command from {data['user']['name']}: {data['command']}"
                 )
 
+                # Check that only one-word guesses are used
+                # if len(command.split()) > 1:
+                #     self.sio.emit(
+                #         "text",
+                #         {
+                #             "message": "You need to use one word only. You lost your turn",
+                #             "room": room_id,
+                #             "receiver_id": this_session.guesser
+                #         },
+                #     )
+                #     self.sio.emit(
+                #         "text",
+                #         {
+                #             "message": "Invalid guess (it contained more than one word).",
+                #             "room": room_id,
+                #             "receiver_id": this_session.explainer
+                #         },
+                #     )
+                #     self.process_move(room_id, 0)
+
                 if word_to_guess.lower() in command:
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"{word_to_guess} was correct! YOU WON :)",
+                            "message": f"GUESS: '{command}' was correct. You both win!",
                             "room": room_id,
-                            "receiver_id": this_session.guesser
-                        },
-                    )
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{data['user']['name']} guessed the word. You both win :)",
-                            "room": room_id,
-                            "receiver_id": this_session.explainer,
                         },
                     )
                     self.process_move(room_id, 1)
