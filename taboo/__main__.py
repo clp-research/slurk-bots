@@ -22,7 +22,6 @@ LEAVE_TIMER = 3  # minutes if a user is alone in a room
 STARTING_POINTS = 0
 
 
-
 class RoomTimer:
     def __init__(self, function, room_id):
         self.function = function
@@ -117,11 +116,14 @@ class TabooBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
         self.taboo_data = self.get_taboo_data()
-        self.instructions = self.read_instructions()
+        self.guesser_instructions = self.read_guesser_instructions()
+        self.explainer_instructions = self.read_explainer_instructions()
 
-    def read_instructions(self):
-        return task_description.read_text()
+    def read_guesser_instructions(self):
+        return guesser_task_description.read_text()
 
+    def read_explainer_instructions(self):
+        return explainer_task_description.read_text()
 
     def get_taboo_data(self, difficulty_level=None):
         # Get all instances
@@ -145,7 +147,6 @@ class TabooBot(TaskBot):
         # target_word = game['target_word']
         # related_words = game['related_word']
         return game
-
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -280,6 +281,7 @@ class TabooBot(TaskBot):
                         },
                     )
                     self.process_move(room_id, 0)
+
         @self.sio.event
         def status(data):
             """Triggered when a user enters or leaves a room."""
@@ -490,7 +492,6 @@ class TabooBot(TaskBot):
         elif reward == 1:
             correct += 1
 
-
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
             json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"},
@@ -516,7 +517,7 @@ class TabooBot(TaskBot):
                 "text",
                 {"message": "Give a new hint",
                  "room": room_id,
-                "receiver_id": this_session.explainer}
+                 "receiver_id": this_session.explainer}
             )
             self.sio.emit(
                 "text",
@@ -524,7 +525,6 @@ class TabooBot(TaskBot):
                  "room": room_id,
                  "receiver_id": this_session.guesser}
             )
-            
 
     def validate_input(self, room_id):
         pass
@@ -546,9 +546,9 @@ class TabooBot(TaskBot):
         # guarantee fixed user order - necessary for update due to rejoin
         users = sorted(self.sessions[room_id].players, key=lambda x: x["id"])
 
-        if self.instructions is not None:
-            # self.send_individualised_instructions(room_id)
-            self.send_same_instructions(room_id)
+        if self.guesser_instructions is not None:
+            self.send_individualised_instructions(room_id)
+            # self.send_same_instructions(room_id)
 
         else:
             # Print task title for everyone
@@ -562,15 +562,15 @@ class TabooBot(TaskBot):
                     f"Could not set task instruction title: {response.status_code}"
                 )
                 response.raise_for_status()
-            # Print no-instructions for everyone
+            # Print no-guesser_instructions for everyone
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": "No instructions provided"},
+                json={"text": "No guesser_instructions provided"},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response.ok:
                 LOG.error(
-                    f"Could not set task instructions: {response.status_code}"
+                    f"Could not set task guesser_instructions: {response.status_code}"
                 )
                 response.raise_for_status()
 
@@ -588,7 +588,7 @@ class TabooBot(TaskBot):
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
-            json={"text": self.instructions},
+            json={"text": self.guesser_instructions},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
@@ -597,51 +597,47 @@ class TabooBot(TaskBot):
 
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
-        # show a different image to each user
-        for usr in this_session.players:
-            if usr["id"] == this_session.explainer:
-                # the task for both users is different - special receiver
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": "Explain the taboo word", "receiver_id": usr},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
 
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr",
-                    json={"text": "You cannot use the fobridden words.", "receiver_id": usr},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    LOG.error(f"Could not set task instruction: {response.status_code}")
-                    response.raise_for_status()
+        # Send explainer_ instructions to explainer
+        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+                                  json={"text": "Explain the taboo word", "receiver_id": this_session.explainer},
+                                  headers={"Authorization": f"Bearer {self.token}"},
+                                  )
+        if not response.ok:
+            LOG.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
 
-            elif usr["id"] == self.sessions[room_id].guesser:
-                # the task for both users is different - special receiver
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": "Guess the taboo word", "receiver_id": usr},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={"text": "Text", "receiver_id": this_session.explainer},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction: {response.status_code}")
+            response.raise_for_status()
 
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr",
-                    json={"text": "You have 3 rounds to guess the word.", "receiver_id": usr},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    LOG.error(f"Could not set task instruction: {response.status_code}")
-                    response.raise_for_status()
+        # Send guesser_instructions to guesser
+        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+                                  json={"text": "Guess the taboo word", "receiver_id": this_session.guesser},
+                                  headers={"Authorization": f"Bearer {self.token}"},
+                                  )
+        if not response.ok:
+            LOG.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={"text": f"{self.guesser_instructions}", "receiver_id": this_session.guesser},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction: {response.status_code}")
+            response.raise_for_status()
+
 
 if __name__ == "__main__":
     # set up logging configuration
