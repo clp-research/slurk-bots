@@ -11,7 +11,7 @@
 
     3) After each trial you will get a new hint from the other player.
 
-    Explanations from your partner will start with "HINT".
+    Explanations from your partner will start with "CLUE".
 
     Make your guesses by just typing ONE word in the chat at the bottom of the page.
 

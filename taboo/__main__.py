@@ -170,7 +170,10 @@ class TabooBot(TaskBot):
 
         @self.sio.event
         def command(data):
-            """Parse user commands, which are typed with a preceding '/'."""
+            """
+            Parse user commands, which are either messages,intercepted
+            and returned as commands or actual commands (typed with a preceding '/').
+            """
             LOG.debug(f"Received a command from {data['user']['name']}.")
 
             room_id = data["room"]
@@ -199,7 +202,7 @@ class TabooBot(TaskBot):
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"You used the taboo word {taboo_word}! GAME OVER :(",
+                                "message": f"You used the taboo word '{taboo_word}'! GAME OVER :(",
                                 "room": room_id,
                                 "receiver_id": this_session.explainer,
                             },
@@ -218,7 +221,7 @@ class TabooBot(TaskBot):
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"CLUE: {command}",
+                                "message": f"CLUE: {command} {forbidden_words}",
                                 "room": room_id,
                                 "receiver_id": this_session.guesser,
                             },
@@ -246,6 +249,7 @@ class TabooBot(TaskBot):
                     self.process_move(room_id, -1)
                     return
 
+            # Check if user is guesser
             elif this_session.guesser == user_id:
                 LOG.debug(f"{data['user']['name']} is the guesser.")
                 command = data['command'].lower()
@@ -275,7 +279,15 @@ class TabooBot(TaskBot):
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"{command} was not correct.",
+                            "message": f"GUESS: {command}",
+                            "room": room_id,
+                            "receiver_id": this_session.explainer
+                        },
+                    )
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"'{command}' was not correct.",
                             "room": room_id,
                             "receiver_id": this_session.guesser
                         },
@@ -330,7 +342,7 @@ class TabooBot(TaskBot):
                     self.sio.emit(
                         "text",
                         {
-                            "message": f"Your task is to explain the word {word_to_guess}. You cannot use the following words: {taboo_words}",
+                            "message": f"Your task is to explain the word '{word_to_guess}'. You cannot use the following words: {taboo_words}",
                             "room": room_id,
                             "receiver_id": this_session.explainer,
                         },
