@@ -546,7 +546,7 @@ class TabooBot(TaskBot):
         # guarantee fixed user order - necessary for update due to rejoin
         users = sorted(self.sessions[room_id].players, key=lambda x: x["id"])
 
-        if self.guesser_instructions is not None:
+        if self.guesser_instructions and self.explainer_instructions is not None:
             self.send_individualised_instructions(room_id)
             # self.send_same_instructions(room_id)
 
@@ -611,7 +611,7 @@ class TabooBot(TaskBot):
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
-            json={"text": "Text", "receiver_id": this_session.explainer},
+            json={"text": f"{self.explainer_instructions}", "receiver_id": this_session.explainer},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
