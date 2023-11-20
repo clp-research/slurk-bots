@@ -11,6 +11,16 @@ import random
 
 import os
 
+import nltk
+from nltk.corpus import stopwords
+import string
+
+nltk.download('stopwords', quiet=True)
+EN_STOPWORDS = stopwords.words('english')
+
+nltk.download('stopwords', quiet=True)
+EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
+
 
 LOG = logging.getLogger(__name__)
 
@@ -230,11 +240,6 @@ class TabooBot(TaskBot):
                 #         )
 
             elif event == "leave":
-                # self.sio.emit(
-                #     "text",
-                #     {"message": f"{user['name']} has left the game.", "room": room_id}
-                #
-                # )
                 self.send_message_to_user(f"{user['name']} has left the game.", room_id)
 
                 # # remove this user from current session
@@ -252,49 +257,6 @@ class TabooBot(TaskBot):
                 #             "room": room_id,
                 #         },
                 #     )
-
-        # @self.sio.event
-        # def text_message(data):
-        #     """Triggered when a text message is sent.
-        #     Check that it didn't contain any forbidden words if sent
-        #     by explainer or whether it was the correct answer when sent
-        #     by a guesser.
-        #     """
-        #     LOG.debug(f"Received a message from {data['user']['name']}.")
-        #
-        #     room_id = data["room"]
-        #     user_id = data["user"]["id"]
-        #
-        #     this_session = self.sessions[room_id]
-        #
-        #     if user_id == self.user:
-        #         return
-        #
-        #     # explainer or guesser?
-        #     if this_session.explainer == user_id:
-        #         LOG.debug(f"{data['user']['name']} is the explainer.")
-        #
-        #         # check whether the user used a forbidden word
-        #         for taboo_word in self.taboo_data[this_session.word_to_guess]:
-        #             if taboo_word in data["message"]:
-        #                 self.sio.emit(
-        #                     "text",
-        #                     {
-        #                         "message": f"You used the taboo word {taboo_word}!",
-        #                         "room": room_id,
-        #                         "receiver_id": this_session.explainer
-        #
-        #                     },
-        #                 )
-        #
-        #     elif this_session.word_to_guess.lower() in data["message"].lower():
-        #         self.sio.emit(
-        #             "text",
-        #             {
-        #                 "message": f"{this_session.word_to_guess} was correct!",
-        #                 "room": room_id,
-        #             },
-        #         )
 
         @self.sio.event
         def command(data):
@@ -320,19 +282,22 @@ class TabooBot(TaskBot):
                     LOG.debug(f"{data['user']['name']} is the explainer.")
 
                     # check whether the user used a forbidden word
-                    explanation_legal = check_explanation(
+                    explanation_errors = check_clue(
                         data["command"].lower(),
-                        self.taboo_data[this_session.word_to_guess],
                         this_session.word_to_guess,
+                        self.taboo_data[this_session.word_to_guess],
+
                     )
-                    if explanation_legal:
+
+                    if not explanation_errors:
                         self.send_message_to_user(
                             f"HINT: {data['command']}", room_id, this_session.guesser
                         )
                     else:
+                        message = explanation_errors[0]["message"]
                         for player in this_session.players:
                             self.send_message_to_user(
-                                f"The taboo word was used in the explanation. You both lost.",
+                                f"{message}",
                                 room_id,
                                 player["id"],
                             )
@@ -496,12 +461,46 @@ def check_guess(correct_answer, user_guess):
     return False
 
 
-def check_explanation(explanation, taboo_words, word):
-    taboo_words.append(word)
-    for word in taboo_words:
-        if word in explanation:
-            return False
-    return True
+
+def remove_punctuation(text: str) -> str:
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    return text
+
+def check_clue(utterance: str, target_word: str, related_words):
+    utterance = utterance.lower()
+    utterance = remove_punctuation(utterance)
+    # simply contain checks
+    if target_word in utterance:
+        return [{
+            "message": f"Target word '{target_word}' was used in the clue. You both lose.",
+            "type": 0
+        }]
+    for related_word in related_words:
+        if related_word in utterance:
+            return [{
+                "message": f"Related word '{related_word}' was used in the clue, You both lose",
+                "type": 1
+            }]
+
+    # lemma checks
+    utterance = utterance.split(" ")
+    filtered_clue = [word for word in utterance if word not in EN_STOPWORDS]
+    target_lemma = EN_LEMMATIZER.lemmatize(target_word)
+    related_lemmas = [EN_LEMMATIZER.lemmatize(related_word) for related_word in related_words]
+    errors = []
+    for clue_word in filtered_clue:
+        clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
+        if clue_lemma == target_lemma:
+            return [{
+                "message": f"Target word '{target_word}' is morphological similar to clue word '{clue_word}'",
+                "type": 0
+            }]
+        if clue_lemma in related_lemmas:
+            return [{
+                "message": f"Related word is morphological similar to clue word '{clue_word}'",
+                "type": 1
+            }]
+    return errors
 
 
 if __name__ == "__main__":
