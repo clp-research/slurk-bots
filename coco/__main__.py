@@ -75,6 +75,7 @@ class CoCoBot(TaskBot):
             # create a new session for these users
             logging.debug("Create data for the new task room...")
             self.sessions.create_session(room_id)
+            this_session = self.sessions[room_id]
 
             roles = [
                 {"role": "player", "name": "Programmer"},
@@ -83,7 +84,7 @@ class CoCoBot(TaskBot):
             random.shuffle(roles)
 
             for usr, role in zip(data["users"], roles):
-                self.sessions[room_id].players.append(
+                this_session.players.append(
                     {**usr, "role": role["role"], "status": "joined"}
                 )
 
@@ -103,7 +104,7 @@ class CoCoBot(TaskBot):
             # create and connect the golmi client
             client = QuadrupleClient(str(room_id), self.golmi_server)
             client.run(self.golmi_password)
-            self.sessions[room_id].golmi_client = client
+            this_session.golmi_client = client
 
             # send roles
             self.send_roles(room_id)
@@ -129,7 +130,8 @@ class CoCoBot(TaskBot):
 
     def send_typing_input(self, room_id):
         """Send typing events when the wizard is working on the boards"""
-        player, wizard = self.sessions[room_id].players
+        this_session = self.sessions[room_id]
+        player, wizard = this_session.players
         if player["role"] != "player":
             player, wizard = wizard, player
 
@@ -144,7 +146,7 @@ class CoCoBot(TaskBot):
             )
 
         # no need to send a new start typing event if the old one is still running
-        timer = self.sessions[room_id].timer.typing_timer
+        timer = this_session.timer.typing_timer
         if timer is None or timer.is_alive() is False:
             send_typing(True, room_id, wizard)
 
@@ -153,10 +155,10 @@ class CoCoBot(TaskBot):
             timer.cancel()
 
         # start a new timer for the stop typing event
-        self.sessions[room_id].timer.typing_timer = Timer(
+        this_session.timer.typing_timer = Timer(
             3, send_typing, args=[False, room_id, wizard]
         )
-        self.sessions[room_id].timer.typing_timer.start()
+        this_session.timer.typing_timer.start()
 
     def register_callbacks(self):
         @self.sio.event
@@ -202,7 +204,8 @@ class CoCoBot(TaskBot):
 
             # some joined a task room
             elif room_id in self.sessions:
-                curr_usr, other_usr = self.sessions[room_id].players
+                this_session = self.sessions[room_id]
+                curr_usr, other_usr = this_session.players
                 if curr_usr["id"] != data["user"]["id"]:
                     curr_usr, other_usr = other_usr, curr_usr
 
@@ -228,7 +231,7 @@ class CoCoBot(TaskBot):
                     # check if the user has a role, if so, send role command
                     role = curr_usr["role"]
                     if role is not None:
-                        golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
+                        golmi_rooms = this_session.golmi_client.rooms.json
                         self.sio.emit(
                             "message_command",
                             {
@@ -250,13 +253,13 @@ class CoCoBot(TaskBot):
                     logging.debug(
                         f"Cancelling Timer: left room for user {curr_usr['name']}"
                     )
-                    timer = self.sessions[room_id].timer.left_room.get(curr_usr["id"])
+                    timer = this_session.timer.left_room.get(curr_usr["id"])
                     if timer is not None:
                         timer.cancel()
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    if self.sessions[room_id].game_over is False:
+                    if this_session.game_over is False:
                         self.sio.emit(
                             "text",
                             {
@@ -277,10 +280,10 @@ class CoCoBot(TaskBot):
                     logging.debug(
                         f"Starting Timer: left room for user {curr_usr['name']}"
                     )
-                    self.sessions[room_id].timer.left_room[curr_usr["id"]] = Timer(
+                    this_session.timer.left_room[curr_usr["id"]] = Timer(
                         TIME_LEFT * 60, self.close_game, args=[room_id]
                     )
-                    self.sessions[room_id].timer.left_room[curr_usr["id"]].start()
+                    this_session.timer.left_room[curr_usr["id"]].start()
 
         @self.sio.event
         def mouse(data):
@@ -299,7 +302,8 @@ class CoCoBot(TaskBot):
             if data["type"] != "click":
                 return
 
-            this_client = self.sessions[room_id].golmi_client
+            this_session = self.sessions[room_id]
+            this_client = this_session.golmi_client
             board = data["coordinates"]["board"]
 
             # the wizard picks an object from the selection board
@@ -343,10 +347,10 @@ class CoCoBot(TaskBot):
                     action, obj = this_client.delete_object(obj)
 
                     if action is not False:
-                        current_action = self.sessions[room_id].current_action
-                        self.sessions[
-                            room_id
-                        ].current_action = current_action.add_action(action, obj)
+                        current_action = this_session.current_action
+                        this_session.current_action = current_action.add_action(
+                            action, obj
+                        )
 
                         # the state changes, log it
                         current_state = this_client.get_state("wizard_working")
@@ -354,14 +358,12 @@ class CoCoBot(TaskBot):
 
                 return
 
-            # select multiple cells with ctrl button 
+            # select multiple cells with ctrl button
             if data["coordinates"]["ctrl"] is True:
                 this_client.remove_selection("wizard_selection", "mouse")
                 this_client.remove_selection("wizard_working", "mouse")
 
-                gripper_on_board = this_client.get_gripper(
-                    "cell", "wizard_working"
-                )
+                gripper_on_board = this_client.get_gripper("cell", "wizard_working")
                 current_state = this_client.get_state("wizard_working")
 
                 # coordinates
@@ -370,9 +372,7 @@ class CoCoBot(TaskBot):
                 block_size = data["coordinates"]["block_size"]
 
                 # obtain new name for this gripper
-                taken = [
-                    int(i.split("_")[-1]) for i in current_state["grippers"]
-                ]
+                taken = [int(i.split("_")[-1]) for i in current_state["grippers"]]
                 taken.sort()
 
                 if not taken:
@@ -389,9 +389,7 @@ class CoCoBot(TaskBot):
                         gripper["x"] == this_x // block_size
                         and gripper["y"] == this_y // block_size
                     ):
-                        this_client.remove_gripper(
-                            gripper["id_n"], "wizard_working"
-                        )
+                        this_client.remove_gripper(gripper["id_n"], "wizard_working")
                         return
 
                 this_client.add_gripper(
@@ -458,18 +456,12 @@ class CoCoBot(TaskBot):
 
                 action, obj = this_client.add_object(obj)
                 if action is not False:
-                    current_action = self.sessions[room_id].current_action
-                    self.sessions[
-                        room_id
-                    ].current_action = current_action.add_action(
-                        action, obj
-                    )
+                    current_action = this_client.current_action
+                    this_client.current_action = current_action.add_action(action, obj)
 
                     # the state changes, log it
                     current_state = this_client.get_state("wizard_working")
-                    self.log_event(
-                        "working_board_log", current_state, room_id
-                    )
+                    self.log_event("working_board_log", current_state, room_id)
 
                 # ungrip any selected object
                 this_client.remove_selection("wizard_selection", "mouse")
@@ -478,18 +470,14 @@ class CoCoBot(TaskBot):
             else:
                 # no object is selected, we can select this object
                 current_state = this_client.get_state("wizard_working")
-                if any(
-                    "cell" in i for i in current_state["grippers"].keys()
-                ):
+                if any("cell" in i for i in current_state["grippers"].keys()):
                     cells_to_copy = list()
                     positions = list()
                     clicks = list()
                     for name, gripper in current_state["grippers"].items():
                         if "cell" in name:
                             cell_index = int(name.split("_")[-1])
-                            clicks.append(
-                                (cell_index, (gripper["x"], gripper["y"]))
-                            )
+                            clicks.append((cell_index, (gripper["x"], gripper["y"])))
                             cell_objects = this_client.get_entire_cell(
                                 x=gripper["x"],
                                 y=gripper["y"],
@@ -517,9 +505,7 @@ class CoCoBot(TaskBot):
                     # start placing the selected objects from the bottom up
                     for i in range(highest_index):
                         for cell, position in zip(cells_to_copy, positions):
-                            current_state = this_client.get_state(
-                                "wizard_working"
-                            )
+                            current_state = this_client.get_state("wizard_working")
                             id_n = new_obj_name(current_state)
 
                             old_x, old_y = position
@@ -534,12 +520,8 @@ class CoCoBot(TaskBot):
                             if obj["id_n"] not in already_placed:
                                 already_placed.add(obj["id_n"])
                                 obj["id_n"] = id_n
-                                obj["x"] = (
-                                    obj["x"] - old_x + new_x - translation_x
-                                )
-                                obj["y"] = (
-                                    obj["y"] - old_y + new_y - translation_y
-                                )
+                                obj["x"] = obj["x"] - old_x + new_x - translation_x
+                                obj["y"] = obj["y"] - old_y + new_y - translation_y
                                 obj["gripped"] = None
 
                                 (
@@ -571,13 +553,9 @@ class CoCoBot(TaskBot):
 
                                 action, obj = this_client.add_object(obj)
                                 if action is not False:
-                                    current_action = self.sessions[
-                                        room_id
-                                    ].current_action
-                                    self.sessions[
-                                        room_id
-                                    ].current_action = current_action.add_action(
-                                        action, obj
+                                    current_action = this_session.current_action
+                                    this_session.current_action = (
+                                        current_action.add_action(action, obj)
                                     )
 
                                     # the state changes, log it
@@ -598,8 +576,6 @@ class CoCoBot(TaskBot):
 
                     this_client.remove_cell_grippers()
 
-            
-
         @self.sio.event
         def command(data):
             """Parse user commands."""
@@ -614,321 +590,318 @@ class CoCoBot(TaskBot):
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            curr_usr, other_usr = self.sessions[room_id].players
+            if room_id not in self.sessions:
+                return
+
+            this_session = self.sessions[room_id]
+
+            curr_usr, other_usr = this_session.players
             if curr_usr["id"] != user_id:
                 curr_usr, other_usr = other_usr, curr_usr
 
-            if room_id in self.sessions:
-                this_session = self.sessions[room_id]
+            if isinstance(data["command"], dict):
+                # commands from the front end
+                event = data["command"]["event"]
+                this_client = this_session.golmi_client
 
-                if isinstance(data["command"], dict):
-                    # commands from the front end
-                    event = data["command"]["event"]
-                    this_client = this_session.golmi_client
+                # clear board
+                if event == "clear_board":
+                    right_user = self.check_role(user_id, "wizard", room_id)
+                    if right_user is False:
+                        return
 
-                    # clear board
-                    if event == "clear_board":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
+                    this_client.clear_state("wizard_working")
+                    this_session.current_action = ActionNode.new_tree()
 
-                        this_client.clear_state("wizard_working")
-                        this_session.current_action = ActionNode.new_tree()
+                elif event == "show_progress":
+                    right_user = self.check_role(user_id, "wizard", room_id)
+                    if right_user is False:
+                        return
 
-                    elif event == "show_progress":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        # only show update if board has changed since last checkpoint
-                        current_state = this_client.get_state("wizard_working")
-                        if current_state == this_session.checkpoint:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message="No changes detected since the last checkpoint, you have to make some modifications before you can send another update to your partner",
-                                        color=WARNING_COLOR,
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": curr_usr["id"],
-                                    "html": True,
-                                },
-                            )
-                            return
-
-                        this_client.copy_working_state()
-                        current_state = this_client.get_state("wizard_working")
-                        this_session.checkpoint = current_state
-
+                    # only show update if board has changed since last checkpoint
+                    current_state = this_client.get_state("wizard_working")
+                    if current_state == this_session.checkpoint:
                         self.sio.emit(
                             "text",
                             {
                                 "message": COLOR_MESSAGE.format(
-                                    message="The current working board was updated for your partner",
-                                    color=STANDARD_COLOR,
+                                    message="No changes detected since the last checkpoint, you have to make some modifications before you can send another update to your partner",
+                                    color=WARNING_COLOR,
                                 ),
                                 "room": room_id,
                                 "receiver_id": curr_usr["id"],
                                 "html": True,
                             },
                         )
+                        return
 
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message="Your working board was updated",
-                                    color=STANDARD_COLOR,
-                                ),
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                                "html": True,
-                            },
-                        )
+                    this_client.copy_working_state()
+                    current_state = this_client.get_state("wizard_working")
+                    this_session.checkpoint = current_state
 
-                    elif event == "revert_session":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        # undo should not work anymore after reverting
-                        this_session.current_action = ActionNode.new_tree()
-
-                        client = this_session.golmi_client
-                        client.load_state(this_session.checkpoint, "wizard_working")
-
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message="Reverting session to last checkpoint",
-                                    color=STANDARD_COLOR,
-                                ),
-                                "room": room_id,
-                                "receiver_id": curr_usr["id"],
-                                "html": True,
-                            },
-                        )
-
-                        # the state changes, log it
-                        current_state = this_client.get_state("wizard_working")
-                        self.log_event("working_board_log", current_state, room_id)
-
-                    elif event == "confirm_next_episode":
-                        if this_session.can_load_next_episode is False:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message="You can move to the next episode by clicking on the button 'NEXT EPISODE'",
-                                        color=WARNING_COLOR,
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": curr_usr["id"],
-                                    "html": True,
-                                },
-                            )
-                        else:
-                            this_session.can_load_next_episode = False
-                            if data["command"]["answer"] == "no":
-                                return
-                                # self.sio.emit(
-                                #     "text",
-                                #     {
-                                #         "message": COLOR_MESSAGE.format(
-                                #             message="Before you can move to the next episode you have to agree wether this one is over",
-                                #             color=WARNING_COLOR,
-                                #         ),
-                                #         "room": room_id,
-                                #         "html": True,
-                                #     },
-                                # )
-                            elif data["command"]["answer"] == "yes":
-                                # load next state
-                                self.load_next_state(room_id)
-
-                    elif event == "undo":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        last_command = this_session.current_action
-
-                        if last_command.action == "root":
-                            return
-
-                        if last_command.action == "add":
-                            action, obj = this_client.delete_object(last_command.obj)
-                        elif last_command.action == "delete":
-                            action, obj = this_client.add_object(last_command.obj)
-
-                        # register new last actiond
-                        if action is not False:
-                            current_state = last_command.previous_state()
-                            if current_state is not None:
-                                this_session.current_action = current_state
-
-                                # the state changes, log it
-                                current_state = this_client.get_state("wizard_working")
-                                self.log_event(
-                                    "working_board_log", current_state, room_id
-                                )
-
-                    elif event == "redo":
-                        right_user = self.check_role(user_id, "wizard", room_id)
-                        if right_user is False:
-                            return
-
-                        current_state = this_session.current_action
-                        current_state = current_state.next_state()
-
-                        if current_state is not None:
-                            this_session.current_action = current_state
-
-                            if current_state.action == "add":
-                                action, obj = this_client.add_object(current_state.obj)
-                            elif current_state.action == "delete":
-                                action, obj = this_client.delete_object(
-                                    current_state.obj
-                                )
-
-                            # register new last actiond
-                            if action is not False:
-
-                                # the state changes, log it
-                                current_state = this_client.get_state("wizard_working")
-                                self.log_event(
-                                    "working_board_log", current_state, room_id
-                                )
-
-                    elif event == "next_state":
-                        right_user = self.check_role(user_id, "player", room_id)
-                        if right_user is False:
-                            return
-
-                        if this_session.can_load_next_episode is True:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message=f"Give the Cocobot the time to check the boards",
-                                        color=WARNING_COLOR,
-                                    ),
-                                    "room": room_id,
-                                    "html": True,
-                                    "receiver_id": user_id,
-                                },
-                            )
-                            return
-
-                        # user thinks players can move to next episode
-                        this_session.can_load_next_episode = True
-
-                        curr_usr, other_usr = this_session.players
-                        if curr_usr["id"] != user_id:
-                            curr_usr, other_usr = other_usr, curr_usr
-
-                        # ask other user if the episode is really over
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": (
-                                    "Do you confirm that this episode is over? <br>"
-                                    "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
-                                    "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
-                                ),
-                                "room": room_id,
-                                "receiver_id": curr_usr["id"],
-                                "html": True,
-                            },
-                        )
-
-                        # self.sio.emit(
-                        #     "text",
-                        #     {
-                        #         "message": COLOR_MESSAGE.format(
-                        #             message=f"Waiting for confirmation from the Cocobot",
-                        #             color=STANDARD_COLOR,
-                        #         ),
-                        #         "room": room_id,
-                        #         "html": True,
-                        #         "receiver_id": curr_usr["id"],
-                        #     },
-                        # )
-
-                    elif event == "inspect":
-                        gripper = this_client.get_mouse_gripper()
-                        cell = this_client.get_entire_cell(
-                            x=gripper["x"],
-                            y=gripper["y"],
-                            block_size=1,
-                            board="wizard_working",
-                        )
-
-                        if cell:
-                            message = "Bottom to top: "
-                            obj_strings = list()
-                            for obj in cell:
-                                name = obj["type"]
-                                if name == "vbridge":
-                                    name = "vertical bridge"
-
-                                if name == "hbridge":
-                                    name = "horizontal bridge"
-
-                                this_obj = f"{obj['color'][0]} {name}"
-                                obj_strings.append(this_obj)
-
-                            message += ", ".join(obj_strings)
-
-                            state = this_client.get_state("wizard_working")
-                            cell_ids = [obj["id_n"] for obj in cell]
-
-                            x = int(gripper["x"])
-                            y = int(gripper["y"])
-                            coordinates = f"{y}:{x}"
-
-                            for pattern in self.patterns:
-                                if pattern.detect((coordinates, cell_ids), state):
-                                    message += " | detected patterns:"
-
-                                    if pattern.cells > 1:
-                                        message += f" part of a {pattern.name}"
-                                    else:
-                                        message += f" {pattern.name}"
-
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        message=message,
-                                        color=STANDARD_COLOR,
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": curr_usr["id"],
-                                    "html": True,
-                                },
-                            )
-                            return
-
-                else:
-                    # commands from the user
                     self.sio.emit(
                         "text",
                         {
                             "message": COLOR_MESSAGE.format(
-                                message="Sorry, but I do not understand this command.",
+                                message="The current working board was updated for your partner",
                                 color=STANDARD_COLOR,
                             ),
                             "room": room_id,
-                            "receiver_id": user_id,
+                            "receiver_id": curr_usr["id"],
                             "html": True,
                         },
                     )
 
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                message="Your working board was updated",
+                                color=STANDARD_COLOR,
+                            ),
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                            "html": True,
+                        },
+                    )
+
+                elif event == "revert_session":
+                    right_user = self.check_role(user_id, "wizard", room_id)
+                    if right_user is False:
+                        return
+
+                    # undo should not work anymore after reverting
+                    this_session.current_action = ActionNode.new_tree()
+
+                    client = this_session.golmi_client
+                    client.load_state(this_session.checkpoint, "wizard_working")
+
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                message="Reverting session to last checkpoint",
+                                color=STANDARD_COLOR,
+                            ),
+                            "room": room_id,
+                            "receiver_id": curr_usr["id"],
+                            "html": True,
+                        },
+                    )
+
+                    # the state changes, log it
+                    current_state = this_client.get_state("wizard_working")
+                    self.log_event("working_board_log", current_state, room_id)
+
+                elif event == "confirm_next_episode":
+                    if this_session.can_load_next_episode is False:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="You can move to the next episode by clicking on the button 'NEXT EPISODE'",
+                                    color=WARNING_COLOR,
+                                ),
+                                "room": room_id,
+                                "receiver_id": curr_usr["id"],
+                                "html": True,
+                            },
+                        )
+                    else:
+                        this_session.can_load_next_episode = False
+                        if data["command"]["answer"] == "no":
+                            return
+                            # self.sio.emit(
+                            #     "text",
+                            #     {
+                            #         "message": COLOR_MESSAGE.format(
+                            #             message="Before you can move to the next episode you have to agree wether this one is over",
+                            #             color=WARNING_COLOR,
+                            #         ),
+                            #         "room": room_id,
+                            #         "html": True,
+                            #     },
+                            # )
+                        elif data["command"]["answer"] == "yes":
+                            # load next state
+                            self.load_next_state(room_id)
+
+                elif event == "undo":
+                    right_user = self.check_role(user_id, "wizard", room_id)
+                    if right_user is False:
+                        return
+
+                    last_command = this_session.current_action
+
+                    if last_command.action == "root":
+                        return
+
+                    if last_command.action == "add":
+                        action, obj = this_client.delete_object(last_command.obj)
+                    elif last_command.action == "delete":
+                        action, obj = this_client.add_object(last_command.obj)
+
+                    # register new last actiond
+                    if action is not False:
+                        current_state = last_command.previous_state()
+                        if current_state is not None:
+                            this_session.current_action = current_state
+
+                            # the state changes, log it
+                            current_state = this_client.get_state("wizard_working")
+                            self.log_event("working_board_log", current_state, room_id)
+
+                elif event == "redo":
+                    right_user = self.check_role(user_id, "wizard", room_id)
+                    if right_user is False:
+                        return
+
+                    current_state = this_session.current_action
+                    current_state = current_state.next_state()
+
+                    if current_state is not None:
+                        this_session.current_action = current_state
+
+                        if current_state.action == "add":
+                            action, obj = this_client.add_object(current_state.obj)
+                        elif current_state.action == "delete":
+                            action, obj = this_client.delete_object(current_state.obj)
+
+                        # register new last actiond
+                        if action is not False:
+
+                            # the state changes, log it
+                            current_state = this_client.get_state("wizard_working")
+                            self.log_event("working_board_log", current_state, room_id)
+
+                elif event == "next_state":
+                    right_user = self.check_role(user_id, "player", room_id)
+                    if right_user is False:
+                        return
+
+                    if this_session.can_load_next_episode is True:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message=f"Give the Cocobot the time to check the boards",
+                                    color=WARNING_COLOR,
+                                ),
+                                "room": room_id,
+                                "html": True,
+                                "receiver_id": user_id,
+                            },
+                        )
+                        return
+
+                    # user thinks players can move to next episode
+                    this_session.can_load_next_episode = True
+
+                    curr_usr, other_usr = this_session.players
+                    if curr_usr["id"] != user_id:
+                        curr_usr, other_usr = other_usr, curr_usr
+
+                    # ask other user if the episode is really over
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": (
+                                "Do you confirm that this episode is over? <br>"
+                                "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
+                                "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
+                            ),
+                            "room": room_id,
+                            "receiver_id": curr_usr["id"],
+                            "html": True,
+                        },
+                    )
+
+                    # self.sio.emit(
+                    #     "text",
+                    #     {
+                    #         "message": COLOR_MESSAGE.format(
+                    #             message=f"Waiting for confirmation from the Cocobot",
+                    #             color=STANDARD_COLOR,
+                    #         ),
+                    #         "room": room_id,
+                    #         "html": True,
+                    #         "receiver_id": curr_usr["id"],
+                    #     },
+                    # )
+
+                elif event == "inspect":
+                    gripper = this_client.get_mouse_gripper()
+                    cell = this_client.get_entire_cell(
+                        x=gripper["x"],
+                        y=gripper["y"],
+                        block_size=1,
+                        board="wizard_working",
+                    )
+
+                    if cell:
+                        message = "Bottom to top: "
+                        obj_strings = list()
+                        for obj in cell:
+                            name = obj["type"]
+                            if name == "vbridge":
+                                name = "vertical bridge"
+
+                            if name == "hbridge":
+                                name = "horizontal bridge"
+
+                            this_obj = f"{obj['color'][0]} {name}"
+                            obj_strings.append(this_obj)
+
+                        message += ", ".join(obj_strings)
+
+                        state = this_client.get_state("wizard_working")
+                        cell_ids = [obj["id_n"] for obj in cell]
+
+                        x = int(gripper["x"])
+                        y = int(gripper["y"])
+                        coordinates = f"{y}:{x}"
+
+                        for pattern in self.patterns:
+                            if pattern.detect((coordinates, cell_ids), state):
+                                message += " | detected patterns:"
+
+                                if pattern.cells > 1:
+                                    message += f" part of a {pattern.name}"
+                                else:
+                                    message += f" {pattern.name}"
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message=message,
+                                    color=STANDARD_COLOR,
+                                ),
+                                "room": room_id,
+                                "receiver_id": curr_usr["id"],
+                                "html": True,
+                            },
+                        )
+                        return
+
+            else:
+                # commands from the user
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": COLOR_MESSAGE.format(
+                            message="Sorry, but I do not understand this command.",
+                            color=STANDARD_COLOR,
+                        ),
+                        "room": room_id,
+                        "receiver_id": user_id,
+                        "html": True,
+                    },
+                )
+
     def check_role(self, user_id, wanted_role, room_id):
-        curr_usr, other_usr = self.sessions[room_id].players
+        this_session = self.sessions[room_id]
+        curr_usr, other_usr = this_session.players
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
 
@@ -952,10 +925,11 @@ class CoCoBot(TaskBot):
             return False
 
     def send_roles(self, room_id):
-        curr_usr, other_usr = self.sessions[room_id].players
+        this_session = self.sessions[room_id]
+        curr_usr, other_usr = this_session.players
 
-        golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
-        for user in self.sessions[room_id].players:
+        golmi_rooms = this_session.golmi_client.rooms.json
+        for user in this_session.players:
             role = user["role"]
 
             self.sio.emit(
@@ -977,14 +951,15 @@ class CoCoBot(TaskBot):
         self.load_state(room_id)
 
     def switch_roles(self, room_id):
-        golmi_rooms = self.sessions[room_id].golmi_client.rooms.json
-        curr_usr, other_usr = self.sessions[room_id].players
+        this_session = self.sessions[room_id]
+        golmi_rooms = this_session.golmi_client.rooms.json
+        curr_usr, other_usr = this_session.players
 
         names = {"wizard": "Cocobot", "player": "Programmer"}
 
         # switch roles
         curr_usr["role"], other_usr["role"] = other_usr["role"], curr_usr["role"]
-        for user in self.sessions[room_id].players:
+        for user in this_session.players:
             role = user["role"]
 
             self.sio.emit(
@@ -1019,6 +994,7 @@ class CoCoBot(TaskBot):
             )
 
     def load_next_state(self, room_id):
+        this_session = self.sessions[room_id]
         self.sio.emit(
             "text",
             {
@@ -1029,26 +1005,29 @@ class CoCoBot(TaskBot):
                 "html": True,
             },
         )
-        self.sessions[room_id].timer.reset()
-        self.sessions[room_id].states.pop(0)
+        this_session.timer.reset()
+        this_session.states.pop(0)
 
-        if not self.sessions[room_id].states:
+        # reload new states if no states left
+        if not this_session.states:
             # self.close_game(room_id)
             self.switch_roles(room_id)
-            self.sessions[room_id].states.get_boards()
+            this_session.states.get_boards()
 
-        if isinstance(self.sessions[room_id].states[0], str) is True:
-            if self.sessions[room_id].states[0] == "switch":
+        # switch roles
+        if isinstance(this_session.states[0], str) is True:
+            if this_session.states[0] == "switch":
                 self.switch_roles(room_id)
-                self.sessions[room_id].states.pop(0)
+                this_session.states.pop(0)
 
         self.load_state(room_id)
 
     def load_state(self, room_id, from_disconnect=False):
         """load the current board on the golmi server"""
+        this_session = self.sessions[room_id]
         # get current state
-        this_state, descriptions = self.sessions[room_id].states[0]
-        client = self.sessions[room_id].golmi_client
+        this_state, descriptions = this_session.states[0]
+        client = this_session.golmi_client
 
         # load configuration and selector board
         client.load_config(CONFIG)
@@ -1064,7 +1043,7 @@ class CoCoBot(TaskBot):
         self.log_event("target_board_log", this_state, room_id)
 
         # send to frontend instructions
-        for user in self.sessions[room_id].players:
+        for user in this_session.players:
             role = user["role"]
             self.sio.emit(
                 "message_command",
@@ -1081,6 +1060,7 @@ class CoCoBot(TaskBot):
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
+        this_session = self.sessions[room_id]
         sleep(2)
         self.sio.emit(
             "text",
@@ -1094,7 +1074,7 @@ class CoCoBot(TaskBot):
             },
         )
         if room_id in self.sessions:
-            self.sessions[room_id].game_over = True
+            this_session.game_over = True
             self.room_to_read_only(room_id)
 
             # remove any task room specific objects
@@ -1102,6 +1082,7 @@ class CoCoBot(TaskBot):
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
+        this_session = self.sessions[room_id]
         # set room to read-only
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
@@ -1122,7 +1103,7 @@ class CoCoBot(TaskBot):
 
         # remove user from room
         if room_id in self.sessions:
-            for usr in self.sessions[room_id].players:
+            for usr in this_session.players:
                 response = requests.get(
                     f"{self.uri}/users/{usr['id']}",
                     headers={"Authorization": f"Bearer {self.token}"},
