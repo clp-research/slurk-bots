@@ -165,7 +165,8 @@ function confirm_selection(answer){
     "undo",
     "redo",
     "next_state",
-    "revert_session"
+    "revert_session",
+    "delete"
 ].forEach(element => {
     $(`#${element}_button`).click(() => {
         socket.emit("message_command",

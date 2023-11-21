@@ -355,7 +355,6 @@ class CoCoBot(TaskBot):
                         # the state changes, log it
                         current_state = this_client.get_state("wizard_working")
                         self.log_event("working_board_log", current_state, room_id)
-
                 return
 
             # select multiple cells with ctrl button
@@ -456,8 +455,8 @@ class CoCoBot(TaskBot):
 
                 action, obj = this_client.add_object(obj)
                 if action is not False:
-                    current_action = this_client.current_action
-                    this_client.current_action = current_action.add_action(action, obj)
+                    current_action = this_session.current_action
+                    this_session.current_action = current_action.add_action(action, obj)
 
                     # the state changes, log it
                     current_state = this_client.get_state("wizard_working")
@@ -468,8 +467,10 @@ class CoCoBot(TaskBot):
                 this_client.remove_cell_grippers()
 
             else:
-                # no object is selected, we can select this object
+                # no object is selected
                 current_state = this_client.get_state("wizard_working")
+
+                # objects are selected with ctrl, cell deep copy
                 if any("cell" in i for i in current_state["grippers"].keys()):
                     cells_to_copy = list()
                     positions = list()
@@ -575,6 +576,16 @@ class CoCoBot(TaskBot):
                                     return
 
                     this_client.remove_cell_grippers()
+                    return
+
+                # no deep copy, let's select this object
+                this_client.grip_object(
+                    x=data["coordinates"]["x"],
+                    y=data["coordinates"]["y"],
+                    block_size=data["coordinates"]["block_size"],
+                    board="wizard_working",
+                )
+                
 
         @self.sio.event
         def command(data):
@@ -711,17 +722,7 @@ class CoCoBot(TaskBot):
                         this_session.can_load_next_episode = False
                         if data["command"]["answer"] == "no":
                             return
-                            # self.sio.emit(
-                            #     "text",
-                            #     {
-                            #         "message": COLOR_MESSAGE.format(
-                            #             message="Before you can move to the next episode you have to agree wether this one is over",
-                            #             color=WARNING_COLOR,
-                            #         ),
-                            #         "room": room_id,
-                            #         "html": True,
-                            #     },
-                            # )
+
                         elif data["command"]["answer"] == "yes":
                             # load next state
                             self.load_next_state(room_id)
@@ -816,73 +817,29 @@ class CoCoBot(TaskBot):
                         },
                     )
 
-                    # self.sio.emit(
-                    #     "text",
-                    #     {
-                    #         "message": COLOR_MESSAGE.format(
-                    #             message=f"Waiting for confirmation from the Cocobot",
-                    #             color=STANDARD_COLOR,
-                    #         ),
-                    #         "room": room_id,
-                    #         "html": True,
-                    #         "receiver_id": curr_usr["id"],
-                    #     },
-                    # )
+                elif event == "delete":
+                    this_client = this_session.golmi_client
+                    current_state = this_client.get_state("wizard_working")
 
-                elif event == "inspect":
-                    gripper = this_client.get_mouse_gripper()
-                    cell = this_client.get_entire_cell(
-                        x=gripper["x"],
-                        y=gripper["y"],
-                        block_size=1,
-                        board="wizard_working",
-                    )
-
-                    if cell:
-                        message = "Bottom to top: "
-                        obj_strings = list()
-                        for obj in cell:
-                            name = obj["type"]
-                            if name == "vbridge":
-                                name = "vertical bridge"
-
-                            if name == "hbridge":
-                                name = "horizontal bridge"
-
-                            this_obj = f"{obj['color'][0]} {name}"
-                            obj_strings.append(this_obj)
-
-                        message += ", ".join(obj_strings)
-
-                        state = this_client.get_state("wizard_working")
-                        cell_ids = [obj["id_n"] for obj in cell]
-
-                        x = int(gripper["x"])
-                        y = int(gripper["y"])
-                        coordinates = f"{y}:{x}"
-
-                        for pattern in self.patterns:
-                            if pattern.detect((coordinates, cell_ids), state):
-                                message += " | detected patterns:"
-
-                                if pattern.cells > 1:
-                                    message += f" part of a {pattern.name}"
-                                else:
-                                    message += f" {pattern.name}"
-
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": COLOR_MESSAGE.format(
-                                    message=message,
-                                    color=STANDARD_COLOR,
-                                ),
-                                "room": room_id,
-                                "receiver_id": curr_usr["id"],
-                                "html": True,
-                            },
-                        )
+                    if "mouse" not in current_state["grippers"]:
                         return
+
+                    obj = current_state["grippers"]["mouse"]["gripped"]
+                    obj_id = list(obj.keys())[0]
+                    obj = obj[obj_id]
+
+                    action, obj = this_client.delete_object(obj)
+
+                    if action is not False:
+                        current_action = this_session.current_action
+                        this_session.current_action = current_action.add_action(
+                            action, obj
+                        )
+
+                        # the state changes, log it
+                        current_state = this_client.get_state("wizard_working")
+                        self.log_event("working_board_log", current_state, room_id)
+                    return
 
             else:
                 # commands from the user
