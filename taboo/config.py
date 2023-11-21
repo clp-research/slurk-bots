@@ -12,3 +12,4 @@ with open(os.path.join(ROOT, "taboo", "data", "intitial_explainer_prompt.txt"), 
 
 with open(os.path.join(ROOT, "taboo", "data", "initial_guesser_prompt.txt"), "r") as my_f:
     GUESSER_PROMPT = my_f.read()
+RESULTS_PATH = os.path.join(ROOT, "taboo", "data", "results")

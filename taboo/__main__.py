@@ -4,7 +4,7 @@ import logging
 import requests
 from time import sleep
 
-from taboo.config import TABOO_WORDS, EXPLAINER_PROMPT, GUESSER_PROMPT
+from taboo.config import TABOO_WORDS, EXPLAINER_PROMPT, GUESSER_PROMPT, RESULTS_PATH
 from templates import TaskBot
 
 import random
@@ -17,11 +17,18 @@ import string
 
 nltk.download('stopwords', quiet=True)
 EN_STOPWORDS = stopwords.words('english')
-
+nltk.download('wordnet')
 nltk.download('stopwords', quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
+from taboo.metrics import METRIC_ABORTED, METRIC_SUCCESS, METRIC_LOSE, METRIC_REQUEST_COUNT, \
+    METRIC_REQUEST_COUNT_VIOLATED, METRIC_REQUEST_COUNT_PARSED, METRIC_REQUEST_SUCCESS, BENCH_SCORE
 
+from typing import List, Dict, Tuple, Any
+
+from datetime import datetime
+
+from .utils import save_file
 LOG = logging.getLogger(__name__)
 
 
@@ -29,11 +36,21 @@ class Session:
     # what happens between 2 players
     def __init__(self):
         self.players = list()
-        self.explainer = None
         self.word_to_guess = None
         self.guesses = 0
         self.guessed = False
+        self.explainer = None
         self.guesser = None
+        self.interactions = {
+            "players": self.players,
+            "turns": []
+        }
+        self.log_current_turn = -1
+
+    def log_next_turn(self):
+        """ Call this method to group interactions per turn """
+        self.log_current_turn += 1
+        self.interactions["turns"].append([])
 
     def close(self):
         pass
@@ -123,6 +140,12 @@ class TabooBot(TaskBot):
             this_session.word_to_guess = random.choice(list(self.taboo_data.keys()))
             # 2) Choose an explainer
             this_session.pick_explainer()
+            for user in data["users"]:
+                if user["id"] == this_session.explainer:
+                    LOG.debug(f'{user["name"]} is the explainer.')
+                else:
+                    LOG.debug(f'{user["name"]} is the guesser.')
+
 
             # 3) Tell the explainer about the word
             word_to_guess = this_session.word_to_guess
@@ -278,8 +301,8 @@ class TabooBot(TaskBot):
 
             # EXPLAINER sent a command
             else:
+                this_session.log_next_turn()
                 if this_session.explainer == user_id:
-                    LOG.debug(f"{data['user']['name']} is the explainer.")
 
                     # check whether the user used a forbidden word
                     explanation_errors = check_clue(
@@ -290,10 +313,18 @@ class TabooBot(TaskBot):
                     )
 
                     if not explanation_errors:
+                        self.log_event(this_session, "GM", "GM", "valid format", "continue")
+
                         self.send_message_to_user(
                             f"HINT: {data['command']}", room_id, this_session.guesser
                         )
                     else:
+                        error_type = explanation_errors[0]["type"]
+                        if error_type == 0:
+                            self.log_event(this_session, "GM", "GM", "invalid clue", "clue contains target word")
+                        if error_type == 1:
+                            self.log_event(this_session, "GM", "GM", "invalid clue", "clue contains related word")
+
                         message = explanation_errors[0]["message"]
                         for player in this_session.players:
                             self.send_message_to_user(
@@ -301,6 +332,8 @@ class TabooBot(TaskBot):
                                 room_id,
                                 player["id"],
                             )
+                        self.store_records(this_session)
+
                         sleep(1)
                         self.close_room(room_id)
 
@@ -313,6 +346,8 @@ class TabooBot(TaskBot):
                         if check_guess(
                             this_session.word_to_guess, data["command"].lower()
                         ):
+                            self.log_event(this_session, "GM", "GM", "correct guess", data["command"].lower())
+
                             for player in this_session.players:
                                 self.send_message_to_user(
                                     f"GUESS {this_session.guesses}: "
@@ -321,6 +356,8 @@ class TabooBot(TaskBot):
                                     room_id,
                                     player["id"],
                                 )
+
+                            self.store_records(this_session)
                             sleep(1)
                             self.close_room(room_id)
                         else:
@@ -358,6 +395,7 @@ class TabooBot(TaskBot):
                                     room_id,
                                     player["id"],
                                 )
+                        self.store_records(this_session)
                         sleep(1)
                         self.close_room(room_id)
 
@@ -454,6 +492,66 @@ class TabooBot(TaskBot):
                 {"message": f"{message}", "room": room},
             )
 
+    def log_event(self, session, from_: str, to: str, type_, value):
+        """
+        Add an event to the internal log. It can be only an action or an action
+        plus an API call that should have the same timestamp as the action.
+
+        call, if given, is a tuple whose first element is the input prompt
+        object (after API-specific manipulation) as passed to the API and the
+        second element is the raw response object as returned by the API.
+        """
+        assert session.log_current_turn >= 0, f"Call log_add_new_turn at least once " \
+                                           f"(log_current_turn={session.log_current_turn})"
+        action = {'type': type_, 'content': value}
+
+        timestamp = datetime.now().isoformat()
+        action_obj = {
+            "from": from_,
+            "to": to,
+            "timestamp": timestamp,
+            "action": action
+        }
+
+        session.interactions["turns"][session.log_current_turn].append(action_obj.copy())
+        LOG.info(
+            f"Logged {action['type']} action ({from_}->{to}).")
+
+    def store_records(self, session):
+        """Raise warnings if a mandatory element is empty or format is wrong."""
+        if not session.interactions["players"]:
+            LOG.warning(f"Players metadada is missing!")
+        # else:
+        #     for name in session.interactions["players"]:
+        #         """The transcript builder relies on specific player identifiers."""
+        #         try:
+        #             assert name == "GM" or name.startswith("Player ")
+        #         except AssertionError:
+        #             self.logger.warning(f"Invalid player identifiers, html builder won't work.")
+        if not session.interactions["turns"]:
+            LOG.warning(f"Interaction logs are missing!")
+
+        # if not self.requests:
+        #     self.logger.warning(f"No calls logged!")
+
+        # self.store_results_file(self.interactions, "interactions.json", sub_dir=game_record_dir)
+
+        # in the current dict
+        self.store_results_file(session.interactions, f"{RESULTS_PATH}/interactions.json")
+        # self.store_results_file(self.requests, "requests.json", sub_dir=game_record_dir)
+
+
+    def store_results_file(self, data, file_name: str):
+        """
+        Store a results file in your game results' directory. The top-level directory is 'results'.
+
+        :param sub_dir: automatically created when given; otherwise an error will be thrown.
+        :param data: to store
+        :param file_name: can have subdirectories e.g. "sub/my_file"
+        """
+        save_file(data, file_name)
+        LOG.info(f"interactions saved, {data}")
+
 
 def check_guess(correct_answer, user_guess):
     if correct_answer in user_guess:
@@ -502,6 +600,89 @@ def check_clue(utterance: str, target_word: str, related_words):
             }]
     return errors
 
+
+# def compute_scores(self, episode_interactions: Dict) -> None:
+#     """ Episode level scores"""
+#     turn_scores = []
+#     prev_guess = None
+#     prev_guess_counter = 0
+#     prev_clue = None
+#     prev_clue_counter = 0
+#     invalid_response = False  # Note: This only takes into consideration that both players were compliant or not
+#     guesser_won = False
+#     for turn_idx, turn in enumerate(episode_interactions["turns"]):
+#         turn_score = {"guess": None, "clue": None, "request_count": 1}
+#
+#         for event in turn:
+#             action = event["action"]
+#             if action["type"] == "invalid format":
+#                 invalid_response = True
+#             if action["type"] == "guess":
+#                 turn_score["guess"] = action["content"]
+#             if action["type"] == "clue":
+#                 turn_score["clue"] = action["content"]
+#             if action["type"] == "correct guess":
+#                 guesser_won = True
+#
+#         if invalid_response:
+#             turn_score["violated_request_count"] = 1
+#             turn_score["parsed_request_count"] = 0
+#         else:
+#             turn_score["violated_request_count"] = 0
+#             turn_score["parsed_request_count"] = 1
+#
+#         if turn_score["guess"] is not None and turn_score["guess"] == prev_guess:  # might be None, if clue is wrong
+#             prev_guess_counter += 1
+#         if turn_score["clue"] is not None and turn_score["clue"] == prev_clue:
+#             prev_clue_counter += 1
+#         self.log_turn_score(turn_idx, 'Accuracy', 1 if guesser_won else 0)
+#         self.log_turn_score(turn_idx, METRIC_REQUEST_COUNT_VIOLATED, turn_score["violated_request_count"])
+#         self.log_turn_score(turn_idx, METRIC_REQUEST_COUNT_PARSED, turn_score["parsed_request_count"])
+#         self.log_turn_score(turn_idx, METRIC_REQUEST_COUNT, turn_score["request_count"])
+#         prev_guess = turn_score["guess"]
+#         prev_clue = turn_score["clue"]
+#         turn_scores.append(turn_score)
+#
+#     violated_request_count = sum([turn["violated_request_count"] for turn in turn_scores])
+#     self.log_episode_score(METRIC_REQUEST_COUNT_VIOLATED, violated_request_count)
+#
+#     parsed_request_count = sum([turn["parsed_request_count"] for turn in turn_scores])
+#     self.log_episode_score(METRIC_REQUEST_COUNT_PARSED, parsed_request_count)
+#
+#     request_count = sum([turn["request_count"] for turn in turn_scores])
+#     self.log_episode_score(METRIC_REQUEST_COUNT, request_count)
+#
+#     self.log_episode_score(METRIC_REQUEST_SUCCESS, parsed_request_count / request_count)
+#     # checking the last guess (could be None) is ok,
+#     # b.c. the game ends only successfully, when there is a correct guess
+#
+#     # Common metrics
+#     if invalid_response:  # whether a violation of the game rules happened (response not parsable)
+#         self.log_episode_score(METRIC_ABORTED, 1)
+#         self.log_episode_score(METRIC_SUCCESS, 0)
+#         self.log_episode_score(METRIC_LOSE, 0)
+#
+#         # Game-specific metrics
+#         # commendted this metric, import numpy!
+#         # self.log_episode_score(BENCH_SCORE, np.nan)  # metric not applicable
+#     else:
+#         self.log_episode_score(METRIC_ABORTED, 0)
+#         if guesser_won:
+#             self.log_episode_score(METRIC_SUCCESS, 1)
+#             self.log_episode_score(METRIC_LOSE, 0)
+#             self.log_episode_score(BENCH_SCORE, 100 / len(turn_scores))  # how early the guesser found the word
+#         else:
+#             self.log_episode_score(METRIC_SUCCESS, 0)
+#             self.log_episode_score(METRIC_LOSE, 1)
+#             self.log_episode_score(BENCH_SCORE, 0)  # word not found
+#
+#     # Game-specific metrics
+#     # How often the Guesser repeated a guess
+#     self.log_episode_score('Repetition-Guesser', prev_guess_counter)
+#     # How often the Describer repeated itself
+#     self.log_episode_score('Repetition-Describer', prev_clue_counter)
+#     # this might require a side-loop between describer and GM (game should not continue with Guesser)
+#     # self.log_episode_score('Rule-following', ...)
 
 if __name__ == "__main__":
     # set up logging configuration
