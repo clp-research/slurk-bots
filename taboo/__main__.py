@@ -301,14 +301,14 @@ class TabooBot(TaskBot):
             word_to_guess = this_session.word_to_guess
 
             if 'ready' in data['command']:
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": "You typed READY",
-                        "room": room_id,
-                    },
-                )
-                # self._command_ready(room_id, user_id)
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": f"You typed READY.",
+                #         "room": room_id,
+                #     },
+                # )
+                self._command_ready(room_id, user_id)
                 return
 
             # explainer
@@ -476,7 +476,7 @@ class TabooBot(TaskBot):
                         },
                     )
 
-                    this_session.players.append({**user, "status": "joined", "wins": 0})
+                    # this_session.players.append({**user, "status": "joined", "wins": 0})
 
                     if len(this_session.players) < 2:
                         self.sio.emit(
@@ -630,6 +630,16 @@ class TabooBot(TaskBot):
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
+        # ex_players =  [{'id': 19, 'name': 'user_0', 'role': None, 'status': 'joined'},
+        # {'id': 20, 'name': 'user_1', 'role': None, 'status': 'joined'}, {'id': 20, 'name': 'user_1', 'status': 'joined', 'wins': 0}]
+        # self.sio.emit(
+        #     "text",
+        #     {
+        #         "message": f"_command_ready is triggered",
+        #         "room": room_id,
+        #     },
+        # )
+
         # identify the user that has not sent this event
         curr_usr, other_usr = self.sessions[room_id].players
         if curr_usr["id"] != user_id:
