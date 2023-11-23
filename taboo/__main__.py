@@ -321,6 +321,14 @@ class TabooBot(TaskBot):
 
                 # check whether the user used a forbidden word
                 forbidden_words = self.taboo_data['related_word']
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": f"the taboo words are {forbidden_words}",
+                #         "room": room_id,
+                #         "receiver_id": this_session.explainer,
+                #     },
+                # )
                 for taboo_word in forbidden_words:
                     if taboo_word.lower() in command.lower():
                         self.sio.emit(
@@ -651,7 +659,7 @@ class TabooBot(TaskBot):
             self.sio.emit(
                 "text",
                 {
-                    "message": "You have already typed /ready.",
+                    "message": "You have already typed 'ready'.",
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
                 },
@@ -666,7 +674,7 @@ class TabooBot(TaskBot):
             self.sio.emit(
                 "text",
                 {
-                    "message": "Now, waiting for your partner to type /ready.",
+                    "message": "Now, waiting for your partner to type 'ready'.",
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
                 },
@@ -675,7 +683,7 @@ class TabooBot(TaskBot):
             self.sio.emit(
                 "text",
                     {
-                        "message": "Your partner is ready. Please, type /ready!",
+                        "message": "Your partner is ready. Please, type 'ready'!",
                         "room": room_id,
                         "receiver_id": other_usr["id"],
                     },
@@ -692,10 +700,10 @@ class TabooBot(TaskBot):
 
     def start_game(self, room_id):
         this_session = self.sessions[room_id]
-        self.sio.emit(
-            "text",
-            {"message": "start_game was triggered.", "room": room_id},
-        )
+        # self.sio.emit(
+        #     "text",
+        #     {"message": "start_game was triggered.", "room": room_id},
+        # )
         # 3) Tell the explainer about the word
         word_to_guess = this_session.word_to_guess
         taboo_words = ", ".join(self.taboo_data['related_word'])
