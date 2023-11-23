@@ -315,10 +315,28 @@ class TabooBot(TaskBot):
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
                 command = data['command']
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": f"{command} is tested",
+                #         "room": room_id,
+                #         "receiver_id": this_session.explainer,
+                #     },
+                # )
                 logging.debug(
                     f"Received a command from {data['user']['name']}: {data['command']}"
                 )
-
+                # check whether the user used the word to guess
+                if word_to_guess.lower() in command.lower():
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"The taboo word was used in the explanation. You both lost.",
+                            "room": room_id,
+                        },
+                    )
+                    self.process_move(room_id, -1)
+                    return
                 # check whether the user used a forbidden word
                 forbidden_words = self.taboo_data['related_word']
                 # self.sio.emit(
@@ -360,27 +378,6 @@ class TabooBot(TaskBot):
                         )
                         return
 
-                # check whether the user used the word to guess
-                if word_to_guess.lower() in command:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"You used the word to guess '{word_to_guess}'! GAME OVER",
-                            "room": room_id,
-                            "receiver_id": this_session.explainer,
-                        },
-                    )
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{data['user']['name']} used the word to guess. You both lose!",
-                            "room": room_id,
-                            "receiver_id": this_session.guesser,
-                        },
-                    )
-                    self.process_move(room_id, -1)
-                    return
-
             # Check if user is guesser
             elif this_session.guesser == user_id:
                 LOG.debug(f"{data['user']['name']} is the guesser.")
@@ -409,7 +406,7 @@ class TabooBot(TaskBot):
                 #     )
                 #     self.process_move(room_id, 0)
 
-                if word_to_guess.lower() in command:
+                if word_to_guess.lower() in command.lower():
                     self.sio.emit(
                         "text",
                         {
