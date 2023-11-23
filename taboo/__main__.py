@@ -687,8 +687,37 @@ class TabooBot(TaskBot):
                 "text",
                 {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
             )
-            # self.start_game()
+            sleep(1)
+            self.start_game(room_id)
 
+    def start_game(self, room_id):
+        this_session = self.sessions[room_id]
+        self.sio.emit(
+            "text",
+            {"message": "start_game was triggered.", "room": room_id},
+        )
+        # 3) Tell the explainer about the word
+        word_to_guess = this_session.word_to_guess
+        taboo_words = ", ".join(self.taboo_data['related_word'])
+        self.sio.emit(
+            "text",
+            {
+                "message": f"Your task is to explain the word '{word_to_guess}'. You cannot use the following words: {taboo_words}",
+                "room": room_id,
+                "receiver_id": this_session.explainer,
+            },
+        )
+        # 4) Tell everyone else that the game has started
+        for player in this_session.players:
+            if player["id"] != this_session.explainer:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": "The game has started. Try to guess the word!",
+                        "room": room_id,
+                        "receiver_id": this_session.guesser,
+                    },
+                )
 
     def remove_punctuation(text: str) -> str:
         text = text.translate(str.maketrans("", "", string.punctuation))
