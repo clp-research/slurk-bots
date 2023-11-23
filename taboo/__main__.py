@@ -119,7 +119,7 @@ class TabooBot(TaskBot):
         self.guesser_instructions = self.read_guesser_instructions()
         self.explainer_instructions = self.read_explainer_instructions()
         self.waiting_room = None
-        self.task_id = None
+
 
     def read_guesser_instructions(self):
         return guesser_task_description.read_text()
@@ -157,7 +157,124 @@ class TabooBot(TaskBot):
             exit(1)
         LOG.debug("Sent message successfully.")
 
+    def on_task_room_creation(self, data):
+        room_id = data["room"]
+        task_id = data["task"]
+
+        logging.debug(f"A new task room was created with id: {data['task']}")
+        logging.debug(f"This bot is looking for task id: {self.task_id}")
+
+        if task_id is not None and task_id == self.task_id:
+            # reduce height of sidebar
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+                headers={"Authorization": f"Bearer {self.token}"},
+                json={"attribute": "style", "value": f"height: 90%"}
+            )
+
+            for usr in data["users"]:
+                self.received_waiting_token.discard(usr["id"])
+
+            # create session for these users
+            # self.sessions.create_session(room_id)
+            # timer = RoomTimer(self.timeout_close_game, room_id)
+            # self.sessions[room_id].timer = timer
+
+            for usr in data["users"]:
+                self.sessions[room_id].players.append(
+                    {**usr, "role": None, "status": "joined"}
+                )
+
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "letting task bot join room")
+
     def register_callbacks(self):
+        @self.sio.event
+        def new_task_room(data):
+            """Triggered after a new task room is created.
+
+            An example scenario would be that the concierge
+            bot emitted a room_created event once enough
+            users for a task have entered the waiting room.
+            """
+            room_id = data["room"]
+            task_id = data["task"]
+
+            LOG.debug(f"A new task room was created with id: {data['task']}")
+            LOG.debug(f"This bot is looking for task id: {self.task_id}")
+
+            if task_id is not None and task_id == self.task_id:
+                for usr in data["users"]:
+                    self.received_waiting_token.discard(usr["id"])
+
+                # create image items for this room
+                LOG.debug("Create data for the new task room...")
+
+                # self.images_per_room.get_image_pairs(room_id)
+                # self.players_per_room[room_id] = []
+                # for usr in data["users"]:
+                #     self.players_per_room[room_id].append(
+                #         {**usr, "msg_n": 0, "status": "joined"}
+                #     )
+                # self.last_message_from[room_id] = None
+                #
+                # # register ready timer for this room
+                # self.timers_per_room[room_id] = RoomTimers()
+                # self.timers_per_room[room_id].ready_timer = Timer(
+                #     TIME_READY * 60,
+                #     self.sio.emit,
+                #     args=[
+                #         "text",
+                #         {
+                #             "message": "Are you ready? "
+                #                        "Please type **/ready** to begin the game.",
+                #             "room": room_id,
+                #             "html": True,
+                #         },
+                #     ],
+                # )
+                self.sio.emit(
+                    "text",
+                        {
+                            "message": "Are you ready? "
+                                       "Please type **/ready** to begin the game.",
+                            "room": room_id,
+                            "html": True,
+                        },
+                )
+                # self.timers_per_room[room_id].ready_timer.start()
+
+                response = requests.post(
+                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(
+                        f"Could not let taboo bot join room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                LOG.debug("Sending taboo bot to new room was successful.")
+
+        @self.sio.event
+        def joined_room(data):
+            """Triggered once after the bot joins a room."""
+            room_id = data["room"]
+
+            if room_id in self.sessions:
+                # read out task greeting #todo: read from file
+                message = "Welcome!"
+                self.sio.emit(
+                        "text", {"message": message, "room": room_id, "html": True}
+                    )
+
+            else:
+                # create_room(task_room_layout_id)
+                self.sio.emit(
+                    "text", {"message": f"Didn't manage to create a task room {room_id}", "room": room_id, "html": True}
+                )
         @self.sio.event
         def user_message(data):
             LOG.debug("Received a user_message.")
@@ -327,18 +444,14 @@ class TabooBot(TaskBot):
 
             # someone joined waiting room
             if room_id == self.waiting_room:
-                pass
-                # if self.waiting_timer is not None:
-                #     LOG.debug("Waiting Timer stopped.")
-                #     self.waiting_timer.cancel()
-                # if data["type"] == "join":
-                #     LOG.debug("Waiting Timer restarted.")
-                #     self.waiting_timer = Timer(
-                #         TIME_WAITING * 60,
-                #         self._no_partner,
-                #         args=[room_id, data["user"]["id"]],
-                #     )
-                #     self.waiting_timer.start()
+                if data["type"] == "join":
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": "Somebody joined the waiting room",
+                            "room": room_id,
+                        },
+                    )
             else:
                 # automatically creates a new session if not present
                 this_session = self.sessions[room_id]
@@ -701,7 +814,7 @@ if __name__ == "__main__":
         waiting_room = {"default": os.environ["WAITING_ROOM"]}
     else:
         waiting_room = {"required": True}
-    task_id = {"default": os.environ.get("TASK_ID")}
+
     parser.add_argument(
         "--taboo_data",
         help="json file containing words",
@@ -713,13 +826,11 @@ if __name__ == "__main__":
         help="room where users await their partner",
         **waiting_room
     )
-    parser.add_argument("--task_id", type=int, help="task to join", **task_id)
     args = parser.parse_args()
 
     # create bot instance
     taboo_bot = TabooBot(args.token, args.user, args.task, args.host, args.port)
     taboo_bot.waiting_room = args.waiting_room
-    taboo_bot.task_id = args.task_id
     # taboo_bot.taboo_data = args.taboo_data
     # connect to chat server
     taboo_bot.run()
