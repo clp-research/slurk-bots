@@ -429,7 +429,6 @@ class TabooBot(TaskBot):
                         {
                             "message": f"'{command}' was not correct.",
                             "room": room_id,
-                            "receiver_id": this_session.guesser
                         },
                     )
                     self.process_move(room_id, 0)
@@ -786,13 +785,13 @@ class TabooBot(TaskBot):
         else:
             self.sio.emit(
                 "text",
-                {"message": "Give a new hint",
+                {"message": "Give a new clue.",
                  "room": room_id,
                  "receiver_id": this_session.explainer}
             )
             self.sio.emit(
                 "text",
-                {"message": "Wait for a new hint",
+                {"message": "Wait for a new clue.",
                  "room": room_id,
                  "receiver_id": this_session.guesser}
             )
