@@ -11,7 +11,7 @@ def save_file(data, file_name: str):
     """
     with open(file_name, "w", encoding='utf-8') as f:
         if file_name.endswith(".json"):
-            json.dump(data, f, ensure_ascii=False)
+            json.dump(data, f,  indent=4, ensure_ascii=False)
         else:
             f.write(data)
     return
