@@ -4,9 +4,9 @@ import logging
 import requests
 from time import sleep
 
-from taboo.config import TABOO_WORDS, EXPLAINER_PROMPT, GUESSER_PROMPT
+from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM
 
-# LEVEL_WORDS, WORDS_PER_ROOM
+
 
 from templates import TaskBot
 
@@ -31,7 +31,7 @@ from taboo.metrics import METRIC_ABORTED, METRIC_SUCCESS, METRIC_LOSE, METRIC_RE
 from typing import List, Dict, Tuple, Any
 
 from datetime import datetime
-# from taboo.dataloader import Dataloader
+from taboo.dataloader import Dataloader
 
 
 LOG = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class Session:
     # what happens between 2 players
     def __init__(self):
         self.players = list()
-        # self.words = Dataloader(LEVEL_WORDS, WORDS_PER_ROOM)
+        self.words = Dataloader(LEVEL_WORDS, WORDS_PER_ROOM)
         self.word_to_guess = None
         self.guesses = 0
         self.guessed = False
@@ -99,7 +99,7 @@ class TabooBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
 
-        self.taboo_data = TABOO_WORDS
+        # self.taboo_data = TABOO_WORDS
 
 
     def post_init(self, waiting_room):
@@ -143,8 +143,10 @@ class TabooBot(TaskBot):
             #     this_session.players.append({**user, "status": "joined", "wins": 0})
 
 
-            self.sessions[room_id].word_to_guess = random.choice(list(self.taboo_data.keys()))
-            # this_session.word_to_guess = this_session.words[0]["target_word"]
+            # self.sessions[room_id].word_to_guess = random.choice(list(self.taboo_data.keys()))
+
+            self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0]["target_word"]
+
             # 2) Choose an explainer
             self.sessions[room_id].pick_explainer()
             for user in data["users"]:
@@ -156,6 +158,7 @@ class TabooBot(TaskBot):
 
             # 3) Tell the explainer about the word
             word_to_guess  = self.sessions[room_id].word_to_guess
+
             # taboo_words = ", ".join(self.taboo_data[word_to_guess])
 
             response_e = requests.patch(
@@ -250,10 +253,6 @@ class TabooBot(TaskBot):
 
             if user_id == self.user:
                 return
-            self.send_message_to_user(
-                f"{room_id}",
-                room_id,
-            )
 
             this_session = self.sessions[room_id]
             this_session.log_next_turn()
@@ -271,7 +270,8 @@ class TabooBot(TaskBot):
                     explanation_errors = check_clue(
                         data["command"].lower(),
                         this_session.word_to_guess,
-                        self.taboo_data[this_session.word_to_guess],
+                        # self.taboo_data[this_session.word_to_guess],
+                        this_session.words[0]["related_word"]
 
                     )
 
@@ -388,13 +388,13 @@ class TabooBot(TaskBot):
 
         # both
         if other_usr["status"] == "ready":
-
             self.send_message_to_user("Woo-Hoo! The game will begin now.", room_id)
             self.send_message_to_user("Wait a bit for the first hint about the word you need to guess", room_id, self.sessions[room_id].guesser)
 
 
             #     now send the word to the explainer?? Here?
-            taboo_words = ", ".join(self.taboo_data[self.sessions[room_id].word_to_guess])
+            # taboo_words = ", ".join(self.taboo_data[self.sessions[room_id].word_to_guess])
+            taboo_words = ", ".join(self.sessions[room_id].words[0]["related_word"])
             # taboo_words = ", ".join(this_session.words[0]["related_word"])
             self.send_message_to_user(
                 f"Your task is to explain the word '{self.sessions[room_id].word_to_guess}'."
@@ -436,11 +436,17 @@ class TabooBot(TaskBot):
             response.raise_for_status()
 
     def send_message_to_user(self, message, room, receiver=None):
-        self.sio.emit(
+        if receiver:
+            self.sio.emit(
                 "text",
                 {"message": f"{message}", "room": room, "receiver_id": receiver},
             )
-        sleep(1)
+        else:
+            self.sio.emit(
+                "text",
+                {"message": f"{message}", "room": room},
+            )
+        # sleep(1)
 
 
 def check_guess(correct_answer, user_guess):
