@@ -6,8 +6,6 @@ from time import sleep
 
 from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM
 
-
-
 from templates import TaskBot
 
 
@@ -19,14 +17,22 @@ import nltk
 from nltk.corpus import stopwords
 import string
 
-nltk.download('stopwords', quiet=True)
-EN_STOPWORDS = stopwords.words('english')
-nltk.download('wordnet')
-nltk.download('stopwords', quiet=True)
+nltk.download("stopwords", quiet=True)
+EN_STOPWORDS = stopwords.words("english")
+nltk.download("wordnet")
+nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
-from taboo.metrics import METRIC_ABORTED, METRIC_SUCCESS, METRIC_LOSE, METRIC_REQUEST_COUNT, \
-    METRIC_REQUEST_COUNT_VIOLATED, METRIC_REQUEST_COUNT_PARSED, METRIC_REQUEST_SUCCESS, BENCH_SCORE
+from taboo.metrics import (
+    METRIC_ABORTED,
+    METRIC_SUCCESS,
+    METRIC_LOSE,
+    METRIC_REQUEST_COUNT,
+    METRIC_REQUEST_COUNT_VIOLATED,
+    METRIC_REQUEST_COUNT_PARSED,
+    METRIC_REQUEST_SUCCESS,
+    BENCH_SCORE,
+)
 
 from typing import List, Dict, Tuple, Any
 
@@ -47,14 +53,13 @@ class Session:
         self.guessed = False
         self.explainer = None
         self.guesser = None
-        self.interactions = {
-            "players": self.players,
-            "turns": []
-        }
+        # do not need?
+        self.interactions = {"players": self.players, "turns": []}
+        # do not need?
         self.log_current_turn = -1
 
     def log_next_turn(self):
-        """ Call this method to group interactions per turn """
+        """Call this method to group interactions per turn"""
         self.log_current_turn += 1
         self.interactions["turns"].append([])
 
@@ -99,9 +104,6 @@ class TabooBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager(Session)
 
-        # self.taboo_data = TABOO_WORDS
-
-
     def post_init(self, waiting_room):
         """
         save extra variables after the __init__() method has been called
@@ -131,7 +133,9 @@ class TabooBot(TaskBot):
 
             for usr in data["users"]:
                 # this_session.players.append({**usr, "msg_n": 0, "status": "joined"})
-                self.sessions[room_id].players.append({**usr, "msg_n": 0, "status": "joined"})
+                self.sessions[room_id].players.append(
+                    {**usr, "msg_n": 0, "status": "joined"}
+                )
 
             # join the newly created room
             response = requests.post(
@@ -142,10 +146,8 @@ class TabooBot(TaskBot):
             # for user in data["users"]:
             #     this_session.players.append({**user, "status": "joined", "wins": 0})
 
-
-            # self.sessions[room_id].word_to_guess = random.choice(list(self.taboo_data.keys()))
-
-            self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0]["target_word"]
+            # now define in a sep function, so that it's possible to change the word
+            # self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0]["target_word"]
 
             # 2) Choose an explainer
             self.sessions[room_id].pick_explainer()
@@ -155,15 +157,12 @@ class TabooBot(TaskBot):
                 else:
                     LOG.debug(f'{user["name"]} is the guesser.')
 
-
-            # 3) Tell the explainer about the word
-            word_to_guess  = self.sessions[room_id].word_to_guess
-
-            # taboo_words = ", ".join(self.taboo_data[word_to_guess])
-
             response_e = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": EXPLAINER_PROMPT, "receiver_id": self.sessions[room_id].explainer},
+                json={
+                    "text": EXPLAINER_PROMPT,
+                    "receiver_id": self.sessions[room_id].explainer,
+                },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response_e.ok:
@@ -172,25 +171,15 @@ class TabooBot(TaskBot):
 
             response_g = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr",
-                json={"text": GUESSER_PROMPT, "receiver_id": self.sessions[room_id].guesser},
+                json={
+                    "text": GUESSER_PROMPT,
+                    "receiver_id": self.sessions[room_id].guesser,
+                },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             if not response_g.ok:
                 LOG.error(f"Could not set task instruction: {response.status_code}")
                 response_g.raise_for_status()
-
-            # self.send_message_to_user(EXPLAINER_PROMPT, room_id, this_session.explainer)
-            #
-            # When to send th ewprd to the explainer?
-            # if this_session.ready:
-            #     self.send_message_to_user(
-            #     f"Your task is to explain the word '{word_to_guess}'."
-            #     f" You cannot use the following words: {taboo_words}",
-            #     room_id,
-            #     this_session.explainer,
-            # )
-            # # 4) Provide the instructions to the guesser
-            # self.send_message_to_user(GUESSER_PROMPT, room_id, this_session.guesser)
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -257,7 +246,6 @@ class TabooBot(TaskBot):
             this_session = self.sessions[room_id]
             this_session.log_next_turn()
 
-
             if data["command"].startswith("ready"):
                 self._command_ready(room_id, user_id)
 
@@ -265,32 +253,25 @@ class TabooBot(TaskBot):
             else:
                 this_session.log_next_turn()
                 if this_session.explainer == user_id:
-
                     # check whether the user used a forbidden word
                     explanation_errors = check_clue(
                         data["command"].lower(),
                         this_session.word_to_guess,
-                        # self.taboo_data[this_session.word_to_guess],
-                        this_session.words[0]["related_word"]
-
+                        this_session.words[0]["related_word"],
                     )
 
                     if not explanation_errors:
-
-
                         self.send_message_to_user(
                             f"HINT: {data['command']}", room_id, this_session.guesser
                         )
 
                         #     log that send message
 
-
                     else:
                         error_type = explanation_errors[0]["type"]
                         # if error_type == 0:
 
                         # if error_type == 1:
-
 
                         message = explanation_errors[0]["message"]
                         for player in this_session.players:
@@ -300,9 +281,9 @@ class TabooBot(TaskBot):
                                 player["id"],
                             )
 
-
                         sleep(1)
-                        self.close_room(room_id)
+                        # self.close_room(room_id)
+                        self.load_next_state(room_id)
 
                 else:
                     # GUESSER sent the command
@@ -311,25 +292,22 @@ class TabooBot(TaskBot):
                     if this_session.guesses < 2:
                         this_session.guesses += 1
 
-
-
                         if check_guess(
                             this_session.word_to_guess, data["command"].lower()
                         ):
-
-
                             for player in this_session.players:
                                 self.send_message_to_user(
                                     f"GUESS {this_session.guesses}: "
                                     f"'{this_session.word_to_guess}' was correct! "
-                                    f"You both win",
+                                    f"You both win this round.",
                                     room_id,
                                     player["id"],
                                 )
 
+                            sleep(0.5)
+                            # self.close_room(room_id)
+                            self.load_next_state(room_id)
 
-                            sleep(1)
-                            self.close_room(room_id)
                         else:
                             for player in this_session.players:
                                 self.send_message_to_user(
@@ -338,14 +316,12 @@ class TabooBot(TaskBot):
                                     player["id"],
                                 )
 
-
                                 if player["id"] == this_session.explainer:
                                     self.send_message_to_user(
                                         f"Please provide a new description",
                                         room_id,
                                         this_session.explainer,
                                     )
-
 
                     else:
                         # last guess (guess 3)
@@ -356,7 +332,7 @@ class TabooBot(TaskBot):
                             for player in this_session.players:
                                 self.send_message_to_user(
                                     f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
-                                    f"You both win.",
+                                    f"You both win this round.",
                                     room_id,
                                     player["id"],
                                 )
@@ -364,12 +340,13 @@ class TabooBot(TaskBot):
                         else:
                             for player in this_session.players:
                                 self.send_message_to_user(
-                                    f"3 guesses have been already used. You lost.",
+                                    f"3 guesses have been already used. You lost this round.",
                                     room_id,
                                     player["id"],
                                 )
                         sleep(1)
-                        self.close_room(room_id)
+                        # self.close_room(room_id)
+                        self.load_next_state(room_id)
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
@@ -381,7 +358,9 @@ class TabooBot(TaskBot):
         # only one user has sent /ready repetitively
         if curr_usr["status"] in {"ready", "done"}:
             sleep(0.5)
-            self.send_message_to_user("You have already typed 'ready'.", room_id, curr_usr["id"])
+            self.send_message_to_user(
+                "You have already typed 'ready'.", room_id, curr_usr["id"]
+            )
 
             return
         curr_usr["status"] = "ready"
@@ -389,24 +368,43 @@ class TabooBot(TaskBot):
         # both
         if other_usr["status"] == "ready":
             self.send_message_to_user("Woo-Hoo! The game will begin now.", room_id)
-            self.send_message_to_user("Wait a bit for the first hint about the word you need to guess", room_id, self.sessions[room_id].guesser)
-
-
-            #     now send the word to the explainer?? Here?
-            # taboo_words = ", ".join(self.taboo_data[self.sessions[room_id].word_to_guess])
-            taboo_words = ", ".join(self.sessions[room_id].words[0]["related_word"])
-            # taboo_words = ", ".join(this_session.words[0]["related_word"])
-            self.send_message_to_user(
-                f"Your task is to explain the word '{self.sessions[room_id].word_to_guess}'."
-                f" You cannot use the following words: {taboo_words}",
-                room_id,
-                self.sessions[room_id].explainer,
-            )
+            self.start_round(room_id)
         else:
-            self.send_message_to_user("Now, waiting for your partner to type 'ready'.",
-                                      room_id, curr_usr["id"]
-                                      )
+            self.send_message_to_user(
+                "Now, waiting for your partner to type 'ready'.",
+                room_id,
+                curr_usr["id"],
+            )
 
+    def start_round(self, room_id):
+        # send the intructions for the round
+        round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
+        self.send_message_to_user(f"Let's start round {round_n}", room_id)
+        self.send_message_to_user(
+            "Wait a bit for the first hint about the word you need to guess",
+            room_id,
+            self.sessions[room_id].guesser,
+        )
+
+        self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
+            "target_word"
+        ]
+        taboo_words = ", ".join(self.sessions[room_id].words[0]["related_word"])
+        self.sessions[room_id].guesses = 0
+
+        self.send_message_to_user(
+            f"Your task is to explain the word '{self.sessions[room_id].word_to_guess}'."
+            f" You cannot use the following words: {taboo_words}",
+            room_id,
+            self.sessions[room_id].explainer,
+        )
+
+    def load_next_state(self, room_id):
+        # word list gets smaller, next round starts
+        self.sessions[room_id].words.pop(0)
+        if not self.sessions[room_id].words:
+            self.close_room(room_id)
+        self.start_round(room_id)
 
     def close_room(self, room_id):
         # print message to close
@@ -455,7 +453,6 @@ def check_guess(correct_answer, user_guess):
     return False
 
 
-
 def remove_punctuation(text: str) -> str:
     text = text.translate(str.maketrans("", "", string.punctuation))
     return text
@@ -466,35 +463,45 @@ def check_clue(utterance: str, target_word: str, related_words):
     utterance = remove_punctuation(utterance)
     # simply contain checks
     if target_word in utterance:
-        return [{
-            "message": f"Target word '{target_word}' was used in the clue. You both lose.",
-            "type": 0
-        }]
+        return [
+            {
+                "message": f"Target word '{target_word}' was used in the clue. You both lose this round.",
+                "type": 0,
+            }
+        ]
     for related_word in related_words:
         if related_word in utterance:
-            return [{
-                "message": f"Related word '{related_word}' was used in the clue, You both lose",
-                "type": 1
-            }]
+            return [
+                {
+                    "message": f"Related word '{related_word}' was used in the clue, You both lose this round",
+                    "type": 1,
+                }
+            ]
 
     # lemma checks
     utterance = utterance.split(" ")
     filtered_clue = [word for word in utterance if word not in EN_STOPWORDS]
     target_lemma = EN_LEMMATIZER.lemmatize(target_word)
-    related_lemmas = [EN_LEMMATIZER.lemmatize(related_word) for related_word in related_words]
+    related_lemmas = [
+        EN_LEMMATIZER.lemmatize(related_word) for related_word in related_words
+    ]
     errors = []
     for clue_word in filtered_clue:
         clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
         if clue_lemma == target_lemma:
-            return [{
-                "message": f"Target word '{target_word}' is morphological similar to clue word '{clue_word}'",
-                "type": 0
-            }]
+            return [
+                {
+                    "message": f"Target word '{target_word}' is morphological similar to clue word '{clue_word}'",
+                    "type": 0,
+                }
+            ]
         if clue_lemma in related_lemmas:
-            return [{
-                "message": f"Related word is morphological similar to clue word '{clue_word}'",
-                "type": 1
-            }]
+            return [
+                {
+                    "message": f"Related word is morphological similar to clue word '{clue_word}'",
+                    "type": 1,
+                }
+            ]
     return errors
 
 
