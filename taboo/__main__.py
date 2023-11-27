@@ -315,14 +315,9 @@ class TabooBot(TaskBot):
             if this_session.explainer == user_id:
                 LOG.debug(f"{data['user']['name']} is the explainer.")
                 command = data['command']
-                # self.sio.emit(
-                #     "text",
-                #     {
-                #         "message": f"{command} is tested",
-                #         "room": room_id,
-                #         "receiver_id": this_session.explainer,
-                #     },
-                # )
+                command = command.lower()
+                command = self.remove_punctuation(command)
+
                 logging.debug(
                     f"Received a command from {data['user']['name']}: {data['command']}"
                 )
@@ -723,7 +718,7 @@ class TabooBot(TaskBot):
                     },
                 )
 
-    def remove_punctuation(text: str) -> str:
+    def remove_punctuation(self, text: str) -> str:
         text = text.translate(str.maketrans("", "", string.punctuation))
         return text
 
