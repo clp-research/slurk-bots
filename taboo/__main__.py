@@ -23,16 +23,16 @@ nltk.download("wordnet")
 nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
-from taboo.metrics import (
-    METRIC_ABORTED,
-    METRIC_SUCCESS,
-    METRIC_LOSE,
-    METRIC_REQUEST_COUNT,
-    METRIC_REQUEST_COUNT_VIOLATED,
-    METRIC_REQUEST_COUNT_PARSED,
-    METRIC_REQUEST_SUCCESS,
-    BENCH_SCORE,
-)
+# from taboo.metrics import (
+#     METRIC_ABORTED,
+#     METRIC_SUCCESS,
+#     METRIC_LOSE,
+#     METRIC_REQUEST_COUNT,
+#     METRIC_REQUEST_COUNT_VIOLATED,
+#     METRIC_REQUEST_COUNT_PARSED,
+#     METRIC_REQUEST_SUCCESS,
+#     BENCH_SCORE,
+# )
 
 from typing import List, Dict, Tuple, Any
 
