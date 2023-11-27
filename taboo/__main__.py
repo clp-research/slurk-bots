@@ -12,6 +12,11 @@ from templates import TaskBot
 from time import sleep
 from threading import Timer
 
+import nltk
+from nltk.corpus import stopwords
+
+
+
 import random
 
 LOG = logging.getLogger(__name__)
