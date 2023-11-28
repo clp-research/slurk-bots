@@ -102,7 +102,9 @@ class TabooBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
-        self.sessions = SessionManager(Session)
+        # the next session then starts automatically?
+        # self.sessions = SessionManager(Session)
+        self.sessions = SessionManager()
 
     def post_init(self, waiting_room):
         """
@@ -231,11 +233,15 @@ class TabooBot(TaskBot):
 
         @self.sio.event
         def command(data):
+            if data["command"].startswith("ready"):
+                self._command_ready(data["room"], data["user"]["id"])
+
+        @self.sio.event
+        def text_message(data):
             """Parse user commands."""
             LOG.debug(
-                f"Received a command from {data['user']['name']}: {data['command']}"
+                f"Received a message from {data['user']['name']}: {data['message']}"
             )
-            sleep(0.5)
 
             room_id = data["room"]
             user_id = data["user"]["id"]
@@ -246,107 +252,193 @@ class TabooBot(TaskBot):
             this_session = self.sessions[room_id]
             this_session.log_next_turn()
 
-            if data["command"].startswith("ready"):
-                self._command_ready(room_id, user_id)
+            if this_session.explainer == user_id:
+                # EXPLAINER sent a message
+                self.set_message_privilege(self.sessions[room_id].explainer, False)
+                self.make_input_field_unresponsive(
+                    room_id, self.sessions[room_id].explainer
+                )
 
-            # EXPLAINER sent a command
-            else:
-                this_session.log_next_turn()
-                if this_session.explainer == user_id:
-                    # check whether the user used a forbidden word
-                    explanation_errors = check_clue(
-                        data["command"].lower(),
-                        this_session.word_to_guess,
-                        this_session.words[0]["related_word"],
-                    )
+                # check whether the explainer used a forbidden word
+                explanation_errors = check_clue(
+                    data["message"].lower(),
+                    this_session.word_to_guess,
+                    this_session.words[0]["related_word"],
+                )
+                # log that send message
 
-                    if not explanation_errors:
+                if explanation_errors:
+                    message = explanation_errors[0]["message"]
+                    for player in this_session.players:
                         self.send_message_to_user(
-                            f"HINT: {data['command']}", room_id, this_session.guesser
+                            f"{message}",
+                            room_id,
+                            player["id"],
                         )
 
-                        #     log that send message
+                    self.load_next_state(room_id)
 
-                    else:
-                        error_type = explanation_errors[0]["type"]
-                        # if error_type == 0:
+                else:
+                    self.set_message_privilege(self.sessions[room_id].guesser, True)
+                    # assign writing rights to other user
+                    response = requests.delete(
+                        f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                        json={
+                            "attribute": "readonly",
+                            "value": "placeholder",
+                            "receiver_id": self.sessions[room_id].guesser,
+                        },
+                        headers={"Authorization": f"Bearer {self.token}"},
+                    )
+                    response = requests.patch(
+                        f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                        json={
+                            "attribute": "placeholder",
+                            "value": "Enter your message here!",
+                            "receiver_id": self.sessions[room_id].guesser,
+                        },
+                        headers={"Authorization": f"Bearer {self.token}"},
+                    )
 
-                        # if error_type == 1:
+            else:
+                # GUESSER sent the command
+                self.set_message_privilege(self.sessions[room_id].explainer, True)
+                # assign writing rights to other user
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={
+                        "attribute": "readonly",
+                        "value": "placeholder",
+                        "receiver_id": self.sessions[room_id].explainer,
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={
+                        "attribute": "placeholder",
+                        "value": "Enter your message here!",
+                        "receiver_id": self.sessions[room_id].explainer,
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
 
-                        message = explanation_errors[0]["message"]
+                self.set_message_privilege(self.sessions[room_id].guesser, False)
+                self.make_input_field_unresponsive(
+                    room_id, self.sessions[room_id].guesser
+                )
+
+                #  before 2 guesses were made
+                if this_session.guesses < 2:
+                    this_session.guesses += 1
+
+                    if check_guess(this_session.word_to_guess, data["message"].lower()):
                         for player in this_session.players:
                             self.send_message_to_user(
-                                f"{message}",
+                                f"GUESS {this_session.guesses}: "
+                                f"'{this_session.word_to_guess}' was correct! "
+                                f"You both win this round.",
                                 room_id,
                                 player["id"],
                             )
 
-                        sleep(1)
+                        sleep(0.5)
                         # self.close_room(room_id)
                         self.load_next_state(room_id)
-
-                else:
-                    # GUESSER sent the command
-
-                    #  before 2 guesses were made
-                    if this_session.guesses < 2:
-                        this_session.guesses += 1
-
-                        if check_guess(
-                            this_session.word_to_guess, data["command"].lower()
-                        ):
-                            for player in this_session.players:
-                                self.send_message_to_user(
-                                    f"GUESS {this_session.guesses}: "
-                                    f"'{this_session.word_to_guess}' was correct! "
-                                    f"You both win this round.",
-                                    room_id,
-                                    player["id"],
-                                )
-
-                            sleep(0.5)
-                            # self.close_room(room_id)
-                            self.load_next_state(room_id)
-
-                        else:
-                            for player in this_session.players:
-                                self.send_message_to_user(
-                                    f"GUESS {this_session.guesses} '{data['command']}' was false",
-                                    room_id,
-                                    player["id"],
-                                )
-
-                                if player["id"] == this_session.explainer:
-                                    self.send_message_to_user(
-                                        f"Please provide a new description",
-                                        room_id,
-                                        this_session.explainer,
-                                    )
 
                     else:
-                        # last guess (guess 3)
-                        this_session.guesses += 1
-                        if check_guess(
-                            this_session.word_to_guess, data["command"].lower()
-                        ):
-                            for player in this_session.players:
-                                self.send_message_to_user(
-                                    f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
-                                    f"You both win this round.",
-                                    room_id,
-                                    player["id"],
-                                )
+                        for player in this_session.players:
+                            self.send_message_to_user(
+                                f"GUESS {this_session.guesses} '{data['message']}' was false",
+                                room_id,
+                                player["id"],
+                            )
 
-                        else:
-                            for player in this_session.players:
+                            if player["id"] == this_session.explainer:
                                 self.send_message_to_user(
-                                    f"3 guesses have been already used. You lost this round.",
+                                    f"Please provide a new description",
                                     room_id,
-                                    player["id"],
+                                    this_session.explainer,
                                 )
-                        sleep(1)
-                        # self.close_room(room_id)
-                        self.load_next_state(room_id)
+                        self.set_message_privilege(
+                            self.sessions[room_id].explainer, True
+                        )
+                        # assign writing rights to other user
+                        response = requests.delete(
+                            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                            json={
+                                "attribute": "readonly",
+                                "value": "placeholder",
+                                "receiver_id": self.sessions[room_id].explainer,
+                            },
+                            headers={"Authorization": f"Bearer {self.token}"},
+                        )
+                        response = requests.patch(
+                            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                            json={
+                                "attribute": "placeholder",
+                                "value": "Enter your message here!",
+                                "receiver_id": self.sessions[room_id].explainer,
+                            },
+                            headers={"Authorization": f"Bearer {self.token}"},
+                        )
+                        self.set_message_privilege(
+                            self.sessions[room_id].guesser, False
+                        )
+                        self.make_input_field_unresponsive(
+                            room_id, self.sessions[room_id].guesser
+                        )
+
+                else:
+                    # last guess (guess 3)
+                    this_session.guesses += 1
+                    if check_guess(this_session.word_to_guess, data["message"].lower()):
+                        for player in this_session.players:
+                            self.send_message_to_user(
+                                f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
+                                f"You both win this round.",
+                                room_id,
+                                player["id"],
+                            )
+
+                    else:
+                        for player in this_session.players:
+                            self.send_message_to_user(
+                                f"3 guesses have been already used. You lost this round.",
+                                room_id,
+                                player["id"],
+                            )
+                    sleep(1)
+                    # self.close_room(room_id)
+                    self.load_next_state(room_id)
+                self.set_message_privilege(self.sessions[room_id].explainer, True)
+
+                # assign writing rights to other user
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={
+                        "attribute": "readonly",
+                        "value": "placeholder",
+                        "receiver_id": self.sessions[room_id].explainer,
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={
+                        "attribute": "placeholder",
+                        "value": "Enter your message here!",
+                        "receiver_id": self.sessions[room_id].explainer,
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+
+                self.set_message_privilege(self.sessions[room_id].guesser, False)
+
+                # make input field unresponsive
+                self.make_input_field_unresponsive(
+                    room_id, self.sessions[room_id].guesser
+                )
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
@@ -377,7 +469,7 @@ class TabooBot(TaskBot):
             )
 
     def start_round(self, room_id):
-        # send the intructions for the round
+        # send the instructions for the round
         round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
         self.send_message_to_user(f"Let's start round {round_n}", room_id)
         self.send_message_to_user(
@@ -398,6 +490,30 @@ class TabooBot(TaskBot):
             room_id,
             self.sessions[room_id].explainer,
         )
+
+        # update writing_rights
+        self.set_message_privilege(self.sessions[room_id].explainer, True)
+        # assign writing rights to other user
+        response = requests.delete(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "placeholder",
+                "receiver_id": self.sessions[room_id].explainer,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Enter your message here!",
+                "receiver_id": self.sessions[room_id].explainer,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.set_message_privilege(self.sessions[room_id].guesser, False)
+        self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
     def load_next_state(self, room_id):
         # word list gets smaller, next round starts
@@ -445,6 +561,48 @@ class TabooBot(TaskBot):
                 {"message": f"{message}", "room": room},
             )
         # sleep(1)
+
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "retrieving user's permissions")
+
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        self.request_feedback(response, "changing user's message permission")
+
+    def make_input_field_unresponsive(self, room_id, user_id):
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "true",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Wait for a message from your partner",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
 
 
 def check_guess(correct_answer, user_guess):

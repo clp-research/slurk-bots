@@ -29,8 +29,8 @@ class Dataloader(list):
         random.shuffle(self)
 
 
-if __name__ == "__main__":
-    from pathlib import Path
-    d = Dataloader(Path("data/level_words.json"), n=6)
-    print(d[0]['related_word'])
+# if __name__ == "__main__":
+#     from pathlib import Path
+#     d = Dataloader(Path("data/level_words.json"), n=6)
+#     print(d[0]['related_word'])
     # random.choice(list(d.keys()))

@@ -20,7 +20,7 @@
     ],
     "scripts": {
         "incoming-text": "markdown",
-        "submit-message": "send-intercepted-message",
+        "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
         "typing-users": "typing-users"
     },

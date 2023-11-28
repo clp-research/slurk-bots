@@ -21,4 +21,4 @@
 
     Important: You are under time pressure, give short descriptions that are to the point!
 
-    Please type "ready" to begin the game!
+    Please type "/ready" to begin the game!
