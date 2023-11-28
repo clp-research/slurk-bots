@@ -28,7 +28,9 @@ class Dataloader(list):
         )
 
     def read_boards(self):
-        for sequence in self.path.iterdir():
+        sequences = list(self.path.iterdir())
+        random.shuffle(sequences)
+        for sequence in sequences:
             with sequence.open(encoding="utf-8") as infile:
                 for line in infile:
                     board = json.loads(line)
