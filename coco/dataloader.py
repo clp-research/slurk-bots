@@ -11,6 +11,8 @@ from .config import *
 class Dataloader(list):
     def __init__(self, path):
         self.path = path
+        self.sequences = list(self.path.iterdir())
+        random.shuffle(self.sequences)
         self.get_boards()
 
     def get_instructions_link(self, state_id):
@@ -28,9 +30,7 @@ class Dataloader(list):
         )
 
     def read_boards(self):
-        sequences = list(self.path.iterdir())
-        random.shuffle(sequences)
-        for sequence in sequences:
+        for sequence in self.sequences:
             with sequence.open(encoding="utf-8") as infile:
                 for line in infile:
                     board = json.loads(line)
