@@ -14,6 +14,11 @@ from threading import Timer
 
 import nltk
 from nltk.corpus import stopwords
+# nltk.download("stopwords", quiet=True)
+# EN_STOPWORDS = stopwords.words('english')
+#
+# nltk.download('wordnet', quiet=True)
+# EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
 
 
@@ -387,24 +392,25 @@ class TabooBot(TaskBot):
                 )
 
                 # Check that only one-word guesses are used
-                # if len(command.split()) > 1:
-                #     self.sio.emit(
-                #         "text",
-                #         {
-                #             "message": "You need to use one word only. You lost your turn",
-                #             "room": room_id,
-                #             "receiver_id": this_session.guesser
-                #         },
-                #     )
-                #     self.sio.emit(
-                #         "text",
-                #         {
-                #             "message": "Invalid guess (it contained more than one word).",
-                #             "room": room_id,
-                #             "receiver_id": this_session.explainer
-                #         },
-                #     )
-                #     self.process_move(room_id, 0)
+                if len(command.split()) > 1:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": "You need to use one word only. You lost your turn",
+                            "room": room_id,
+                            "receiver_id": this_session.guesser
+                        },
+                    )
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": "Invalid guess (it contained more than one word).",
+                            "room": room_id,
+                            "receiver_id": this_session.explainer
+                        },
+                    )
+                    self.process_move(room_id, 0)
+                    return
 
                 if word_to_guess.lower() in command.lower():
                     self.sio.emit(
@@ -795,9 +801,6 @@ class TabooBot(TaskBot):
                  "room": room_id,
                  "receiver_id": this_session.guesser}
             )
-
-    def validate_input(self, room_id):
-        pass
 
     def process_move(self, room_id, reward: int):
         this_session = self.sessions[room_id]
