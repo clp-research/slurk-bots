@@ -41,7 +41,7 @@ SELECTIONSTATE = json.loads(
     Path(f"{ROOT}/data/selection_state.json").read_text()
 )  # golmi selection state for the wizard
 STATES = Path(
-    f"{ROOT}/data/states.jsonl"
+    f"{ROOT}/data/sequences"
 )  # jsonl file containing all the boards for the bot
 RULES = json.loads(
     Path(f"{ROOT}/data/allowed_moves.json").read_text()
