@@ -508,6 +508,14 @@ class TabooBot(TaskBot):
                                 "room": room_id,
                             },
                         )
+                        # # 3) Update writing rights to enable strict turn-taking
+                        # rights = [True, False]
+                        # for usr, writing_right in zip(this_session.players, rights):
+                        #     # update writing_rights
+                        #     if usr["id"] == this_session.explainer:
+                        #         self.set_message_privilege(usr["id"], True)
+                        #     elif usr["id"] == this_session.guesser:
+                        #         self.set_message_privilege(usr["id"], False)
 
                         # # 3) Tell the explainer about the word
                         # word_to_guess = this_session.word_to_guess
@@ -709,6 +717,57 @@ class TabooBot(TaskBot):
         # 3) Tell the explainer about the word
         word_to_guess = this_session.word_to_guess
         taboo_words = ", ".join(self.taboo_data['related_word'])
+        rights = [True, False]
+        random.shuffle(rights)
+        for usr in this_session.players:
+            # update writing_rights
+            if usr['id'] == this_session.explainer:
+                writing_right= True
+                self.set_message_privilege(usr["id"], writing_right)
+            elif usr['id'] == this_session.guesser:
+                writing_right= False
+                self.set_message_privilege(usr["id"], writing_right)
+
+            if writing_right is True:
+                pass
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "room": room_id,
+                #         "message": "You can send a message to your partner",
+                #         "receiver_id": usr["id"],
+                #     },
+                # )
+            else:
+                self.sio.emit(
+                    "text",
+                    {
+                        "room": room_id,
+                        "message": "You will only be able to send a message after your partner",
+                        "receiver_id": usr["id"],
+                    },
+                )
+
+                # make input field unresponsive
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={
+                        "attribute": "readonly",
+                        "value": "true",
+                        "receiver_id": usr["id"],
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                    json={
+                        "attribute": "placeholder",
+                        "value": "Wait for a message from your partner",
+                        "receiver_id": usr["id"],
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+
         self.sio.emit(
             "text",
             {
@@ -910,6 +969,28 @@ class TabooBot(TaskBot):
         if not response.ok:
             LOG.error(f"Could not set task instruction: {response.status_code}")
             response.raise_for_status()
+
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "retrieving user's permissions")
+
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        self.request_feedback(response, "changing user's message permission")
 
 
 if __name__ == "__main__":
