@@ -23,16 +23,16 @@ nltk.download("wordnet")
 nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
-# from taboo.metrics import (
-#     METRIC_ABORTED,
-#     METRIC_SUCCESS,
-#     METRIC_LOSE,
-#     METRIC_REQUEST_COUNT,
-#     METRIC_REQUEST_COUNT_VIOLATED,
-#     METRIC_REQUEST_COUNT_PARSED,
-#     METRIC_REQUEST_SUCCESS,
-#     BENCH_SCORE,
-# )
+from taboo.metrics import (
+    METRIC_ABORTED,
+    METRIC_SUCCESS,
+    METRIC_LOSE,
+    METRIC_REQUEST_COUNT,
+    METRIC_REQUEST_COUNT_VIOLATED,
+    METRIC_REQUEST_COUNT_PARSED,
+    METRIC_REQUEST_SUCCESS,
+    BENCH_SCORE,
+)
 
 from typing import List, Dict, Tuple, Any
 
@@ -254,6 +254,10 @@ class TabooBot(TaskBot):
 
             if this_session.explainer == user_id:
                 # EXPLAINER sent a message
+
+                this_session.log_next_turn()
+
+
                 self.set_message_privilege(self.sessions[room_id].explainer, False)
                 self.make_input_field_unresponsive(
                     room_id, self.sessions[room_id].explainer
@@ -277,62 +281,39 @@ class TabooBot(TaskBot):
                         )
 
                     self.load_next_state(room_id)
-
                 else:
                     self.set_message_privilege(self.sessions[room_id].guesser, True)
                     # assign writing rights to other user
-                    response = requests.delete(
-                        f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                        json={
-                            "attribute": "readonly",
-                            "value": "placeholder",
-                            "receiver_id": self.sessions[room_id].guesser,
-                        },
-                        headers={"Authorization": f"Bearer {self.token}"},
-                    )
-                    response = requests.patch(
-                        f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                        json={
-                            "attribute": "placeholder",
-                            "value": "Enter your message here!",
-                            "receiver_id": self.sessions[room_id].guesser,
-                        },
-                        headers={"Authorization": f"Bearer {self.token}"},
-                    )
+                    self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
             else:
                 # GUESSER sent the command
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
                 # assign writing rights to other user
-                response = requests.delete(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                    json={
-                        "attribute": "readonly",
-                        "value": "placeholder",
-                        "receiver_id": self.sessions[room_id].explainer,
-                    },
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                    json={
-                        "attribute": "placeholder",
-                        "value": "Enter your message here!",
-                        "receiver_id": self.sessions[room_id].explainer,
-                    },
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
+                self.give_writing_rights(room_id, self.sessions[room_id].explainer)
 
                 self.set_message_privilege(self.sessions[room_id].guesser, False)
                 self.make_input_field_unresponsive(
                     room_id, self.sessions[room_id].guesser
                 )
+                valid_guess = check_guess(data["message"].lower())
 
+                if not valid_guess:
+                    for player in this_session.players:
+                        self.send_message_to_user(
+                            f"INVALID GUESS: '{data['message'].lower()}' contains more than one word."
+                            f"You both lose this round.",
+                            room_id,
+                            player["id"],
+                        )
+                    self.load_next_state(room_id)
+                    return
+
+                guess_is_correct = correct_guess(this_session.word_to_guess, data["message"].lower())
                 #  before 2 guesses were made
                 if this_session.guesses < 2:
                     this_session.guesses += 1
-
-                    if check_guess(this_session.word_to_guess, data["message"].lower()):
+                    if guess_is_correct:
                         for player in this_session.players:
                             self.send_message_to_user(
                                 f"GUESS {this_session.guesses}: "
@@ -341,9 +322,6 @@ class TabooBot(TaskBot):
                                 room_id,
                                 player["id"],
                             )
-
-                        sleep(0.5)
-                        # self.close_room(room_id)
                         self.load_next_state(room_id)
 
                     else:
@@ -364,24 +342,7 @@ class TabooBot(TaskBot):
                             self.sessions[room_id].explainer, True
                         )
                         # assign writing rights to other user
-                        response = requests.delete(
-                            f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                            json={
-                                "attribute": "readonly",
-                                "value": "placeholder",
-                                "receiver_id": self.sessions[room_id].explainer,
-                            },
-                            headers={"Authorization": f"Bearer {self.token}"},
-                        )
-                        response = requests.patch(
-                            f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                            json={
-                                "attribute": "placeholder",
-                                "value": "Enter your message here!",
-                                "receiver_id": self.sessions[room_id].explainer,
-                            },
-                            headers={"Authorization": f"Bearer {self.token}"},
-                        )
+                        self.give_writing_rights(room_id, self.sessions[room_id].explainer )
                         self.set_message_privilege(
                             self.sessions[room_id].guesser, False
                         )
@@ -392,7 +353,7 @@ class TabooBot(TaskBot):
                 else:
                     # last guess (guess 3)
                     this_session.guesses += 1
-                    if check_guess(this_session.word_to_guess, data["message"].lower()):
+                    if guess_is_correct:
                         for player in this_session.players:
                             self.send_message_to_user(
                                 f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
@@ -408,30 +369,11 @@ class TabooBot(TaskBot):
                                 room_id,
                                 player["id"],
                             )
-                    sleep(1)
-                    # self.close_room(room_id)
                     self.load_next_state(room_id)
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
 
                 # assign writing rights to other user
-                response = requests.delete(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                    json={
-                        "attribute": "readonly",
-                        "value": "placeholder",
-                        "receiver_id": self.sessions[room_id].explainer,
-                    },
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/text",
-                    json={
-                        "attribute": "placeholder",
-                        "value": "Enter your message here!",
-                        "receiver_id": self.sessions[room_id].explainer,
-                    },
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
+                self.give_writing_rights(room_id, self.sessions[room_id].explainer)
 
                 self.set_message_privilege(self.sessions[room_id].guesser, False)
 
@@ -494,24 +436,7 @@ class TabooBot(TaskBot):
         # update writing_rights
         self.set_message_privilege(self.sessions[room_id].explainer, True)
         # assign writing rights to other user
-        response = requests.delete(
-            f"{self.uri}/rooms/{room_id}/attribute/id/text",
-            json={
-                "attribute": "readonly",
-                "value": "placeholder",
-                "receiver_id": self.sessions[room_id].explainer,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/attribute/id/text",
-            json={
-                "attribute": "placeholder",
-                "value": "Enter your message here!",
-                "receiver_id": self.sessions[room_id].explainer,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
+        self.give_writing_rights(room_id, self.sessions[room_id].explainer)
         self.set_message_privilege(self.sessions[room_id].guesser, False)
         self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
@@ -604,8 +529,33 @@ class TabooBot(TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
 
+    def give_writing_rights(self, room_id, user_id):
+        response = requests.delete(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "placeholder",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Enter your message here!",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
 
-def check_guess(correct_answer, user_guess):
+
+
+def check_guess(user_guess):
+     return len(user_guess.split()) == 1
+
+
+def correct_guess(correct_answer, user_guess):
     if correct_answer in user_guess:
         return True
     return False

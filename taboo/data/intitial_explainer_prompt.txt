@@ -1,7 +1,7 @@
     Welcome!
 
-    You are playing a collaborative word guessing game in which you have to describe
-    a target word for another player to guess.
+    You are playing a collaborative word guessing game in which you have to DESCRIBE
+    a target word for the other player to guess. You will play 6 rounds (6 words).
 
     Rules:
 

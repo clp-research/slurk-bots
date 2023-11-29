@@ -1,11 +1,11 @@
    Welcome!
 
-   You are playing a collaborative word guessing game in which you have to guess a target word that
-   another player describes to you.
+   You are playing a collaborative word guessing game in which you have to GUESS a target word that
+   that other player describes to you. You will play 6 rounds (6 words).
 
     Rules:
 
-    1) You can make one guess at each trial. You win when you guess the target word.
+    1) You can make one guess at each trial. Your guess must be a single word! You win when you guess the target word.
 
     2) You lose when you cannot guess it in 3 tries.
 
