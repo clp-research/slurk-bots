@@ -420,6 +420,16 @@ class TabooBot(TaskBot):
                         },
                     )
                     self.process_move(room_id, 0)
+                    curr_usr, other_usr = self.sessions[room_id].players
+                    if curr_usr['id'] != this_session.guesser:
+                        curr_usr, other_usr = other_usr, curr_usr
+                    # revoke writing rights to guesser
+                    self.set_message_privilege(this_session.guesser, False)
+                    self.check_writing_right(room_id, curr_usr, False)
+                    # assign writing rights to other user
+                    self.set_message_privilege(this_session.explainer, True)
+                    self.check_writing_right(room_id, other_usr, True)
+
                     return
 
                 if word_to_guess.lower() in command.lower():
@@ -448,6 +458,15 @@ class TabooBot(TaskBot):
                         },
                     )
                     self.process_move(room_id, 0)
+                    curr_usr, other_usr = self.sessions[room_id].players
+                    if curr_usr['id'] != this_session.guesser:
+                        curr_usr, other_usr = other_usr, curr_usr
+                    # revoke writing rights to guesser
+                    self.set_message_privilege(this_session.guesser, False)
+                    self.check_writing_right(room_id, curr_usr, False)
+                    # assign writing rights to other user
+                    self.set_message_privilege(this_session.explainer, True)
+                    self.check_writing_right(room_id, other_usr, True)
 
         @self.sio.event
         def status(data):
@@ -802,6 +821,8 @@ class TabooBot(TaskBot):
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
+
+
         elif writing_right is False:
             # self.sio.emit(
             #     "text",
@@ -818,7 +839,7 @@ class TabooBot(TaskBot):
                 json={
                     "attribute": "readonly",
                     "value": "true",
-                    "receiver_id": usr["id"],
+                    "receiver_id": curr_usr["id"],
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
@@ -827,11 +848,20 @@ class TabooBot(TaskBot):
                 json={
                     "attribute": "placeholder",
                     "value": "Wait for a message from your partner",
-                    "receiver_id": usr["id"],
+                    "receiver_id": curr_usr["id"],
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
 
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "placeholder",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/attribute/id/text",
                 json={
