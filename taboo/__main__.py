@@ -381,12 +381,16 @@ class TabooBot(TaskBot):
                                 "receiver_id": this_session.guesser,
                             },
                         )
-                        # revoke writing rights to current user
-                        self.set_message_privilege(user_id, False)
-                        self.check_writing_right(room_id, user_id, False)
+                        curr_usr, other_usr = self.sessions[room_id].players
+                        if curr_usr['id'] != this_session.explainer:
+                            curr_usr, other_usr = other_usr, curr_usr
+                        # revoke writing rights to explainer
+                        self.set_message_privilege(this_session.explainer, False)
+                        self.check_writing_right(room_id, curr_usr, False)
                         # assign writing rights to other user
                         self.set_message_privilege(this_session.guesser, True)
-                        self.check_writing_right(room_id, this_session.guesser, True)
+                        self.check_writing_right(room_id, other_usr, True)
+
                         return
 
             # Check if user is guesser
@@ -729,46 +733,6 @@ class TabooBot(TaskBot):
                 writing_right = False
                 self.set_message_privilege(usr["id"], writing_right)
                 self.check_writing_right(room_id, usr, writing_right)
-            # self.check_writing_right(usr, writing_right)
-            # if writing_right is True:
-            #     pass
-            #     # self.sio.emit(
-            #     #     "text",
-            #     #     {
-            #     #         "room": room_id,
-            #     #         "message": "You can send a message to your partner",
-            #     #         "receiver_id": usr["id"],
-            #     #     },
-            #     # )
-            # else:
-            #     self.sio.emit(
-            #         "text",
-            #         {
-            #             "room": room_id,
-            #             "message": "You will only be able to send a message after your partner",
-            #             "receiver_id": usr["id"],
-            #         },
-            #     )
-            #
-            #     # make input field unresponsive
-            #     response = requests.patch(
-            #         f"{self.uri}/rooms/{room_id}/attribute/id/text",
-            #         json={
-            #             "attribute": "readonly",
-            #             "value": "true",
-            #             "receiver_id": usr["id"],
-            #         },
-            #         headers={"Authorization": f"Bearer {self.token}"},
-            #     )
-            #     response = requests.patch(
-            #         f"{self.uri}/rooms/{room_id}/attribute/id/text",
-            #         json={
-            #             "attribute": "placeholder",
-            #             "value": "Wait for a message from your partner",
-            #             "receiver_id": usr["id"],
-            #         },
-            #         headers={"Authorization": f"Bearer {self.token}"},
-            #     )
 
         self.sio.emit(
             "text",
@@ -791,25 +755,62 @@ class TabooBot(TaskBot):
                 )
 
     def check_writing_right(self, room_id, usr, writing_right):
+        # self.sio.emit(
+        #     "text",
+        #     {
+        #         "room": room_id,
+        #         "message": f"check writing right is triggered for user {usr}",
+        #     },
+        # )
+
+        curr_usr, other_usr = self.sessions[room_id].players
+        if curr_usr['id'] != usr['id']:
+            curr_usr, other_usr = other_usr, curr_usr
+        # self.sio.emit(
+        #     "text",
+        #     {
+        #         "room": room_id,
+        #         "message": f"current user is {curr_usr['id']} and other user is {other_usr['id']}",
+        #     },
+        # )
         if writing_right is True:
-            pass
+            # assign writing rights to the user
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "placeholder",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "true",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "placeholder",
+                    "value": "Enter your message here!",
+                    "receiver_id": curr_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+        elif writing_right is False:
             # self.sio.emit(
             #     "text",
             #     {
             #         "room": room_id,
-            #         "message": "You can send a message to your partner",
+            #         "message": "You will only be able to send a message after your partner",
             #         "receiver_id": usr["id"],
             #     },
             # )
-        else:
-            self.sio.emit(
-                "text",
-                {
-                    "room": room_id,
-                    "message": "You will only be able to send a message after your partner",
-                    "receiver_id": usr["id"],
-                },
-            )
 
             # make input field unresponsive
             response = requests.patch(
@@ -830,6 +831,64 @@ class TabooBot(TaskBot):
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
+
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "placeholder",
+                    "value": "Enter your message here!",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+
+    def room_to_read_only(self, room_id):
+        """Set room to read only."""
+        # set room to read-only by disabling the text input field
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "readonly", "value": "True"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "Could not set room to read_only")
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={"attribute": "placeholder", "value": "This room is read-only"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "Could not set room to read_only")
+
+        # get users in this room
+        response = requests.get(
+            f"{self.uri}/rooms/{room_id}/users",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+
+        users = response.json()
+        for user in users:
+            if user["id"] != self.user:
+                # get current user
+                response = requests.get(
+                    f"{self.uri}/users/{user['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(
+                    response, f"Could not get user: {response.status_code}"
+                )
+                etag = response.headers["ETag"]
+
+                # remove this user from this room
+                response = requests.delete(
+                    f"{self.uri}/users/{user['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(
+                    response,
+                    f"Could not remove user from task room: {response.status_code}",
+                )
+                logging.debug("Removing user from task room was successful.")
 
     def remove_punctuation(self, text: str) -> str:
         text = text.translate(str.maketrans("", "", string.punctuation))
