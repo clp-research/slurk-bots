@@ -992,6 +992,15 @@ class TabooBot(TaskBot):
                  "room": room_id,
                  "receiver_id": this_session.guesser}
             )
+            curr_usr, other_usr = self.sessions[room_id].players
+            if curr_usr['id'] != this_session.explainer:
+                curr_usr, other_usr = other_usr, curr_usr
+            # revoke writing rights to explainer
+            self.set_message_privilege(this_session.explainer, False)
+            self.check_writing_right(room_id, curr_usr, False)
+            # assign writing rights to other user
+            self.set_message_privilege(this_session.guesser, True)
+            self.check_writing_right(room_id, other_usr, True)
 
     def process_move(self, room_id, reward: int):
         this_session = self.sessions[room_id]
