@@ -310,7 +310,7 @@ class TabooBot(TaskBot):
             # this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
 
-            if 'ready' in data['command']:
+            if 'ready' in data['command'].lower():
                 # self.sio.emit(
                 #     "text",
                 #     {
@@ -327,12 +327,20 @@ class TabooBot(TaskBot):
                 command = data['command']
                 command = command.lower()
                 command = self.remove_punctuation(command)
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": f"Command is {command}",
+                #         "room": room_id,
+                #         "receiver_id": this_session.explainer,
+                #     },
+                # )
 
                 logging.debug(
                     f"Received a command from {data['user']['name']}: {data['command']}"
                 )
                 # check whether the user used the word to guess
-                if word_to_guess.lower() in command.lower():
+                if word_to_guess.lower() in command:
                     self.sio.emit(
                         "text",
                         {
@@ -353,7 +361,7 @@ class TabooBot(TaskBot):
                 #     },
                 # )
                 for taboo_word in forbidden_words:
-                    if taboo_word.lower() in command.lower():
+                    if taboo_word in command:
                         self.sio.emit(
                             "text",
                             {
