@@ -256,6 +256,12 @@ class TabooBot(TaskBot):
                 # EXPLAINER sent a message
                 self.update_interactions(room_id, "clue", data['message'])
 
+                # means that new turn began?
+                self.log_event("turn", dict(), room_id)
+
+                # try logging event
+                self.log_event("clue", {"content": data['message']}, room_id)
+
                 self.set_message_privilege(self.sessions[room_id].explainer, False)
                 self.make_input_field_unresponsive(
                     room_id, self.sessions[room_id].explainer
@@ -272,11 +278,11 @@ class TabooBot(TaskBot):
                 if explanation_errors:
                     message = explanation_errors[0]["message"]
                     self.update_interactions(room_id, "invalid clue", message)
-                    for player in this_session.players:
-                        self.send_message_to_user(
+                    self.log_event("invalid clue", {"content": message}, room_id)
+                    # for player in this_session.players:
+                    self.send_message_to_user(
                             f"{message}",
                             room_id,
-                            player["id"],
                         )
 
                     self.load_next_state(room_id)
@@ -288,6 +294,7 @@ class TabooBot(TaskBot):
             else:
                 # GUESSER sent the command
                 self.update_interactions(room_id, "guess", data['message'])
+                self.log_event("guess", {"content": data['message']}, room_id)
 
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
                 # assign writing rights to other user
@@ -301,13 +308,14 @@ class TabooBot(TaskBot):
 
                 if not valid_guess:
                     self.update_interactions(room_id, "invalid format", "abort game")
+                    self.log_event("invalid format", {"content": data['message']}, room_id)
 
-                    for player in this_session.players:
-                        self.send_message_to_user(
+                    # for player in this_session.players:
+                    self.send_message_to_user(
                             f"INVALID GUESS: '{data['message'].lower()}' contains more than one word."
                             f"You both lose this round.",
                             room_id,
-                            player["id"],
+                            # player["id"],
                         )
                     self.load_next_state(room_id)
                     return
@@ -319,28 +327,29 @@ class TabooBot(TaskBot):
                     if guess_is_correct:
 
                         self.update_interactions(room_id, "correct guess", data["message"].lower())
+                        self.log_event("correct guess", {"content": data['message']}, room_id)
 
-                        for player in this_session.players:
-                            self.send_message_to_user(
+                        # for player in this_session.players:
+                        self.send_message_to_user(
                                 f"GUESS {this_session.guesses}: "
                                 f"'{this_session.word_to_guess}' was correct! "
                                 f"You both win this round.",
                                 room_id,
-                                player["id"],
+                                # player["id"],
                             )
                         self.load_next_state(room_id)
 
                     else:
 
-                        for player in this_session.players:
-                            self.send_message_to_user(
+                        # for player in this_session.players:
+                        self.send_message_to_user(
                                 f"GUESS {this_session.guesses} '{data['message']}' was false",
                                 room_id,
-                                player["id"],
+                                # player["id"],
                             )
 
-                            if player["id"] == this_session.explainer:
-                                self.send_message_to_user(
+                            # if player["id"] == this_session.explainer:
+                        self.send_message_to_user(
                                     f"Please provide a new description",
                                     room_id,
                                     this_session.explainer,
@@ -362,23 +371,25 @@ class TabooBot(TaskBot):
                     this_session.guesses += 1
                     if guess_is_correct:
                         self.update_interactions(room_id, "correct guess", data["message"].lower())
+                        self.log_event("correct guess", {"content": data['message']}, room_id)
 
-                        for player in this_session.players:
-                            self.send_message_to_user(
+                        # for player in this_session.players:
+                        self.send_message_to_user(
                                 f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
                                 f"You both win this round.",
                                 room_id,
-                                player["id"],
+                                # player["id"],
                             )
 
                     else:
                         self.update_interactions(room_id, "max turns reached", str(3))
+                        self.log_event("max turns reached", {"content": str(3)}, room_id)
 
-                        for player in this_session.players:
-                            self.send_message_to_user(
+                        # for player in this_session.players:
+                        self.send_message_to_user(
                                 f"3 guesses have been already used. You lost this round.",
                                 room_id,
-                                player["id"],
+                                # player["id"],
                             )
                     self.load_next_state(room_id)
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
@@ -426,9 +437,12 @@ class TabooBot(TaskBot):
 
         if not self.sessions[room_id].words:
             self.close_room(room_id)
-
         # send the instructions for the round
         round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
+
+        # try to log the round number
+        self.log_event("round", {"number": round_n}, room_id)
+
         self.send_message_to_user(f"Let's start round {round_n}", room_id)
         self.send_message_to_user(
             "Wait a bit for the first hint about the word you need to guess",
