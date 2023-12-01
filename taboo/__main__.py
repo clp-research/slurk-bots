@@ -310,7 +310,8 @@ class TabooBot(TaskBot):
             # this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
 
-            if 'ready' in data['command'].lower():
+            if data["command"].lower().startswith("ready"):
+            # if 'ready' in data['command'].lower():
                 # self.sio.emit(
                 #     "text",
                 #     {
