@@ -251,6 +251,14 @@ class TabooBot(TaskBot):
 
             this_session = self.sessions[room_id]
             this_session.log_next_turn()
+            if data['message'] == "ready":
+                self.send_message_to_user(
+                    f"Pleasy type a backshlash before ready, like this '/ready'",
+                    room_id,
+                    user_id
+                )
+                return
+
 
             if this_session.explainer == user_id:
                 # EXPLAINER sent a message
@@ -593,9 +601,8 @@ def check_guess(user_guess):
 
 
 def correct_guess(correct_answer, user_guess):
-    if correct_answer in user_guess:
-        return True
-    return False
+    return correct_answer in user_guess
+
 
 
 def remove_punctuation(text: str) -> str:
