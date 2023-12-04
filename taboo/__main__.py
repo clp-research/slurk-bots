@@ -1,16 +1,8 @@
 from collections import defaultdict
 import logging
-
 import requests
 from time import sleep
-
-from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM
-
-from templates import TaskBot
-
-
 import random
-
 import os
 
 import nltk
@@ -23,21 +15,13 @@ nltk.download("wordnet")
 nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
-# from taboo.metrics import (
-#     METRIC_ABORTED,
-#     METRIC_SUCCESS,
-#     METRIC_LOSE,
-#     METRIC_REQUEST_COUNT,
-#     METRIC_REQUEST_COUNT_VIOLATED,
-#     METRIC_REQUEST_COUNT_PARSED,
-#     METRIC_REQUEST_SUCCESS,
-#     BENCH_SCORE,
-# )
 
 from typing import List, Dict, Tuple, Any
-
 from datetime import datetime
+
 from taboo.dataloader import Dataloader
+from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM
+from templates import TaskBot
 
 
 LOG = logging.getLogger(__name__)
@@ -50,18 +34,10 @@ class Session:
         self.words = Dataloader(LEVEL_WORDS, WORDS_PER_ROOM)
         self.word_to_guess = None
         self.guesses = 0
-        self.guessed = False
         self.explainer = None
         self.guesser = None
-        # do not need?
-        self.interactions = {"players": self.players, "turns": []}
-        # do not need?
-        self.log_current_turn = -1
 
-    def log_next_turn(self):
-        """Call this method to group interactions per turn"""
-        self.log_current_turn += 1
-        self.interactions["turns"].append([])
+    # log next turn?
 
     def close(self):
         pass
@@ -134,7 +110,6 @@ class TabooBot(TaskBot):
             self.sessions.create_session(room_id)
 
             for usr in data["users"]:
-                # this_session.players.append({**usr, "msg_n": 0, "status": "joined"})
                 self.sessions[room_id].players.append(
                     {**usr, "msg_n": 0, "status": "joined"}
                 )
@@ -144,12 +119,6 @@ class TabooBot(TaskBot):
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            #         roles
-            # for user in data["users"]:
-            #     this_session.players.append({**user, "status": "joined", "wins": 0})
-
-            # now define in a sep function, so that it's possible to change the word
-            # self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0]["target_word"]
 
             # 2) Choose an explainer
             self.sessions[room_id].pick_explainer()
@@ -250,7 +219,6 @@ class TabooBot(TaskBot):
                 return
 
             this_session = self.sessions[room_id]
-            this_session.log_next_turn()
             if data['message'] == "ready":
                 self.send_message_to_user(
                     f"Pleasy type a backshlash before ready, like this '/ready'",
@@ -261,13 +229,14 @@ class TabooBot(TaskBot):
 
 
             if this_session.explainer == user_id:
+
                 # EXPLAINER sent a message
                 self.update_interactions(room_id, "clue", data['message'])
 
-                # means that new turn began?
+                # means that new turn began
                 self.log_event("turn", dict(), room_id)
 
-                # try logging event
+                # log event
                 self.log_event("clue", {"content": data['message']}, room_id)
 
                 self.set_message_privilege(self.sessions[room_id].explainer, False)
@@ -348,8 +317,7 @@ class TabooBot(TaskBot):
                         self.load_next_state(room_id)
 
                     else:
-
-                        # for player in this_session.players:
+                        # guess is false
                         self.send_message_to_user(
                                 f"GUESS {this_session.guesses} '{data['message']}' was false",
                                 room_id,
@@ -373,33 +341,30 @@ class TabooBot(TaskBot):
                         self.make_input_field_unresponsive(
                             room_id, self.sessions[room_id].guesser
                         )
-
                 else:
-                    # last guess (guess 3)
+                    # last guess (guess number 3)
                     this_session.guesses += 1
                     if guess_is_correct:
                         self.update_interactions(room_id, "correct guess", data["message"].lower())
                         self.log_event("correct guess", {"content": data['message']}, room_id)
-
-                        # for player in this_session.players:
                         self.send_message_to_user(
                                 f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
                                 f"You both win this round.",
                                 room_id,
-                                # player["id"],
                             )
 
                     else:
+                        # guess is false
                         self.update_interactions(room_id, "max turns reached", str(3))
                         self.log_event("max turns reached", {"content": str(3)}, room_id)
-
-                        # for player in this_session.players:
                         self.send_message_to_user(
                                 f"3 guesses have been already used. You lost this round.",
                                 room_id,
-                                # player["id"],
                             )
+                    # start new round (because 3 guesses were used)
                     self.load_next_state(room_id)
+
+                # in any case update rights
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
 
                 # assign writing rights to other user
@@ -441,7 +406,6 @@ class TabooBot(TaskBot):
             )
 
     def start_round(self, room_id):
-        # self.send_message_to_user(f"{self.sessions[room_id].interactions}", room_id)
 
         if not self.sessions[room_id].words:
             self.close_room(room_id)
@@ -487,10 +451,6 @@ class TabooBot(TaskBot):
         self.start_round(room_id)
 
     def close_room(self, room_id):
-        # print message to close
-
-        # LOG.info(f"{self.sessions[room_id].interactions}")
-        # compute_scores(self.sessions[room_id].interactions)
 
         self.room_to_read_only(room_id)
 
@@ -596,6 +556,7 @@ class TabooBot(TaskBot):
         turn_info = {"action": {"type": type_, "content": value_}}
         self.sessions[room_id].interactions["turns"][self.sessions[room_id].log_current_turn].append(turn_info)
 
+
 def check_guess(user_guess):
      return len(user_guess.split()) == 1
 
@@ -656,89 +617,6 @@ def check_clue(utterance: str, target_word: str, related_words):
             ]
     return errors
 
-# def compute_scores(episode_interactions) -> None:
-#     """ Episode level scores"""
-#     turn_scores = []
-#     prev_guess = None
-#     prev_guess_counter = 0
-#     prev_clue = None
-#     prev_clue_counter = 0
-#     invalid_response = False  # Note: This only takes into consideration that both players were compliant or not
-#     guesser_won = False
-#     for turn_idx, turn in enumerate(episode_interactions["turns"]):
-#         turn_score = {"guess": None, "clue": None, "request_count": 1}
-#
-#         for event in turn:
-#             action = event["action"]
-#             if action["type"] == "invalid format":
-#                 invalid_response = True
-#             if action["type"] == "guess":
-#                 turn_score["guess"] = action["content"]
-#             if action["type"] == "clue":
-#                 turn_score["clue"] = action["content"]
-#             if action["type"] == "correct guess":
-#                 guesser_won = True
-#
-#         if invalid_response:
-#             turn_score["violated_request_count"] = 1
-#             turn_score["parsed_request_count"] = 0
-#         else:
-#             turn_score["violated_request_count"] = 0
-#             turn_score["parsed_request_count"] = 1
-#
-#         if turn_score["guess"] is not None and turn_score["guess"] == prev_guess:  # might be None, if clue is wrong
-#             prev_guess_counter += 1
-#         if turn_score["clue"] is not None and turn_score["clue"] == prev_clue:
-#             prev_clue_counter += 1
-#         # LOG.debug(f" {turn_idx}, 'Accuracy', 1 if guesser_won else 0)
-#         LOG.debug(f'{turn_idx}, METRIC_REQUEST_COUNT_VIOLATED, {turn_score["violated_request_count"]}')
-#         LOG.debug(f'{turn_idx}, METRIC_REQUEST_COUNT_PARSED, {turn_score["parsed_request_count"]}')
-#         LOG.debug(f'{turn_idx}, METRIC_REQUEST_COUNT, {turn_score["request_count"]}')
-#         prev_guess = turn_score["guess"]
-#         prev_clue = turn_score["clue"]
-#         turn_scores.append(turn_score)
-#
-#     violated_request_count = sum([turn["violated_request_count"] for turn in turn_scores])
-#     LOG.debug(f"{METRIC_REQUEST_COUNT_VIOLATED}, {violated_request_count}")
-#
-#     parsed_request_count = sum([turn["parsed_request_count"] for turn in turn_scores])
-#     LOG.debug(f"{METRIC_REQUEST_COUNT_PARSED}, {parsed_request_count}")
-#
-#     request_count = sum([turn["request_count"] for turn in turn_scores])
-#     LOG.debug(f"{METRIC_REQUEST_COUNT}, {request_count}")
-#
-#     LOG.debug(f"{METRIC_REQUEST_SUCCESS}, {parsed_request_count / request_count}")
-#     # checking the last guess (could be None) is ok,
-#     # b.c. the game ends only successfully, when there is a correct guess
-
-    # commented
-    # # Common metrics
-    # if invalid_response:  # whether a violation of the game rules happened (response not parsable)
-    #     LOG.debug(METRIC_ABORTED, 1)
-    #     LOG.debug(METRIC_SUCCESS, 0)
-    #     LOG.debug(METRIC_LOSE, 0)
-    #
-    #     # Game-specific metrics
-    #     # commendted this metric, import numpy!
-    #     # self.log_episode_score(BENCH_SCORE, np.nan)  # metric not applicable
-    # else:
-    #     LOG.debug(METRIC_ABORTED, 0)
-    #     if guesser_won:
-    #         LOG.debug(METRIC_SUCCESS, 1)
-    #         LOG.debug(METRIC_LOSE, 0)
-    #         LOG.debug(BENCH_SCORE, 100 / len(turn_scores))  # how early the guesser found the word
-    #     else:
-    #         LOG.debug(METRIC_SUCCESS, 0)
-    #         LOG.debug(METRIC_LOSE, 1)
-    #         LOG.debug(BENCH_SCORE, 0)  # word not found
-    #
-    # # Game-specific metrics
-    # # How often the Guesser repeated a guess
-    # LOG.debug('Repetition-Guesser', prev_guess_counter)
-    # # How often the Describer repeated itself
-    # LOG.debug('Repetition-Describer', prev_clue_counter)
-    # # this might require a side-loop between describer and GM (game should not continue with Guesser)
-    # # self.log_episode_score('Rule-following', ...)
 
 if __name__ == "__main__":
     # set up logging configuration
