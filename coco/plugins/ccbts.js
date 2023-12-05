@@ -218,8 +218,8 @@ $(document).ready(() => {
                 case "instruction":
                     $("#instr").html(data.command.base);
                     data.command.extra.forEach(element => {
-                        $('#instr').append("<hr>")
-                        $('#instr').append(`<img id="theImg" src="${element}" />`)
+                        $('#instr').append(`<hr style="width: 1px; height: 50px; display: inline-block;">`)
+                        $('#instr').append(`<img src="${element}" />`)
                     });                    
                     break
 

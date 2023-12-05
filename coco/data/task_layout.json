@@ -7,7 +7,7 @@
       "layout-content": [
         {
           "layout-type": "div",
-          "style": "overflow-y: scroll; height: 150px",
+          "style": "height: 100%",
           "layout-content": [
             {
               "layout-type": "div",
@@ -15,11 +15,16 @@
               "layout-content": [
                 {
                   "layout-type": "div",
-                  "style": "border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 100%;",
+                  "style": "border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 75%; height: 100%",
                   "layout-content": [
                     {
+                      "layout-type": "b",
+                      "style": "color: #00305E",
+                      "layout-content": "Naming Legend for objects"
+                    },
+                    {
                       "layout-type": "div",
-                      "style": "margin: 5px",
+                      "style": "display: flex; overflow-x: scroll; height: 100%; align-items: center",
                       "id": "instr"
                     }
                   ]
@@ -28,7 +33,7 @@
                   "layout-type": "div",
                   "class": "hidden_card",
                   "id": "player_interface",
-                  "style": "margin: 10px; border: 1px solid #CECDCD",
+                  "style": "margin: 10px; border: 1px solid #CECDCD;  width: 25%;",
                   "layout-content": [
                     {
                       "layout-type": "div",
