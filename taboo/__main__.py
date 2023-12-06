@@ -231,7 +231,7 @@ class TabooBot(TaskBot):
             if this_session.explainer == user_id:
 
                 # EXPLAINER sent a message
-                self.update_interactions(room_id, "clue", data['message'])
+                # self.update_interactions(room_id, "clue", data['message'])
 
                 # means that new turn began
                 self.log_event("turn", dict(), room_id)
@@ -262,7 +262,7 @@ class TabooBot(TaskBot):
                             room_id,
                         )
 
-                    self.load_next_state(room_id)
+                    self.load_next_game(room_id)
                 else:
                     self.set_message_privilege(self.sessions[room_id].guesser, True)
                     # assign writing rights to other user
@@ -294,7 +294,7 @@ class TabooBot(TaskBot):
                             room_id,
                             # player["id"],
                         )
-                    self.load_next_state(room_id)
+                    self.load_next_game(room_id)
                     return
 
                 guess_is_correct = correct_guess(this_session.word_to_guess, data["message"].lower())
@@ -314,7 +314,7 @@ class TabooBot(TaskBot):
                                 room_id,
                                 # player["id"],
                             )
-                        self.load_next_state(room_id)
+                        self.load_next_game(room_id)
 
                     else:
                         # guess is false
@@ -362,7 +362,7 @@ class TabooBot(TaskBot):
                                 room_id,
                             )
                     # start new round (because 3 guesses were used)
-                    self.load_next_state(room_id)
+                    self.load_next_game(room_id)
 
                 # in any case update rights
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
@@ -442,7 +442,7 @@ class TabooBot(TaskBot):
         self.set_message_privilege(self.sessions[room_id].guesser, False)
         self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
-    def load_next_state(self, room_id):
+    def load_next_game(self, room_id):
         # word list gets smaller, next round starts
         self.sessions[room_id].words.pop(0)
         if not self.sessions[room_id].words:
@@ -552,9 +552,9 @@ class TabooBot(TaskBot):
         )
 
 
-    def update_interactions(self, room_id, type_, value_):
-        turn_info = {"action": {"type": type_, "content": value_}}
-        self.sessions[room_id].interactions["turns"][self.sessions[room_id].log_current_turn].append(turn_info)
+    # def update_interactions(self, room_id, type_, value_):
+    #     turn_info = {"action": {"type": type_, "content": value_}}
+    #     self.sessions[room_id].interactions["turns"][self.sessions[room_id].log_current_turn].append(turn_info)
 
 
 def check_guess(user_guess):
