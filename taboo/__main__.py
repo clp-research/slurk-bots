@@ -14,11 +14,11 @@ from threading import Timer
 
 import nltk
 from nltk.corpus import stopwords
-# nltk.download("stopwords", quiet=True)
-# EN_STOPWORDS = stopwords.words('english')
-#
-# nltk.download('wordnet', quiet=True)
-# EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
+nltk.download("stopwords", quiet=True)
+EN_STOPWORDS = stopwords.words('english')
+
+nltk.download('wordnet', quiet=True)
+EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
 
 
@@ -310,7 +310,7 @@ class TabooBot(TaskBot):
             # this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
 
-            if data["command"].lower().startswith("ready"):
+            if "ready" in data["command"].lower():
             # if 'ready' in data['command'].lower():
                 # self.sio.emit(
                 #     "text",
@@ -401,6 +401,7 @@ class TabooBot(TaskBot):
                         self.check_writing_right(room_id, other_usr, True)
 
                         return
+                self.check_clue(room_id, command)
 
             # Check if user is guesser
             elif this_session.guesser == user_id:
@@ -546,37 +547,7 @@ class TabooBot(TaskBot):
                                 "room": room_id,
                             },
                         )
-                        # # 3) Update writing rights to enable strict turn-taking
-                        # rights = [True, False]
-                        # for usr, writing_right in zip(this_session.players, rights):
-                        #     # update writing_rights
-                        #     if usr["id"] == this_session.explainer:
-                        #         self.set_message_privilege(usr["id"], True)
-                        #     elif usr["id"] == this_session.guesser:
-                        #         self.set_message_privilege(usr["id"], False)
 
-                        # # 3) Tell the explainer about the word
-                        # word_to_guess = this_session.word_to_guess
-                        # taboo_words = ", ".join(self.taboo_data['related_word'])
-                        # self.sio.emit(
-                        #     "text",
-                        #     {
-                        #         "message": f"Your task is to explain the word '{word_to_guess}'. You cannot use the following words: {taboo_words}",
-                        #         "room": room_id,
-                        #         "receiver_id": this_session.explainer,
-                        #     },
-                        # )
-                        # # 4) Tell everyone else that the game has started
-                        # for player in this_session.players:
-                        #     if player["id"] != this_session.explainer:
-                        #         self.sio.emit(
-                        #             "text",
-                        #             {
-                        #                 "message": "The game has started. Try to guess the word!",
-                        #                 "room": room_id,
-                        #                 "receiver_id": this_session.guesser,
-                        #             },
-                        #         )
                 elif event == "leave":
                     self.sio.emit(
                         "text",
@@ -599,90 +570,90 @@ class TabooBot(TaskBot):
                             },
                         )
 
-        @self.sio.event
-        def text_message(data):
-            """Triggered when a text message is sent.
-            Check that it didn't contain any forbidden words if sent
-            by explainer or whether it was the correct answer when sent
-            by a guesser.
-            """
-            LOG.debug(f"Received a message from {data['user']['name']}.")
-
-            room_id = data["room"]
-            user_id = data["user"]["id"]
-
-            this_session = self.sessions[room_id]
-            # this_session.timer.reset()
-            word_to_guess = this_session.word_to_guess
-
-            # do not process commands from itself
-            if user_id == self.user:
-                return
-
-            # explainer
-            if this_session.explainer == user_id:
-                LOG.debug(f"{data['user']['name']} is the explainer.")
-                message = data["message"]
-                # check whether the user used a forbidden word
-                for taboo_word in self.taboo_data['related_word']:
-                    if taboo_word.lower() in message.lower():
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"You used the taboo word {taboo_word}! GAME OVER :(",
-                                "room": room_id,
-                                "receiver_id": this_session.explainer,
-                            },
-                        )
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"{data['user']['name']} used a taboo word. You both lose!",
-                                "room": room_id,
-                                "receiver_id": this_session.guesser,
-                            },
-                        )
-                        self.process_move(room_id, 0)
-
-                # check whether the user used the word to guess
-                if word_to_guess.lower() in message:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"You used the word to guess '{word_to_guess}'! GAME OVER",
-                            "room": room_id,
-                            "receiver_id": this_session.explainer,
-                        },
-                    )
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{data['user']['name']} used the word to guess. You both lose!",
-                            "room": room_id,
-                            "receiver_id": this_session.guesser,
-                        },
-                    )
-
-                    self.process_move(room_id, 0)
-            # Guesser guesses word
-            elif word_to_guess.lower() in data["message"].lower():
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": f"{word_to_guess} was correct! YOU WON :)",
-                        "room": room_id,
-                        "receiver_id": this_session.guesser
-                    },
-                )
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": f"{data['user']['name']} guessed the word. You both win :)",
-                        "room": room_id,
-                        "receiver_id": this_session.explainer,
-                    },
-                )
-                self.process_move(room_id, 1)
+        # @self.sio.event
+        # def text_message(data):
+        #     """Triggered when a text message is sent.
+        #     Check that it didn't contain any forbidden words if sent
+        #     by explainer or whether it was the correct answer when sent
+        #     by a guesser.
+        #     """
+        #     LOG.debug(f"Received a message from {data['user']['name']}.")
+        #
+        #     room_id = data["room"]
+        #     user_id = data["user"]["id"]
+        #
+        #     this_session = self.sessions[room_id]
+        #     # this_session.timer.reset()
+        #     word_to_guess = this_session.word_to_guess
+        #
+        #     # do not process commands from itself
+        #     if user_id == self.user:
+        #         return
+        #
+        #     # explainer
+        #     if this_session.explainer == user_id:
+        #         LOG.debug(f"{data['user']['name']} is the explainer.")
+        #         message = data["message"]
+        #         # check whether the user used a forbidden word
+        #         for taboo_word in self.taboo_data['related_word']:
+        #             if taboo_word.lower() in message.lower():
+        #                 self.sio.emit(
+        #                     "text",
+        #                     {
+        #                         "message": f"You used the taboo word {taboo_word}! GAME OVER :(",
+        #                         "room": room_id,
+        #                         "receiver_id": this_session.explainer,
+        #                     },
+        #                 )
+        #                 self.sio.emit(
+        #                     "text",
+        #                     {
+        #                         "message": f"{data['user']['name']} used a taboo word. You both lose!",
+        #                         "room": room_id,
+        #                         "receiver_id": this_session.guesser,
+        #                     },
+        #                 )
+        #                 self.process_move(room_id, 0)
+        #
+        #         # check whether the user used the word to guess
+        #         if word_to_guess.lower() in message:
+        #             self.sio.emit(
+        #                 "text",
+        #                 {
+        #                     "message": f"You used the word to guess '{word_to_guess}'! GAME OVER",
+        #                     "room": room_id,
+        #                     "receiver_id": this_session.explainer,
+        #                 },
+        #             )
+        #             self.sio.emit(
+        #                 "text",
+        #                 {
+        #                     "message": f"{data['user']['name']} used the word to guess. You both lose!",
+        #                     "room": room_id,
+        #                     "receiver_id": this_session.guesser,
+        #                 },
+        #             )
+        #
+        #             self.process_move(room_id, 0)
+        #     # Guesser guesses word
+        #     elif word_to_guess.lower() in data["message"].lower():
+        #         self.sio.emit(
+        #             "text",
+        #             {
+        #                 "message": f"{word_to_guess} was correct! YOU WON :)",
+        #                 "room": room_id,
+        #                 "receiver_id": this_session.guesser
+        #             },
+        #         )
+        #         self.sio.emit(
+        #             "text",
+        #             {
+        #                 "message": f"{data['user']['name']} guessed the word. You both win :)",
+        #                 "room": room_id,
+        #                 "receiver_id": this_session.explainer,
+        #             },
+        #         )
+        #         self.process_move(room_id, 1)
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
@@ -831,7 +802,6 @@ class TabooBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
 
-
         elif writing_right is False:
             # self.sio.emit(
             #     "text",
@@ -932,6 +902,42 @@ class TabooBot(TaskBot):
     def remove_punctuation(self, text: str) -> str:
         text = text.translate(str.maketrans("", "", string.punctuation))
         return text
+
+    def check_clue(self, room_id, utterance: str):
+        utterance = utterance.lower()
+        utterance = self.remove_punctuation(utterance)
+        # simply contain checks
+        word_to_guess = self.taboo_data['target_word']
+        if word_to_guess in utterance:
+            print(f"Target word '{word_to_guess}' in clue")
+        for related_word in self.taboo_data['related_word']:
+            if related_word in utterance:
+                print(f"Related word '{related_word}' in clue")
+
+        # lemma checks
+        utterance = utterance.split(" ")
+        print(f"This is the utterance: {utterance}")
+        filtered_clue = [word for word in utterance if word not in EN_STOPWORDS]
+        print(f"This is the filtered clue: {filtered_clue}")
+        target_lemma = EN_LEMMATIZER.lemmatize(word_to_guess)
+        print(f"This is the target lemma: {target_lemma}")
+        related_lemmas = [EN_LEMMATIZER.lemmatize(related_word) for related_word in self.taboo_data['related_word']]
+        print(f"This are the related lemmas: {related_lemmas}")
+        errors = []
+        for clue_word in filtered_clue:
+            clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
+            print(f"This a clue lemma: {clue_lemma}")
+            if clue_lemma == target_lemma:
+                self.sio.emit(
+                                "text",
+                                {
+                                    "room": room_id,
+                                    "message": f"Target word '{word_to_guess}' is morphological similar to clue word '{clue_word}'",
+                                },
+                            )
+            if clue_lemma in related_lemmas:
+                print(f"Related word is morphological similar to clue word '{clue_word}'")
+        return errors
 
     def timeout_close_game(self, room_id, status):
         while self.sessions[room_id].game_over is False:
