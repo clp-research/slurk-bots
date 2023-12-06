@@ -85,7 +85,7 @@ class Session:
             ]
         }
         self.played_words = []
-        self.rounds_left = 3
+        self.rounds_left = 4
 
     def close(self):
         pass
@@ -310,17 +310,10 @@ class TabooBot(TaskBot):
             # this_session.timer.reset()
             word_to_guess = this_session.word_to_guess
 
-            if "ready" in data["command"].lower():
-            # if 'ready' in data['command'].lower():
-                # self.sio.emit(
-                #     "text",
-                #     {
-                #         "message": f"You typed READY.",
-                #         "room": room_id,
-                #     },
-                # )
-                self._command_ready(room_id, user_id)
-                return
+            if this_session.rounds_left == 4:
+                if "ready" in data["command"].lower():
+                    self._command_ready(room_id, user_id)
+                    return
 
             # explainer
             if this_session.explainer == user_id:
@@ -341,7 +334,7 @@ class TabooBot(TaskBot):
                     f"Received a command from {data['user']['name']}: {data['command']}"
                 )
                 # check whether the user used the word to guess
-                if word_to_guess.lower() in command:
+                if word_to_guess in command:
                     self.sio.emit(
                         "text",
                         {
@@ -715,6 +708,7 @@ class TabooBot(TaskBot):
                 {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
             )
             sleep(1)
+            self.sessions[room_id].rounds_left = 3
             self.start_game(room_id)
 
     def start_game(self, room_id):
@@ -923,7 +917,6 @@ class TabooBot(TaskBot):
         print(f"This is the target lemma: {target_lemma}")
         related_lemmas = [EN_LEMMATIZER.lemmatize(related_word) for related_word in self.taboo_data['related_word']]
         print(f"This are the related lemmas: {related_lemmas}")
-        errors = []
         for clue_word in filtered_clue:
             clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
             print(f"This a clue lemma: {clue_lemma}")
@@ -936,8 +929,13 @@ class TabooBot(TaskBot):
                                 },
                             )
             if clue_lemma in related_lemmas:
-                print(f"Related word is morphological similar to clue word '{clue_word}'")
-        return errors
+                self.sio.emit(
+                    "text",
+                    {
+                        "room": room_id,
+                        "message": f"Related word is morphological similar to clue word '{clue_word}'",
+                    },
+                )
 
     def timeout_close_game(self, room_id, status):
         while self.sessions[room_id].game_over is False:
