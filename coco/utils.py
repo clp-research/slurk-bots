@@ -2,33 +2,51 @@ import copy
 import json
 import itertools
 from pathlib import Path
+from threading import Timer
 
 from .config import *
 from .golmi_client import *
 from .dataloader import Dataloader
 
 
-class RoomTimers:
-    """A number of timed events during the game.
-
-    :param alone_in_room: Closes a room if one player is alone in
-        the room for longer than 5 minutes
-
-    :param round_timer: After 15 minutes the image will change
-        and players get no points
-    """
-
-    def __init__(self):
-        self.left_room = dict()
+class RoomTimer:
+    def __init__(self, function, room_id):
+        self.function = function
+        self.room_id = room_id
+        self.start_timer()
         self.typing_timer = None
+        self.left_room = dict()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.info("reset timer")
 
     def cancel(self):
+        self.timer.cancel()
+
+    def cancel_all_timers(self):
+        self.timer.cancel()
         self.typing_timer.cancel()
         for timer in self.left_room.values():
             timer.cancel()
 
-    def reset(self):
-        pass
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
+        )
+        self.left_room[user].start()
 
 
 class ActionNode:
@@ -74,18 +92,19 @@ class ActionNode:
 class Session:
     def __init__(self):
         self.players = list()
-        self.timer = RoomTimers()
+        self.timer = None
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
         self.states = Dataloader(STATES)
         self.checkpoint = EMPTYSTATE
         self.game_over = False
         self.can_load_next_episode = False
+        self.points = 0
 
     def close(self):
         try:
             self.golmi_client.disconnect()
-            self.timer.cancel()
+            self.timer.cancel_all_timers()
         except:
             pass
 

@@ -25,7 +25,15 @@ SUCCESS_COLOR = "Green"
 TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
 BOARDS_PER_ROOM = 20
 BOARDS_PER_LEVEL = 2
-INSTRUCTION_BASE_LINK = "https://expdata.ling.uni-potsdam.de/cocobot"
+
+# points system
+STARTING_POINTS = 0
+POSITIVE_REWARD = 10  # right piece selected
+NEGATIVE_REWARD = -5  # wrong piece selected
+
+# timers
+TIMEOUT_TIMER = 5
+LEAVE_TIMER = 3
 
 # data
 CONFIG = {

@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+import string
 from threading import Timer
 from time import sleep
 
@@ -17,7 +18,6 @@ class CoCoBot(TaskBot):
         self.received_waiting_token = set()
         self.sessions = SessionManager()
         self.move_evaluator = MoveEvaluator(RULES)
-        self.patterns = get_patterns()
 
     def post_init(self, waiting_room, golmi_server, golmi_password):
         """
@@ -76,6 +76,7 @@ class CoCoBot(TaskBot):
             logging.debug("Create data for the new task room...")
             self.sessions.create_session(room_id)
             this_session = self.sessions[room_id]
+            this_session.timer = RoomTimer(self.timeout_close_game, room_id)
 
             roles = [
                 {"role": "player", "name": "Programmer"},
@@ -181,6 +182,17 @@ class CoCoBot(TaskBot):
                     sleep(0.5)
 
         @self.sio.event
+        def text_message(data):
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            # ignore messages from self
+            if user_id == self.user:
+                return
+
+            this_session.timer.reset()
+
+        @self.sio.event
         def status(data):
             """Triggered if a user enters or leaves a room."""
             # check whether the user is eligible to join this task
@@ -224,6 +236,8 @@ class CoCoBot(TaskBot):
                             "html": True,
                         },
                     )
+
+                    this_session.timer.user_joined(curr_usr["id"])
 
                     # update layout
                     self.modify_layout(room_id, curr_usr["id"])
@@ -276,14 +290,11 @@ class CoCoBot(TaskBot):
                             },
                         )
 
-                    # start timer since user left the room
-                    logging.debug(
-                        f"Starting Timer: left room for user {curr_usr['name']}"
-                    )
-                    this_session.timer.left_room[curr_usr["id"]] = Timer(
-                        TIME_LEFT * 60, self.close_game, args=[room_id]
-                    )
-                    this_session.timer.left_room[curr_usr["id"]].start()
+                        # start timer since user left the room
+                        logging.debug(
+                            f"Starting Timer: left room for user {curr_usr['name']}"
+                        )
+                        self.sessions[room_id].timer.user_left(curr_usr["id"])
 
         @self.sio.event
         def mouse(data):
@@ -305,6 +316,7 @@ class CoCoBot(TaskBot):
             this_session = self.sessions[room_id]
             this_client = this_session.golmi_client
             board = data["coordinates"]["board"]
+            this_session.timer.reset()
 
             # the wizard picks an object from the selection board
             if board == "wizard_selection":
@@ -585,7 +597,6 @@ class CoCoBot(TaskBot):
                     block_size=data["coordinates"]["block_size"],
                     board="wizard_working",
                 )
-                
 
         @self.sio.event
         def command(data):
@@ -605,6 +616,7 @@ class CoCoBot(TaskBot):
                 return
 
             this_session = self.sessions[room_id]
+            this_session.timer.reset()
 
             curr_usr, other_usr = this_session.players
             if curr_usr["id"] != user_id:
@@ -770,7 +782,6 @@ class CoCoBot(TaskBot):
 
                         # register new last actiond
                         if action is not False:
-
                             # the state changes, log it
                             current_state = this_client.get_state("wizard_working")
                             self.log_event("working_board_log", current_state, room_id)
@@ -962,14 +973,22 @@ class CoCoBot(TaskBot):
                 "html": True,
             },
         )
+
+        working_state = this_client.get_state("wizard_working")
+        reference_state = this_session.states.pop(0)
+        current_points = self.calculate_points(working_state, reference_state)
+        self.log_event(
+            "points",
+            {"reference_board": reference_state, "working_board": working_state},
+            room_id,
+        )
+
         this_session.timer.reset()
-        this_session.states.pop(0)
 
         # reload new states if no states left
         if not this_session.states:
             # self.close_game(room_id)
-            self.switch_roles(room_id)
-            this_session.states.get_boards()
+            self.terminate_experiment(room_id)
 
         # switch roles
         if isinstance(this_session.states[0], str) is True:
@@ -1014,6 +1033,66 @@ class CoCoBot(TaskBot):
                     "receiver_id": user["id"],
                 },
             )
+
+    def calculate_points(self, working_board, reference_board):
+        return random.randint(0, 10)
+
+    def terminate_experiment(self, room_id):
+        self.sio.emit(
+            "text",
+            {
+                "room": room_id,
+                "message": (
+                    "The experiment is over 🎉 🎉 thank you very much for your time!"
+                ),
+                "html": True,
+            },
+        )
+        self.confirmation_code(room_id, "sucess")
+        self.close_game(room_id)
+
+    def confirmation_code(self, room_id, status):
+        """Generate AMT token that will be sent to each player."""
+        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        points = self.sessions[room_id].points
+        # post AMT token to logs
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": status, "amt_token": amt_token, "reward": points},
+            room_id,
+        )
+
+        self.sio.emit(
+            "text",
+            {
+                "message": COLOR_MESSAGE.format(
+                    color=STANDARD_COLOR,
+                    message=(
+                        "The experiment is over, please remember to "
+                        "save your token before you close this browser window. "
+                        f"Your token: {amt_token}"
+                    ),
+                ),
+                "room": room_id,
+                "html": True,
+            },
+        )
+
+    def timeout_close_game(self, room_id, status):
+        if room_id in self.sessions:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message="The room is closing because of inactivity",
+                    ),
+                    "html": True,
+                    "room": room_id,
+                },
+            )
+            self.confirmation_code(room_id, status)
+            self.close_game(room_id)
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
