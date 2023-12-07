@@ -131,30 +131,8 @@ class TabooBot(TaskBot):
                     LOG.debug(f'{user["name"]} is the explainer.')
                 else:
                     LOG.debug(f'{user["name"]} is the guesser.')
+            self.send_individualised_instructions(room_id)
 
-            response_e = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={
-                    "text": EXPLAINER_PROMPT,
-                    "receiver_id": self.sessions[room_id].explainer,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response_e.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response_e.raise_for_status()
-
-            response_g = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={
-                    "text": GUESSER_PROMPT,
-                    "receiver_id": self.sessions[room_id].guesser,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response_g.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response_g.raise_for_status()
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -323,7 +301,6 @@ class TabooBot(TaskBot):
                                 room_id,
                                 # player["id"],
                             )
-                        self.update_reward(room_id, 0)
                         self.send_message_to_user(
                                     f"Please provide a new description",
                                     room_id,
@@ -513,6 +490,49 @@ class TabooBot(TaskBot):
                 {"message": f"{message}", "room": room},
             )
         # sleep(1)
+
+    def send_individualised_instructions(self, room_id):
+        this_session = self.sessions[room_id]
+
+        # Send explainer_ instructions to explainer
+        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+                                  json={"text": "Explain the taboo word", "receiver_id": this_session.explainer},
+                                  headers={"Authorization": f"Bearer {self.token}"},
+                                  )
+        if not response.ok:
+            LOG.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={"text": f"{EXPLAINER_PROMPT}", "receiver_id": this_session.explainer},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction: {response.status_code}")
+            response.raise_for_status()
+
+        # Send guesser_instructions to guesser
+        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+                                  json={"text": "Guess the taboo word", "receiver_id": this_session.guesser},
+                                  headers={"Authorization": f"Bearer {self.token}"},
+                                  )
+        if not response.ok:
+            LOG.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={"text": f"{GUESSER_PROMPT}", "receiver_id": this_session.guesser},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction: {response.status_code}")
+            response.raise_for_status()
 
     def set_message_privilege(self, user_id, value):
         """
