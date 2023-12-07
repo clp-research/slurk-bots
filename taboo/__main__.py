@@ -200,85 +200,58 @@ class TabooBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "letting task bot join room")
-
-    def register_callbacks(self):
-        @self.sio.event
-        def new_task_room(data):
-            """Triggered after a new task room is created.
-
-            An example scenario would be that the concierge
-            bot emitted a room_created event once enough
-            users for a task have entered the waiting room.
-            """
-            room_id = data["room"]
-            task_id = data["task"]
-
-            LOG.debug(f"A new task room was created with id: {data['task']}")
-            LOG.debug(f"This bot is looking for task id: {self.task_id}")
-
-            if task_id is not None and task_id == self.task_id:
-                for usr in data["users"]:
-                    self.received_waiting_token.discard(usr["id"])
-
-                # create image items for this room
-                LOG.debug("Create data for the new task room...")
-
-                # self.images_per_room.get_image_pairs(room_id)
-                # self.players_per_room[room_id] = []
-                # for usr in data["users"]:
-                #     self.players_per_room[room_id].append(
-                #         {**usr, "msg_n": 0, "status": "joined"}
-                #     )
-                # self.last_message_from[room_id] = None
-                #
-                # # register ready timer for this room
-                # self.timers_per_room[room_id] = RoomTimers()
-                # self.timers_per_room[room_id].ready_timer = Timer(
-                #     TIME_READY * 60,
-                #     self.sio.emit,
-                #     args=[
-                #         "text",
-                #         {
-                #             "message": "Are you ready? "
-                #                        "Please type **/ready** to begin the game.",
-                #             "room": room_id,
-                #             "html": True,
-                #         },
-                #     ],
-                # )
+            if len(self.sessions[room_id].players) >= 2:
                 self.sio.emit(
                     "text",
-                        {
-                            "message": "Are you ready? "
-                                       "Please type **/ready** to begin the game.",
-                            "room": room_id,
-                            "html": True,
-                        },
+                    {
+                        "message": "Type 'ready' to begin the game.",
+                        "room": room_id,
+                    },
                 )
-                # self.timers_per_room[room_id].ready_timer.start()
 
-                response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not let taboo bot join room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                LOG.debug("Sending taboo bot to new room was successful.")
+    def register_callbacks(self):
+        # @self.sio.event
+        # def new_task_room(data):
+        #     """Triggered after a new task room is created.
+        #
+        #     An example scenario would be that the concierge
+        #     bot emitted a room_created event once enough
+        #     users for a task have entered the waiting room.
+        #     """
+        #     room_id = data["room"]
+        #     task_id = data["task"]
+        #
+        #     LOG.debug(f"A new task room was created with id: {data['task']}")
+        #     LOG.debug(f"This bot is looking for task id: {self.task_id}")
+        #
+        #     if task_id is not None and task_id == self.task_id:
+        #         for usr in data["users"]:
+        #             self.received_waiting_token.discard(usr["id"])
+        #
+        #         # create image items for this room
+        #         LOG.debug("Create data for the new task room...")
+        #         self.sio.emit(
+        #             "text",
+        #                 {
+        #                     "message": "Are you ready? "
+        #                                "Please type **/ready** to begin the game.",
+        #                     "room": room_id,
+        #                     "html": True,
+        #                 },
+        #         )
+        #         # self.timers_per_room[room_id].ready_timer.start()
+        #
+        #         response = requests.post(
+        #             f"{self.uri}/users/{self.user}/rooms/{room_id}",
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         if not response.ok:
+        #             LOG.error(
+        #                 f"Could not let taboo bot join room: {response.status_code}"
+        #             )
+        #             response.raise_for_status()
+        #         LOG.debug("Sending taboo bot to new room was successful.")
 
-        @self.sio.event
-        def joined_room(data):
-            """Triggered once after the bot joins a room."""
-            room_id = data["room"]
-
-            # if room_id in self.sessions:
-            #     # read out task greeting #todo: read from file
-            #     message = "Type 'ready' to start the game!"
-            #     self.sio.emit(
-            #             "text", {"message": message, "room": room_id, "html": True}
-            #         )
         @self.sio.event
         def user_message(data):
             LOG.debug("Received a user_message.")
@@ -533,13 +506,6 @@ class TabooBot(TaskBot):
                         this_session.pick_explainer()
                         this_session.pick_guesser()
                         self.show_instructions(room_id)
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "Type 'ready' to begin the game.",
-                                "room": room_id,
-                            },
-                        )
 
                 elif event == "leave":
                     self.sio.emit(
@@ -563,25 +529,25 @@ class TabooBot(TaskBot):
                             },
                         )
 
-        # @self.sio.event
-        # def text_message(data):
-        #     """Triggered when a text message is sent.
-        #     Check that it didn't contain any forbidden words if sent
-        #     by explainer or whether it was the correct answer when sent
-        #     by a guesser.
-        #     """
-        #     LOG.debug(f"Received a message from {data['user']['name']}.")
-        #
-        #     room_id = data["room"]
-        #     user_id = data["user"]["id"]
-        #
-        #     this_session = self.sessions[room_id]
-        #     # this_session.timer.reset()
-        #     word_to_guess = this_session.word_to_guess
-        #
-        #     # do not process commands from itself
-        #     if user_id == self.user:
-        #         return
+        @self.sio.event
+        def text_message(data):
+            """Triggered when a text message is sent.
+            Check that it didn't contain any forbidden words if sent
+            by explainer or whether it was the correct answer when sent
+            by a guesser.
+            """
+            LOG.debug(f"Received a message from {data['user']['name']}.")
+
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            this_session = self.sessions[room_id]
+            # this_session.timer.reset()
+            word_to_guess = this_session.word_to_guess
+
+            # do not process commands from itself
+            if user_id == self.user:
+                return
         #
         #     # explainer
         #     if this_session.explainer == user_id:
