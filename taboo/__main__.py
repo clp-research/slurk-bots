@@ -115,7 +115,7 @@ class TabooBot(TaskBot):
     - Bot enters a room and starts a taboo game as soon as 2 participants are
       present.
     - Game starts: select a word to guess, assign one of the participants as
-      explainer, present the word and taboo words to her
+      player_a, present the word and taboo words to her
     - Game is in progress: check for taboo words or solutions
     - Solution has been said: end the game, record the winner, start a new game.
     - When new users enter while the game is in progress: make them guessers.
@@ -288,9 +288,9 @@ class TabooBot(TaskBot):
                     self._command_ready(room_id, user_id)
                     return
 
-            # explainer
+            # player_a
             if this_session.explainer == user_id:
-                LOG.debug(f"{data['user']['name']} is the explainer.")
+                LOG.debug(f"{data['user']['name']} is the player_a.")
                 command = data['command']
                 command = command.lower()
                 command = self.remove_punctuation(command)
@@ -299,7 +299,7 @@ class TabooBot(TaskBot):
                 #     {
                 #         "message": f"Command is {command}",
                 #         "room": room_id,
-                #         "receiver_id": this_session.explainer,
+                #         "receiver_id": this_session.player_a,
                 #     },
                 # )
 
@@ -324,7 +324,7 @@ class TabooBot(TaskBot):
                 #     {
                 #         "message": f"the taboo words are {forbidden_words}",
                 #         "room": room_id,
-                #         "receiver_id": this_session.explainer,
+                #         "receiver_id": this_session.player_a,
                 #     },
                 # )
                 for taboo_word in forbidden_words:
@@ -359,7 +359,7 @@ class TabooBot(TaskBot):
                         curr_usr, other_usr = self.sessions[room_id].players
                         if curr_usr['id'] != this_session.explainer:
                             curr_usr, other_usr = other_usr, curr_usr
-                        # revoke writing rights to explainer
+                        # revoke writing rights to player_a
                         self.set_message_privilege(this_session.explainer, False)
                         self.check_writing_right(room_id, curr_usr, False)
                         # assign writing rights to other user
@@ -369,9 +369,9 @@ class TabooBot(TaskBot):
                         return
                 self.check_clue(room_id, command)
 
-            # Check if user is guesser
+            # Check if user is player_b
             elif this_session.guesser == user_id:
-                LOG.debug(f"{data['user']['name']} is the guesser.")
+                LOG.debug(f"{data['user']['name']} is the player_b.")
                 command = data['command'].lower()
                 logging.debug(
                     f"Received a command from {data['user']['name']}: {data['command']}"
@@ -399,7 +399,7 @@ class TabooBot(TaskBot):
                     curr_usr, other_usr = self.sessions[room_id].players
                     if curr_usr['id'] != this_session.guesser:
                         curr_usr, other_usr = other_usr, curr_usr
-                    # revoke writing rights to guesser
+                    # revoke writing rights to player_b
                     self.set_message_privilege(this_session.guesser, False)
                     self.check_writing_right(room_id, curr_usr, False)
                     # assign writing rights to other user
@@ -437,7 +437,7 @@ class TabooBot(TaskBot):
                     curr_usr, other_usr = self.sessions[room_id].players
                     if curr_usr['id'] != this_session.guesser:
                         curr_usr, other_usr = other_usr, curr_usr
-                    # revoke writing rights to guesser
+                    # revoke writing rights to player_b
                     self.set_message_privilege(this_session.guesser, False)
                     self.check_writing_right(room_id, curr_usr, False)
                     # assign writing rights to other user
@@ -502,7 +502,7 @@ class TabooBot(TaskBot):
                         # start a game
                         # 1) Choose a word
                         this_session.word_to_guess = self.taboo_data['target_word']
-                        # 2) Choose an explainer and a guesser
+                        # 2) Choose an player_a and a player_b
                         this_session.pick_explainer()
                         this_session.pick_guesser()
                         self.show_instructions(room_id)
@@ -533,8 +533,8 @@ class TabooBot(TaskBot):
         def text_message(data):
             """Triggered when a text message is sent.
             Check that it didn't contain any forbidden words if sent
-            by explainer or whether it was the correct answer when sent
-            by a guesser.
+            by player_a or whether it was the correct answer when sent
+            by a player_b.
             """
             LOG.debug(f"Received a message from {data['user']['name']}.")
 
@@ -549,9 +549,9 @@ class TabooBot(TaskBot):
             if user_id == self.user:
                 return
         #
-        #     # explainer
-        #     if this_session.explainer == user_id:
-        #         LOG.debug(f"{data['user']['name']} is the explainer.")
+        #     # player_a
+        #     if this_session.player_a == user_id:
+        #         LOG.debug(f"{data['user']['name']} is the player_a.")
         #         message = data["message"]
         #         # check whether the user used a forbidden word
         #         for taboo_word in self.taboo_data['related_word']:
@@ -561,7 +561,7 @@ class TabooBot(TaskBot):
         #                     {
         #                         "message": f"You used the taboo word {taboo_word}! GAME OVER :(",
         #                         "room": room_id,
-        #                         "receiver_id": this_session.explainer,
+        #                         "receiver_id": this_session.player_a,
         #                     },
         #                 )
         #                 self.sio.emit(
@@ -569,7 +569,7 @@ class TabooBot(TaskBot):
         #                     {
         #                         "message": f"{data['user']['name']} used a taboo word. You both lose!",
         #                         "room": room_id,
-        #                         "receiver_id": this_session.guesser,
+        #                         "receiver_id": this_session.player_b,
         #                     },
         #                 )
         #                 self.process_move(room_id, 0)
@@ -581,7 +581,7 @@ class TabooBot(TaskBot):
         #                 {
         #                     "message": f"You used the word to guess '{word_to_guess}'! GAME OVER",
         #                     "room": room_id,
-        #                     "receiver_id": this_session.explainer,
+        #                     "receiver_id": this_session.player_a,
         #                 },
         #             )
         #             self.sio.emit(
@@ -589,7 +589,7 @@ class TabooBot(TaskBot):
         #                 {
         #                     "message": f"{data['user']['name']} used the word to guess. You both lose!",
         #                     "room": room_id,
-        #                     "receiver_id": this_session.guesser,
+        #                     "receiver_id": this_session.player_b,
         #                 },
         #             )
         #
@@ -601,7 +601,7 @@ class TabooBot(TaskBot):
         #             {
         #                 "message": f"{word_to_guess} was correct! YOU WON :)",
         #                 "room": room_id,
-        #                 "receiver_id": this_session.guesser
+        #                 "receiver_id": this_session.player_b
         #             },
         #         )
         #         self.sio.emit(
@@ -609,7 +609,7 @@ class TabooBot(TaskBot):
         #             {
         #                 "message": f"{data['user']['name']} guessed the word. You both win :)",
         #                 "room": room_id,
-        #                 "receiver_id": this_session.explainer,
+        #                 "receiver_id": this_session.player_a,
         #             },
         #         )
         #         self.process_move(room_id, 1)
@@ -679,7 +679,7 @@ class TabooBot(TaskBot):
 
     def start_game(self, room_id):
         this_session = self.sessions[room_id]
-        # 3) Tell the explainer about the word
+        # 3) Tell the player_a about the word
         word_to_guess = this_session.word_to_guess
         taboo_words = ", ".join(self.taboo_data['related_word'])
         for usr in this_session.players:
@@ -974,7 +974,7 @@ class TabooBot(TaskBot):
             curr_usr, other_usr = self.sessions[room_id].players
             if curr_usr['id'] != this_session.explainer:
                 curr_usr, other_usr = other_usr, curr_usr
-            # revoke writing rights to explainer
+            # revoke writing rights to player_a
             self.set_message_privilege(this_session.explainer, False)
             self.check_writing_right(room_id, curr_usr, False)
             # assign writing rights to other user
@@ -1050,7 +1050,7 @@ class TabooBot(TaskBot):
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
 
-        # Send explainer_ instructions to explainer
+        # Send explainer_ instructions to player_a
         response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
                                   json={"text": "Explain the taboo word", "receiver_id": this_session.explainer},
                                   headers={"Authorization": f"Bearer {self.token}"},
@@ -1070,7 +1070,7 @@ class TabooBot(TaskBot):
             LOG.error(f"Could not set task instruction: {response.status_code}")
             response.raise_for_status()
 
-        # Send guesser_instructions to guesser
+        # Send guesser_instructions to player_b
         response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
                                   json={"text": "Guess the taboo word", "receiver_id": this_session.guesser},
                                   headers={"Authorization": f"Bearer {self.token}"},
