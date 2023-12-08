@@ -372,13 +372,25 @@ class DrawingBot:
 
     def start_game(self, room_id, data):
         this_session = self.sessions[room_id]
-        # 2) Choose player A
+        # 1) Choose player A
         self.sessions[room_id].pick_player_a()
         for user in data["users"]:
             if user["id"] == this_session.player_a:
                 LOG.debug(f'{user["name"]} is player A.')
             else:
                 LOG.debug(f'{user["name"]} is player B.')
+
+        # Send explainer_ instructions to player_a
+        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+                                  json={"text": "Describe the grid",
+                                        "receiver_id": this_session.player_a},
+                                  headers={"Authorization": f"Bearer {self.token}"},
+                                  )
+        if not response.ok:
+            LOG.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
 
         response_e = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
@@ -391,6 +403,18 @@ class DrawingBot:
         if not response_e.ok:
             LOG.error(f"Could not set task instruction: {response_e.status_code}")
             response_e.raise_for_status()
+
+        # Send drawer_ instructions to player_b
+        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+                                  json={"text": "Draw the described grid",
+                                        "receiver_id": this_session.player_b},
+                                  headers={"Authorization": f"Bearer {self.token}"},
+                                  )
+        if not response.ok:
+            LOG.error(
+                f"Could not set task instruction title: {response.status_code}"
+            )
+            response.raise_for_status()
 
         response_g = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
