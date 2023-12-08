@@ -74,7 +74,7 @@
   "scripts": {
     "incoming-text": "markdown",
     "incoming-image": "display-image",
-    "submit-message": "send-message",
+    "submit-message": "send-intercepted-message",
     "print-history": [
       "attribute-history",
       "markdown-history"
