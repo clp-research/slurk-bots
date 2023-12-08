@@ -137,54 +137,61 @@ class DrawingBot:
         self.sio.wait()
 
     def register_callbacks(self):
-        # @self.sio.event
-        # def new_task_room(data):
-        #     """Triggered after a new task room is created.
-        #
-        #     An example scenario would be that the concierge
-        #     bot emitted a room_created event once enough
-        #     users for a task have entered the waiting room.
-        #     """
-        #     room_id = data["room"]
-        #     task_id = data["task"]
-        #
-        #     LOG.debug(f"A new task room was created with id: {data['task']}")
-        #     LOG.debug(f"This bot is looking for task id: {self.task_id}")
-        #
-        #     if task_id is not None and task_id == self.task_id:
-        #         for usr in data["users"]:
-        #             self.received_waiting_token.discard(usr["id"])
-        #
-        #         # create image items for this room
-        #         LOG.debug("Create data for the new task room...")
-        #
-        #         # self.images_per_room.get_image_pairs(room_id)
-        #         self.players_per_room[room_id] = []
-        #         for usr in data["users"]:
-        #             self.players_per_room[room_id].append(
-        #                 {**usr, "msg_n": 0, "status": "joined"}
-        #             )
-        #         # self.last_message_from[room_id] = None
-        #
-        #         # self.sio.emit(
-        #         #         "text",
-        #         #         {
-        #         #             "message": "Are you ready? "
-        #         #             "Please type **/ready** to begin the game.",
-        #         #             "room": room_id,
-        #         #             "html": True,
-        #         #         },
-        #         # )
-        #         response = requests.post(
-        #             f"{self.uri}/users/{self.user}/rooms/{room_id}",
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         if not response.ok:
-        #             LOG.error(
-        #                 f"Could not let drawing game bot join room: {response.status_code}"
-        #             )
-        #             response.raise_for_status()
-        #         LOG.debug("Sending drawing game bot to new room was successful.")
+        @self.sio.event
+        def new_task_room(data):
+            """Triggered after a new task room is created.
+
+            An example scenario would be that the concierge
+            bot emitted a room_created event once enough
+            users for a task have entered the waiting room.
+            """
+            room_id = data["room"]
+            task_id = data["task"]
+
+            LOG.debug(f"A new task room was created with id: {data['task']}")
+            LOG.debug(f"This bot is looking for task id: {self.task_id}")
+
+            if task_id is not None and task_id == self.task_id:
+                for usr in data["users"]:
+                    self.received_waiting_token.discard(usr["id"])
+
+                # create image items for this room
+                LOG.debug("Create data for the new task room...")
+
+                # create a new session for these users
+                self.sessions.create_session(room_id)
+
+                # self.images_per_room.get_image_pairs(room_id)
+                self.players_per_room[room_id] = []
+                for usr in data["users"]:
+                    self.sessions[room_id].players.append(
+                        {**usr, "msg_n": 0, "status": "joined"}
+                    )
+                    self.players_per_room[room_id].append(
+                        {**usr, "msg_n": 0, "status": "joined"}
+                    )
+                # self.last_message_from[room_id] = None
+
+                # self.sio.emit(
+                #         "text",
+                #         {
+                #             "message": "Are you ready? "
+                #             "Please type **/ready** to begin the game.",
+                #             "room": room_id,
+                #             "html": True,
+                #         },
+                # )
+                response = requests.post(
+                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    LOG.error(
+                        f"Could not let drawing game bot join room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                LOG.debug("Sending drawing game bot to new room was successful.")
+                self.start_game(room_id, data)
 
         @self.sio.event
         def joined_room(data):
@@ -196,7 +203,7 @@ class DrawingBot:
             self.sio.emit(
                     "text", {"message": message, "room": room_id, "html": True}
                 )
-            # ask players to send \ready
+            # ask players to send 'ready'
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/instr_title",
                 json={"text": message},
@@ -311,74 +318,6 @@ class DrawingBot:
                     },
                 )
 
-    def on_task_room_creation(self, data):
-        """This function is executed as soon as 2 users are paired and a new
-        task took is created
-        """
-        room_id = data["room"]
-        task_id = data["task"]
-        logging.debug(f"A new task room was created with id: {data['room']}")
-        logging.debug(f"A new task room was created with task id: {data['task']}")
-        logging.debug(f"This bot is looking for task id: {self.task_id}")
-        if task_id is not None and task_id == self.task_id:
-            # modify layout
-            for usr in data["users"]:
-                self.received_waiting_token.discard(usr["id"])
-            logging.debug("Create data for the new task room...")
-            # create a new session for these users
-            # this_session = self.sessions[room_id]
-            self.sessions.create_session(room_id)
-
-            for usr in data["users"]:
-                # this_session.players.append({**usr, "msg_n": 0, "status": "joined"})
-                self.sessions[room_id].players.append(
-                    {**usr, "msg_n": 0, "status": "joined"}
-                )
-
-            # join the newly created room
-            response = requests.post(
-                f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            #         roles
-            # for user in data["users"]:
-            #     this_session.players.append({**user, "status": "joined", "wins": 0})
-
-            # now define in a sep function, so that it's possible to change the word
-            # self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0]["target_word"]
-
-            # 2) Choose an explainer
-            self.sessions[room_id].pick_player_a()
-            for user in data["users"]:
-                if user["id"] == self.sessions[room_id].player_a:
-                    LOG.debug(f'{user["name"]} is the player A.')
-                else:
-                    LOG.debug(f'{user["name"]} is the player B.')
-
-            response_e = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={
-                    "text": self.sessions[room_id].player_a_instructions,
-                    "receiver_id": self.sessions[room_id].player_a,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response_e.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response_e.raise_for_status()
-
-            response_g = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={
-                    "text": self.sessions[room_id].player_b_instructions,
-                    "receiver_id": self.sessions[room_id].player_b,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response_g.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response_g.raise_for_status()
-
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
         # identify the user that has not sent this event
@@ -392,7 +331,7 @@ class DrawingBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": "You have already typed /ready.",
+                    "message": "You have already typed 'ready'.",
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
                 },
@@ -431,8 +370,40 @@ class DrawingBot:
             self.sessions[room_id].rounds_left = 3
             self.start_game(room_id)
 
-    def start_game(self, room_id):
+    def start_game(self, room_id, data):
         this_session = self.sessions[room_id]
+        # 2) Choose player A
+        self.sessions[room_id].pick_player_a()
+        for user in data["users"]:
+            if user["id"] == this_session.player_a:
+                LOG.debug(f'{user["name"]} is player A.')
+            else:
+                LOG.debug(f'{user["name"]} is player B.')
+
+        response_e = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={
+                "text": TASK_DESCR_A.read_text(),
+                "receiver_id": this_session.player_a,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response_e.ok:
+            LOG.error(f"Could not set task instruction: {response_e.status_code}")
+            response_e.raise_for_status()
+
+        response_g = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={
+                "text": TASK_DESCR_B.read_text(),
+                "receiver_id": this_session.player_b,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response_g.ok:
+            LOG.error(f"Could not set task instruction: {response_g.status_code}")
+            response_g.raise_for_status()
+
 
     def _not_done(self, room_id, user_id):
         """One of the two players was not done."""
