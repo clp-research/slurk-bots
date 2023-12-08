@@ -11,7 +11,7 @@ import requests
 import socketio
 
 import config
-# from drawing_game.config import TASK_GREETING
+from config import TASK_GREETING
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -78,7 +78,6 @@ class DrawingBot:
         self.uri += "/slurk/api"
 
         self.players_per_room = dict()
-
         self.received_waiting_token = set()
 
         LOG.info(f"Running drawing game bot on {self.uri} with token {self.token}")
@@ -125,16 +124,15 @@ class DrawingBot:
                     )
                 # self.last_message_from[room_id] = None
 
-                self.sio.emit(
-                        "text",
-                        {
-                            "message": "Are you ready? "
-                            "Please type **/ready** to begin the game.",
-                            "room": room_id,
-                            "html": True,
-                        },
-                )
-
+                # self.sio.emit(
+                #         "text",
+                #         {
+                #             "message": "Are you ready? "
+                #             "Please type **/ready** to begin the game.",
+                #             "room": room_id,
+                #             "html": True,
+                #         },
+                # )
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
                     headers={"Authorization": f"Bearer {self.token}"},
@@ -151,24 +149,22 @@ class DrawingBot:
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
-            if room_id in self.images_per_room:
-                # read out task greeting
-                for line in TASK_GREETING:
-                    self.sio.emit(
-                        "text", {"message": line, "room": room_id, "html": True}
-                    )
-                    sleep(0.5)
-                # ask players to send \ready
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": line},
-                    headers={"Authorization": f"Bearer {self.token}"},
+            # read out task greeting
+            message = TASK_GREETING.read_text()
+            self.sio.emit(
+                    "text", {"message": message, "room": room_id, "html": True}
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not set task instruction title: {response.status_code}"
-                    )
-                    response.raise_for_status()
+            # ask players to send \ready
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/instr_title",
+                json={"text": message},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not set task instruction title: {response.status_code}"
+                )
+                response.raise_for_status()
 
         @self.sio.event
         def status(data):
@@ -187,11 +183,12 @@ class DrawingBot:
             room_id = data["room"]
             # someone joined waiting room
             if room_id == self.waiting_room:
-                if self.waiting_timer is not None:
-                    LOG.debug("Waiting Timer stopped.")
-                    self.waiting_timer.cancel()
-                if data["type"] == "join":
-                    LOG.debug("Waiting Timer restarted.")
+                pass
+                # if self.waiting_timer is not None:
+                #     LOG.debug("Waiting Timer stopped.")
+                #     self.waiting_timer.cancel()
+                # if data["type"] == "join":
+                #     LOG.debug("Waiting Timer restarted.")
 
             # some joined a task room
             else:
@@ -253,19 +250,18 @@ class DrawingBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            if room_id in self.images_per_room:
-                if data["command"].lower() == "done":
-                    pass
-                    #todo: self._command_done(room_id, user_id)
-                else:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "Sorry, but I do not understand this command.",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+            if data["command"].lower() == "done":
+                pass
+                #todo: self._command_done(room_id, user_id)
+            else:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": "Sorry, but I do not understand this command.",
+                        "room": room_id,
+                        "receiver_id": user_id,
+                    },
+                )
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
