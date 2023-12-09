@@ -76,7 +76,7 @@
         "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
         "typing-users": "typing-users",
-      "plain":["recolage"]
+      "plain":["taboo"]
     },
     "show_latency": false
 }
