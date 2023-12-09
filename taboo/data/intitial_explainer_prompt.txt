@@ -21,5 +21,3 @@
     ii) If the other player can guess the target word in 3 tries, you both win.
 
     Important: You are under time pressure, give short descriptions that are to the point!
-
-    Please type "/ready" to begin the game!

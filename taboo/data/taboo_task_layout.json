@@ -75,7 +75,8 @@
         "incoming-text": "markdown",
         "submit-message": "send-message",
         "print-history": ["attribute-history", "markdown-history"],
-        "typing-users": "typing-users"
+        "typing-users": "typing-users",
+      "plain":["recolage"]
     },
     "show_latency": false
 }

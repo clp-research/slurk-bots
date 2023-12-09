@@ -16,5 +16,3 @@
     Explanations from your partner will start with "HINT".
 
     Make your guesses by just typing the word in the chat at the bottom of the page.
-
-    Please type "/ready" to begin the game!

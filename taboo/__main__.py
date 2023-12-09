@@ -132,7 +132,38 @@ class TabooBot(TaskBot):
                 else:
                     LOG.debug(f'{user["name"]} is the guesser.')
             self.send_individualised_instructions(room_id)
+            # use sleep so that people first read the instructions!
+            # sleep(2)
 
+            # static button
+            # # Start command (button)
+            # self.sio.emit(
+            #         "text",
+            #         {
+            #             "message": f"Please click "
+            #                        "on <Start> once you are ready!",
+            #             "room": room_id,
+            #
+            #         },
+            #         callback=self.message_callback,
+            #     )
+            #
+
+    #         html
+
+        self.sio.emit(
+        "text",
+        {
+            "message": (
+                "Are you ready? <br>"
+                "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
+                "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
+            ),
+            "room": room_id,
+            # "receiver_id": player["id"],
+            "html": True,
+        },
+    )
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -170,6 +201,7 @@ class TabooBot(TaskBot):
                 self.send_message_to_user(
                     f"{user['name']} has joined the game.", room_id
                 )
+                sleep(0.5)
 
             elif event == "leave":
                 self.send_message_to_user(f"{user['name']} has left the game.", room_id)
@@ -184,12 +216,42 @@ class TabooBot(TaskBot):
 
         @self.sio.event
         def command(data):
-            if data["command"].startswith("ready"):
-                self._command_ready(data["room"], data["user"]["id"])
+            logging.debug(
+                f"Received a command from {data['user']['name']}: {data['command']}"
+            )
+
+
+            # static button
+            # elif data["command"] == "start":
+            #
+            #     self.send_message_to_user(
+            #         f"Clicked on the button.", data["room"]
+            #     )
+            #     response = requests.post(
+            #         f"{self.uri}/rooms/{data['room']}/class/start-button",
+            #         json={"class": "dis-button"},
+            #         headers={"Authorization": f"Bearer {self.token}"},
+            #     )
+            #     LOG.debug(f"hide {response}")
+            #     self.request_feedback(response, "hide start button")
+
+        #     html
+            if isinstance(data["command"], dict):
+                # commands from interface
+                event = data["command"]["event"]
+                if event == "confirm_selection":
+                    if data["command"]["answer"] == "yes":
+                        # self.send_message_to_user(f"you picked ready", data["room"], data["user"]["id"])
+                        self._command_ready(data["room"], data["user"]["id"])
+
+            # elif data["command"].startswith("ready"):
+            #         self._command_ready(data["room"], data["user"]["id"])
+
+
 
         @self.sio.event
         def text_message(data):
-            """Parse user commands."""
+            """Parse user messages."""
             LOG.debug(
                 f"Received a message from {data['user']['name']}: {data['message']}"
             )
