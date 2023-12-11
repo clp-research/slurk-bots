@@ -184,7 +184,16 @@ class WordleBot(TaskBot):
 
             if this_session.guesses < 5:
                 this_session.guesses += 1
-                self.send_message_to_user(f"Feedback {this_session.guesses}:{letter_feedback}", room_id)
+                html_feedback = format_string(letter_feedback)
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": html_feedback,
+                        "room": room_id,
+                        # "receiver_id": player["id"],
+                        "html": True,
+                    },
+                )
                 self.send_message_to_user(f"Make a new guess", room_id)
 
             elif this_session.guesses == 5:
@@ -245,6 +254,18 @@ class WordleBot(TaskBot):
         # try to log the round number
         self.log_event("round", {"number": round_n}, room_id)
 
+
+        # self.sio.emit(
+        #     "text",
+        #     {
+        #         "message": ('very <a style = "color:green;" >g     </a> <a style = "color:red;" >a'
+        #
+        #         ),
+        #         "room": room_id,
+        #         # "receiver_id": player["id"],
+        #         "html": True,
+        #     },
+        # )
         self.send_message_to_user(f"Let's start round {round_n}", room_id)
         self.send_message_to_user(
             "Make your guess",
@@ -393,6 +414,13 @@ def check_guess(guess, session):
             else:
                 feedback.append((guess[i], "red"))
     return feedback
+
+
+def format_string(letter_feedback):
+    formatted_string = ""
+    for pair in letter_feedback:
+        formatted_string += f'<a style = "color:{pair[1]};" > <b> {pair[0]}  </b> </a>'
+    return formatted_string
 
 
 if __name__ == "__main__":
