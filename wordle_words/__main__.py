@@ -18,9 +18,18 @@ LOG = logging.getLogger(__name__)
 class Session:
     def __init__(self):
         self.players = list()
-        self.guesser = None
         self.words = Dataloader(WORDLE_WORDS, WORDS_PER_ROOM)
         self.word_to_guess = None
+        self.word_letters = {}
+        self.guesses = 0
+        self.guesser = None
+        self.points = {
+            "score": 0,
+            "history": [{"correct": 0, "wrong": 0, "warnings": 0}],
+        }
+
+    def close(self):
+        pass
 
 class SessionManager(dict):
     def create_session(self, room_id):
@@ -102,6 +111,12 @@ class WordleBot(TaskBot):
         LOG.debug("Sent message successfully.")
 
     def register_callbacks(self):
+        @self.sio.event
+        def user_message(data):
+            LOG.debug("Received a user_message.")
+            LOG.debug(data)
+            # it sends to itself, user id = null, receiver if = null
+            self.sio.emit("text", {"message": data["message"], "room": data["room"]})
 
         @self.sio.event
         def status(data):
@@ -137,21 +152,57 @@ class WordleBot(TaskBot):
 
         @self.sio.event
         def text_message(data):
-            """load next state after the user enters a description"""
-            if self.user == data["user"]["id"]:
-                return
+            """Parse user messages."""
+            LOG.debug(
+                f"Received a message from {data['user']['name']}: {data['message']}"
+            )
             room_id = data["room"]
+            user_id = data["user"]["id"]
 
+            if user_id == self.user:
+                return
+
+            this_session = self.sessions[room_id]
+            self.log_event("guess", {"content": data["message"]}, room_id)
+            if not valid_guess(data["message"]):
+                self.log_event("invalid guess", {"content": data["message"]}, room_id)
+                self.send_message_to_user(
+                    f"The guess must be a single 5-letter word! You lost this round.",
+                    room_id,
+                )
+                self.update_reward(room_id, 0)
+                self.load_next_game(room_id)
+                return
+
+            letter_feedback = check_guess(data["message"].lower(), this_session)
+            if letter_feedback == "correct":
+                this_session.guesses += 1
+                self.send_message_to_user(f"You guessed the word!", room_id)
+                self.update_reward(room_id, 1)
+                self.load_next_game(room_id)
+                return
+
+            if this_session.guesses < 5:
+                this_session.guesses += 1
+                self.send_message_to_user(f"Feedback {this_session.guesses}:{letter_feedback}", room_id)
+                self.send_message_to_user(f"Make a new guess", room_id)
+
+            elif this_session.guesses == 5:
+                this_session.guesses += 1
+                self.send_message_to_user(
+                    f"6 guesses have been already used. You lost this round.",
+                    room_id,
+                )
+                self.update_reward(room_id, 0)
+                self.load_next_game(room_id)
 
 
         @self.sio.event
         def command(data):
             """Parse user commands."""
-            room_id = data["room"]
-            user_id = data["user"]["id"]
 
             # do not prcess commands from itself
-            if user_id == self.user:
+            if data["user"]["id"] == self.user:
                 return
 
             logging.debug(
@@ -180,7 +231,6 @@ class WordleBot(TaskBot):
                 "You have already typed 'ready'.", room_id, user["id"]
             )
             return
-
         self.sessions[room_id].players[0]["status"] = "ready"
         self.send_message_to_user("Woo-Hoo! The game will begin now.", room_id)
         self.start_round(room_id)
@@ -201,11 +251,20 @@ class WordleBot(TaskBot):
             room_id,
             self.sessions[room_id].guesser,
         )
-
         self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
-            "target_word"
-        ]
+            "target_word"].lower()
 
+        self.sessions[room_id].guesses = 0
+        self.send_message_to_user(f"(The word to guess is {self.sessions[room_id].word_to_guess})", room_id)
+        self.sessions[room_id].word_letters = decompose(self.sessions[room_id].word_to_guess)
+
+    def load_next_game(self, room_id):
+        # word list gets smaller, next round starts
+        self.sessions[room_id].words.pop(0)
+        if not self.sessions[room_id].words:
+            self.close_room(room_id)
+            return
+        self.start_round(room_id)
 
     def send_instructions(self, room_id):
         response = requests.patch(
@@ -217,10 +276,49 @@ class WordleBot(TaskBot):
             LOG.error(f"Could not set task instruction: {response.status_code}")
             response.raise_for_status()
 
+    def update_reward(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        score += reward
+        score = round(score, 2)
+        self.sessions[room_id].points["score"] = max(0, score)
+        self.update_title_points(room_id, reward)
+
+    def update_title_points(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        correct = self.sessions[room_id].points["history"][0]["correct"]
+        wrong = self.sessions[room_id].points["history"][0]["wrong"]
+        if reward == 0:
+            wrong += 1
+        elif reward == 1:
+            correct += 1
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={
+                "text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.sessions[room_id].points["history"][0]["correct"] = correct
+        self.sessions[room_id].points["history"][0]["wrong"] = wrong
+
+        self.request_feedback(response, "setting point stand in title")
+
+    def send_message_to_user(self, message, room, receiver=None):
+        if receiver:
+            self.sio.emit(
+                "text",
+                {"message": f"{message}", "room": room, "receiver_id": receiver},
+            )
+        else:
+            self.sio.emit(
+                "text",
+                {"message": f"{message}", "room": room},
+            )
+        # sleep(1)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
-        # set room to read-only
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "readonly", "value": "True"},
@@ -261,25 +359,41 @@ class WordleBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Removing user from task room was successful.")
 
-    def send_message_to_user(self, message, room, receiver=None):
-        if receiver:
-            self.sio.emit(
-                "text",
-                {"message": f"{message}", "room": room, "receiver_id": receiver},
-            )
-        else:
-            self.sio.emit(
-                "text",
-                {"message": f"{message}", "room": room},
-            )
-        # sleep(1)
-
-
     def close_room(self, room_id):
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
+
+
+def decompose(word):
+    letters = {}
+    for i in range (len(word)):
+        if word[i] in letters:
+            letters[word[i]].append(i)
+        else:
+            letters[word[i]] = [i]
+    return letters
+
+
+def valid_guess(guess):
+    return len(guess.split()) == 1 and len(guess) == 5
+
+
+def check_guess(guess, session):
+    if session.word_to_guess == guess:
+        return "correct"
+    feedback = []
+    for i in range(len(guess)):
+        if guess[i] == session.word_to_guess[i]:
+            feedback.append((guess[i], "green"))
+        else:
+            if guess[i] in session.word_letters:
+                feedback.append((guess[i], "yellow"))
+            else:
+                feedback.append((guess[i], "red"))
+    return feedback
+
 
 if __name__ == "__main__":
     # set up logging configuration
