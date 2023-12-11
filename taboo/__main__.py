@@ -348,14 +348,26 @@ class TabooBot(TaskBot):
                         self.process_move(room_id, -1)
                         return
                     else:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"CLUE: {command}",
-                                "room": room_id,
-                                "receiver_id": this_session.guesser,
-                            },
-                        )
+                        for user in this_session.players:
+                            if user["id"] != user_id:
+                                self.sio.emit(
+                                    "text",
+                                    {
+                                        "room": room_id,
+                                        "receiver_id": this_session.guesser,
+                                        "message": f"CLUE: {command}",
+                                        "impersonate": user_id,
+                                    },
+                                    callback=self.message_callback,
+                                )
+                        # self.sio.emit(
+                        #     "text",
+                        #     {
+                        #         "message": f"CLUE: {command}",
+                        #         "room": room_id,
+                        #         "receiver_id": this_session.guesser,
+                        #     },
+                        # )
                         curr_usr, other_usr = self.sessions[room_id].players
                         if curr_usr['id'] != this_session.explainer:
                             curr_usr, other_usr = other_usr, curr_usr
