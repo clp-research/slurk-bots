@@ -203,17 +203,17 @@ class DrawingBot:
             self.sio.emit(
                     "text", {"message": message, "room": room_id, "html": True}
                 )
-            # ask players to send 'ready'
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr_title",
-                json={"text": message},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not set task instruction title: {response.status_code}"
-                )
-                response.raise_for_status()
+            # # ask players to send 'ready'
+            # response = requests.patch(
+            #     f"{self.uri}/rooms/{room_id}/text/instr_title",
+            #     json={"text": message},
+            #     headers={"Authorization": f"Bearer {self.token}"},
+            # )
+            # if not response.ok:
+            #     LOG.error(
+            #         f"Could not set task instruction title: {response.status_code}"
+            #     )
+            #     response.raise_for_status()
 
         @self.sio.event
         def status(data):
@@ -372,13 +372,15 @@ class DrawingBot:
 
     def start_game(self, room_id, data):
         this_session = self.sessions[room_id]
-        # 1) Choose player A
+        # 1) Choose players A and B
         self.sessions[room_id].pick_player_a()
-        for user in data["users"]:
+        self.sessions[room_id].pick_player_b()
+        for user in this_session.players:
             if user["id"] == this_session.player_a:
                 LOG.debug(f'{user["name"]} is player A.')
             else:
                 LOG.debug(f'{user["name"]} is player B.')
+
 
         # Send explainer_ instructions to player_a
         response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
