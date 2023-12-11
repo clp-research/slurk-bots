@@ -34,7 +34,14 @@
         {
           "layout-type": "div",
           "id": "instr",
-          "style": "white-space: pre-wrap;"
+          "style": "white-space: pre-wrap;",
+          "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "collapsible",
+                  "layout-content": "Click to see task instructions"
+                }
+            ]
         },
         {
           "layout-type": "div",
@@ -43,7 +50,7 @@
             {
               "layout-type": "image",
               "id": "current-image",
-              "style": "min-width: 70vmin; max-width: 90vmax; object-fit: contain; padding: 2%;"
+              "style": "max-width: 100%; height: auto; object-fit: contain;"
             }
           ]
         }
@@ -60,7 +67,7 @@
       "background-clip": "border-box",
       "border": "1px solid rgba(0,0,0,.125)",
       "border-radius": ".25rem",
-      "height": "100vh!important",
+      "height": "100%",
       "margin": "0px 15px",
       "padding": "20px"
     },

@@ -158,6 +158,9 @@ class DrawingBot:
                 # create image items for this room
                 LOG.debug("Create data for the new task room...")
 
+                # Resize screen
+                self.move_divider(room_id, 20, 80)
+
                 # create a new session for these users
                 self.sessions.create_session(room_id)
 
@@ -430,6 +433,35 @@ class DrawingBot:
             LOG.error(f"Could not set task instruction: {response_g.status_code}")
             response_g.raise_for_status()
 
+    @staticmethod
+    def request_feedback(response, action):
+        if not response.ok:
+            LOG.error(f"Could not {action}: {response.status_code}")
+            response.raise_for_status()
+        else:
+            LOG.debug(f"Successfully did {action}.")
+
+    def move_divider(self, room_id, chat_area=50, task_area=50):
+        """move the central divider and resize chat and task area
+        the sum of char_area and task_area must sum up to 100
+        """
+        if chat_area + task_area != 100:
+            LOG.error("Could not resize chat and task area: invalid parameters.")
+            raise ValueError("chat_area and task_area must sum up to 100")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {task_area}%"},
+        )
+        self.request_feedback(response, "resize sidebar")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/content",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {chat_area}%"},
+        )
+        self.request_feedback(response, "resize content area")
 
     def _not_done(self, room_id, user_id):
         """One of the two players was not done."""
