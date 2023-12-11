@@ -290,7 +290,7 @@ class TabooBot(TaskBot):
 
             # player_a
             if this_session.explainer == user_id:
-                LOG.debug(f"{data['user']['name']} is the player_a.")
+                LOG.debug(f"{data['user']['name']} is the explainer.")
                 command = data['command']
                 command = command.lower()
                 command = self.remove_punctuation(command)
@@ -381,9 +381,9 @@ class TabooBot(TaskBot):
                         return
                 self.check_clue(room_id, command)
 
-            # Check if user is player_b
+            # Check if user is the guesser
             elif this_session.guesser == user_id:
-                LOG.debug(f"{data['user']['name']} is the player_b.")
+                LOG.debug(f"{data['user']['name']} is the guesser.")
                 command = data['command'].lower()
                 logging.debug(
                     f"Received a command from {data['user']['name']}: {data['command']}"
@@ -430,14 +430,26 @@ class TabooBot(TaskBot):
                     )
                     self.process_move(room_id, 1)
                 else:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"GUESS: {command}",
-                            "room": room_id,
-                            "receiver_id": this_session.explainer
-                        },
-                    )
+                    for user in this_session.players:
+                        if user["id"] != user_id:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "room": room_id,
+                                    "receiver_id": this_session.explainer,
+                                    "message": f"GUESS: {command}",
+                                    "impersonate": user_id,
+                                },
+                                callback=self.message_callback,
+                            )
+                    # self.sio.emit(
+                    #     "text",
+                    #     {
+                    #         "message": f"GUESS: {command}",
+                    #         "room": room_id,
+                    #         "receiver_id": this_session.explainer
+                    #     },
+                    # )
                     self.sio.emit(
                         "text",
                         {
