@@ -19,12 +19,19 @@ cd ../slurk-bots
 docker build --tag "slurk/drawing-bot" -f drawing/Dockerfile .
 docker build --tag "slurk/concierge-bot" -f concierge/Dockerfile .
 
+
+## copy plugins
+cp drawing_game/drawing_game.js ../slurk/slurk/views/static/plugins/
+
 # run slurk
 cd ../slurk
 docker build --tag="slurk/server" -f Dockerfile .
 export SLURK_DOCKER=slurk
 scripts/start_server.sh
 sleep 5
+
+rm slurk/views/static/plugins/drawing_game.js
+
 
 # create admin token
 SLURK_TOKEN=$(check_response scripts/read_admin_token.sh)

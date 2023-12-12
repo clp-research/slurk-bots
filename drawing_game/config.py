@@ -12,5 +12,14 @@ TASK_GREETING = Path(f"{ROOT}/data/task_greeting.txt")
 
 TASK_TITLE = "Describe the grid to your partner and see how what they draw matches."
 
+DATA_PATH = Path(f"{ROOT}/data/image_data.tsv")
+
+N = 1
+
+GAME_MODE = "one_blind"
+
+SEED = None
+# Whether to randomly sample images or present them in linear order.
+SHUFFLE = True
 
 

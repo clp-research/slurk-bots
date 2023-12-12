@@ -8,49 +8,256 @@
     },
     {
       "layout-type": "div",
-      "class": "card",
+      "class": "cards",
       "layout-content": [
         {
           "layout-type": "div",
+          "class": "card",
           "layout-content": [
             {
-              "layout-type": "b",
-              "layout-content": [
-                {
                   "layout-type": "lighter",
                   "id": "instr_title",
-                  "style": "min-height: 20px"
-                }
-              ]
-            }
-          ],
-          "style": "color: #000000"
-        },
-        {
-          "layout-type": "hr",
-          "layout-content": "",
-          "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
-        },
-        {
-          "layout-type": "div",
-          "id": "instr",
-          "style": "white-space: pre-wrap;",
-          "layout-content": [
+                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;"
+                },
+            {
+              "layout-type": "div",
+              "id": "instr",
+              "layout-content": [
                 {
                   "layout-type": "button",
                   "class": "collapsible",
                   "layout-content": "Click to see task instructions"
+                },
+                {
+                  "layout-type": "div",
+                  "class": "collapsible-content",
+                  "layout-content": [
+                    {
+                      "layout-type": "p",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": "Read individualised instructions."
+                    },
+                    {
+                      "layout-type": "p",
+                      "id": "mode",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": ""
+                    },
+                    {
+                      "layout-type": "p",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": "More instructions."
+                    },
+                    {
+                      "layout-type": "p",
+                      "layout-content": "...and more"
+                    }
+                  ]
+                },
+                {
+                  "layout-type": "div",
+                  "id": "game",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "wrapper",
+                      "layout-content": [
+                        {
+                          "layout-type": "div",
+                          "id": "game-board"
+                        },
+                        {
+                          "layout-type": "div",
+                          "id": "keyboard-cont",
+                          "layout-content": [
+                            {
+                              "layout-type": "div",
+                              "class": "first-row",
+                              "layout-content": [
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "q"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "w"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "e"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "r"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "t"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "y"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "u"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "i"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "o"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "p"
+                                }
+                              ]
+                            },
+                            {
+                              "layout-type": "div",
+                              "class": "second-row",
+                              "layout-content": [
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "a"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "s"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "d"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "f"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "g"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "h"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "j"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "k"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "l"
+                                }
+                              ]
+                            },
+                            {
+                              "layout-type": "div",
+                              "class": "third-row",
+                              "layout-content": [
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "DEL"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "z"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "x"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "c"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "v"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "b"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "n"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "m"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "ENTER"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
-            ]
+              ]
+            }
+          ]
         },
         {
           "layout-type": "div",
-          "id": "image-area",
+          "class": "card",
           "layout-content": [
             {
-              "layout-type": "image",
-              "id": "current-image",
-              "style": "max-width: 100%; height: auto; object-fit: contain;"
+              "layout-type": "p",
+              "id": "image-desc",
+              "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+              "layout-content": "In this game mode, only one of you sees the image and needs to describe it to the other player."
+            },
+            {
+              "layout-type": "div",
+              "id": "image-area",
+              "layout-content": [
+                {
+                  "layout-type": "image",
+                  "id": "current-image",
+                  "style": "max-width: 100%; height: auto; object-fit: contain;"
+                }
+              ]
             }
           ]
         }
@@ -76,6 +283,23 @@
     },
     "#image-area": {
       "margin": "0 auto"
+    },
+    ".collapsible": {
+      "background-color": "#eee",
+      "color": "#444",
+      "font-size": "1rem",
+      "cursor": "pointer",
+      "padding": "18px",
+      "width": "100%",
+      "border": "none",
+      "text-align": "left",
+      "outline": "none"
+    },
+    ".collapsible-content": {
+      "padding": "18px 18px",
+      "display": "none",
+      "overflow": "hidden",
+      "background-color": "#f1f1f1"
     }
   },
   "scripts": {
@@ -86,6 +310,7 @@
       "attribute-history",
       "markdown-history"
     ],
-    "typing-users": "typing-users"
+    "typing-users": "typing-users",
+    "plain": ["collapsible-task-instructions","enforce-fullscreen","drawing_game"]
   }
 }

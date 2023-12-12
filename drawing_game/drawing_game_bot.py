@@ -12,7 +12,7 @@ import requests
 import socketio
 
 import config
-from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B
+from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, DATA_PATH, N, GAME_MODE, SHUFFLE, SEED
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -46,6 +46,141 @@ class RoomTimers:
         self.last_answer_timer = None
 
 
+class ImageData(list):
+    """Manage the access to image data.
+
+    Mapping from room id to items left for this room.
+
+    Args:
+        path (str): Path to a valid tsv file with at least
+            two columns per row, containing the image/word
+            pairs. Images are represented as urls.
+        n (int): Number of images presented per
+            participant per room (one at a time).
+        game_mode: one of 'same', 'one_blind', 'different',
+            specifying whether both players see the same image,
+            whether they see different images, or whether one
+            player is blind, i.e. does not see any image.
+        shuffle (bool): Whether to randomly sample images or
+            select them one by one as present in the file.
+            If more images are present than required per room
+            and participant, the selection is without replacement.
+            Otherwise it is with replacement.
+        seed (int): Use together with shuffle to
+            make the image presentation process reproducible.
+    """
+
+    def __init__(self,
+                 path=None,
+                 n=1,
+                 game_mode='same',
+                 shuffle=False,
+                 seed=None):
+        self._path = path
+        self._n = n
+        self._mode = game_mode
+        self._shuffle = shuffle
+
+        self._images = None
+        if seed is not None:
+            random.seed(seed)
+
+        self._switch_order = self._switch_image_order()
+        self.get_word_image_pairs()
+
+    @property
+    def n(self):
+        return self._n
+
+    @property
+    def mode(self):
+        return self._mode
+
+    def get_word_image_pairs(self):
+        """Create a collection of word/image pair items.
+
+        Each item holds a word and 1 or 2 urls each to one image
+        resource. The images will be loaded from there.
+        For local testing, you can host the images with python:
+        ```python -m SimpleHTTPServer 8000```
+
+        This function remembers previous calls to itself,
+        which makes it possible to split a file of items over
+        several participants even for not random sampling.
+
+        Returns:
+            None
+        """
+        if self._images is None:
+            # first time accessing the file
+            # or a new access for each random sample
+            self._images = self._image_gen()
+
+        sample = []
+        while len(sample) < self._n:
+            try:
+                pair = next(self._images)
+            except StopIteration:
+                # we reached the end of the file
+                # and start again from the top
+                self._images = self._image_gen()
+            else:
+                sample.append(pair)
+        if self._shuffle:
+            # implements reservoir sampling
+            for img_line, img in enumerate(self._images, self._n):
+                rand_line = random.randint(0, img_line)
+                if rand_line < self._n:
+                    sample[rand_line] = tuple(img)
+            self._images = None
+
+        # make sure that for the one_blind mode, the game alternates
+        # between who sees the image
+        if self._mode == 'one_blind':
+            new_sample = []
+            for item in sample:
+                order = next(self._switch_order)
+                if order:
+                    # switch the order of images
+                    new_sample.append((item[0], item[2], item[1]))
+                else:
+                    new_sample.append(item)
+            self.extend(new_sample)
+        else:
+            self.extend(sample)
+
+    def _image_gen(self):
+        """Generate one image pair at a time."""
+        with open(self._path, "r") as infile:
+            for line in infile:
+                data = line.strip().split("\t")
+                if len(data) == 2:
+                    if self.mode == 'one_blind':
+                        yield data[0], data[1], None
+                    elif self.mode == 'same':
+                        yield data[0], data[1], data[1]
+                    else:
+                        raise KeyError("No second image available.")
+                elif len(data) > 2:
+                    if self.mode == 'one_blind':
+                        yield data[0], data[1], None
+                    elif self.mode == 'same':
+                        yield data[0], data[1], data[1]
+                    else:
+                        yield data[0], data[1], data[2]
+
+    def _switch_image_order(self):
+        """For the mode one_blind, switch who sees an image"""
+        last = 0
+        while True:
+            if last == 0:
+                last = 1
+            elif last == 1:
+                last = 0
+            yield last
+
+
+
 class Session:
     def __init__(self):
         self.players = list()
@@ -53,6 +188,7 @@ class Session:
         self.player_b = None
         self.player_a_instructions = TASK_DESCR_A.read_text()
         self.player_b_instructions = TASK_DESCR_B.read_text()
+        self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
         self.game_over = False
         self.timer = None
         self.points = {
@@ -159,7 +295,7 @@ class DrawingBot:
                 LOG.debug("Create data for the new task room...")
 
                 # Resize screen
-                self.move_divider(room_id, 20, 80)
+                self.move_divider(room_id, 30, 70)
 
                 # create a new session for these users
                 self.sessions.create_session(room_id)
@@ -194,7 +330,11 @@ class DrawingBot:
                     )
                     response.raise_for_status()
                 LOG.debug("Sending drawing game bot to new room was successful.")
-                self.start_game(room_id, data)
+                self.sio.emit(
+                    "message_command",
+                    {"command": {"command": "drawing_game_init"}, "room": room_id},
+                )
+
 
         @self.sio.event
         def joined_room(data):
@@ -204,19 +344,11 @@ class DrawingBot:
             # read out task greeting
             message = TASK_GREETING.read_text()
             self.sio.emit(
-                    "text", {"message": message, "room": room_id, "html": True}
-                )
-            # # ask players to send 'ready'
-            # response = requests.patch(
-            #     f"{self.uri}/rooms/{room_id}/text/instr_title",
-            #     json={"text": message},
-            #     headers={"Authorization": f"Bearer {self.token}"},
-            # )
-            # if not response.ok:
-            #     LOG.error(
-            #         f"Could not set task instruction title: {response.status_code}"
-            #     )
-            #     response.raise_for_status()
+                "text",
+                {
+                    "message": message, "room": room_id, "html": True,
+                }
+            )
 
         @self.sio.event
         def status(data):
@@ -373,7 +505,7 @@ class DrawingBot:
             self.sessions[room_id].rounds_left = 3
             self.start_game(room_id)
 
-    def start_game(self, room_id, data):
+    def start_game(self, room_id):
         this_session = self.sessions[room_id]
         # 1) Choose players A and B
         self.sessions[room_id].pick_player_a()
@@ -433,6 +565,8 @@ class DrawingBot:
             LOG.error(f"Could not set task instruction: {response_g.status_code}")
             response_g.raise_for_status()
 
+        self.show_item(room_id)
+
     @staticmethod
     def request_feedback(response, action):
         if not response.ok:
@@ -479,45 +613,97 @@ class DrawingBot:
         )
 
     def show_item(self, room_id):
-        pass
-        # """Update the image and task description of the players."""
-        # LOG.debug("Update the image and task description of the players.")
-        # # guarantee fixed user order - necessary for update due to rejoin
-        # users = sorted(self.players_per_room[room_id], key=lambda x: x["id"])
-        #
-        # if self.images_per_room[room_id]:
-        #     images = self.images_per_room[room_id][0]
-        #     # show a different image to each user
-        #     for usr, img in zip(users, images):
-        #         response = requests.patch(
-        #             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-        #             json={"attribute": "src", "value": img, "receiver_id": usr["id"]},
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         if not response.ok:
-        #             LOG.error(f"Could not set image: {response.status_code}")
-        #             response.raise_for_status()
-        #
-        #     # the task for both users is the same - no special receiver
-        #     response = requests.patch(
-        #         f"{self.uri}/rooms/{room_id}/text/instr_title",
-        #         json={"text": TASK_TITLE},
-        #         headers={"Authorization": f"Bearer {self.token}"},
-        #     )
-        #     if not response.ok:
-        #         LOG.error(
-        #             f"Could not set task instruction title: {response.status_code}"
-        #         )
-        #         response.raise_for_status()
-        #
-        #     response = requests.patch(
-        #         f"{self.uri}/rooms/{room_id}/text/instr",
-        #         json={"text": TASK_DESCR},
-        #         headers={"Authorization": f"Bearer {self.token}"},
-        #     )
-        #     if not response.ok:
-        #         LOG.error(f"Could not set task instruction: {response.status_code}")
-        #         response.raise_for_status()
+        """Update the image of the players."""
+        LOG.debug("Update the image and task description of the players.")
+        # guarantee fixed user order - necessary for update due to rejoin
+        # users = sorted(self.sessions[room_id].players, key=lambda x: x["id"])
+        # user_1 = users[0]
+        # user_2 = users[1]
+
+        this_session = self.sessions[room_id]
+
+        if this_session.images:
+            word, image_1 = this_session.images[0]
+            LOG.debug(f"{image_1}")
+
+            # show a different image to each user. one image can be None
+
+            # remove image and description for both
+            self._hide_image(room_id)
+            self._hide_image_desc(room_id)
+
+            # Player 1
+            if image_1:
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={
+                        "attribute": "src",
+                        "value": image_1,
+                        "receiver_id": this_session.player_a,
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "set image 1")
+                # enable the image
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-area",
+                    json={"class": "dis-area", "receiver_id": this_session.player_a},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable image 1")
+
+            else:
+                # enable the explanatory text
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-desc",
+                    json={"class": "dis-area", "receiver_id": this_session.player_a},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable explanation")
+
+            # Player 2
+            # if image_2:
+            #     response = requests.patch(
+            #         f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+            #         json={
+            #             "attribute": "src",
+            #             "value": image_2,
+            #             "receiver_id": this_session.player_b,
+            #         },
+            #         headers={"Authorization": f"Bearer {self.token}"},
+            #     )
+            #     self.request_feedback(response, "set image 2")
+            #     # enable the image
+            #     response = requests.delete(
+            #         f"{self.uri}/rooms/{room_id}/class/image-area",
+            #         json={"class": "dis-area", "receiver_id": this_session.player_b},
+            #         headers={"Authorization": f"Bearer {self.token}"},
+            #     )
+            #     self.request_feedback(response, "enable image 2")
+            # else:
+            # enable the explanatory text
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/class/image-desc",
+                json={"class": "dis-area", "receiver_id": this_session.player_b},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "enable explanation")
+
+    def _hide_image(self, room_id):
+        response = requests.post(
+            f"{self.uri}/rooms/{room_id}/class/image-area",
+            json={"class": "dis-area"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "hide image")
+
+    def _hide_image_desc(self, room_id):
+        response = requests.post(
+            f"{self.uri}/rooms/{room_id}/class/image-desc",
+            json={"class": "dis-area"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "hide description")
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
