@@ -29,24 +29,21 @@
         {
           "layout-type": "hr",
           "layout-content": "",
-          "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+          "style": "margin: 2px; background-color: #cfe2f3; opacity: .50;"
         },
         {
           "layout-type": "div",
           "id": "instr",
-          "style": "white-space: pre-wrap;"
+          "style": "white-space: pre-wrap; background-color: #cfe2f3; "
         },
         {
           "layout-type": "div",
-          "id": "image-area",
-          "layout-content": [
-            {
-              "layout-type": "image",
-              "id": "current-image",
-              "style": "min-width: 70vmin; max-width: 90vmax; object-fit: contain; padding: 2%;"
-            }
-          ]
+          "id": "text_to_modify",
+          "layout-content": "TEXT TO MODIFY",
+          "style": "background-color: #cfe2f3;"
         }
+
+
       ]
     }
   ],
@@ -56,7 +53,7 @@
       "display": "flex",
       "flex-direction": "column",
       "min-width": "0",
-      "background-color": "#fff",
+      "background-color": "#cfe2f3;",
       "background-clip": "border-box",
       "border": "1px solid rgba(0,0,0,.125)",
       "border-radius": ".25rem",

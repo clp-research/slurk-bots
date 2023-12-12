@@ -9,3 +9,6 @@ with open(os.path.join(ROOT, "wordle_words", "data", "initial_guesser_prompt.txt
 
 WORDLE_WORDS = f"{ROOT}/wordle_words/data/wordle_words.json"
 WORDS_PER_ROOM = 3  # -1 to load entire dataset
+
+with open(os.path.join(ROOT, "wordle_words", "data", "example.html"), "r") as html_f:
+    LETTER_FEEDBACK_EXAMPLE = html_f.read()

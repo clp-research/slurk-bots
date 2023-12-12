@@ -9,7 +9,7 @@ from templates import TaskBot
 
 import logging
 
-from wordle_words.config import GUESSER_PROMPT,  WORDLE_WORDS, WORDS_PER_ROOM
+from wordle_words.config import GUESSER_PROMPT,  WORDLE_WORDS, WORDS_PER_ROOM,  LETTER_FEEDBACK_EXAMPLE
 from wordle_words.dataloader import Dataloader
 
 
@@ -48,13 +48,14 @@ class WordleBot(TaskBot):
         self.sessions = SessionManager()
         self.register_callbacks()
 
-    def post_init(self, waiting_room):
+    def post_init(self, waiting_room, version):
         """
         save extra variables after the __init__() method has been called
         and create the init_base_dict: a dictionary containing
         needed arguments for the init event to send to the JS frontend
         """
         self.waiting_room = waiting_room
+        self.version = version
 
 
     def on_task_room_creation(self, data):
@@ -67,6 +68,9 @@ class WordleBot(TaskBot):
         logging.debug(f"A new task room was created with id: {data['room']}")
         logging.debug(f"A new task room was created with task id: {data['task']}")
         logging.debug(f"This bot is looking for task id: {self.task_id}")
+
+        self.log_event("bot_version_log", {"version": self.version}, room_id)
+
         if task_id is not None and task_id == self.task_id:
             # modify layout
             for usr in data["users"]:
@@ -184,13 +188,12 @@ class WordleBot(TaskBot):
 
             if this_session.guesses < 5:
                 this_session.guesses += 1
-                html_feedback = format_string(letter_feedback)
+                html_feedback, text_feedback = format_string(letter_feedback)
                 self.sio.emit(
                     "text",
                     {
-                        "message": html_feedback,
+                        "message": f'{html_feedback} ({text_feedback})',
                         "room": room_id,
-                        # "receiver_id": player["id"],
                         "html": True,
                     },
                 )
@@ -251,33 +254,24 @@ class WordleBot(TaskBot):
         # send the instructions for the round
         round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
 
-        # try to log the round number
         self.log_event("round", {"number": round_n}, room_id)
-
-
-        # self.sio.emit(
-        #     "text",
-        #     {
-        #         "message": ('very <a style = "color:green;" >g     </a> <a style = "color:red;" >a'
-        #
-        #         ),
-        #         "room": room_id,
-        #         # "receiver_id": player["id"],
-        #         "html": True,
-        #     },
-        # )
         self.send_message_to_user(f"Let's start round {round_n}", room_id)
-        self.send_message_to_user(
-            "Make your guess",
-            room_id,
-            self.sessions[room_id].guesser,
-        )
         self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
             "target_word"].lower()
-
         self.sessions[room_id].guesses = 0
         self.send_message_to_user(f"(The word to guess is {self.sessions[room_id].word_to_guess})", room_id)
         self.sessions[room_id].word_letters = decompose(self.sessions[room_id].word_to_guess)
+        if self.version == "clue":
+            self.send_message_to_user(
+                f'CLUE for the word: {self.sessions[room_id].words[0]["target_word_clue"].lower()} ',
+                room_id,
+                self.sessions[room_id].guesser,
+            )
+        self.send_message_to_user(
+            "Make your guess:",
+            room_id,
+            self.sessions[room_id].guesser,
+        )
 
     def load_next_game(self, room_id):
         # word list gets smaller, next round starts
@@ -296,6 +290,18 @@ class WordleBot(TaskBot):
         if not response.ok:
             LOG.error(f"Could not set task instruction: {response.status_code}")
             response.raise_for_status()
+
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "event": "color_text",
+                    "message": f'{LETTER_FEEDBACK_EXAMPLE}'
+                },
+                "room": room_id,
+                "receiver_id": self.sessions[room_id].guesser,
+            }
+        )
 
     def update_reward(self, room_id, reward):
         score = self.sessions[room_id].points["score"]
@@ -417,10 +423,12 @@ def check_guess(guess, session):
 
 
 def format_string(letter_feedback):
-    formatted_string = ""
+    colour_string = ""
+    text_string = ""
     for pair in letter_feedback:
-        formatted_string += f'<a style = "color:{pair[1]};" > <b> {pair[0]}  </b> </a>'
-    return formatted_string
+        colour_string += f'<a style = "color:{pair[1]};" > <b> {pair[0].upper()}  </b> </a>'
+        text_string += f'{pair[0].upper()}  < {pair[1]}> '
+    return colour_string, text_string
 
 
 if __name__ == "__main__":
@@ -442,13 +450,28 @@ if __name__ == "__main__":
         **waiting_room,
     )
 
+    # versions:
+    #  clue : a guesser gets a clue about the word before they start guesing
+    #  standard: no clue is provided
+
+    if "BOT_VERSION" in os.environ:
+        bot_version = {"default": os.environ["BOT_VERSION"]}
+    else:
+        bot_version = {"required": True}
+    parser.add_argument(
+        "--bot_version",
+        type=str,
+        help="version of wordle game",
+        **bot_version,
+    )
+
     args = parser.parse_args()
     logging.debug(args)
 
     # create bot instance
     bot = WordleBot(args.token, args.user, args.task, args.host, args.port)
 
-    bot.post_init(args.waiting_room)
+    bot.post_init(args.waiting_room, args.bot_version)
 
     # connect to chat server
     bot.run()
