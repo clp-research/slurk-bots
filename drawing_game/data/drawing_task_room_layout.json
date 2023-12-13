@@ -77,52 +77,52 @@
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "q"
+                                  "layout-content": "Q"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "w"
+                                  "layout-content": "W"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "e"
+                                  "layout-content": "E"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "r"
+                                  "layout-content": "R"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "t"
+                                  "layout-content": "T"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "y"
+                                  "layout-content": "Y"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "u"
+                                  "layout-content": "U"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "i"
+                                  "layout-content": "I"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "o"
+                                  "layout-content": "O"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "p"
+                                  "layout-content": "P"
                                 }
                               ]
                             },
@@ -133,47 +133,52 @@
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "a"
+                                  "layout-content": "A"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "s"
+                                  "layout-content": "S"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "d"
+                                  "layout-content": "D"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "f"
+                                  "layout-content": "F"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "g"
+                                  "layout-content": "G"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "h"
+                                  "layout-content": "H"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "j"
+                                  "layout-content": "J"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "k"
+                                  "layout-content": "K"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "l"
+                                  "layout-content": "L"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "☐"
                                 }
                               ]
                             },
@@ -189,37 +194,37 @@
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "z"
+                                  "layout-content": "Z"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "x"
+                                  "layout-content": "X"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "c"
+                                  "layout-content": "C"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "v"
+                                  "layout-content": "V"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "b"
+                                  "layout-content": "B"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "n"
+                                  "layout-content": "N"
                                 },
                                 {
                                   "layout-type": "button",
                                   "class": "keyboard-button",
-                                  "layout-content": "m"
+                                  "layout-content": "M"
                                 },
                                 {
                                   "layout-type": "button",

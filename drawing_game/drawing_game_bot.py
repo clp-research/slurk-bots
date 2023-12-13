@@ -511,7 +511,7 @@ class DrawingBot:
             sleep(1)
             self.sessions[room_id].rounds_left = 3
             self.start_game(room_id)
-            self.show_item(room_id)
+            # self.show_item(room_id)
             # self.sio.emit(
             #     "message_command",
             #     {"command": {"command": "drawing_game_init"}, "room": room_id},
@@ -539,6 +539,7 @@ class DrawingBot:
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
+
         if not response_e.ok:
             LOG.error(f"Could not set task instruction: {response_e.status_code}")
             response_e.raise_for_status()
