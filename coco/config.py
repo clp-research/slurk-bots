@@ -25,6 +25,7 @@ SUCCESS_COLOR = "Green"
 TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
 BOARDS_PER_ROOM = 20
 BOARDS_PER_LEVEL = 2
+SEQUENCES_PER_ROOM = 3
 
 # points system
 STARTING_POINTS = 0

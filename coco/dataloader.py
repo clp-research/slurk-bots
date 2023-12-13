@@ -28,15 +28,18 @@ class Dataloader(list):
         )
 
     def read_boards(self):
-        sequence = random.choice(list(self.path.iterdir()))
-        with sequence.open(encoding="utf-8") as infile:
-            for line in infile:
-                board = json.loads(line)
-                self.append((board["state"], board["instructions"]))
-                self.append("switch")
+        all_sequences = list(self.path.iterdir())
+        sequences = random.sample(all_sequences, SEQUENCES_PER_ROOM)
 
-        if self[-1] == "switch":
-            self.pop()
+        for i, sequence in enumerate(sequences):
+            with sequence.open(encoding="utf-8") as infile:
+                for line in infile:
+                    board = json.loads(line)
+                    self.append((board["state"], board["instructions"]))
+
+                # switch roles ar the end of the sequence except for the last one
+                if i != len(sequences) - 1:
+                    self.append("switch")
 
     def get_boards(self):
         """sample random boards for a room"""
