@@ -963,6 +963,7 @@ class CoCoBot(TaskBot):
 
     def load_next_state(self, room_id):
         this_session = self.sessions[room_id]
+        this_client = this_session.golmi_client
         self.sio.emit(
             "text",
             {
@@ -984,11 +985,11 @@ class CoCoBot(TaskBot):
         )
 
         this_session.timer.reset()
-
         # reload new states if no states left
         if not this_session.states:
             # self.close_game(room_id)
             self.terminate_experiment(room_id)
+            return
 
         # switch roles
         if isinstance(this_session.states[0], str) is True:
