@@ -334,6 +334,7 @@ class DrawingBot:
                     "message_command",
                     {"command": {"command": "drawing_game_init"}, "room": room_id},
                 )
+                # self.start_game(room_id)
 
 
         @self.sio.event
@@ -441,8 +442,14 @@ class DrawingBot:
 
             elif this_session.rounds_left == 4:
                 if "ready" in data["command"].lower():
+                    # self.sio.emit(
+                    #     "message_command",
+                    #     {"command": {"command": "drawing_game_init"}, "room": room_id},
+                    # )
                     self._command_ready(room_id, user_id)
                     return
+            if isinstance(data["command"], dict):
+                pass
             else:
                 self.sio.emit(
                     "text",
@@ -482,7 +489,7 @@ class DrawingBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": "Now, waiting for your partner to type /ready.",
+                    "message": "Now, waiting for your partner to type 'ready'.",
                     "receiver_id": curr_usr["id"],
                     "room": room_id,
                 },
@@ -490,7 +497,7 @@ class DrawingBot:
             self.sio.emit(
                     "text",
                     {
-                        "message": "Your partner is ready. Please, type /ready!",
+                        "message": "Your partner is ready. Please, type 'ready'!",
                         "room": room_id,
                         "receiver_id": other_usr["id"],
                     },
@@ -504,18 +511,13 @@ class DrawingBot:
             sleep(1)
             self.sessions[room_id].rounds_left = 3
             self.start_game(room_id)
-
-    def start_game(self, room_id):
+            self.show_item(room_id)
+            # self.sio.emit(
+            #     "message_command",
+            #     {"command": {"command": "drawing_game_init"}, "room": room_id},
+            # )
+    def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
-        # 1) Choose players A and B
-        self.sessions[room_id].pick_player_a()
-        self.sessions[room_id].pick_player_b()
-        for user in this_session.players:
-            if user["id"] == this_session.player_a:
-                LOG.debug(f'{user["name"]} is player A.')
-            else:
-                LOG.debug(f'{user["name"]} is player B.')
-
 
         # Send explainer_ instructions to player_a
         response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
@@ -565,7 +567,20 @@ class DrawingBot:
             LOG.error(f"Could not set task instruction: {response_g.status_code}")
             response_g.raise_for_status()
 
-        self.show_item(room_id)
+    def start_game(self, room_id):
+        this_session = self.sessions[room_id]
+        # 1) Choose players A and B
+        self.sessions[room_id].pick_player_a()
+        self.sessions[room_id].pick_player_b()
+        for user in this_session.players:
+            if user["id"] == this_session.player_a:
+                LOG.debug(f'{user["name"]} is player A.')
+            else:
+                LOG.debug(f'{user["name"]} is player B.')
+
+        self.send_individualised_instructions(room_id)
+
+        # self.show_item(room_id)
 
     @staticmethod
     def request_feedback(response, action):
