@@ -324,7 +324,13 @@
     },
     "#instr": {
       "text-justify": "inter-word",
-      "margin": "10px"
+      "margin": "10px",
+      "flex-direction": "row"
+    },
+    "#instr-title": {
+      "text-justify": "inter-word",
+      "margin": "10px",
+      "flex-direction": "row"
     },
     ".collapsible": {
       "background-color": "#eee",

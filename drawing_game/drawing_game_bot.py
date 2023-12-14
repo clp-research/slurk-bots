@@ -436,12 +436,12 @@ class DrawingBot:
             user_id = data["user"]["id"]
             this_session = self.sessions[room_id]
 
-            if data["command"].lower() == "done":
+            if data["command"] == "done":
                 pass
                 #todo: self._command_done(room_id, user_id)
 
             elif this_session.rounds_left == 4:
-                if "ready" in data["command"].lower():
+                if "ready" in data["command"]:
                     # self.sio.emit(
                     #     "message_command",
                     #     {"command": {"command": "drawing_game_init"}, "room": room_id},
@@ -531,16 +531,15 @@ class DrawingBot:
             )
             response.raise_for_status()
 
+        instructions_a = TASK_DESCR_A.read_text() # Loads instructions but non-collapsible
         response_e = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
             json={
-                "class": "collapsible-content",
-                "text": TASK_DESCR_A.read_text(),
+                "text": instructions_a,
                 "receiver_id": this_session.player_a,
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        # HTTPError: 422 Client Error: UNPROCESSABLE ENTITY for url: http://127.0.0.1:5000/slurk/api/rooms/34/text/instr
 
         if not response_e.ok:
             LOG.error(f"Could not set task instruction: {response_e.status_code}")
@@ -582,7 +581,7 @@ class DrawingBot:
             else:
                 LOG.debug(f'{user["name"]} is player B.')
 
-        self.send_individualised_instructions(room_id)
+        # self.send_individualised_instructions(room_id)
 
         self.show_item(room_id)
 
@@ -642,8 +641,8 @@ class DrawingBot:
         this_session = self.sessions[room_id]
 
         if this_session.images:
-            word, image_1 = this_session.images[0]
-            LOG.debug(f"{image_1}")
+            word, image_1, image_2 = self.sessions[room_id].images[0]
+            LOG.debug(f"{image_1}\n{image_2}")
 
             # show a different image to each user. one image can be None
 
@@ -681,32 +680,32 @@ class DrawingBot:
                 self.request_feedback(response, "enable explanation")
 
             # Player 2
-            # if image_2:
-            #     response = requests.patch(
-            #         f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-            #         json={
-            #             "attribute": "src",
-            #             "value": image_2,
-            #             "receiver_id": this_session.player_b,
-            #         },
-            #         headers={"Authorization": f"Bearer {self.token}"},
-            #     )
-            #     self.request_feedback(response, "set image 2")
-            #     # enable the image
-            #     response = requests.delete(
-            #         f"{self.uri}/rooms/{room_id}/class/image-area",
-            #         json={"class": "dis-area", "receiver_id": this_session.player_b},
-            #         headers={"Authorization": f"Bearer {self.token}"},
-            #     )
-            #     self.request_feedback(response, "enable image 2")
-            # else:
-            # enable the explanatory text
-            response = requests.delete(
-                f"{self.uri}/rooms/{room_id}/class/image-desc",
-                json={"class": "dis-area", "receiver_id": this_session.player_b},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "enable explanation")
+            if image_2:
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                    json={
+                        "attribute": "src",
+                        "value": image_2,
+                        "receiver_id": this_session.player_b,
+                    },
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "set image 2")
+                # enable the image
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-area",
+                    json={"class": "dis-area", "receiver_id": this_session.player_b},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable image 2")
+            else:
+                # enable the explanatory text
+                response = requests.delete(
+                    f"{self.uri}/rooms/{room_id}/class/image-desc",
+                    json={"class": "dis-area", "receiver_id": this_session.player_b},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "enable explanation")
 
     def _hide_image(self, room_id):
         response = requests.post(

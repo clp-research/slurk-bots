@@ -1,4 +1,5 @@
 const NUMBER_OF_GUESSES = 6;
+const NUMBER_OF_ROWS = 5;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
@@ -9,7 +10,7 @@ function initBoard() {
     let board = document.getElementById("game-board");
     board.textContent = "";
 
-    for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
+    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
         let row = document.createElement("div")
         row.className = "letter-row"
 
