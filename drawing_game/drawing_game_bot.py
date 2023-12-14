@@ -534,11 +534,13 @@ class DrawingBot:
         response_e = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
             json={
+                "class": "collapsible-content",
                 "text": TASK_DESCR_A.read_text(),
                 "receiver_id": this_session.player_a,
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
+        # HTTPError: 422 Client Error: UNPROCESSABLE ENTITY for url: http://127.0.0.1:5000/slurk/api/rooms/34/text/instr
 
         if not response_e.ok:
             LOG.error(f"Could not set task instruction: {response_e.status_code}")
@@ -559,6 +561,7 @@ class DrawingBot:
         response_g = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
             json={
+                "class": "collapsible-content",
                 "text": TASK_DESCR_B.read_text(),
                 "receiver_id": this_session.player_b,
             },
@@ -581,7 +584,7 @@ class DrawingBot:
 
         self.send_individualised_instructions(room_id)
 
-        # self.show_item(room_id)
+        self.show_item(room_id)
 
     @staticmethod
     def request_feedback(response, action):
