@@ -1,5 +1,4 @@
-
-
+import json
 import logging
 import os
 import random
@@ -12,7 +11,7 @@ import requests
 import socketio
 
 import config
-from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, DATA_PATH, N, GAME_MODE, SHUFFLE, SEED
+from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, DATA_PATH, N, GAME_MODE, SHUFFLE, SEED, GAME_INSTANCE
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -188,6 +187,7 @@ class Session:
         self.player_b = None
         self.player_a_instructions = TASK_DESCR_A.read_text()
         self.player_b_instructions = TASK_DESCR_B.read_text()
+        self.target_grid = None
         self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
         self.game_over = False
         self.timer = None
@@ -209,6 +209,10 @@ class Session:
         for player in self.players:
             if player["id"] != self.player_a:
                 self.player_b = player["id"]
+
+    def get_grid(self):
+        instance = json.loads(GAME_INSTANCE.read_text())['target_grid']
+        return instance
 
 
 class SessionManager(defaultdict):
@@ -581,6 +585,10 @@ class DrawingBot:
             else:
                 LOG.debug(f'{user["name"]} is player B.')
 
+        # 2) Load grid
+        this_session.target_grid = this_session.get_grid()
+        LOG.debug(f'{this_session.get_grid()} is grid')
+
         # self.send_individualised_instructions(room_id)
 
         self.show_item(room_id)
@@ -639,6 +647,25 @@ class DrawingBot:
         # user_2 = users[1]
 
         this_session = self.sessions[room_id]
+
+        if this_session.target_grid:
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                json={
+                    "attribute": "src",
+                    "value": this_session.target_grid,
+                    "receiver_id": this_session.player_a,
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set grid")
+            # enable the grid
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/class/image-area",
+                json={"class": "dis-area", "receiver_id": this_session.player_a},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "enable grid")
 
         if this_session.images:
             word, image_1, image_2 = self.sessions[room_id].images[0]
@@ -812,3 +839,33 @@ class DrawingBot:
                 LOG.error(f"Could not rename user: {response.status_code}")
                 response.raise_for_status()
             LOG.debug(f"Successfuly renamed user to '{new_name}'.")
+
+
+# class ImageGame:
+#
+#     def __init__(self, game_instance: Dict, player_backends: List[str]):
+#         self.game_id = game_instance['game_id']
+#         self.player_1_prompt_header = game_instance['player_1_prompt_header']
+#         self.player_2_prompt_header = game_instance['player_2_prompt_header']
+#         self.player_1_question = game_instance['player_1_question']
+#         self.target_grid = game_instance['target_grid']
+#         self.player_backends = player_backends
+#         self.grid_dimension = game_instance['grid_dimension']
+#         self.number_of_letters = game_instance['number_of_letters']
+#         self.fill_row = game_instance['fill_row']
+#         self.fill_column = game_instance['fill_column']
+#
+#
+#         self.instruction_follower = InstructionFollower(player_backends[1])
+#         self.instruction_giver = InstructionGiver(player_backends[0])
+#
+#         self.given_instruction = Instruction()
+#         self.given_instruction.add_user_message(
+#             self.player_1_prompt_header + '\n' + self.target_grid + '\n' + self.player_1_question + '\n')
+#
+#         self.next_turn_message = ''
+#         self.followed_instruction = Instruction()
+#
+#         self.current_turn = 0
+#         self.max_turns = self.grid_dimension * self.grid_dimension
+#         self.terminate = False

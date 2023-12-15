@@ -14,6 +14,8 @@ TASK_TITLE = "Describe the grid to your partner and see how what they draw match
 
 DATA_PATH = Path(f"{ROOT}/data/image_data.tsv")
 
+GAME_INSTANCE = Path(f"{ROOT}/data/instance.json")
+
 N = 1
 
 GAME_MODE = "one_blind"
