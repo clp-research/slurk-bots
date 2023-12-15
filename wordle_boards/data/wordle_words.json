@@ -1,0 +1,128 @@
+{
+    "low_en": [
+        {
+            "target_word": "jerky",
+            "target_word_clue": "uneven"
+        },
+        {
+            "target_word": "brash",
+            "target_word_clue": "full of chutzpah"
+        },
+        {
+            "target_word": "trial",
+            "target_word_clue": "court event"
+        },
+        {
+            "target_word": "flier",
+            "target_word_clue": "ace"
+        },
+        {
+            "target_word": "wider",
+            "target_word_clue": "dentist's directive"
+        },
+        {
+            "target_word": "album",
+            "target_word_clue": "philatelist's need"
+        },
+        {
+            "target_word": "koala",
+            "target_word_clue": "zoo critter"
+        },
+        {
+            "target_word": "islet",
+            "target_word_clue": "key"
+        },
+        {
+            "target_word": "dried",
+            "target_word_clue": "toweled off"
+        },
+        {
+            "target_word": "stand",
+            "target_word_clue": "kiosk"
+        }
+    ],
+    "high_en": [
+        {
+            "target_word": "model",
+            "target_word_clue": "display"
+        },
+        {
+            "target_word": "dogma",
+            "target_word_clue": "church teachings"
+        },
+        {
+            "target_word": "horny",
+            "target_word_clue": "like rhinos"
+        },
+        {
+            "target_word": "vigil",
+            "target_word_clue": "watch"
+        },
+        {
+            "target_word": "creme",
+            "target_word_clue": "food topping"
+        },
+        {
+            "target_word": "otter",
+            "target_word_clue": "mink's relative"
+        },
+        {
+            "target_word": "stare",
+            "target_word_clue": "rubberneck"
+        },
+        {
+            "target_word": "prong",
+            "target_word_clue": "tine"
+        },
+        {
+            "target_word": "crony",
+            "target_word_clue": "back-room fellow"
+        },
+        {
+            "target_word": "grain",
+            "target_word_clue": "rye or corn"
+        }
+    ],
+    "medium_en": [
+        {
+            "target_word": "stiff",
+            "target_word_clue": "unbending"
+        },
+        {
+            "target_word": "media",
+            "target_word_clue": "news conference attendees"
+        },
+        {
+            "target_word": "macaw",
+            "target_word_clue": "cockatoo cousin"
+        },
+        {
+            "target_word": "array",
+            "target_word_clue": "marshal"
+        },
+        {
+            "target_word": "beset",
+            "target_word_clue": "hound"
+        },
+        {
+            "target_word": "chain",
+            "target_word_clue": "sprockets linker"
+        },
+        {
+            "target_word": "feast",
+            "target_word_clue": "celebration"
+        },
+        {
+            "target_word": "mound",
+            "target_word_clue": "pitcher's place"
+        },
+        {
+            "target_word": "spied",
+            "target_word_clue": "snooped"
+        },
+        {
+            "target_word": "thigh",
+            "target_word_clue": "dark meat option"
+        }
+    ]
+}
