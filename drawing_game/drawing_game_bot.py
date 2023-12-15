@@ -520,6 +520,7 @@ class DrawingBot:
             #     "message_command",
             #     {"command": {"command": "drawing_game_init"}, "room": room_id},
             # )
+
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
 
@@ -535,7 +536,7 @@ class DrawingBot:
             )
             response.raise_for_status()
 
-        instructions_a = TASK_DESCR_A.read_text() # Loads instructions but non-collapsible
+        instructions_a = this_session.player_a_instructions # Loads instructions but non-collapsible
         response_e = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
             json={
@@ -561,11 +562,12 @@ class DrawingBot:
             )
             response.raise_for_status()
 
+        instructions_b = this_session.player_b_instructions
         response_g = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr",
             json={
                 "class": "collapsible-content",
-                "text": TASK_DESCR_B.read_text(),
+                "text": instructions_b,
                 "receiver_id": this_session.player_b,
             },
             headers={"Authorization": f"Bearer {self.token}"},
@@ -661,11 +663,11 @@ class DrawingBot:
                 },
             )
 
+            # Display on display area (doesn't work yet!)
             response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+                f"{self.uri}/rooms/{room_id}/text/current-grid",
                 json={
-                    "attribute": "src",
-                    "value": this_session.target_grid,
+                    "text": this_session.target_grid,
                     "receiver_id": this_session.player_a,
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
@@ -673,79 +675,79 @@ class DrawingBot:
             self.request_feedback(response, "set grid")
             # enable the grid
             response = requests.delete(
-                f"{self.uri}/rooms/{room_id}/class/image-area",
+                f"{self.uri}/rooms/{room_id}/class/grid-area",
                 json={"class": "dis-area", "receiver_id": this_session.player_a},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
 
 
-        if this_session.images:
-            word, image_1, image_2 = self.sessions[room_id].images[0]
-            LOG.debug(f"{image_1}\n{image_2}")
-
-            # show a different image to each user. one image can be None
-
-            # remove image and description for both
-            self._hide_image(room_id)
-            self._hide_image_desc(room_id)
-
-            # Player 1
-            if image_1:
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={
-                        "attribute": "src",
-                        "value": image_1,
-                        "receiver_id": this_session.player_a,
-                    },
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "set image 1")
-                # enable the image
-                response = requests.delete(
-                    f"{self.uri}/rooms/{room_id}/class/image-area",
-                    json={"class": "dis-area", "receiver_id": this_session.player_a},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "enable image 1")
-
-            else:
-                # enable the explanatory text
-                response = requests.delete(
-                    f"{self.uri}/rooms/{room_id}/class/image-desc",
-                    json={"class": "dis-area", "receiver_id": this_session.player_a},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "enable explanation")
-
-            # Player 2
-            if image_2:
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-                    json={
-                        "attribute": "src",
-                        "value": image_2,
-                        "receiver_id": this_session.player_b,
-                    },
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "set image 2")
-                # enable the image
-                response = requests.delete(
-                    f"{self.uri}/rooms/{room_id}/class/image-area",
-                    json={"class": "dis-area", "receiver_id": this_session.player_b},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "enable image 2")
-            else:
-                # enable the explanatory text
-                response = requests.delete(
-                    f"{self.uri}/rooms/{room_id}/class/image-desc",
-                    json={"class": "dis-area", "receiver_id": this_session.player_b},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "enable explanation")
+        # if this_session.images:
+        #     word, image_1, image_2 = self.sessions[room_id].images[0]
+        #     LOG.debug(f"{image_1}\n{image_2}")
+        #
+        #     # show a different image to each user. one image can be None
+        #
+        #     # remove image and description for both
+        #     self._hide_image(room_id)
+        #     self._hide_image_desc(room_id)
+        #
+        #     # Player 1
+        #     if image_1:
+        #         response = requests.patch(
+        #             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+        #             json={
+        #                 "attribute": "src",
+        #                 "value": image_1,
+        #                 "receiver_id": this_session.player_a,
+        #             },
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         self.request_feedback(response, "set image 1")
+        #         # enable the image
+        #         response = requests.delete(
+        #             f"{self.uri}/rooms/{room_id}/class/image-area",
+        #             json={"class": "dis-area", "receiver_id": this_session.player_a},
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         self.request_feedback(response, "enable image 1")
+        #
+        #     else:
+        #         # enable the explanatory text
+        #         response = requests.delete(
+        #             f"{self.uri}/rooms/{room_id}/class/image-desc",
+        #             json={"class": "dis-area", "receiver_id": this_session.player_a},
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         self.request_feedback(response, "enable explanation")
+        #
+        #     # Player 2
+        #     if image_2:
+        #         response = requests.patch(
+        #             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
+        #             json={
+        #                 "attribute": "src",
+        #                 "value": image_2,
+        #                 "receiver_id": this_session.player_b,
+        #             },
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         self.request_feedback(response, "set image 2")
+        #         # enable the image
+        #         response = requests.delete(
+        #             f"{self.uri}/rooms/{room_id}/class/image-area",
+        #             json={"class": "dis-area", "receiver_id": this_session.player_b},
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         self.request_feedback(response, "enable image 2")
+        #     else:
+        #         # enable the explanatory text
+        #         response = requests.delete(
+        #             f"{self.uri}/rooms/{room_id}/class/image-desc",
+        #             json={"class": "dis-area", "receiver_id": this_session.player_b},
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         self.request_feedback(response, "enable explanation")
 
     def _hide_image(self, room_id):
         response = requests.post(

@@ -230,11 +230,11 @@
           "layout-content": [
             {
               "layout-type": "div",
-              "id": "image-area",
+              "id": "grid-area",
               "layout-content": [
                 {
-                  "layout-type": "image",
-                  "id": "current-image",
+                  "layout-type": "div",
+                  "id": "current-grid",
                   "style": "max-width: 100%; height: auto; object-fit: contain;"
                 }
               ]
@@ -276,7 +276,7 @@
     "time:before": {
       "content": "''"
     },
-    "#image-area": {
+    "#grid-area": {
       "margin": "0 auto",
       "align-items": "center",
       "justify-content": "center"
