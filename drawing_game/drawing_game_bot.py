@@ -649,6 +649,18 @@ class DrawingBot:
         this_session = self.sessions[room_id]
 
         if this_session.target_grid:
+            # Display on chat area
+            grid = this_session.target_grid.replace('\n', '<br>')
+            self.sio.emit(
+                "text",
+                {
+                    "message": grid,
+                    "receiver_id": this_session.player_a,
+                    "room": room_id,
+                    "html": True
+                },
+            )
+
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
                 json={
@@ -666,6 +678,7 @@ class DrawingBot:
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
+
 
         if this_session.images:
             word, image_1, image_2 = self.sessions[room_id].images[0]
