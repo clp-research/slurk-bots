@@ -6,7 +6,7 @@ import argparse
 import logging
 import os
 
-from wordle_bot import WordleBot2
+from .wordle_bot import WordleBot2
 
 
 if __name__ == "__main__":
@@ -70,8 +70,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # create bot instance
-    wordle_bot = WordleBot2(args.token, args.user, args.host, args.port)
-    wordle_bot.task_id = args.task_id
+    wordle_bot = WordleBot2(args.token, args.user,args.task_id, args.host, args.port)
     # wordle_bot.waiting_room = args.waiting_room
     wordle_bot.post_init(args.waiting_room, args.bot_version)
 

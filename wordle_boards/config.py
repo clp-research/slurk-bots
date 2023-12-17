@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """File contains global variables meant to be used read-only."""
 
-import os
+from pathlib import Path
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = Path(__file__).parent.resolve()
 
 PROLIFIC_URL = "https://app.prolific.co/submissions/complete?cc="
 
@@ -43,11 +43,15 @@ TASK_TITLE = "Find the word."
 # ) as f:
 #     TASK_DESCR =  f.read()
 
-WORD_LIST = os.path.join(ROOT, "wordle_boards", "data", "wordlist.txt")
 
-with open(os.path.join(ROOT, "wordle_boards", "data", "task_greeting.txt"), "r", encoding="utf-8") as f:
+ALL_WORDS = Path(f"{ROOT}/data/wordlist.txt")
+with open(ALL_WORDS) as infile:
+    VALID_WORDS = set((line.strip()) for line in infile)
+
+
+with open(Path(f"{ROOT}/data/task_greeting.txt")) as f:
     TASK_GREETING = f.read().split("\n\n\n")
 
+WORDLE_WORDS = Path(f"{ROOT}/data/wordle_words.json")
 
-WORDLE_WORDS = f"{ROOT}/wordle_boards/data/wordle_words.json"
 WORDS_PER_ROOM = 3  # -1 to load entire dataset

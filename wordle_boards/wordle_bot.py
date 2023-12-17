@@ -13,8 +13,9 @@ from time import sleep
 import requests
 import socketio
 
-from dataloader import Dataloader
-from config import (
+from templates import TaskBot
+from .dataloader import Dataloader
+from .config import (
     COLOR_MESSAGE,
     PLATFORM,
     PROLIFIC_URL,
@@ -27,19 +28,17 @@ from config import (
     TIME_ROUND,
     TIME_WAITING,
     WARNING_COLOR,
-    WORD_LIST,
+    VALID_WORDS,
     WORDLE_WORDS,
     WORDS_PER_ROOM
 )
 
 
 LOG = logging.getLogger(__name__)
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class RoomTimers:
     """A number of timed events during the game.
-
     :param round_timer: After 15 minutes the image will change
         and players get no points
     """
@@ -99,66 +98,14 @@ class SessionManager(dict):
             self.pop(room_id)
 
 
-class WordleBot2:
-    sio = socketio.Client(logger=True)
-    """The ID of the task the bot is involved in."""
-    task_id = None
-    """The ID of the room where users for this task are waiting."""
-    # waiting_room = None
-
-    def __init__(self, token, user, host, port):
-        """This bot allows two players to play wordle together
-
-        :param token: A uuid; a string following the same pattern
-            as `0c45b30f-d049-43d1-b80d-e3c3a3ca22a0`
-        :type token: str
-        :param user: ID of a `User` object that was created with
-        the token.
-        :type user: int
-        :param uri: Full URL including protocol and hostname,
-            followed by the assigned port if any.
-        :type uri: str
-        :param images_per_room: Each room is mapped to a list
-            of pairs with two image urls. Each participant
-            is presented exactly one image per pair and round.
-        :type images_per_room: dict
-        :param timers_per_room: Each room is mapped to
-            an instance of RoomTimers.
-        :type timers_per_room: dict
-        :param players_per_room: Each room is mapped to a list of
-            users. Each user is represented as a dict with the
-            keys 'name', 'id', 'msg_n' and 'status'.
-        :type players_per_room: dict
-        :param guesses_per_room: each room is mapped to a current guess.
-            this is used to make sure that both users sent the same
-            guess for the current wordle, only so it is possible to
-            advance in the game
-        :type guesses_per_room: dict
-        :param points_per_room: a dictionary that saves for each room
-            the current point stand
-        :type points_per_room: dict
-        """
-        self.token = token
-        self.user = user
-
-        self.uri = host
-        if port is not None:
-            self.uri += f":{port}"
-
-        self.url = self.uri
-        self.uri += "/slurk/api"
-
+class WordleBot2 (TaskBot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.sessions = SessionManager()
-
         self.public = PUBLIC
-        self.data_collection = PLATFORM
-
         # maps number of guesses to points
         self.point_system = dict(zip([6, 5, 4, 3, 2, 1], [100, 50, 25, 10, 5, 1]))
 
-        # read wordlist
-        with open(WORD_LIST) as infile:
-            self.wordlist = set((line.strip()) for line in infile)
         # ensure all the words from the initial image file are guessable
         # with open(DATA_PATH) as infile:
         #     self.wordlist.update(line.split("\t")[0] for line in infile)
@@ -166,102 +113,66 @@ class WordleBot2:
         self.waiting_timer = None
         self.received_waiting_token = set()
 
-        LOG.info(f"Running wordle bot on {self.uri} with token {self.token}")
-        # register all event handlers
-        self.register_callbacks()
-
     def post_init(self, waiting_room, version):
-        """
-        save extra variables after the __init__() method has been called
-        and create the init_base_dict: a dictionary containing
-        needed arguments for the init event to send to the JS frontend
-        """
+        """save extra variables after the __init__() method has been called"""
         self.waiting_room = waiting_room
         self.version = version
 
-    def run(self):
-        # establish a connection to the server
-        self.sio.connect(
-            self.uri,
-            headers={"Authorization": f"Bearer {self.token}", "user": self.user},
-            namespaces="/",
-        )
-        # wait until the connection with the server ends
-        self.sio.wait()
+    def on_task_room_creation(self, data):
+        """Triggered after a new task room is created."""
+        room_id = data["room"]
+        task_id = data["task"]
 
-    @staticmethod
-    def request_feedback(response, action):
-        if not response.ok:
-            LOG.error(f"Could not {action}: {response.status_code}")
-            response.raise_for_status()
-        else:
-            LOG.debug(f"Successfully did {action}.")
+        LOG.debug(f"A new task room was created with id: {data['task']}")
+        LOG.debug(f"This bot is looking for task id: {self.task_id}")
+
+        if task_id is not None and task_id == self.task_id:
+            for usr in data["users"]:
+                self.received_waiting_token.discard(usr["id"])
+
+            # create image items for this room
+            LOG.debug("Create data for the new task room...")
+            LOG.debug(data)
+
+            self.move_divider(room_id, 20, 80)
+
+            self.sessions.create_session(room_id)
+
+            LOG.debug(self.sessions[room_id].words)
+            self.sessions[room_id].players = []
+            for usr in data["users"]:
+                self.sessions[room_id].players.append(
+                    {**usr, "msg_n": 0, "status": "joined"}
+                )
+
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "let wordle bot join room")
+
+            logging.info(room_id)
+
+            self.sio.emit(
+                "message_command",
+                {"command": {"command": "wordle_init"}, "room": room_id},
+            )
+
+            # self.show_item(room_id)
+
+            self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
+                "target_word"].lower()
+
+            # begin timers
+            self.sessions[room_id].timer.start_round_timer(
+                self.time_out_round, room_id
+            )
+
+            # show info to users
+            self._update_score_info(room_id)
+            self.start_round(room_id)
 
     def register_callbacks(self):
-        @self.sio.event
-        def new_task_room(data):
-            """Triggered after a new task room is created.
-
-            An example scenario would be that the concierge
-            bot emitted a room_created event once enough
-            users for a task have entered the waiting room.
-            """
-            room_id = data["room"]
-            task_id = data["task"]
-
-            LOG.debug(f"A new task room was created with id: {data['task']}")
-            LOG.debug(f"This bot is looking for task id: {self.task_id}")
-
-            if task_id is not None and task_id == self.task_id:
-                for usr in data["users"]:
-                    self.received_waiting_token.discard(usr["id"])
-
-                # create image items for this room
-                LOG.debug("Create data for the new task room...")
-                LOG.debug(data)
-
-                self.move_divider(room_id, 20, 80)
-
-                self.sessions.create_session(room_id)
-
-
-                LOG.debug(self.sessions[room_id].words)
-                self.sessions[room_id].players = []
-                for usr in data["users"]:
-                    self.sessions[room_id].players.append(
-                        {**usr, "msg_n": 0, "status": "joined"}
-                    )
-
-                response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "let wordle bot join room")
-
-                logging.info(room_id)
-
-                self.sio.emit(
-                    "message_command",
-                    {"command": {"command": "wordle_init"}, "room": room_id},
-                )
-
-                # self.show_item(room_id)
-
-                self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
-                    "target_word"].lower()
-
-                self.send_message_to_user(f"{self.sessions[room_id].word_to_guess}", room_id)
-                if self.version == "clue":
-                    self.send_message_to_user(f"CLUE: {self.sessions[room_id].words[0]['target_word_clue'].lower()}", room_id)
-
-                # begin timers
-                self.sessions[room_id].timer.start_round_timer(
-                    self.time_out_round, room_id
-                )
-
-                # show info to users
-                self._update_score_info(room_id)
-
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
@@ -290,7 +201,7 @@ class WordleBot2:
                             "html": True,
                         },
                     )
-                    sleep(0.5)
+                    # sleep(0.5)
 
                 self.sio.emit(
                     "text",
@@ -303,7 +214,8 @@ class WordleBot2:
                         "html": True,
                     },
                 )
-
+                sleep(0.5)
+                # BUT CAN"T FIND instr_title  IN THE LAYOUT
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/instr_title",
                     json={"text": line},
@@ -500,7 +412,7 @@ class WordleBot2:
             return
 
         # make sure it's a good guess
-        if guess not in self.wordlist:
+        if guess not in VALID_WORDS:
             self.sio.emit(
                 "text",
                 {
@@ -567,7 +479,7 @@ class WordleBot2:
                 },
             )
 
-            self.next_round(room_id)
+            self.load_next_game(room_id)
 
     def _update_score_info(self, room):
         response = requests.patch(
@@ -579,8 +491,7 @@ class WordleBot2:
         )
         self.request_feedback(response, "update score")
 
-
-    def next_round(self, room_id):
+    def load_next_game(self, room_id):
         """
         Load the next image and wordle and move to the next round if possible
         """
@@ -613,12 +524,14 @@ class WordleBot2:
             self.close_room(room_id)
         else:
             # load the next word
+            self.start_round(room_id)
+
+    def start_round(self, room_id):
+        if not self.sessions[room_id].words:
+            self.close_room(room_id)
+        else:
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
-            "target_word"].lower()
-            self.send_message_to_user(f"{self.sessions[room_id].word_to_guess}", room_id)
-            if self.version == "clue":
-                self.send_message_to_user(f"CLUE: {self.sessions[room_id].words[0]['target_word_clue'].lower()}",
-                                          room_id)
+                "target_word"].lower()
 
             self.sio.emit(
                 "text",
@@ -626,12 +539,16 @@ class WordleBot2:
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
                         message=f"Ok, let's move on to the next round. "
-                        f"{len(self.sessions[room_id].words)} rounds to go!",
+                                f"{len(self.sessions[room_id].words)} rounds to go!",
                     ),
                     "room": room_id,
                     "html": True,
                 },
             )
+            self.send_message_to_user(f"{self.sessions[room_id].word_to_guess}", room_id)
+            if self.version == "clue":
+                self.send_message_to_user(f"CLUE: {self.sessions[room_id].words[0]['target_word_clue'].lower()}",
+                                          room_id)
 
             self._update_score_info(room_id)
             sleep(2)
@@ -666,7 +583,7 @@ class WordleBot2:
                 "html": True,
             },
         )
-        self.next_round(room_id)
+        self.load_next_game(room_id)
 
     def _no_partner(self, room_id, user_id):
         """Handle the situation that a participant waits in vain."""
@@ -705,30 +622,6 @@ class WordleBot2:
                 },
             )
 
-    # def show_item(self, room_id):
-    #     """Update the image of the players."""
-    #     LOG.debug("Update the image and task description of the players.")
-    #     # guarantee fixed user order - necessary for update due to rejoin
-    #     users = sorted(self.sessions[room_id].players, key=lambda x: x["id"])
-    #     user_1 = users[0]
-    #     # user_2 = users[1]
-    #
-    #     if self.sessions[room_id].words:
-    #         word = self.sessions[room_id].words[0]["target_word"]
-    #
-    #         # LOG.debug(f"{image_1}\n{image_2}")
-    #
-    #
-    #         # enable the explanatory text
-    #         response = requests.delete(
-    #                 f"{self.uri}/rooms/{room_id}/class/image-desc",
-    #                 json={"class": "dis-area", "receiver_id": user_1["id"]},
-    #                 headers={"Authorization": f"Bearer {self.token}"},
-    #             )
-    #         self.request_feedback(response, "enable explanation")
-
-
-
     def send_message_to_user(self, message, room, receiver=None):
         if receiver:
             self.sio.emit(
@@ -740,8 +633,6 @@ class WordleBot2:
                 "text",
                 {"message": f"{message}", "room": room},
             )
-
-
 
     def confirmation_code(self, room_id, status, receiver_id=None):
         """Generate AMT token that will be sent to each player."""
@@ -833,7 +724,7 @@ class WordleBot2:
                         f"Together with {other_user_name}, "
                         f"I got {self.sessions[room_id].points} "
                         f"points for {self.sessions[room_id].words.n} puzzle(s). "
-                        f"Play here: {self.url}. #slurdle"
+                        f"Play here: {self.uri}. #slurdle"
                     ),
                 ),
                 "receiver_id": this_user_id,
