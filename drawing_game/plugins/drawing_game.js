@@ -4,6 +4,7 @@ let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
 let submitted = false;  // whether a guess was submitted
+let selected_cell = null;  // keep track of the box the user selects
 
 
 function initBoard() {
@@ -17,6 +18,15 @@ function initBoard() {
         for (let j = 0; j < 5; j++) {
             let box = document.createElement("div")
             box.className = "letter-box"
+
+            // click listener: if the user clicks on this cell, make it the selected_cell
+            box.onclick = function(){
+                if (selected_cell !== null){
+                    selected_cell.style["boxShadow"] = ""
+                }
+                selected_cell = this;
+                selected_cell.style["boxShadow"] = "1px 1px 2px 2px #00305E, -1px -1px 2px 2px #00305E"
+            };
             row.appendChild(box)
         }
         board.appendChild(row)
@@ -115,18 +125,14 @@ function checkGuess(guessString, rightWordString) {
 
 
 function insertLetter(pressedKey) {
-    if (nextLetter === 5) {
-        return
-    }
     pressedKey = pressedKey.toLowerCase()
 
-    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
-    let box = row.children[nextLetter]
+    // add this letter to the selected cell
+    let box = selected_cell
+
     animateCSS(box, "pulse")
     box.textContent = pressedKey
     box.classList.add("filled-box")
-    currentGuess.push(pressedKey)
-    nextLetter += 1
 }
 
 
