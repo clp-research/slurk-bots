@@ -187,7 +187,8 @@ class Session:
         self.player_b = None
         self.player_a_instructions = TASK_DESCR_A.read_text()
         self.player_b_instructions = TASK_DESCR_B.read_text()
-        self.target_grid = None
+        self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
+        self.drawn_grid = None
         self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
         self.game_over = False
         self.timer = None
@@ -313,17 +314,7 @@ class DrawingBot:
                     self.players_per_room[room_id].append(
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
-                # self.last_message_from[room_id] = None
 
-                # self.sio.emit(
-                #         "text",
-                #         {
-                #             "message": "Are you ready? "
-                #             "Please type **/ready** to begin the game.",
-                #             "room": room_id,
-                #             "html": True,
-                #         },
-                # )
                 response = requests.post(
                     f"{self.uri}/users/{self.user}/rooms/{room_id}",
                     headers={"Authorization": f"Bearer {self.token}"},
@@ -439,30 +430,185 @@ class DrawingBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
             this_session = self.sessions[room_id]
+            command = data['command'].lower()
 
-            if data["command"] == "done":
-                pass
-                #todo: self._command_done(room_id, user_id)
+            # do not process commands from itself
+            if str(user_id) == self.user:
+                return
 
-            elif this_session.rounds_left == 4:
-                if "ready" in data["command"]:
-                    # self.sio.emit(
-                    #     "message_command",
-                    #     {"command": {"command": "drawing_game_init"}, "room": room_id},
-                    # )
-                    self._command_ready(room_id, user_id)
-                    return
             if isinstance(data["command"], dict):
-                pass
+                if "guess" in data["command"]:
+                    if data["command"]["guess"].strip() == "":
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "**You need to provide a guess!**",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                                "html": True,
+                            },
+                        )
+                        return
+                    else:
+                        self._command_done(room_id, user_id, data["command"])
+
             else:
-                self.sio.emit(
+                if this_session.rounds_left == 4:
+                    if "ready" in command:
+                        self._command_ready(room_id, user_id)
+                        return
+                    else:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "Sorry, but I do not understand this command.",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
+                        return
+                if "done" in data["command"]:
+                    self._command_done(room_id, user_id, command)
+                    return
+
+                # player_a
+                if this_session.player_a == user_id:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": command,
+                            "room": room_id,
+                            "receiver_id": this_session.player_b,
+                        },
+                    )
+                    sleep(1)
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": "What is your next instruction?",
+                            "room": room_id,
+                            "receiver_id": this_session.player_a,
+                        },
+                    )
+
+                # player_b
+                elif this_session.player_b == user_id:
+                    if '▢' in command:
+                        drawn_grid = self.reformat_drawn_grid(command)
+                        this_session.drawn_grid = drawn_grid
+                        dislayed_grid = self.transform_string_in_grid(drawn_grid.upper())
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"GRID: {dislayed_grid}",
+                                "room": room_id,
+                                "receiver_id": this_session.player_a,
+                                "htmal": True
+                            },
+                        )
+                    else:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "Sorry, but I do not understand this command.",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                            },
+                        )
+
+    def reformat_drawn_grid(self, grid):
+        grid = grid.lower()
+        grid = grid.replace('\n', ' ')
+        return grid
+
+    def _command_done(self, room_id, user_id, command):
+        """Must be sent to end a game round."""
+        # identify the user that has not sent this event
+        curr_usr, other_usr = self.sessions[room_id].players
+        if curr_usr["id"] != user_id:
+            curr_usr, other_usr = other_usr, curr_usr
+
+        LOG.debug(command)
+
+        this_session = self.sessions[room_id]
+
+        # get the grid for this room and the guess from the user
+        grid = this_session.target_grid.lower()
+        grid = grid.replace('\n', ' ')
+        # if command["guess"] is not None:
+        #     this_session.drawn_grid = command["guess"]
+
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "command": "drawing_game_guess",
+                    "guess": this_session.drawn_grid,
+                    "correct_grid": grid,
+                },
+                "room": room_id,
+            },
+        )
+
+        if grid != this_session.drawn_grid:
+            result = 'LOST'
+            points = 0
+            self.sio.emit(
                     "text",
                     {
-                        "message": "Sorry, but I do not understand this command.",
+                        "message":
+                            f"**YOU both {result}! For this round you get {points} points. "
+                            f"Your total score is: {points}**",
                         "room": room_id,
-                        "receiver_id": user_id,
+                        "html": True,
                     },
                 )
+        else:
+            result = 'WON'
+            points = 1
+            self.sio.emit(
+                "text",
+                {
+                    "message":
+                        f"**YOU both {result}! For this round you get {points} points. "
+                        f"Your total score is: {points}**",
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+
+
+
+            # if (word == guess) or (remaining_guesses == 1):
+            #     sleep(2)
+            #
+            #     result = "LOST"
+            #     points = 0
+            #
+            #     if word == guess:
+            #         result = "WON"
+            #         points = self.point_system[int(remaining_guesses)]
+            #
+            #     # update points for this room
+            #     self.sessions[room_id].points += points
+            #
+            #     # self.timers_per_room[room_id].done_timer.cancel()
+            #     self.sio.emit(
+            #         "text",
+            #         {
+            #             "message": COLOR_MESSAGE.format(
+            #                 color=STANDARD_COLOR,
+            #                 message=(
+            #                     f"**YOU {result}! For this round you get {points} points. "
+            #                     f"Your total score is: {self.sessions[room_id].points}**"
+            #                 ),
+            #             ),
+            #             "room": room_id,
+            #             "html": True,
+            #         },
+            #     )
+            #
+            #     self.next_round(room_id)
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
@@ -550,31 +696,31 @@ class DrawingBot:
             LOG.error(f"Could not set task instruction: {response_e.status_code}")
             response_e.raise_for_status()
 
-        # Send drawer_ instructions to player_b
-        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
-                                  json={"text": "Draw the described grid",
-                                        "receiver_id": this_session.player_b},
-                                  headers={"Authorization": f"Bearer {self.token}"},
-                                  )
-        if not response.ok:
-            LOG.error(
-                f"Could not set task instruction title: {response.status_code}"
-            )
-            response.raise_for_status()
-
-        instructions_b = this_session.player_b_instructions
-        response_g = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr",
-            json={
-                "class": "collapsible-content",
-                "text": instructions_b,
-                "receiver_id": this_session.player_b,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        if not response_g.ok:
-            LOG.error(f"Could not set task instruction: {response_g.status_code}")
-            response_g.raise_for_status()
+        # # Send drawer_ instructions to player_b
+        # response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+        #                           json={"text": "Draw the described grid",
+        #                                 "receiver_id": this_session.player_b},
+        #                           headers={"Authorization": f"Bearer {self.token}"},
+        #                           )
+        # if not response.ok:
+        #     LOG.error(
+        #         f"Could not set task instruction title: {response.status_code}"
+        #     )
+        #     response.raise_for_status()
+        #
+        # instructions_b = this_session.player_b_instructions
+        # response_g = requests.patch(
+        #     f"{self.uri}/rooms/{room_id}/text/instr",
+        #     json={
+        #         "class": "collapsible-content",
+        #         "text": instructions_b,
+        #         "receiver_id": this_session.player_b,
+        #     },
+        #     headers={"Authorization": f"Bearer {self.token}"},
+        # )
+        # if not response_g.ok:
+        #     LOG.error(f"Could not set task instruction: {response_g.status_code}")
+        #     response_g.raise_for_status()
 
     def start_game(self, room_id):
         this_session = self.sessions[room_id]
@@ -591,9 +737,30 @@ class DrawingBot:
         this_session.target_grid = this_session.get_grid()
         LOG.debug(f'{this_session.get_grid()} is grid')
 
-        # self.send_individualised_instructions(room_id)
+        self.send_individualised_instructions(room_id)
 
         self.show_item(room_id)
+
+    def transform_string_in_grid(self, string):
+        rows = 5
+        cols = 5
+
+        # Split the input string into individual characters
+        characters = [char for char in string if char != ' ']
+
+        # Initialize an empty grid
+        grid = [['▢' for _ in range(cols)] for _ in range(rows)]
+
+        # Fill the grid with characters
+        for i in range(rows):
+            for j in range(cols):
+                if characters:
+                    grid[i][j] = characters.pop(0)
+
+        # Convert the grid to a string representation
+        grid_string = '\n'.join([' '.join(row) for row in grid])
+
+        return grid_string
 
     @staticmethod
     def request_feedback(response, action):
@@ -663,7 +830,7 @@ class DrawingBot:
                 },
             )
 
-            # Display on display area (doesn't work yet!)
+            # Display on display area
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/current-grid",
                 json={

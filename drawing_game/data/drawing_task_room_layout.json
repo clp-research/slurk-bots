@@ -347,7 +347,8 @@
       "padding": "18px 18px",
       "display": "none",
       "overflow": "hidden",
-      "background-color": "#f1f1f1"
+      "background-color": "#f1f1f1",
+      "flex-direction": "row"
     },
     "#game-board": {
       "display": "flex",
@@ -375,6 +376,6 @@
       "markdown-history"
     ],
     "typing-users": "typing-users",
-    "plain": ["collapsible-task-instructions","enforce-fullscreen","drawing_game"]
+    "plain": ["collapsible-task-instructions","drawing_game"]
   }
 }

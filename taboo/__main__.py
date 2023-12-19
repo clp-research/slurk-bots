@@ -319,14 +319,7 @@ class TabooBot(TaskBot):
                     return
                 # check whether the user used a forbidden word
                 forbidden_words = self.taboo_data['related_word']
-                # self.sio.emit(
-                #     "text",
-                #     {
-                #         "message": f"the taboo words are {forbidden_words}",
-                #         "room": room_id,
-                #         "receiver_id": this_session.player_a,
-                #     },
-                # )
+
                 for taboo_word in forbidden_words:
                     if taboo_word in command:
                         self.sio.emit(
@@ -360,14 +353,6 @@ class TabooBot(TaskBot):
                                     },
                                     callback=self.message_callback,
                                 )
-                        # self.sio.emit(
-                        #     "text",
-                        #     {
-                        #         "message": f"CLUE: {command}",
-                        #         "room": room_id,
-                        #         "receiver_id": this_session.guesser,
-                        #     },
-                        # )
                         curr_usr, other_usr = self.sessions[room_id].players
                         if curr_usr['id'] != this_session.explainer:
                             curr_usr, other_usr = other_usr, curr_usr
