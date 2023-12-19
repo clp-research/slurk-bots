@@ -21,8 +21,9 @@ function initBoard() {
         board.appendChild(row)
     }
     for (const elem of document.getElementsByClassName("keyboard-button")) {
-        elem.style.backgroundColor = "";
-    }
+    elem.style.backgroundColor = "";
+}
+
 }
 
 
@@ -214,7 +215,7 @@ $(document).ready(() => {
             if (data.command.command === "wordle_init") {
                 guessesRemaining = NUMBER_OF_GUESSES;
                 currentGuess = [];
-                $("#keyboard-cont").show()
+                 $("#keyboard-cont").show()
                 initBoard();
                 for (let i=0; i<5; i++) {
                     deleteLetter()
@@ -226,6 +227,17 @@ $(document).ready(() => {
             } else if (data.command.command === "unsubmit") {
                 // happens when players submit different guesses
                 submitted = false;
+            }
+            else if (data.command.command === "wordle_init_critic") {
+                guessesRemaining = NUMBER_OF_GUESSES;
+                currentGuess = [];
+                initBoard();
+                for (let i=0; i<5; i++) {
+                    deleteLetter()
+                }
+
+
+//
             }
         }
     });

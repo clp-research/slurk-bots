@@ -83,6 +83,12 @@ class Session:
         self.guesses_history = list()
         self.points = 0
         self.game_over = False
+        self.guesser = None
+
+        self.critic = None
+        self.turn = -1
+        self.critic_provided = False
+
 
     def close(self):
         self.timer.cancel_all_timers()
@@ -144,6 +150,11 @@ class WordleBot2 (TaskBot):
                 self.sessions[room_id].players.append(
                     {**usr, "msg_n": 0, "status": "joined"}
                 )
+            # FOR NOW: guesser = 0, critic = 1
+            self.sessions[room_id].guesser = self.sessions[room_id].players[0]["id"]
+            self.sessions[room_id].critic = self.sessions[room_id].players[1]["id"]
+
+
 
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
@@ -152,13 +163,6 @@ class WordleBot2 (TaskBot):
             self.request_feedback(response, "let wordle bot join room")
 
             logging.info(room_id)
-
-            self.sio.emit(
-                "message_command",
-                {"command": {"command": "wordle_init"}, "room": room_id},
-            )
-
-            # self.show_item(room_id)
 
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
                 "target_word"].lower()
@@ -170,7 +174,9 @@ class WordleBot2 (TaskBot):
 
             # show info to users
             self._update_score_info(room_id)
+            self.set_message_privilege(self.sessions[room_id].guesser, False)
             self.start_round(room_id)
+
 
     def register_callbacks(self):
         @self.sio.event
@@ -303,6 +309,12 @@ class WordleBot2 (TaskBot):
                 if usr["id"] == user_id and usr["status"] == "ready":
                     usr["msg_n"] += 1
 
+            if user_id == self.sessions[room_id].critic:
+                self.sessions[room_id].critic_provided  = True
+                self.set_message_privilege(self.sessions[room_id].critic, False)
+                self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
+
+
         @self.sio.event
         def command(data):
             """Parse user commands."""
@@ -379,6 +391,10 @@ class WordleBot2 (TaskBot):
         """Must be sent to end a game round."""
 
         LOG.debug(command)
+        if user_id != self.sessions[room_id].guesser:
+            self.send_message_to_user(f"You can't guess the word, you can only give critic.",
+                                      room_id, self.sessions[room_id].critic)
+            return
 
         # get the wordle for this room and the guess from the user
         word = self.sessions[room_id].word_to_guess
@@ -436,8 +452,25 @@ class WordleBot2 (TaskBot):
             )
             return
 
+        self.sessions[room_id].turn += 1
         self.sessions[room_id].guesses = dict()
         self.sessions[room_id].guesses_history.append(guess)
+        # if self.sessions[room_id].turn% 2 == 0:
+        if not self.sessions[room_id].critic_provided:
+            self.send_message_to_user(f"PRPOPOSAL: {guess}", room_id, self.sessions[room_id].critic)
+            self.send_message_to_user(f"Please, provide your critic", room_id, self.sessions[room_id].critic)
+            self.set_message_privilege(self.sessions[room_id].critic, True)
+            self.give_writing_rights(room_id, self.sessions[room_id].critic)
+            self.send_message_to_user(f"Ok, now let's wait for the critic", room_id, self.sessions[room_id].guesser)
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"command": "unsubmit"},
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+            return
         self.sio.emit(
             "message_command",
             {
@@ -449,6 +482,8 @@ class WordleBot2 (TaskBot):
                 "room": room_id,
             },
         )
+        self.sessions[room_id].critic_provided = False
+        self.set_message_privilege(self.sessions[room_id].critic,True)
 
         if (word == guess) or (remaining_guesses == 1):
             sleep(2)
@@ -530,6 +565,9 @@ class WordleBot2 (TaskBot):
         if not self.sessions[room_id].words:
             self.close_room(room_id)
         else:
+            self.set_message_privilege(self.sessions[room_id].critic, False)
+            self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
+
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
                 "target_word"].lower()
 
@@ -545,18 +583,23 @@ class WordleBot2 (TaskBot):
                     "html": True,
                 },
             )
-            self.send_message_to_user(f"{self.sessions[room_id].word_to_guess}", room_id)
+            self.send_message_to_user(f"{self.sessions[room_id].word_to_guess}", room_id, self.sessions[room_id].guesser)
             if self.version == "clue":
                 self.send_message_to_user(f"CLUE: {self.sessions[room_id].words[0]['target_word_clue'].lower()}",
-                                          room_id)
+                                          room_id, self.sessions[room_id].guesser)
 
             self._update_score_info(room_id)
             sleep(2)
+
             self.sio.emit(
                 "message_command",
-                {"command": {"command": "wordle_init"}, "room": room_id},
+                {"command": {"command": "wordle_init_critic"}, "room": room_id,  "receiver_id": self.sessions[room_id].critic},
             )
 
+            self.sio.emit(
+                "message_command",
+                {"command": {"command": "wordle_init"}, "room": room_id, "receiver_id": self.sessions[room_id].guesser},
+            )
             # reset attributes for the new round
             for usr in self.sessions[room_id].players:
                 usr["status"] = "ready"
@@ -566,6 +609,69 @@ class WordleBot2 (TaskBot):
 
             # restart next_round_timer
             self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
+            self.sessions[room_id].turn = 0
+
+    def give_writing_rights(self, room_id, user_id):
+        response = requests.delete(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "placeholder",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Enter your message here!",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "retrieving user's permissions")
+
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        self.request_feedback(response, "changing user's message permission")
+
+    def make_input_field_unresponsive(self, room_id, user_id):
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "true",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Wait for the guess proposal",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
 
     def time_out_round(self, room_id):
         """
