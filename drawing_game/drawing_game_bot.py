@@ -199,7 +199,7 @@ class Session:
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
-        self.rounds_left = 2
+        self.rounds_left = 3
 
     def close(self):
         pass
@@ -454,7 +454,11 @@ class DrawingBot:
                         self._command_done(room_id, user_id, data["command"])
 
             else:
-                if this_session.rounds_left == 2:
+                if this_session.rounds_left == 0:
+                    this_session.game_rounds -= 1
+                    self.next_round(room_id)
+                    return
+                elif this_session.rounds_left == 3:
                     if "ready" in command:
                         self._command_ready(room_id, user_id)
                         return
@@ -467,60 +471,59 @@ class DrawingBot:
                                 "receiver_id": user_id,
                             },
                         )
+                else:
+                    if "done" in data["command"]:
+                        self._command_done(room_id, user_id, command)
                         return
-                if "done" in data["command"]:
-                    self._command_done(room_id, user_id, command)
-                    return
 
-                # player_a
-                if this_session.player_a == user_id:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": command,
-                            "room": room_id,
-                            "receiver_id": this_session.player_b,
-                        },
-                    )
-                    this_session.rounds_left -= 1
-                    self.update_rights(room_id, False, True)
-                    sleep(1)
-
-
-                # player_b
-                elif this_session.player_b == user_id:
-                    if '▢' in command:
-                        drawn_grid = self.reformat_drawn_grid(command)
-                        this_session.drawn_grid = drawn_grid
-                        dislayed_grid = self.transform_string_in_grid(drawn_grid.upper())
+                    # player_a
+                    if this_session.player_a == user_id:
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"GRID: <br>{dislayed_grid}",
+                                "message": command,
                                 "room": room_id,
-                                "receiver_id": this_session.player_a,
-                                "html": True
+                                "receiver_id": this_session.player_b,
                             },
                         )
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "What is your next instruction?",
-                                "room": room_id,
-                                "receiver_id": this_session.player_a,
-                            },
-                        )
-                        self.update_rights(room_id, True, False)
+                        this_session.rounds_left -= 1
+                        self.update_rights(room_id, False, True)
                         sleep(1)
-                    else:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "Sorry, but I do not understand this command. Try again.",
-                                "room": room_id,
-                                "receiver_id": user_id,
-                            },
-                        )
+
+                    # player_b
+                    elif this_session.player_b == user_id:
+                        if '▢' in command:
+                            drawn_grid = self.reformat_drawn_grid(command)
+                            this_session.drawn_grid = drawn_grid
+                            dislayed_grid = self.transform_string_in_grid(drawn_grid.upper())
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": f"GRID: <br>{dislayed_grid}",
+                                    "room": room_id,
+                                    "receiver_id": this_session.player_a,
+                                    "html": True
+                                },
+                            )
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "What is your next instruction?",
+                                    "room": room_id,
+                                    "receiver_id": this_session.player_a,
+                                },
+                            )
+                            self.update_rights(room_id, True, False)
+                            sleep(1)
+                        else:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "Sorry, but I do not understand this command. Try again.",
+                                    "room": room_id,
+                                    "receiver_id": user_id,
+                                },
+                            )
 
     def reformat_drawn_grid(self, grid):
         grid = grid.lower()
@@ -738,7 +741,6 @@ class DrawingBot:
                     "html": True,
                 },
             )
-            this_session.rounds_left -= 1
             self.next_round(room_id)
             return
 
@@ -1011,6 +1013,7 @@ class DrawingBot:
         # user_2 = users[1]
 
         this_session = self.sessions[room_id]
+        this_session.rounds_left -= 1
 
         if this_session.target_grid:
             # Display on chat area
@@ -1018,7 +1021,7 @@ class DrawingBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": f"This is the target grid: <br>{grid}<br><br>Give the first instruction.",
+                    "message": f"Game round {this_session.game_rounds} of 3.<br>This is the target grid: <br>{grid}<br><br>Give the first instruction.",
                     "receiver_id": this_session.player_a,
                     "room": room_id,
                     "html": True
