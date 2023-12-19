@@ -22,15 +22,17 @@ from .config import (
     PUBLIC,
     SEED,
     STANDARD_COLOR,
+    WARNING_COLOR,
     TASK_GREETING,
+    CRITIC_INSTR,
     TASK_TITLE,
     TIME_LEFT,
     TIME_ROUND,
     TIME_WAITING,
-    WARNING_COLOR,
     VALID_WORDS,
     WORDLE_WORDS,
-    WORDS_PER_ROOM
+    WORDS_PER_ROOM,
+    TASK_DESCR
 )
 
 
@@ -183,16 +185,48 @@ class WordleBot2 (TaskBot):
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
+            mode_message = ""
             if self.version == "clue":
-                mode_message = "You will get a clue about the words you need to guess." \
-                               " It will appear in the chat area."
+                mode_message = "To help you make an informed guess, you will first receive a clue for the word!" \
+                               " It will appear in the chat area on the left."
 
+            if self.version == "critic":
+                mode_message += "After you enter your guess, the critic will indicate whether they agree" \
+                                " or disagree with it" \
+                                " and provide rationale, but agreeing with " \
+                                "a guess does not confirm its correctness. " \
+                                "You may choose to retain your original guess " \
+                                "(just press on ENTER to submit your guess again) " \
+                                "or modify it based on given clue and agreement and then submit it."
+
+            pars = ["p1", "p2", "p3", "p4"]
+            for i in range (0, len(pars)):
                 response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/mode",
-                json={"text": mode_message},
+                f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
+                json={"text": TASK_DESCR[i], "receiver_id": self.sessions[room_id].guesser},
                 headers={"Authorization": f"Bearer {self.token}"}
                 )
-                self.request_feedback(response, "add mode explanation")
+            # mode
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/mode",
+                json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
+                headers={"Authorization": f"Bearer {self.token}"}
+            )
+
+            pars = ["p1", "p2", "p3", "p4", "p5"]
+            for i in range(0, len(pars)):
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
+                    json={"text": CRITIC_INSTR[i], "receiver_id": self.sessions[room_id].critic},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                )
+
+                # response = requests.patch(
+                # f"{self.uri}/rooms/{room_id}/text/mode",
+                # json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
+                # headers={"Authorization": f"Bearer {self.token}"}
+                # )
+                # self.request_feedback(response, "add mode explanation")
 
             if room_id in self.sessions:
                 # read out task greeting
@@ -391,10 +425,12 @@ class WordleBot2 (TaskBot):
         """Must be sent to end a game round."""
 
         LOG.debug(command)
-        if user_id != self.sessions[room_id].guesser:
-            self.send_message_to_user(f"You can't guess the word, you can only give critic.",
-                                      room_id, self.sessions[room_id].critic)
-            return
+        # no need, because critic can't enter the word?
+
+        # if user_id != self.sessions[room_id].guesser:
+        #     self.send_message_to_user(f"You can't guess the word, you can only give critic.",
+        #                               room_id, self.sessions[room_id].critic)
+        #     return
 
         # get the wordle for this room and the guess from the user
         word = self.sessions[room_id].word_to_guess
@@ -605,7 +641,6 @@ class WordleBot2 (TaskBot):
                 usr["status"] = "ready"
                 usr["msg_n"] = 0
 
-            # self.show_item(room_id)
 
             # restart next_round_timer
             self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)

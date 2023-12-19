@@ -37,15 +37,28 @@
                   "layout-content": [
                     {
                       "layout-type": "p",
+                      "id": "p1",
                       "style": "padding-bottom: 5px",
-                      "layout-content": "You are a language wizard who likes to guess words by using the given rules."
+                      "layout-content": ""
                     },
 
                     {
                       "layout-type": "p",
                       "style": "padding-bottom: 5px",
-                      "layout-content": "    You have six attempts to guess the target word, a valid English word of five lowercase letters (a-z)."
+                      "layout-content": ""
                     },
+                                        {
+                      "layout-type": "p",
+                      "id": "p2",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": ""
+                    },
+                    {
+                      "layout-type": "p",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": ""
+                    },
+
                     {
                       "layout-type": "p",
                       "id": "mode",
@@ -60,16 +73,23 @@
 
                     {
                       "layout-type": "p",
-                      "layout-content": "    After each guess, your answer will be validated, and you will receive feedback indicating which letters are correct (green),\n    which letters are correct but in the wrong position (yellow),\n    and which letters are incorrect (grey)."
+                      "id": "p3",
+                      "layout-content": ""
                     },
                                      {
                       "layout-type": "p",
                       "style": "padding-bottom: 5px",
                       "layout-content": ""
                     },
-                                        {
+                    {
                       "layout-type": "p",
-                      "layout-content": "This feedback can be useful in determining which letters to include or exclude in your next guess."
+                       "id": "p4",
+                      "layout-content": ""
+                    },
+                    {
+                      "layout-type": "p",
+                       "id": "p5",
+                      "layout-content": ""
                     }
                   ]
                 },
