@@ -198,7 +198,7 @@ class Session:
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
-        self.rounds_left = 4
+        self.rounds_left = 26
 
     def close(self):
         pass
@@ -453,7 +453,7 @@ class DrawingBot:
                         self._command_done(room_id, user_id, data["command"])
 
             else:
-                if this_session.rounds_left == 4:
+                if this_session.rounds_left == 26:
                     if "ready" in command:
                         self._command_ready(room_id, user_id)
                         return
@@ -500,10 +500,10 @@ class DrawingBot:
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"GRID: {dislayed_grid}",
+                                "message": f"GRID: <br>{dislayed_grid}",
                                 "room": room_id,
                                 "receiver_id": this_session.player_a,
-                                "htmal": True
+                                "html": True
                             },
                         )
                     else:
@@ -520,6 +520,71 @@ class DrawingBot:
         grid = grid.lower()
         grid = grid.replace('\n', ' ')
         return grid
+
+    def process_move(self, room_id, reward: int):
+        this_session = self.sessions[room_id]
+        this_session.rounds_left -= 1
+        self.update_reward(room_id, reward)
+        self.update_title_points(room_id, reward)
+        self.next_round(room_id)
+
+    def update_reward(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        score += reward
+        score = round(score, 2)
+        self.sessions[room_id].points["score"] = max(0, score)
+
+    def update_title_points(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        correct = self.sessions[room_id].points["history"][0]["correct"]
+        wrong = self.sessions[room_id].points["history"][0]["wrong"]
+        if reward == 0:
+            wrong += 1
+        elif reward == 1:
+            correct += 1
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.sessions[room_id].points["history"][0]["correct"] = correct
+        self.sessions[room_id].points["history"][0]["wrong"] = wrong
+
+        self.request_feedback(response, "setting point stand in title")
+
+    def next_round(self, room_id):
+        this_session = self.sessions[room_id]
+        # was this the last game round?
+        if self.sessions[room_id].rounds_left < 1:
+            self.sio.emit(
+                "text",
+                {"message": "The experiment is over! Thank you for participating :)",
+                 "room": room_id},
+            )
+            self.close_game(room_id)
+        # else:
+        #     self.sio.emit(
+        #         "text",
+        #         {"message": "Give a new clue.",
+        #          "room": room_id,
+        #          "receiver_id": this_session.explainer}
+        #     )
+        #     self.sio.emit(
+        #         "text",
+        #         {"message": "Wait for a new clue.",
+        #          "room": room_id,
+        #          "receiver_id": this_session.guesser}
+        #     )
+        #     curr_usr, other_usr = self.sessions[room_id].players
+        #     if curr_usr['id'] != this_session.explainer:
+        #         curr_usr, other_usr = other_usr, curr_usr
+        #     # revoke writing rights to player_a
+        #     self.set_message_privilege(this_session.explainer, False)
+        #     self.check_writing_right(room_id, curr_usr, False)
+        #     # assign writing rights to other user
+        #     self.set_message_privilege(this_session.guesser, True)
+        #     self.check_writing_right(room_id, other_usr, True)
 
     def _command_done(self, room_id, user_id, command):
         """Must be sent to end a game round."""
@@ -563,6 +628,7 @@ class DrawingBot:
                         "html": True,
                     },
                 )
+            self.process_move(room_id, 0)
         else:
             result = 'WON'
             points = 1
@@ -576,6 +642,7 @@ class DrawingBot:
                     "html": True,
                 },
             )
+            self.process_move(room_id, 1)
 
 
 
@@ -758,7 +825,7 @@ class DrawingBot:
                     grid[i][j] = characters.pop(0)
 
         # Convert the grid to a string representation
-        grid_string = '\n'.join([' '.join(row) for row in grid])
+        grid_string = '<br>'.join([' '.join(row) for row in grid])
 
         return grid_string
 
