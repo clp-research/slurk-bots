@@ -191,6 +191,7 @@ class Session:
         self.drawn_grid = None
         self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
         self.game_over = False
+        self.game_rounds = 3
         self.timer = None
         self.points = {
             "score": STARTING_POINTS,
@@ -198,7 +199,7 @@ class Session:
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
-        self.rounds_left = 26
+        self.rounds_left = 2
 
     def close(self):
         pass
@@ -453,7 +454,7 @@ class DrawingBot:
                         self._command_done(room_id, user_id, data["command"])
 
             else:
-                if this_session.rounds_left == 26:
+                if this_session.rounds_left == 2:
                     if "ready" in command:
                         self._command_ready(room_id, user_id)
                         return
@@ -481,15 +482,10 @@ class DrawingBot:
                             "receiver_id": this_session.player_b,
                         },
                     )
+                    this_session.rounds_left -= 1
+                    self.update_rights(room_id, False, True)
                     sleep(1)
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "What is your next instruction?",
-                            "room": room_id,
-                            "receiver_id": this_session.player_a,
-                        },
-                    )
+
 
                 # player_b
                 elif this_session.player_b == user_id:
@@ -506,11 +502,21 @@ class DrawingBot:
                                 "html": True
                             },
                         )
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "What is your next instruction?",
+                                "room": room_id,
+                                "receiver_id": this_session.player_a,
+                            },
+                        )
+                        self.update_rights(room_id, True, False)
+                        sleep(1)
                     else:
                         self.sio.emit(
                             "text",
                             {
-                                "message": "Sorry, but I do not understand this command.",
+                                "message": "Sorry, but I do not understand this command. Try again.",
                                 "room": room_id,
                                 "receiver_id": user_id,
                             },
@@ -556,35 +562,142 @@ class DrawingBot:
     def next_round(self, room_id):
         this_session = self.sessions[room_id]
         # was this the last game round?
-        if self.sessions[room_id].rounds_left < 1:
+        if self.sessions[room_id].game_rounds < 1:
             self.sio.emit(
                 "text",
                 {"message": "The experiment is over! Thank you for participating :)",
                  "room": room_id},
             )
             self.close_game(room_id)
-        # else:
-        #     self.sio.emit(
-        #         "text",
-        #         {"message": "Give a new clue.",
-        #          "room": room_id,
-        #          "receiver_id": this_session.explainer}
-        #     )
-        #     self.sio.emit(
-        #         "text",
-        #         {"message": "Wait for a new clue.",
-        #          "room": room_id,
-        #          "receiver_id": this_session.guesser}
-        #     )
-        #     curr_usr, other_usr = self.sessions[room_id].players
-        #     if curr_usr['id'] != this_session.explainer:
-        #         curr_usr, other_usr = other_usr, curr_usr
-        #     # revoke writing rights to player_a
-        #     self.set_message_privilege(this_session.explainer, False)
-        #     self.check_writing_right(room_id, curr_usr, False)
-        #     # assign writing rights to other user
-        #     self.set_message_privilege(this_session.guesser, True)
-        #     self.check_writing_right(room_id, other_usr, True)
+        else:
+            self.sio.emit(
+                "text",
+                {"message": f"You are starting round {this_session.game_rounds - 1} out of 3",
+                 "room": room_id,
+                 }
+            )
+            self.sio.emit(
+                "text",
+                {"message": "Provide new instruction.",
+                 "room": room_id,
+                 "receiver_id": this_session.player_a}
+            )
+            self.sio.emit(
+                "text",
+                {"message": "Wait for a new instruction.",
+                 "room": room_id,
+                 "receiver_id": this_session.player_b}
+            )
+            self.show_item(room_id)
+            self.update_rights(room_id, player_a=True, player_b=False)
+
+    def update_rights(self, room_id, player_a: bool, player_b: bool):
+        this_session = self.sessions[room_id]
+        curr_usr, other_usr = self.sessions[room_id].players
+        if curr_usr['id'] != this_session.player_a:
+            curr_usr, other_usr = other_usr, curr_usr
+        # update writing rights to player_a (assign or revoke)
+        self.set_message_privilege(this_session.player_a, player_a)
+        self.check_writing_right(room_id, curr_usr, player_a)
+        # update writing rights to other user (assign or revoke)
+        self.set_message_privilege(this_session.player_b, player_b)
+        self.check_writing_right(room_id, other_usr, player_b)
+
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "retrieving user's permissions")
+
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        self.request_feedback(response, "changing user's message permission")
+
+    def check_writing_right(self, room_id, usr, writing_right):
+        curr_usr, other_usr = self.sessions[room_id].players
+        if curr_usr['id'] != usr['id']:
+            curr_usr, other_usr = other_usr, curr_usr
+        if writing_right is True:
+            # assign writing rights to the user
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "placeholder",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "true",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "placeholder",
+                    "value": "Enter your message here!",
+                    "receiver_id": curr_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+
+        elif writing_right is False:
+            # make input field unresponsive
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "true",
+                    "receiver_id": curr_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "placeholder",
+                    "value": "Wait for a message from your partner",
+                    "receiver_id": curr_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "readonly",
+                    "value": "placeholder",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/attribute/id/text",
+                json={
+                    "attribute": "placeholder",
+                    "value": "Enter your message here!",
+                    "receiver_id": other_usr["id"],
+                },
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
 
     def _command_done(self, room_id, user_id, command):
         """Must be sent to end a game round."""
@@ -615,6 +728,20 @@ class DrawingBot:
             },
         )
 
+        if this_session.drawn_grid is None:
+            self.sio.emit(
+                "text",
+                {
+                    "message":
+                        f"**You didn't provide an answer. You lost this round**",
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            this_session.rounds_left -= 1
+            self.next_round(room_id)
+            return
+
         if grid != this_session.drawn_grid:
             result = 'LOST'
             points = 0
@@ -643,6 +770,7 @@ class DrawingBot:
                 },
             )
             self.process_move(room_id, 1)
+        this_session.game_rounds -= 1
 
 
 
@@ -890,7 +1018,7 @@ class DrawingBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": grid,
+                    "message": f"This is the target grid: <br>{grid}<br><br>Give the first instruction.",
                     "receiver_id": this_session.player_a,
                     "room": room_id,
                     "html": True
