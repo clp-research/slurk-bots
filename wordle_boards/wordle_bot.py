@@ -154,7 +154,8 @@ class WordleBot2 (TaskBot):
                 )
             # FOR NOW: guesser = 0, critic = 1
             self.sessions[room_id].guesser = self.sessions[room_id].players[0]["id"]
-            self.sessions[room_id].critic = self.sessions[room_id].players[1]["id"]
+            if self.version == "critic":
+                self.sessions[room_id].critic = self.sessions[room_id].players[1]["id"]
 
 
 
@@ -344,7 +345,7 @@ class WordleBot2 (TaskBot):
                     usr["msg_n"] += 1
 
             if user_id == self.sessions[room_id].critic:
-                self.sessions[room_id].critic_provided  = True
+                self.sessions[room_id].critic_provided = True
                 self.set_message_privilege(self.sessions[room_id].critic, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
 
@@ -425,12 +426,6 @@ class WordleBot2 (TaskBot):
         """Must be sent to end a game round."""
 
         LOG.debug(command)
-        # no need, because critic can't enter the word?
-
-        # if user_id != self.sessions[room_id].guesser:
-        #     self.send_message_to_user(f"You can't guess the word, you can only give critic.",
-        #                               room_id, self.sessions[room_id].critic)
-        #     return
 
         # get the wordle for this room and the guess from the user
         word = self.sessions[room_id].word_to_guess
@@ -491,8 +486,9 @@ class WordleBot2 (TaskBot):
         self.sessions[room_id].turn += 1
         self.sessions[room_id].guesses = dict()
         self.sessions[room_id].guesses_history.append(guess)
-        # if self.sessions[room_id].turn% 2 == 0:
-        if not self.sessions[room_id].critic_provided:
+
+        # check if not and!
+        if not self.sessions[room_id].critic_provided and self.version == "critic":
             self.send_message_to_user(f"PRPOPOSAL: {guess}", room_id, self.sessions[room_id].critic)
             self.send_message_to_user(f"Please, provide your critic", room_id, self.sessions[room_id].critic)
             self.set_message_privilege(self.sessions[room_id].critic, True)
@@ -518,8 +514,9 @@ class WordleBot2 (TaskBot):
                 "room": room_id,
             },
         )
-        self.sessions[room_id].critic_provided = False
-        self.set_message_privilege(self.sessions[room_id].critic,True)
+        if self.version == "critic":
+            self.sessions[room_id].critic_provided = False
+            self.set_message_privilege(self.sessions[room_id].critic,True)
 
         if (word == guess) or (remaining_guesses == 1):
             sleep(2)
@@ -601,8 +598,9 @@ class WordleBot2 (TaskBot):
         if not self.sessions[room_id].words:
             self.close_room(room_id)
         else:
-            self.set_message_privilege(self.sessions[room_id].critic, False)
-            self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
+            if self.version == "critic":
+                self.set_message_privilege(self.sessions[room_id].critic, False)
+                self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
 
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
                 "target_word"].lower()
@@ -627,10 +625,11 @@ class WordleBot2 (TaskBot):
             self._update_score_info(room_id)
             sleep(2)
 
-            self.sio.emit(
+            if self.version == "critic":
+                self.sio.emit(
                 "message_command",
                 {"command": {"command": "wordle_init_critic"}, "room": room_id,  "receiver_id": self.sessions[room_id].critic},
-            )
+                )
 
             self.sio.emit(
                 "message_command",
