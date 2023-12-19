@@ -32,14 +32,24 @@ class Dataloader(list):
         sequences = random.sample(all_sequences, SEQUENCES_PER_ROOM)
 
         for i, sequence in enumerate(sequences):
+            buffer = defaultdict(list)
             with sequence.open(encoding="utf-8") as infile:
                 for line in infile:
                     board = json.loads(line)
-                    self.append((board["state"], board["instructions"]))
+                    level = int(board["level"])
+                    buffer[level].append(board)
 
-                # switch roles ar the end of the sequence except for the last one
-                if i != len(sequences) - 1:
-                    self.append("switch")
+                sorted_dict = dict(sorted(buffer.items()))
+
+                for level, boards in sorted_dict.items():
+                    board = random.choice(boards)
+                    self.append(
+                        (board["state"], board["instructions"])
+                    )
+
+                    # switch roles ar the end of the sequence except for the last one
+                    if i != len(sequences) - 1:
+                        self.append("switch")
 
     def get_boards(self):
         """sample random boards for a room"""
