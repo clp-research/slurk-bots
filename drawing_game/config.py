@@ -16,6 +16,7 @@ DATA_PATH = Path(f"{ROOT}/data/image_data.tsv")
 
 GAME_INSTANCE = Path(f"{ROOT}/data/instance.json")
 COMPACT_GRID_INSTANCES = Path(f"{ROOT}/data/compact_grids/")
+RANDOM_GRID_INSTANCES = Path(f"{ROOT}/data/random_grids/")
 
 N = 1
 

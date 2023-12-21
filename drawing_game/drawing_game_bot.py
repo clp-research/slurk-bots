@@ -11,172 +11,13 @@ import requests
 import socketio
 
 import config
-from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, DATA_PATH, N, GAME_MODE, SHUFFLE, SEED, GAME_INSTANCE, COMPACT_GRID_INSTANCES
+from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, \
+    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
 
 STARTING_POINTS = 0
-
-
-class RoomTimers:
-    """A number of timed events during the game.
-
-    :param ready_timer: Reminds both players that they have to send
-        /ready to begin the game if none of them did so, yet.
-        If one player already sent /ready then the other player
-        is reminded 30s later that they should do so, too.
-    :type ready_timer: Timer
-    :param game_timer: Reminds both players that they should come
-        to an end and close their discussion by sending /difference.
-    :type game_timer: Timer
-    :param done_timer: Resets a sent /difference command for one
-        player if their partner did not also sent /difference.
-    :type done_timer: Timer
-    :param last_answer_timer: Used to end the game if one player
-        did not answer for a prolonged time.
-    :type last_answer_timer: Timer
-    """
-
-    def __init__(self):
-        self.ready_timer = None
-        self.game_timer = None
-        self.done_timer = None
-        self.last_answer_timer = None
-
-
-class ImageData(list):
-    """Manage the access to image data.
-
-    Mapping from room id to items left for this room.
-
-    Args:
-        path (str): Path to a valid tsv file with at least
-            two columns per row, containing the image/word
-            pairs. Images are represented as urls.
-        n (int): Number of images presented per
-            participant per room (one at a time).
-        game_mode: one of 'same', 'one_blind', 'different',
-            specifying whether both players see the same image,
-            whether they see different images, or whether one
-            player is blind, i.e. does not see any image.
-        shuffle (bool): Whether to randomly sample images or
-            select them one by one as present in the file.
-            If more images are present than required per room
-            and participant, the selection is without replacement.
-            Otherwise it is with replacement.
-        seed (int): Use together with shuffle to
-            make the image presentation process reproducible.
-    """
-
-    def __init__(self,
-                 path=None,
-                 n=1,
-                 game_mode='same',
-                 shuffle=False,
-                 seed=None):
-        self._path = path
-        self._n = n
-        self._mode = game_mode
-        self._shuffle = shuffle
-
-        self._images = None
-        if seed is not None:
-            random.seed(seed)
-
-        self._switch_order = self._switch_image_order()
-        self.get_word_image_pairs()
-
-    @property
-    def n(self):
-        return self._n
-
-    @property
-    def mode(self):
-        return self._mode
-
-    def get_word_image_pairs(self):
-        """Create a collection of word/image pair items.
-
-        Each item holds a word and 1 or 2 urls each to one image
-        resource. The images will be loaded from there.
-        For local testing, you can host the images with python:
-        ```python -m SimpleHTTPServer 8000```
-
-        This function remembers previous calls to itself,
-        which makes it possible to split a file of items over
-        several participants even for not random sampling.
-
-        Returns:
-            None
-        """
-        if self._images is None:
-            # first time accessing the file
-            # or a new access for each random sample
-            self._images = self._image_gen()
-
-        sample = []
-        while len(sample) < self._n:
-            try:
-                pair = next(self._images)
-            except StopIteration:
-                # we reached the end of the file
-                # and start again from the top
-                self._images = self._image_gen()
-            else:
-                sample.append(pair)
-        if self._shuffle:
-            # implements reservoir sampling
-            for img_line, img in enumerate(self._images, self._n):
-                rand_line = random.randint(0, img_line)
-                if rand_line < self._n:
-                    sample[rand_line] = tuple(img)
-            self._images = None
-
-        # make sure that for the one_blind mode, the game alternates
-        # between who sees the image
-        if self._mode == 'one_blind':
-            new_sample = []
-            for item in sample:
-                order = next(self._switch_order)
-                if order:
-                    # switch the order of images
-                    new_sample.append((item[0], item[2], item[1]))
-                else:
-                    new_sample.append(item)
-            self.extend(new_sample)
-        else:
-            self.extend(sample)
-
-    def _image_gen(self):
-        """Generate one image pair at a time."""
-        with open(self._path, "r") as infile:
-            for line in infile:
-                data = line.strip().split("\t")
-                if len(data) == 2:
-                    if self.mode == 'one_blind':
-                        yield data[0], data[1], None
-                    elif self.mode == 'same':
-                        yield data[0], data[1], data[1]
-                    else:
-                        raise KeyError("No second image available.")
-                elif len(data) > 2:
-                    if self.mode == 'one_blind':
-                        yield data[0], data[1], None
-                    elif self.mode == 'same':
-                        yield data[0], data[1], data[1]
-                    else:
-                        yield data[0], data[1], data[2]
-
-    def _switch_image_order(self):
-        """For the mode one_blind, switch who sees an image"""
-        last = 0
-        while True:
-            if last == 0:
-                last = 1
-            elif last == 1:
-                last = 0
-            yield last
 
 
 class GridManager:
@@ -204,7 +45,7 @@ class GridManager:
             random_grid = random.choice(self.all_grids)
             index = self.all_grids.index(random_grid)
             random_file = self.json_files[index]
-            LOG.debug(f"Randomly Chosen File: {random_file}, Randomly Chosen Grid: {random_grid}")
+            LOG.debug(f"Randomly Chosen File: {random_file}, randomly Chosen Grid: {random_grid}")
             return random_grid
         else:
             LOG.debug("No JSON files found in the directory.")
@@ -231,8 +72,6 @@ class Session:
         self.all_grids = GridManager(COMPACT_GRID_INSTANCES)
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
-        self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
-        self.game_over = False
         self.game_round = None
         self.timer = None
         self.points = {
@@ -257,22 +96,6 @@ class Session:
     def get_grid(self):
         instance = json.loads(GAME_INSTANCE.read_text())['target_grid']
         return instance
-        # for filename in os.listdir(COMPACT_GRID_INSTANCES):
-        #     if filename.endswith('.json'):
-        #         file_path = COMPACT_GRID_INSTANCES / filename
-        #
-        #         # Load the JSON content
-        #         with open(file_path, 'r') as file:
-        #             json_content = json.load(file)
-        #
-        #         # Access the target grid
-        #         target_grid = json_content.get('target_grid')
-        #
-        #         # Process the target grid as needed
-        #         if target_grid:
-        #             print(f"File: {filename}, Target Grid: {target_grid}")
-        #         else:
-        #             print(f"File: {filename} does not have a target grid.")
 
 
 class SessionManager(defaultdict):
@@ -999,8 +822,16 @@ class DrawingBot:
 
         # 3) Load grid
         # this_session.target_grid = this_session.get_grid()
-        random_grid = this_session.all_grids.get_random_grid()
-        this_session.target_grid = random_grid
+        if this_session.all_grids:
+            random_grid = this_session.all_grids.get_random_grid()
+            this_session.target_grid = random_grid
+        else:
+            random_grids = GridManager(RANDOM_GRID_INSTANCES)
+            this_session.all_grids = random_grids
+            random_grid = this_session.all_grids.get_random_grid()
+            this_session.target_grid = random_grid
+
+
 
         self.send_individualised_instructions(room_id)
         self.show_item(room_id)
