@@ -11,7 +11,7 @@ import requests
 import socketio
 
 import config
-from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, DATA_PATH, N, GAME_MODE, SHUFFLE, SEED, GAME_INSTANCE
+from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, DATA_PATH, N, GAME_MODE, SHUFFLE, SEED, GAME_INSTANCE, COMPACT_GRID_INSTANCES
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -179,6 +179,48 @@ class ImageData(list):
             yield last
 
 
+class GridManager:
+    def __init__(self, root_path):
+        self.root_path = Path(root_path)
+        self.json_files = self._get_json_files()
+        self.all_grids = self._load_all_grids()
+
+    def _get_json_files(self):
+        return [file for file in os.listdir(self.root_path) if file.endswith('.json')]
+
+    def _load_all_grids(self):
+        all_grids = []
+        for json_file in self.json_files:
+            file_path = self.root_path / json_file
+            with open(file_path, 'r') as file:
+                json_content = json.load(file)
+                target_grid = json_content.get('target_grid')
+                if target_grid:
+                    all_grids.append(target_grid)
+        return all_grids
+
+    def get_random_grid(self):
+        if self.all_grids:
+            random_grid = random.choice(self.all_grids)
+            index = self.all_grids.index(random_grid)
+            random_file = self.json_files[index]
+            LOG.debug(f"Randomly Chosen File: {random_file}, Randomly Chosen Grid: {random_grid}")
+            return random_grid
+        else:
+            LOG.debug("No JSON files found in the directory.")
+            return None
+
+    def remove_grid(self, grid):
+        if grid in self.all_grids:
+            index = self.all_grids.index(grid)
+            random_file = self.json_files[index]
+            LOG.debug(f"File {random_file} has been removed.")
+            # Remove the chosen grid from the list
+            self.all_grids.pop(index)
+        else:
+            LOG.debug("Grid not found in the list.")
+
+
 class Session:
     def __init__(self):
         self.players = list()
@@ -214,6 +256,22 @@ class Session:
     def get_grid(self):
         instance = json.loads(GAME_INSTANCE.read_text())['target_grid']
         return instance
+        # for filename in os.listdir(COMPACT_GRID_INSTANCES):
+        #     if filename.endswith('.json'):
+        #         file_path = COMPACT_GRID_INSTANCES / filename
+        #
+        #         # Load the JSON content
+        #         with open(file_path, 'r') as file:
+        #             json_content = json.load(file)
+        #
+        #         # Access the target grid
+        #         target_grid = json_content.get('target_grid')
+        #
+        #         # Process the target grid as needed
+        #         if target_grid:
+        #             print(f"File: {filename}, Target Grid: {target_grid}")
+        #         else:
+        #             print(f"File: {filename} does not have a target grid.")
 
 
 class SessionManager(defaultdict):
@@ -429,7 +487,8 @@ class DrawingBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
             this_session = self.sessions[room_id]
-            command = data['command'].lower()
+            if isinstance(data["command"], str):
+                command = data['command'].lower()
 
             # do not process commands from itself
             if str(user_id) == self.user:
@@ -498,6 +557,7 @@ class DrawingBot:
                             "html": True
                         },
                     )
+                    sleep(1)
                     if this_session.rounds_left >= 1:
                         self.sio.emit(
                             "text",
@@ -712,6 +772,8 @@ class DrawingBot:
         # get the grid for this room and the guess from the user
         grid = this_session.target_grid.lower()
         grid = grid.replace('\n', ' ')
+        # guess = command["guess"]
+        # LOG.debug(guess)
         # if command["guess"] is not None:
         #     this_session.drawn_grid = command["guess"]
 
@@ -720,7 +782,7 @@ class DrawingBot:
             {
                 "command": {
                     "command": "drawing_game_guess",
-                    "guess": this_session.drawn_grid,
+                    "guess": this_session.drawn_grid,  # Or guess?
                     "correct_grid": grid,
                 },
                 "room": room_id,
@@ -930,6 +992,7 @@ class DrawingBot:
 
         # 3) Load grid
         this_session.target_grid = this_session.get_grid()
+
         LOG.debug(f'{this_session.get_grid()} is grid')
 
         self.send_individualised_instructions(room_id)
@@ -1044,73 +1107,6 @@ class DrawingBot:
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
-
-        # if this_session.images:
-        #     word, image_1, image_2 = self.sessions[room_id].images[0]
-        #     LOG.debug(f"{image_1}\n{image_2}")
-        #
-        #     # show a different image to each user. one image can be None
-        #
-        #     # remove image and description for both
-        #     self._hide_image(room_id)
-        #     self._hide_image_desc(room_id)
-        #
-        #     # Player 1
-        #     if image_1:
-        #         response = requests.patch(
-        #             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-        #             json={
-        #                 "attribute": "src",
-        #                 "value": image_1,
-        #                 "receiver_id": this_session.player_a,
-        #             },
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         self.request_feedback(response, "set image 1")
-        #         # enable the image
-        #         response = requests.delete(
-        #             f"{self.uri}/rooms/{room_id}/class/image-area",
-        #             json={"class": "dis-area", "receiver_id": this_session.player_a},
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         self.request_feedback(response, "enable image 1")
-        #
-        #     else:
-        #         # enable the explanatory text
-        #         response = requests.delete(
-        #             f"{self.uri}/rooms/{room_id}/class/image-desc",
-        #             json={"class": "dis-area", "receiver_id": this_session.player_a},
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         self.request_feedback(response, "enable explanation")
-        #
-        #     # Player 2
-        #     if image_2:
-        #         response = requests.patch(
-        #             f"{self.uri}/rooms/{room_id}/attribute/id/current-image",
-        #             json={
-        #                 "attribute": "src",
-        #                 "value": image_2,
-        #                 "receiver_id": this_session.player_b,
-        #             },
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         self.request_feedback(response, "set image 2")
-        #         # enable the image
-        #         response = requests.delete(
-        #             f"{self.uri}/rooms/{room_id}/class/image-area",
-        #             json={"class": "dis-area", "receiver_id": this_session.player_b},
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         self.request_feedback(response, "enable image 2")
-        #     else:
-        #         # enable the explanatory text
-        #         response = requests.delete(
-        #             f"{self.uri}/rooms/{room_id}/class/image-desc",
-        #             json={"class": "dis-area", "receiver_id": this_session.player_b},
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         self.request_feedback(response, "enable explanation")
 
     def _hide_image(self, room_id):
         response = requests.post(
