@@ -231,38 +231,38 @@ class WordleBot2 (TaskBot):
 
             # if room_id in self.sessions:
                 # read out task greeting
-            for line in TASK_GREETING:
+                for line in TASK_GREETING:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(
+                                color=STANDARD_COLOR, message=line
+                            ),
+                            "room": room_id,
+                            "html": True,
+                        },
+                    )
+                    # sleep(0.5)
+
                 self.sio.emit(
                     "text",
                     {
                         "message": COLOR_MESSAGE.format(
-                            color=STANDARD_COLOR, message=line
+                            color=STANDARD_COLOR,
+                            message=f"Let's start with the first "
                         ),
                         "room": room_id,
                         "html": True,
                     },
                 )
-                # sleep(0.5)
-
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR,
-                        message=f"Let's start with the first "
-                    ),
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-            sleep(0.5)
-            # BUT CAN"T FIND instr_title  IN THE LAYOUT
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr_title",
-                json={"text": line},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "set task instruction title")
+                sleep(0.5)
+                # BUT CAN"T FIND instr_title  IN THE LAYOUT
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/instr_title",
+                    json={"text": line},
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                self.request_feedback(response, "set task instruction title")
 
         @self.sio.event
         def status(data):
