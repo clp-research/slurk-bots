@@ -228,6 +228,7 @@ class Session:
         self.player_b = None
         self.player_a_instructions = TASK_DESCR_A.read_text()
         self.player_b_instructions = TASK_DESCR_B.read_text()
+        self.all_grids = GridManager(COMPACT_GRID_INSTANCES)
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
         self.images = ImageData(DATA_PATH, N, GAME_MODE, SHUFFLE, SEED)
@@ -620,6 +621,10 @@ class DrawingBot:
 
     def next_round(self, room_id):
         this_session = self.sessions[room_id]
+        # Remove grid so one instance is not played several times
+        this_session.all_grids.remove_grid(this_session.target_grid)
+        # Get new grid
+        this_session.target_grid = this_session.all_grids.get_random_grid()
         # was this the last game round?
         if self.sessions[room_id].game_round >= 4:
             self.sio.emit(
@@ -991,12 +996,11 @@ class DrawingBot:
                 LOG.debug(f'{user["name"]} is player B.')
 
         # 3) Load grid
-        this_session.target_grid = this_session.get_grid()
-
-        LOG.debug(f'{this_session.get_grid()} is grid')
+        # this_session.target_grid = this_session.get_grid()
+        random_grid = this_session.all_grids.get_random_grid()
+        this_session.target_grid = random_grid
 
         self.send_individualised_instructions(room_id)
-
         self.show_item(room_id)
 
     def transform_string_in_grid(self, string):
