@@ -590,8 +590,6 @@ class DrawingBot:
     def process_move(self, room_id, reward: int):
         this_session = self.sessions[room_id]
         this_session.game_round += 1
-        self.update_reward(room_id, reward)
-        self.update_title_points(room_id, reward)
         self.next_round(room_id)
 
     def update_reward(self, room_id, reward):
@@ -810,12 +808,14 @@ class DrawingBot:
         if grid != this_session.drawn_grid:
             result = 'LOST'
             points = 0
+            self.update_reward(room_id, points)
+            self.update_title_points(room_id, points)
             self.sio.emit(
                 "text",
                 {
                     "message":
                         f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {points}**",
+                        f"Your total score is: {self.sessions[room_id].points['score']}**",
                     "room": room_id,
                     "html": True,
                 },
@@ -824,12 +824,14 @@ class DrawingBot:
         else:
             result = 'WON'
             points = 1
+            self.update_reward(room_id, points)
+            self.update_title_points(room_id, points)
             self.sio.emit(
                 "text",
                 {
                     "message":
                         f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {points}**",
+                        f"Your total score is: {self.sessions[room_id].points['score']}**",
                     "room": room_id,
                     "html": True,
                 },
