@@ -157,8 +157,6 @@ class WordleBot2 (TaskBot):
             if self.version == "critic":
                 self.sessions[room_id].critic = self.sessions[room_id].players[1]["id"]
 
-
-
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
                 headers={"Authorization": f"Bearer {self.token}"},
@@ -186,83 +184,85 @@ class WordleBot2 (TaskBot):
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
-            mode_message = ""
-            if self.version == "clue":
-                mode_message = "To help you make an informed guess, you will first receive a clue for the word!" \
-                               " It will appear in the chat area on the left."
+            if room_id in self.sessions:
+                mode_message = ""
+                if self.version == "clue":
+                    mode_message = "To help you make an informed guess, you will first receive a clue for the word!" \
+                                   " It will appear in the chat area on the left."
 
-            if self.version == "critic":
-                mode_message += "After you enter your guess, the critic will indicate whether they agree" \
-                                " or disagree with it" \
-                                " and provide rationale, but agreeing with " \
-                                "a guess does not confirm its correctness. " \
-                                "You may choose to retain your original guess " \
-                                "(just press on ENTER to submit your guess again) " \
-                                "or modify it based on given clue and agreement and then submit it."
+                if self.version == "critic":
+                    mode_message += "After you enter your guess, the critic will indicate whether they agree" \
+                                    " or disagree with it" \
+                                    " and provide rationale, but agreeing with " \
+                                    "a guess does not confirm its correctness. " \
+                                    "You may choose to retain your original guess " \
+                                    "(just press on ENTER to submit your guess again) " \
+                                    "or modify it based on given clue and agreement and then submit it."
 
-            pars = ["p1", "p2", "p3", "p4"]
-            for i in range (0, len(pars)):
-                response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
-                json={"text": TASK_DESCR[i], "receiver_id": self.sessions[room_id].guesser},
-                headers={"Authorization": f"Bearer {self.token}"}
-                )
-            # mode
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/mode",
-                json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
-                headers={"Authorization": f"Bearer {self.token}"}
-            )
-
-            pars = ["p1", "p2", "p3", "p4", "p5"]
-            for i in range(0, len(pars)):
-                response = requests.patch(
+                pars = ["p1", "p2", "p3", "p4"]
+                for i in range (0, len(pars)):
+                    response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
-                    json={"text": CRITIC_INSTR[i], "receiver_id": self.sessions[room_id].critic},
+                    json={"text": TASK_DESCR[i], "receiver_id": self.sessions[room_id].guesser},
+                    headers={"Authorization": f"Bearer {self.token}"}
+                    )
+
+                # mode
+                response = requests.patch(
+                    f"{self.uri}/rooms/{room_id}/text/mode",
+                    json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
 
-                # response = requests.patch(
-                # f"{self.uri}/rooms/{room_id}/text/mode",
-                # json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
-                # headers={"Authorization": f"Bearer {self.token}"}
-                # )
-                # self.request_feedback(response, "add mode explanation")
-
-            if room_id in self.sessions:
-                # read out task greeting
-                for line in TASK_GREETING:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR, message=line
-                            ),
-                            "room": room_id,
-                            "html": True,
-                        },
+                pars = ["p1", "p2", "p3", "p4", "p5"]
+                for i in range(0, len(pars)):
+                    response = requests.patch(
+                        f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
+                        json={"text": CRITIC_INSTR[i], "receiver_id": self.sessions[room_id].critic},
+                        headers={"Authorization": f"Bearer {self.token}"}
                     )
-                    # sleep(0.5)
 
+                    # response = requests.patch(
+                    # f"{self.uri}/rooms/{room_id}/text/mode",
+                    # json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
+                    # headers={"Authorization": f"Bearer {self.token}"}
+                    # )
+                    # self.request_feedback(response, "add mode explanation")
+
+            # if room_id in self.sessions:
+                # read out task greeting
+            for line in TASK_GREETING:
                 self.sio.emit(
                     "text",
                     {
                         "message": COLOR_MESSAGE.format(
-                            color=STANDARD_COLOR,
-                            message=f"Let's start with the first "
+                            color=STANDARD_COLOR, message=line
                         ),
                         "room": room_id,
                         "html": True,
                     },
                 )
-                sleep(0.5)
-                # BUT CAN"T FIND instr_title  IN THE LAYOUT
-                response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/instr_title",
-                    json={"text": line},
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                self.request_feedback(response, "set task instruction title")
+                # sleep(0.5)
+
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=f"Let's start with the first "
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            sleep(0.5)
+            # BUT CAN"T FIND instr_title  IN THE LAYOUT
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/instr_title",
+                json={"text": line},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set task instruction title")
 
         @self.sio.event
         def status(data):
