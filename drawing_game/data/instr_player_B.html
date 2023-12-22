@@ -1,0 +1,39 @@
+<p>Let us draw something together. There is an empty grid with a size 5 by 5, like so:</p>
+<br>
+<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;</p>
+<br>
+<p>I will give you instructions like &quot;put an X in the top left&quot;, and you return the grid by applying the given instruction, like so:</p>
+<br>
+<p>Instruction: put an X in the top left</p>
+<br>
+<p>X &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;<br>
+&#9634; &#9634; &#9634; &#9634; &#9634;</p>
+<br>
+<p>Or for another instruction such as &quot;fill the fifth column with T&quot;, you return the updated grid by applying the given instruction in all places that the command corresponds to, like so:</p>
+<br>
+<p>Instruction: fill the fifth column with T</p>
+<br>
+<p>X &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; &#9634; T</p>
+<br>
+<p>Or for another instruction such as &quot;fill the fourth column second row with P&quot;, you return the updated grid by applying the given instruction in all places that the command corresponds to, like so:</p>
+<br>
+<p>Instruction: fill the fourth column second row with P</p>
+<br>
+<p>X &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; P T<br>
+&#9634; &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; &#9634; T<br>
+&#9634; &#9634; &#9634; &#9634; T</p>
+<br>
+<p>Now create an empty grid with a size GRID_DIMENSION and execute the following commands at each step. Once you execute the command, return only the grid and exclude all other text from the output.</p>

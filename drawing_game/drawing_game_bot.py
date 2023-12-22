@@ -12,7 +12,7 @@ import socketio
 
 import config
 from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, \
-    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, CRITIC_HTML
+    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, INSTRUCTIONS_A, INSTRUCTIONS_B
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -752,7 +752,7 @@ class DrawingBot:
             {
                 "command": {
                     "event": "send_instr",
-                    "message": f"{CRITIC_HTML}"
+                    "message": f"{INSTRUCTIONS_A}"
                 },
                 "room": room_id,
                 "receiver_id": this_session.player_a,
@@ -763,7 +763,7 @@ class DrawingBot:
             {
                 "command": {
                     "event": "send_instr",
-                    "message": f"Instructions B"
+                    "message": f"{INSTRUCTIONS_B}"
                 },
                 "room": room_id,
                 "receiver_id": this_session.player_b,
