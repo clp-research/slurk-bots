@@ -292,7 +292,9 @@
     "#grid-area": {
       "margin": "0 auto",
       "align-items": "center",
-      "justify-content": "center"
+      "justify-content": "center",
+      "background-color": "#eee",
+      "padding": "18px"
     },
     ".letter-box": {
       "padding-top": "0.5rem",
