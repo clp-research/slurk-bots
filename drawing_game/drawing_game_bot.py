@@ -945,15 +945,27 @@ class DrawingBot:
             )
 
             # Display on display area
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/current-grid",
-                json={
-                    "text": this_session.target_grid,
+            grid = this_session.target_grid.replace('\n', '<br>')
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "send_grid",
+                        "message": f"**Target grid**<br><br>{grid}",
+                    },
+                    "room": room_id,
                     "receiver_id": this_session.player_a,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
+                }
             )
-            self.request_feedback(response, "set grid")
+            # response = requests.patch(
+            #     f"{self.uri}/rooms/{room_id}/text/current-grid",
+            #     json={
+            #         "text": this_session.target_grid,
+            #         "receiver_id": this_session.player_a,
+            #     },
+            #     headers={"Authorization": f"Bearer {self.token}"},
+            # )
+            # self.request_feedback(response, "set grid")
             # enable the grid
             response = requests.delete(
                 f"{self.uri}/rooms/{room_id}/class/grid-area",

@@ -241,7 +241,8 @@
                 {
                   "layout-type": "div",
                   "id": "current-grid",
-                  "style": "max-width: 100%; height: auto; object-fit: contain;"
+                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "layout-content": ""
                 }
               ]
             }

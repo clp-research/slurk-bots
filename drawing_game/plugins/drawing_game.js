@@ -239,6 +239,9 @@ $(document).ready(() => {
                 case "send_instr":
                     $("#text_to_modify").html(data.command.message)
                     break;
+                case "send_grid":
+                    $("#current-grid").html(data.command.message)
+                    break;
             }
         }
     });
