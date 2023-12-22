@@ -209,13 +209,26 @@ class CoCoBot(TaskBot):
                 return
 
             room_id = data["room"]
+            user_id = data["user"]["id"]
+
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if data["type"] == "join":
-                    logging.debug("Waiting Timer restarted.")
+                    # start no_partner timer
+                    timer = Timer(
+                        WAITING_ROOM_TIMER * 60, self.timeout_waiting_room, args=[data["user"]]
+                    )
+                    timer.start()
+                    self.sessions.waiting_room_timers[user_id] = timer
+
+            if data["type"] == "join":
+                # cancel waiting room timers
+                if user_id in self.sessions.waiting_room_timers:
+                    self.sessions.waiting_room_timers[user_id].cancel()
+                    self.sessions.waiting_room_timers.pop(user_id)
 
             # some joined a task room
-            elif room_id in self.sessions:
+            if room_id in self.sessions:
                 this_session = self.sessions[room_id]
                 curr_usr, other_usr = this_session.players
                 if curr_usr["id"] != data["user"]["id"]:
@@ -1052,15 +1065,40 @@ class CoCoBot(TaskBot):
         self.confirmation_code(room_id, "sucess")
         self.close_game(room_id)
 
-    def confirmation_code(self, room_id, status):
-        """Generate AMT token that will be sent to each player."""
-        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        points = self.sessions[room_id].points
-        # post AMT token to logs
-        self.log_event(
-            "confirmation_log",
-            {"status_txt": status, "amt_token": amt_token, "reward": points},
-            room_id,
+    def timeout_waiting_room(self, user):
+        # get layout_id
+        response = requests.get(
+            f"{self.uri}/rooms/{self.waiting_room}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        layout_id = response.json()["layout_id"]
+
+        # create a new task room for this user
+        room = requests.post(
+            f"{self.uri}/rooms",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"layout_id": layout_id},
+        )
+        room = room.json()
+
+        # remove user from waiting_room
+        self.remove_user_from_room(user["id"], self.waiting_room)
+
+        # move user to new task room
+        response = requests.post(
+            f"{self.uri}/users/{user['id']}/rooms/{room['id']}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not let user join room: {response.status_code}")
+            exit(4)
+
+        sleep(0.5)
+
+        requests.patch(
+            f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
+            json={"attribute": "src", "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg"},
+            headers={"Authorization": f"Bearer {self.token}"},
         )
 
         self.sio.emit(
@@ -1069,15 +1107,53 @@ class CoCoBot(TaskBot):
                 "message": COLOR_MESSAGE.format(
                     color=STANDARD_COLOR,
                     message=(
-                        "The experiment is over, please remember to "
+                        "Unfortunately we were not able to find a partner for you, please remember to "
                         "save your token before you close this browser window. "
-                        f"Your token: {amt_token}"
+                        f"Your token: {user['name']}"
                     ),
                 ),
-                "room": room_id,
+                "receiver_id": user["id"],
+                "room": room['id'],
                 "html": True,
             },
         )
+
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": "timeout_waiting_room", "reward": 0, "users": [user]},
+            room['id'],
+        )
+
+        # remove user from new task_room
+        self.remove_user_from_room(user["id"], room['id'])
+
+    def confirmation_code(self, room_id, status):
+        this_session = self.sessions[room_id]
+
+        # post AMT token to logs
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": status, "reward": this_session.points, "users": this_session.players},
+            room_id,
+        )
+
+        for user in this_session.players:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=(
+                            "The experiment is over, please remember to "
+                            "save your token before you close this browser window. "
+                            f"Your token: {user['name']}"
+                        ),
+                    ),
+                    "receiver_id": user["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
 
     def timeout_close_game(self, room_id, status):
         if room_id in self.sessions:
@@ -1117,6 +1193,27 @@ class CoCoBot(TaskBot):
             # remove any task room specific objects
             self.sessions.clear_session(room_id)
 
+    def remove_user_from_room(self, user_id, room_id):
+        response = requests.get(
+            f"{self.uri}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+            response.raise_for_status()
+        etag = response.headers["ETag"]
+
+        response = requests.delete(
+            f"{self.uri}/users/{user_id}/rooms/{room_id}",
+            headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(
+                f"Could not remove user from task room: {response.status_code}"
+            )
+            response.raise_for_status()
+        logging.debug("Removing user from task room was successful.")
+
     def room_to_read_only(self, room_id):
         """Set room to read only."""
         this_session = self.sessions[room_id]
@@ -1141,25 +1238,7 @@ class CoCoBot(TaskBot):
         # remove user from room
         if room_id in self.sessions:
             for usr in this_session.players:
-                response = requests.get(
-                    f"{self.uri}/users/{usr['id']}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(f"Could not get user: {response.status_code}")
-                    response.raise_for_status()
-                etag = response.headers["ETag"]
-
-                response = requests.delete(
-                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not remove user from task room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                logging.debug("Removing user from task room was successful.")
+                self.remove_user_from_room(usr["id"], room_id)
 
 
 if __name__ == "__main__":

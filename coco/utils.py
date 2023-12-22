@@ -110,6 +110,8 @@ class Session:
 
 
 class SessionManager(dict):
+    waiting_room_timers = dict()
+
     def create_session(self, room_id):
         self[room_id] = Session()
 
