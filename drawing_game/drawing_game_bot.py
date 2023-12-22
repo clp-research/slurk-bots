@@ -12,7 +12,7 @@ import socketio
 
 import config
 from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, \
-    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES
+    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, CRITIC_HTML
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -461,12 +461,6 @@ class DrawingBot:
                  "room": room_id,
                  }
             )
-            # self.sio.emit(
-            #     "text",
-            #     {"message": "Provide new instruction.",
-            #      "room": room_id,
-            #      "receiver_id": this_session.player_a}
-            # )
             self.sio.emit(
                 "text",
                 {"message": "Wait for a new instruction.",
@@ -753,31 +747,54 @@ class DrawingBot:
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
 
-        # Send explainer_ instructions to player_a
-        response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
-                                  json={"text": "Describe the grid",
-                                        "receiver_id": this_session.player_a},
-                                  headers={"Authorization": f"Bearer {self.token}"},
-                                  )
-        if not response.ok:
-            LOG.error(
-                f"Could not set task instruction title: {response.status_code}"
-            )
-            response.raise_for_status()
-
-        instructions_a = this_session.player_a_instructions  # Loads instructions but non-collapsible
-        response_e = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr",
-            json={
-                "text": instructions_a,
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "event": "send_instr",
+                    "message": f"{CRITIC_HTML}"
+                },
+                "room": room_id,
                 "receiver_id": this_session.player_a,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
+            }
+        )
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "event": "send_instr",
+                    "message": f"Instructions B"
+                },
+                "room": room_id,
+                "receiver_id": this_session.player_b,
+            }
         )
 
-        if not response_e.ok:
-            LOG.error(f"Could not set task instruction: {response_e.status_code}")
-            response_e.raise_for_status()
+        # # Send explainer_ instructions to player_a
+        # response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
+        #                           json={"text": "Describe the grid",
+        #                                 "receiver_id": this_session.player_a},
+        #                           headers={"Authorization": f"Bearer {self.token}"},
+        #                           )
+        # if not response.ok:
+        #     LOG.error(
+        #         f"Could not set task instruction title: {response.status_code}"
+        #     )
+        #     response.raise_for_status()
+        #
+        # instructions_a = this_session.player_a_instructions  # Loads instructions but non-collapsible
+        # response_e = requests.patch(
+        #     f"{self.uri}/rooms/{room_id}/text/instr",
+        #     json={
+        #         "text": instructions_a,
+        #         "receiver_id": this_session.player_a,
+        #     },
+        #     headers={"Authorization": f"Bearer {self.token}"},
+        # )
+        #
+        # if not response_e.ok:
+        #     LOG.error(f"Could not set task instruction: {response_e.status_code}")
+        #     response_e.raise_for_status()
 
         # # Send drawer_ instructions to player_b
         # response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",

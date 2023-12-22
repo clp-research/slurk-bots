@@ -234,6 +234,12 @@ $(document).ready(() => {
                 // happens when players submit different guesses
                 submitted = false;
             }
+            switch(data.command.event){
+
+                case "send_instr":
+                    $("#text_to_modify").html(data.command.message)
+                    break;
+            }
         }
     });
 });

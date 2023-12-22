@@ -32,8 +32,14 @@
                 {
                   "layout-type": "div",
                   "class": "collapsible-content",
-                  "layout-content": "READING FROM LAYOUT: Let us play a game. The goal is to fill an empty grid that looks like this:<br><br>▢ ▢ ▢ ▢ ▢<br>▢ ▢ ▢ ▢ ▢<br>▢ ▢ ▢ ▢ ▢<br>▢ ▢ ▢ ▢ ▢<br>▢ ▢ ▢ ▢ ▢<br><br>A filled grid below is 5 by 5 and can look like this:<br><br>▢ ▢ ▢ ▢ ▢<br>▢ ▢ E ▢ ▢<br>▢ ▢ ▢ ▢ ▢<br>▢ ▢ ▢ ▢ ▢<br>X X X X X<br><br>I want you to describe this grid to me, step by step. You don't need to describe the empty squares, which are denoted with \"▢\". Only describe the location of letters in the grid. Then you wait for me to say \"What is your next instruction?\", and then you continue with the next step. Take the size of the grid into consideration while giving instructions. When you have described everything, you say \"DONE\".<br><br>For the filled grid above, here are the example steps.<br><br>What is your next instruction?<br>Instruction: Put an E in second row third column<br><br>What is your next instruction?<br>Instruction: Fill the last row with X<br><br>What is your next instruction?<br>Instruction: DONE<br><br>Another example with the following 5 by 5 grid:<br><br>W ▢ ▢ ▢ ▢<br>▢ W ▢ ▢ ▢<br>▢ ▢ W ▢ ▢<br>▢ ▢ ▢ W ▢<br>Z ▢ ▢ ▢ W<br><br>What is your next instruction?<br>Instruction: Put an W in five cells diagonally starting from top left going to bottom right<br><br>What is your next instruction?<br>Instruction: Put Z in the last row first column<br><br>What is your next instruction?<br>Instruction: DONE<br><br>Ok. Please do this for the following example, which is a GRID_DIMENSION grid.<br><br>",
-                  "style": "max-width: 100%; height: auto; object-fit: contain;"
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "text_to_modify",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": ""
+                    }
+                  ]
                 },
                 {
                   "layout-type": "div",

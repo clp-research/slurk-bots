@@ -26,4 +26,7 @@ SEED = None
 # Whether to randomly sample images or present them in linear order.
 SHUFFLE = True
 
+with open(Path(f"{ROOT}/data/critic_instr.html")) as html_f:
+    CRITIC_HTML = html_f.read()
+
 
