@@ -951,12 +951,15 @@ class DrawingBot:
                 {
                     "command": {
                         "event": "send_grid",
-                        "message": f"**Target grid**<br><br>{grid}",
+                        "message": f"<br><br>{grid}",
                     },
                     "room": room_id,
                     "receiver_id": this_session.player_a,
                 }
             )
+            # Hide game board for player a
+            self._hide_game_board(room_id, this_session.player_a)
+
             # response = requests.patch(
             #     f"{self.uri}/rooms/{room_id}/text/current-grid",
             #     json={
@@ -974,13 +977,13 @@ class DrawingBot:
             )
             self.request_feedback(response, "enable grid")
 
-    def _hide_image(self, room_id):
+    def _hide_game_board(self, room_id, user_id):  # Doesn't work
         response = requests.post(
-            f"{self.uri}/rooms/{room_id}/class/image-area",
-            json={"class": "dis-area"},
+            f"{self.uri}/rooms/{room_id}/class/game-board",
+            json={"class": "dis-area", "receiver_id": user_id},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        self.request_feedback(response, "hide image")
+        self.request_feedback(response, "hide game board")
 
     def _hide_image_desc(self, room_id):
         response = requests.post(
