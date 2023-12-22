@@ -214,13 +214,14 @@ class WordleBot2 (TaskBot):
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
 
-                pars = ["p1", "p2", "p3", "p4", "p5"]
-                for i in range(0, len(pars)):
-                    response = requests.patch(
-                        f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
-                        json={"text": CRITIC_INSTR[i], "receiver_id": self.sessions[room_id].critic},
-                        headers={"Authorization": f"Bearer {self.token}"}
-                    )
+                if self.version == "critic":
+                    pars = ["p1", "p2", "p3", "p4", "p5"]
+                    for i in range(0, len(pars)):
+                        response = requests.patch(
+                            f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
+                            json={"text": CRITIC_INSTR[i], "receiver_id": self.sessions[room_id].critic},
+                            headers={"Authorization": f"Bearer {self.token}"}
+                        )
 
                     # response = requests.patch(
                     # f"{self.uri}/rooms/{room_id}/text/mode",
