@@ -235,10 +235,18 @@ $(document).ready(() => {
                 for (let i=0; i<5; i++) {
                     deleteLetter()
                 }
+                 }
+            switch(data.command.event){
+
+                case "send_instr":
+                    $("#text_to_modify").html(data.command.message)
+                    break;
+            }
+
 
 
 //
-            }
+
         }
     });
 });

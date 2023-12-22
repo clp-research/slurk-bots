@@ -24,7 +24,6 @@
           "layout-content": [
             {
               "layout-type": "div",
-              "id": "instr",
               "layout-content": [
                 {
                   "layout-type": "button",
@@ -36,59 +35,15 @@
                   "class": "collapsible-content",
                   "layout-content": [
                     {
-                      "layout-type": "p",
-                      "id": "p1",
-                      "style": "padding-bottom: 5px",
-                      "layout-content": ""
-                    },
-
-                    {
-                      "layout-type": "p",
-                      "style": "padding-bottom: 5px",
-                      "layout-content": ""
-                    },
-                                        {
-                      "layout-type": "p",
-                      "id": "p2",
+                      "layout-type": "div",
+                      "id": "text_to_modify",
                       "style": "padding-bottom: 5px",
                       "layout-content": ""
                     },
                     {
-                      "layout-type": "p",
-                      "style": "padding-bottom: 5px",
-                      "layout-content": ""
-                    },
-
-                    {
-                      "layout-type": "p",
+                      "layout-type": "div",
                       "id": "mode",
                       "style": "padding-bottom: 5px",
-                      "layout-content": ""
-                    },
-                    {
-                      "layout-type": "p",
-                      "style": "padding-bottom: 5px",
-                      "layout-content": ""
-                    },
-
-                    {
-                      "layout-type": "p",
-                      "id": "p3",
-                      "layout-content": ""
-                    },
-                                     {
-                      "layout-type": "p",
-                      "style": "padding-bottom: 5px",
-                      "layout-content": ""
-                    },
-                    {
-                      "layout-type": "p",
-                       "id": "p4",
-                      "layout-content": ""
-                    },
-                    {
-                      "layout-type": "p",
-                       "id": "p5",
                       "layout-content": ""
                     }
                   ]

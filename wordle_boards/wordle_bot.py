@@ -24,7 +24,6 @@ from .config import (
     STANDARD_COLOR,
     WARNING_COLOR,
     TASK_GREETING,
-    CRITIC_INSTR,
     TASK_TITLE,
     TIME_LEFT,
     TIME_ROUND,
@@ -32,7 +31,9 @@ from .config import (
     VALID_WORDS,
     WORDLE_WORDS,
     WORDS_PER_ROOM,
-    TASK_DESCR
+
+    GUESSER_HTML,
+    CRITIC_HTML
 )
 
 
@@ -199,38 +200,44 @@ class WordleBot2 (TaskBot):
                                     "(just press on ENTER to submit your guess again) " \
                                     "or modify it based on given clue and agreement and then submit it."
 
-                pars = ["p1", "p2", "p3", "p4"]
-                for i in range (0, len(pars)):
-                    response = requests.patch(
-                    f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
-                    json={"text": TASK_DESCR[i], "receiver_id": self.sessions[room_id].guesser},
-                    headers={"Authorization": f"Bearer {self.token}"}
-                    )
-
-                # mode
+                # Here html instructions for the GUESSER are emitted
+                # the name of the event ( "send_instr") must be the same as in the plugin file
+                # Besides open task_layout.json and make sure there is a div with the name "text_to_modify".
+                # This div from html is called with "#text_to_modify" in the plugin file
+                # Read html file with the instructions (GUESSER_HTML and CRITIC_HTML) in cofig and import it to the bot
+                self.sio.emit(
+                    "message_command",
+                    {
+                        "command": {
+                            "event":  "send_instr",
+                            "message":  f"{GUESSER_HTML}"
+                        },
+                        "room": room_id,
+                        "receiver_id": self.sessions[room_id].guesser,
+                    }
+                )
+                # mode for the guesser (if version == clue, or critic)
                 response = requests.patch(
                     f"{self.uri}/rooms/{room_id}/text/mode",
                     json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
 
+                # Here html instructions for the CRITIC are emitted
                 if self.version == "critic":
-                    pars = ["p1", "p2", "p3", "p4", "p5"]
-                    for i in range(0, len(pars)):
-                        response = requests.patch(
-                            f"{self.uri}/rooms/{room_id}/text/{pars[i]}",
-                            json={"text": CRITIC_INSTR[i], "receiver_id": self.sessions[room_id].critic},
-                            headers={"Authorization": f"Bearer {self.token}"}
-                        )
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": {
+                                "event": "send_instr",
+                                "message": f"{CRITIC_HTML}"
+                            },
+                            "room": room_id,
+                            "receiver_id": self.sessions[room_id].critic,
+                        }
+                    )
 
-                    # response = requests.patch(
-                    # f"{self.uri}/rooms/{room_id}/text/mode",
-                    # json={"text": mode_message, "receiver_id": self.sessions[room_id].guesser},
-                    # headers={"Authorization": f"Bearer {self.token}"}
-                    # )
-                    # self.request_feedback(response, "add mode explanation")
 
-            # if room_id in self.sessions:
                 # read out task greeting
                 for line in TASK_GREETING:
                     self.sio.emit(
