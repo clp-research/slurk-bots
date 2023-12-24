@@ -332,6 +332,7 @@ class DrawingBot:
                         )
                         return
                     else:
+                        this_session.drawn_grid = data["command"]["guess"].strip()
                         self.sio.emit(
                             "text",
                             {
@@ -341,7 +342,16 @@ class DrawingBot:
                                 "html": True,
                             },
                         )
-                        this_session.drawn_grid = data["command"]["guess"].strip()
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"**CURRENT DRAWN GRID**:<br>{this_session.drawn_grid}",
+                                "room": room_id,
+                                "receiver_id": this_session.player_a,
+                                "html": True,
+                            },
+                        )
+
                         LOG.debug(f"the drawn grid {this_session.drawn_grid} was sent to the other player")
                         return
 

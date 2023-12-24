@@ -142,16 +142,20 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
 function sendGuess() {
     let guessString = ''
 
-    // Construct the formatted guessString with empty spaces
-    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
-        for (let j = 0; j < 5; j++) {
-            if (selected_cells[i][j]) {
-                guessString += currentGuess[i] && currentGuess[i][j] ? currentGuess[i][j] : "▢";
-            } else {
-                guessString += "▢"; // Empty space for not guessed letters
-            }
-        }
+//    // Construct the formatted guessString with empty spaces
+//    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+//        for (let j = 0; j < 5; j++) {
+//            if (selected_cells[i][j]) {
+//                guessString += currentGuess[i] && currentGuess[i][j] ? currentGuess[i][j] : "▢";
+//            } else {
+//                guessString += "▢"; // Empty space for not guessed letters
+//            }
+//        }
+//    }
+    for (const val of currentGuess) {
+        guessString += val
     }
+
 
     socket.emit("message_command",
         {
