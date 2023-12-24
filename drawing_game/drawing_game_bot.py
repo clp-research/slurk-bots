@@ -332,7 +332,17 @@ class DrawingBot:
                         )
                         return
                     else:
-                        self._command_done(room_id, user_id, data["command"])
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": "You sent your drawn grid to the other player.",
+                                "room": room_id,
+                                "receiver_id": user_id,
+                                "html": True,
+                            },
+                        )
+                        this_session.drawn_grid = data["command"]["guess"].strip()
+                        LOG.debug(f"the drawn grid {this_session.drawn_grid} was sent to the other player")
                         return
 
             if this_session.rounds_left is None:

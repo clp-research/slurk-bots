@@ -37,25 +37,6 @@ function initBoard() {
 }
 
 
-function shadeKeyBoard(letter, color) {
-    for (const elem of document.getElementsByClassName("keyboard-button")) {
-        if (elem.textContent.trim() === letter) {
-            let oldColor = elem.style.backgroundColor
-            if (oldColor === 'green') {
-                return
-            }
-
-            if (oldColor === 'yellow' && color !== 'green') {
-                return
-            }
-
-            elem.style.backgroundColor = color
-            break
-        }
-    }
-}
-
-
 function deleteLetter() {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let box = row.children[nextLetter - 1]
@@ -114,7 +95,7 @@ function checkGuess(guessString, rightWordString) {
             box.style.backgroundColor = colors[i]
             // prevent user's shenanigans
             box.textContent = guessString[i]
-            shadeKeyBoard(guessString[i], colors[i])
+//            shadeKeyBoard(guessString[i], colors[i])
         }, delay)
     }
     // update game variables
@@ -133,6 +114,8 @@ function insertLetter(pressedKey) {
     animateCSS(box, "pulse")
     box.textContent = pressedKey
     box.classList.add("filled-box")
+    currentGuess.push(pressedKey)
+    nextLetter += 1
 }
 
 
@@ -159,8 +142,15 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
 function sendGuess() {
     let guessString = ''
 
-    for (const val of currentGuess) {
-        guessString += val
+    // Construct the formatted guessString with empty spaces
+    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+        for (let j = 0; j < 5; j++) {
+            if (selected_cells[i][j]) {
+                guessString += currentGuess[i] && currentGuess[i][j] ? currentGuess[i][j] : "▢";
+            } else {
+                guessString += "▢"; // Empty space for not guessed letters
+            }
+        }
     }
 
     socket.emit("message_command",
@@ -228,8 +218,9 @@ $(document).ready(() => {
                 }
 
             } else if (data.command.command === "drawing_game_guess") {
-                checkGuess(data.command.guess, data.command.correct_word);
-                submitted = false;
+//                checkGuess(data.command.guess, data.command.correct_word);
+//                submitted = false;
+                sendGuess();
             } else if (data.command.command === "unsubmit") {
                 // happens when players submit different guesses
                 submitted = false;
