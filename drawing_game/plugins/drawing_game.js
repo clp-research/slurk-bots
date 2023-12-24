@@ -140,7 +140,7 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
 
 
 function sendGuess() {
-    let guessString = ''
+    let guessString = '';
 
 //    // Construct the formatted guessString with empty spaces
 //    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
@@ -152,8 +152,19 @@ function sendGuess() {
 //            }
 //        }
 //    }
-    for (const val of currentGuess) {
-        guessString += val
+
+//Works
+//    for (const val of currentGuess) {
+//        guessString += val
+//    }
+    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+        for (let j = 0; j < 5; j++) {
+            if (currentGuess[i] && currentGuess[i][j]) {
+                guessString += currentGuess[i][j];
+            } else {
+                guessString += '▢'; // Empty space for not guessed letters
+            }
+        }
     }
 
 
