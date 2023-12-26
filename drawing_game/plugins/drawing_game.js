@@ -1,11 +1,14 @@
 const NUMBER_OF_GUESSES = 6;
 const NUMBER_OF_ROWS = 5;
+const NUMBER_OF_COLUMNS = 5;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
 let submitted = false;  // whether a guess was submitted
 let selected_cell = null;  // keep track of the box the user selects
 
+// Initialize a 2D array to represent the grid
+let grid = Array.from({ length: NUMBER_OF_ROWS }, () => Array(NUMBER_OF_COLUMNS).fill('▢'));
 
 function initBoard() {
     let board = document.getElementById("game-board");
@@ -115,7 +118,20 @@ function insertLetter(pressedKey) {
     box.textContent = pressedKey
     box.classList.add("filled-box")
     currentGuess.push(pressedKey)
-    nextLetter += 1
+
+    // Calculate the row and column based on the selected_cell
+    let rowIndex = Array.from(selected_cell.parentElement.parentElement.children).indexOf(selected_cell.parentElement);
+    let colIndex = Array.from(selected_cell.parentElement.children).indexOf(selected_cell);
+
+    // Ensure the currentGuess array has enough rows
+    if (!currentGuess[rowIndex]) {
+        currentGuess[rowIndex] = [];
+    }
+
+    // Set the pressedKey at the correct position in currentGuess
+    currentGuess[rowIndex][colIndex] = pressedKey;
+
+    console.log(`Inserting letter: ${pressedKey} at row: ${rowIndex} and column: ${colIndex}`);
 }
 
 
@@ -142,30 +158,48 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
 function sendGuess() {
     let guessString = '';
 
-//    // Construct the formatted guessString with empty spaces
+// SOLUTION A
 //    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
 //        for (let j = 0; j < 5; j++) {
-//            if (selected_cells[i][j]) {
-//                guessString += currentGuess[i] && currentGuess[i][j] ? currentGuess[i][j] : "▢";
+//            if (currentGuess[i] && currentGuess[i][j]) {
+//                guessString += currentGuess[i][j];
 //            } else {
-//                guessString += "▢"; // Empty space for not guessed letters
+//                guessString += '▢'; // Empty space for not guessed letters
 //            }
 //        }
 //    }
 
-//Works
-//    for (const val of currentGuess) {
-//        guessString += val
+//SOLUTION B
+//    // Initialize all cells with empty space
+//    let emptyRow = Array(5).fill('▢');
+//    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+//        let row = currentGuess[i] ? [...currentGuess[i]] : emptyRow;
+//
+//        // Ensure the row has exactly 5 elements
+//        row = row.concat(Array(Math.max(0, 5 - row.length)).fill('▢'));
+//
+//        guessString += row.join('');
 //    }
+
+    // Iterate through each row in the grid
     for (let i = 0; i < NUMBER_OF_ROWS; i++) {
-        for (let j = 0; j < 5; j++) {
-            if (currentGuess[i] && currentGuess[i][j]) {
-                guessString += currentGuess[i][j];
-            } else {
-                guessString += '▢'; // Empty space for not guessed letters
-            }
+        let row = currentGuess[i] || Array(5).fill('▢'); // Use currentGuess[i] if available, otherwise use an empty row
+
+        // Ensure the row is an array
+        if (!Array.isArray(row)) {
+            row = Array(5).fill('▢'); // Use an empty row if currentGuess[i] is not an array
         }
+        // Ensure the row has exactly 5 elements
+        row = row.concat(Array(Math.max(0, 5 - row.length)).fill('▢'));
+
+        // Log the row and its index
+        console.log(`Row ${i}: ${row.join('')}`);
+
+        guessString += row.join('');
     }
+
+    // Log the final guessString
+    console.log(`Final Guess: ${guessString}`);
 
 
     socket.emit("message_command",
@@ -176,7 +210,7 @@ function sendGuess() {
             },
             "room": self_room
         }
-    )
+    );
 }
 
 
