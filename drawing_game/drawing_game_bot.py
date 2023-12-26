@@ -351,6 +351,7 @@ class DrawingBot:
                                 "html": True,
                             },
                         )
+                        self.update_rights(room_id, True, False)
 
                         LOG.debug(f"the drawn grid {this_session.drawn_grid} was sent to the other player")
                         return
@@ -617,17 +618,17 @@ class DrawingBot:
         # if command["guess"] is not None:
         #     this_session.drawn_grid = command["guess"]
 
-        self.sio.emit(
-            "message_command",
-            {
-                "command": {
-                    "command": "drawing_game_guess",
-                    "guess": this_session.drawn_grid,  # Or guess?
-                    "correct_grid": grid,
-                },
-                "room": room_id,
-            },
-        )
+        # self.sio.emit(
+        #     "message_command",
+        #     {
+        #         "command": {
+        #             "command": "drawing_game_guess",
+        #             "guess": this_session.drawn_grid,  # Or guess?
+        #             "correct_grid": grid,
+        #         },
+        #         "room": room_id,
+        #     },
+        # )
 
         if this_session.drawn_grid is None:
             self.sio.emit(
