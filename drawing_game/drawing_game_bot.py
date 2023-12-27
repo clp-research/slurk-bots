@@ -342,10 +342,11 @@ class DrawingBot:
                                 "html": True,
                             },
                         )
+                        formatted_grid = self.transform_string_in_grid(this_session.drawn_grid.upper())
                         self.sio.emit(
                             "text",
                             {
-                                "message": f"**CURRENT DRAWN GRID**:<br>{this_session.drawn_grid}",
+                                "message": f"**CURRENT DRAWN GRID**:<br>{formatted_grid}",
                                 "room": room_id,
                                 "receiver_id": this_session.player_a,
                                 "html": True,
