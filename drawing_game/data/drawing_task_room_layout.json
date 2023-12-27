@@ -15,7 +15,7 @@
           "class": "card",
           "layout-content": [
             {
-              "layout-type": "lighter",
+              "layout-type": "div",
               "id": "instr_title",
               "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;"
                 },
@@ -271,7 +271,7 @@
     ".card": {
       "position": "relative",
       "display": "flex",
-      "flex-direction": "row",
+      "flex-direction": "column",
       "min-width": "45%",
       "background-color": "#fff",
       "background-clip": "border-box",
@@ -342,11 +342,6 @@
       "margin": "10px",
       "flex-direction": "row"
     },
-    "#instr-title": {
-      "text-justify": "inter-word",
-      "margin": "10px",
-      "flex-direction": "row"
-    },
     ".collapsible": {
       "background-color": "#eee",
       "color": "#444",
@@ -364,6 +359,15 @@
       "overflow": "hidden",
       "background-color": "#f1f1f1",
       "flex-direction": "row"
+    },
+    "#instr_title": {
+      "max-width": "100%",
+      "height": "auto",
+      "object-fit": "contain",
+      "font-weight": "bold",
+      "display": "flex",
+      "flex-direction": "row",
+      "padding": "18px 18px"
     },
     "#game-board": {
       "display": "flex",

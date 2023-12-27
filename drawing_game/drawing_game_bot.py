@@ -762,6 +762,13 @@ class DrawingBot:
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
 
+        # Display  instructions for player_a
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={"text": "You are the describer", "receiver_id": this_session.player_a},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "set task instruction title")
         self.sio.emit(
             "message_command",
             {
@@ -982,17 +989,6 @@ class DrawingBot:
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "set typing instructions title")
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "send_grid_title",
-                        "message": "ATTENTION! How to type",
-                    },
-                    "room": room_id,
-                    "receiver_id": this_session.player_b,
-                }
-            )
             keyboard_instructions = this_session.keyboard_instructions
             self.sio.emit(
                 "message_command",
