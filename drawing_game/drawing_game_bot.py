@@ -207,10 +207,7 @@ class DrawingBot:
                     )
                     response.raise_for_status()
                 LOG.debug("Sending drawing game bot to new room was successful.")
-                self.sio.emit(
-                    "message_command",
-                    {"command": {"command": "drawing_game_init"}, "room": room_id},
-                )
+
                 # self.start_game(room_id)
 
         @self.sio.event
@@ -865,8 +862,10 @@ class DrawingBot:
             random_grid = this_session.all_grids.get_random_grid()
             this_session.target_grid = random_grid
 
-
-
+        self.sio.emit(
+            "message_command",
+            {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
+        )
         self.send_individualised_instructions(room_id)
         self.show_item(room_id)
 
