@@ -300,6 +300,12 @@ $(document).ready(() => {
                 case "send_grid":
                     $("#current-grid").html(data.command.message)
                     break;
+                case "send_keyboard_instructions":
+                    $("#current-grid").html(data.command.message)
+                    break;
+                case "send_grid_title":
+                    $("#grid-title").html(data.command.message)
+                    break;
             }
         }
     });

@@ -12,7 +12,7 @@ import socketio
 
 import config
 from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, \
-    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, INSTRUCTIONS_A, INSTRUCTIONS_B
+    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -69,6 +69,7 @@ class Session:
         self.player_b = None
         self.player_a_instructions = TASK_DESCR_A.read_text()
         self.player_b_instructions = TASK_DESCR_B.read_text()
+        self.keyboard_instructions = KEYBOARD_INSTRUCTIONS
         self.all_grids = GridManager(COMPACT_GRID_INSTANCES)
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
@@ -973,6 +974,38 @@ class DrawingBot:
                     "receiver_id": this_session.player_a,
                 }
             )
+
+            # Display keyboard instructions for player_b
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/grid_title",
+                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set typing instructions title")
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "send_grid_title",
+                        "message": "ATTENTION! How to type",
+                    },
+                    "room": room_id,
+                    "receiver_id": this_session.player_b,
+                }
+            )
+            keyboard_instructions = this_session.keyboard_instructions
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "send_keyboard_instructions",
+                        "message": f"{keyboard_instructions}",
+                    },
+                    "room": room_id,
+                    "receiver_id": this_session.player_b,
+                }
+            )
+
             # Hide game board for player a
             self._hide_game_board(room_id, this_session.player_a)
 

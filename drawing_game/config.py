@@ -32,4 +32,7 @@ with open(Path(f"{ROOT}/data/instr_player_A.html")) as html_f:
 with open(Path(f"{ROOT}/data/instr_player_B.html")) as html_f:
     INSTRUCTIONS_B = html_f.read()
 
+with open(Path(f"{ROOT}/data/keyboard_instructions.html")) as html_f:
+    KEYBOARD_INSTRUCTIONS = html_f.read()
+
 
