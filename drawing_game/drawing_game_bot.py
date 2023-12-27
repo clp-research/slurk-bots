@@ -478,6 +478,10 @@ class DrawingBot:
             self.close_game(room_id)
         else:
             self.sio.emit(
+                "message_command",
+                {"command": {"command": "drawing_game_init"}, "room": room_id},
+            )
+            self.sio.emit(
                 "text",
                 {"message": f"You are starting round {this_session.game_round} out of 3",
                  "room": room_id,
