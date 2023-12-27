@@ -7,18 +7,20 @@ let nextLetter = 0;
 let submitted = false;  // whether a guess was submitted
 let selected_cell = null;  // keep track of the box the user selects
 
-// Initialize a 2D array to represent the grid
-let grid = Array.from({ length: NUMBER_OF_ROWS }, () => Array(NUMBER_OF_COLUMNS).fill('▢'));
 
 function initBoard() {
     let board = document.getElementById("game-board");
     board.textContent = "";
 
+    // Reset the 2D array to represent the empty grid
+    grid = Array.from({ length: NUMBER_OF_ROWS }, () => Array(NUMBER_OF_COLUMNS).fill('▢'));
+
+
     for (let i = 0; i < NUMBER_OF_ROWS; i++) {
         let row = document.createElement("div")
         row.className = "letter-row"
 
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < NUMBER_OF_COLUMNS; j++) {
             let box = document.createElement("div")
             box.className = "letter-box"
 
@@ -52,72 +54,64 @@ function deleteLetter() {
 }
 
 
-function checkGuess(guessString, rightWordString) {
-    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
-    let rightGuess = Array.from(rightWordString)
-
-    let colors = ["", "", "", "", ""];
-    let remaining = Array.from(rightWordString)
-
-    // first check for green letters
-    for (let i = 0; i < 5; i++) {
-        let guessLetter = guessString.charAt(i);
-        let solutionLetter = rightGuess[i];
-        if (guessLetter === solutionLetter) {
-            colors[i] = "green";
-            remaining[i] = " ";
-        }
-    }
-
-    // check for yellows and greys
-    for (let i = 0; i < 5; i++) {
-        let guessLetter = guessString.charAt(i);
-
-        if (remaining.includes(guessLetter) === true) {
-            if (colors[i] === "") {
-                colors[i] = "yellow";
-
-                // remove this letter from remaining
-                to_remove_index = remaining.indexOf(guessLetter)
-                remaining.splice(to_remove_index, 1)
-            }
-        } else {
-            if (colors[i] === "") {
-                colors[i] = "grey";
-            }
-        }
-    }
-
-    for (let i = 0; i < 5; i++) {
-        let box = row.children[i]
-        let delay = 250 * i
-        setTimeout(() => {
-            // flip box
-            animateCSS(box, 'flipInX')
-            // shade box
-            box.style.backgroundColor = colors[i]
-            // prevent user's shenanigans
-            box.textContent = guessString[i]
-//            shadeKeyBoard(guessString[i], colors[i])
-        }, delay)
-    }
-    // update game variables
-    guessesRemaining -= 1;
-    currentGuess = [];
-    nextLetter = 0;
-}
+//function checkGuess(guessString, rightWordString) {
+//    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
+//    let rightGuess = Array.from(rightWordString)
+//
+//    let colors = ["", "", "", "", ""];
+//    let remaining = Array.from(rightWordString)
+//
+//    // first check for green letters
+//    for (let i = 0; i < 5; i++) {
+//        let guessLetter = guessString.charAt(i);
+//        let solutionLetter = rightGuess[i];
+//        if (guessLetter === solutionLetter) {
+//            colors[i] = "green";
+//            remaining[i] = " ";
+//        }
+//    }
+//
+//    // check for yellows and greys
+//    for (let i = 0; i < 5; i++) {
+//        let guessLetter = guessString.charAt(i);
+//
+//        if (remaining.includes(guessLetter) === true) {
+//            if (colors[i] === "") {
+//                colors[i] = "yellow";
+//
+//                // remove this letter from remaining
+//                to_remove_index = remaining.indexOf(guessLetter)
+//                remaining.splice(to_remove_index, 1)
+//            }
+//        } else {
+//            if (colors[i] === "") {
+//                colors[i] = "grey";
+//            }
+//        }
+//    }
+//
+//    for (let i = 0; i < 5; i++) {
+//        let box = row.children[i]
+//        let delay = 250 * i
+//        setTimeout(() => {
+//            // flip box
+//            animateCSS(box, 'flipInX')
+//            // shade box
+//            box.style.backgroundColor = colors[i]
+//            // prevent user's shenanigans
+//            box.textContent = guessString[i]
+////            shadeKeyBoard(guessString[i], colors[i])
+//        }, delay)
+//    }
+//    // update game variables
+//    guessesRemaining -= 1;
+//    currentGuess = [];
+//    nextLetter = 0;
+//}
 
 
 function insertLetter(pressedKey) {
     pressedKey = pressedKey.toLowerCase()
-
-    // add this letter to the selected cell
-    let box = selected_cell
-
-    animateCSS(box, "pulse")
-    box.textContent = pressedKey
-    box.classList.add("filled-box")
-    currentGuess.push(pressedKey)
 
     // Calculate the row and column based on the selected_cell
     let rowIndex = Array.from(selected_cell.parentElement.parentElement.children).indexOf(selected_cell.parentElement);
@@ -125,13 +119,22 @@ function insertLetter(pressedKey) {
 
     // Ensure the currentGuess array has enough rows
     if (!currentGuess[rowIndex]) {
-        currentGuess[rowIndex] = [];
+        currentGuess[rowIndex] = Array(NUMBER_OF_COLUMNS).fill('▢');
     }
 
     // Set the pressedKey at the correct position in currentGuess
     currentGuess[rowIndex][colIndex] = pressedKey;
 
+    // Add this letter to the selected cell
+    let box = selected_cell;
+
+    animateCSS(box, "pulse");
+    box.textContent = pressedKey;
+    box.classList.add("filled-box");
+
     console.log(`Inserting letter: ${pressedKey} at row: ${rowIndex} and column: ${colIndex}`);
+    console.log("Current Guess:", currentGuess);
+    console.log("Grid After Insert:", grid);
 }
 
 
@@ -158,7 +161,20 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
 function sendGuess() {
     let guessString = '';
 
-// SOLUTION A
+    // Iterate over rows and columns to build the guessString
+    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+        for (let j = 0; j < NUMBER_OF_COLUMNS; j++) {
+            if (currentGuess[i] && currentGuess[i][j]) {
+                guessString += currentGuess[i][j];
+            } else {
+                guessString += '▢'; // Empty space for not guessed letters
+            }
+        }
+
+        // Log the row and its index
+        console.log(`Row ${i}: ${guessString.slice(i * NUMBER_OF_COLUMNS, (i + 1) * NUMBER_OF_COLUMNS)}`);
+    }
+// SOLUTION A gets ther right letters at right iondices, but also extra
 //    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
 //        for (let j = 0; j < 5; j++) {
 //            if (currentGuess[i] && currentGuess[i][j]) {
@@ -181,22 +197,24 @@ function sendGuess() {
 //        guessString += row.join('');
 //    }
 
-    // Iterate through each row in the grid
-    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
-        let row = currentGuess[i] || Array(5).fill('▢'); // Use currentGuess[i] if available, otherwise use an empty row
+//SOLUTION C
+//    // Iterate through each row in the grid
+//    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+//        let row = currentGuess[i] || Array(5).fill('▢'); // Use currentGuess[i] if available, otherwise use an empty row
+//
+//        // Ensure the row is an array
+//        if (!Array.isArray(row)) {
+//            row = Array(5).fill('▢'); // Use an empty row if currentGuess[i] is not an array
+//        }
+//        // Ensure the row has exactly 5 elements
+//        row = row.concat(Array(Math.max(0, 5 - row.length)).fill('▢'));
+//
+//        // Log the row and its index
+//        console.log(`Row ${i}: ${row.join('')}`);
+//
+//        guessString += row.join('');
+//    }
 
-        // Ensure the row is an array
-        if (!Array.isArray(row)) {
-            row = Array(5).fill('▢'); // Use an empty row if currentGuess[i] is not an array
-        }
-        // Ensure the row has exactly 5 elements
-        row = row.concat(Array(Math.max(0, 5 - row.length)).fill('▢'));
-
-        // Log the row and its index
-        console.log(`Row ${i}: ${row.join('')}`);
-
-        guessString += row.join('');
-    }
 
     // Log the final guessString
     console.log(`Final Guess: ${guessString}`);
