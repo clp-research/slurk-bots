@@ -182,9 +182,6 @@ class DrawingBot:
                 # create image items for this room
                 LOG.debug("Create data for the new task room...")
 
-                # Resize screen
-                self.move_divider(room_id, 30, 70)
-
                 # create a new session for these users
                 self.sessions.create_session(room_id)
 
@@ -780,6 +777,13 @@ class DrawingBot:
                 "receiver_id": this_session.player_a,
             }
         )
+        # Display  instructions for player_b
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={"text": "You have to draw the grid", "receiver_id": this_session.player_b},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "set task instruction title")
         self.sio.emit(
             "message_command",
             {
@@ -869,6 +873,9 @@ class DrawingBot:
             this_session.all_grids = random_grids
             random_grid = this_session.all_grids.get_random_grid()
             this_session.target_grid = random_grid
+
+        # Resize screen
+        self.move_divider(room_id, 30, 70)
 
         self.sio.emit(
             "message_command",
