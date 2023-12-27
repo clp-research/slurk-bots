@@ -333,6 +333,7 @@ class DrawingBot:
                         return
                     else:
                         this_session.drawn_grid = data["command"]["guess"].strip()
+                        LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                         self.sio.emit(
                             "text",
                             {
@@ -616,24 +617,14 @@ class DrawingBot:
         this_session = self.sessions[room_id]
 
         # get the grid for this room and the guess from the user
-        grid = this_session.target_grid.lower()
-        grid = grid.replace('\n', ' ')
-        # guess = command["guess"]
-        # LOG.debug(guess)
-        # if command["guess"] is not None:
-        #     this_session.drawn_grid = command["guess"]
+        target_grid = this_session.target_grid
+        # target_grid = target_grid.replace('\n', ' ')
 
-        # self.sio.emit(
-        #     "message_command",
-        #     {
-        #         "command": {
-        #             "command": "drawing_game_guess",
-        #             "guess": this_session.drawn_grid,  # Or guess?
-        #             "correct_grid": grid,
-        #         },
-        #         "room": room_id,
-        #     },
-        # )
+        drawn_grid = self.transform_string_in_grid(this_session.drawn_grid.upper()).replace('<br>', '\n')
+        this_session.drawn_grid = drawn_grid
+
+        LOG.debug(f"TARGET GRID is {this_session.target_grid}")
+        LOG.debug(f"DRAWN GRID is {drawn_grid}")
 
         if this_session.drawn_grid is None:
             self.sio.emit(
@@ -648,7 +639,7 @@ class DrawingBot:
             self.process_move(room_id, 0)
             return
 
-        if grid != this_session.drawn_grid:
+        if target_grid != drawn_grid:
             result = 'LOST'
             points = 0
             self.update_reward(room_id, points)
