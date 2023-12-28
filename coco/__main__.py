@@ -217,7 +217,9 @@ class CoCoBot(TaskBot):
                 if data["type"] == "join":
                     # start no_partner timer
                     timer = Timer(
-                        WAITING_ROOM_TIMER * 60, self.timeout_waiting_room, args=[data["user"]]
+                        WAITING_ROOM_TIMER * 60,
+                        self.timeout_waiting_room,
+                        args=[data["user"]],
                     )
                     timer.start()
                     self.sessions.waiting_room_timers[user_id] = timer
@@ -1005,10 +1007,7 @@ class CoCoBot(TaskBot):
             self.sio.emit(
                 "message_command",
                 {
-                    "command": {
-                        "event": "survey",
-                        "survey": SURVEY
-                    },
+                    "command": {"event": "survey", "survey": SURVEY},
                     "room": room_id,
                 },
             )
@@ -1017,7 +1016,8 @@ class CoCoBot(TaskBot):
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
-                        message="Almost finished! fill out the survey and click on submit to complete the experiment", color=STANDARD_COLOR
+                        message="Almost finished! fill out the survey and click on submit to complete the experiment",
+                        color=STANDARD_COLOR,
                     ),
                     "room": room_id,
                     "html": True,
@@ -1091,19 +1091,19 @@ class CoCoBot(TaskBot):
                 "room": room_id,
                 "message": COLOR_MESSAGE.format(
                     message="The experiment is over 🎉 🎉 thank you very much for your time!",
-                    color=STANDARD_COLOR
+                    color=STANDARD_COLOR,
                 ),
                 "html": True,
-                "receiver_id": user_id
+                "receiver_id": user_id,
             },
         )
         self.confirmation_code(room_id, "sucess", user_id)
-        
+
         # if possible close game for everyone
         if this_session.can_close_room:
             self.close_game(room_id)
             return
-        
+
         this_session.can_close_room = True
 
     def timeout_waiting_room(self, user):
@@ -1138,7 +1138,10 @@ class CoCoBot(TaskBot):
 
         requests.patch(
             f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
-            json={"attribute": "src", "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg"},
+            json={
+                "attribute": "src",
+                "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg",
+            },
             headers={"Authorization": f"Bearer {self.token}"},
         )
 
@@ -1154,7 +1157,7 @@ class CoCoBot(TaskBot):
                     ),
                 ),
                 "receiver_id": user["id"],
-                "room": room['id'],
+                "room": room["id"],
                 "html": True,
             },
         )
@@ -1162,17 +1165,19 @@ class CoCoBot(TaskBot):
         self.log_event(
             "confirmation_log",
             {"status_txt": "timeout_waiting_room", "reward": 0, "users": [user]},
-            room['id'],
+            room["id"],
         )
 
         # remove user from new task_room
-        self.remove_user_from_room(user["id"], room['id'])
+        self.remove_user_from_room(user["id"], room["id"])
 
     def confirmation_code(self, room_id, status, user_id=None):
         this_session = self.sessions[room_id]
 
         if user_id is not None:
-            completion_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            completion_token = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=6)
+            )
             self.sio.emit(
                 "text",
                 {
@@ -1197,15 +1202,16 @@ class CoCoBot(TaskBot):
                     "status_txt": status,
                     "completion_token": completion_token,
                     "reward": this_session.points,
-                    "user_id": user_id
+                    "user_id": user_id,
                 },
                 room_id,
             )
             return
 
-
         for user in this_session.players:
-            completion_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            completion_token = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=6)
+            )
             self.sio.emit(
                 "text",
                 {
@@ -1229,7 +1235,7 @@ class CoCoBot(TaskBot):
                     "status_txt": status,
                     "completion_token": completion_token,
                     "reward": this_session.points,
-                    "user_id": user["id"]
+                    "user_id": user["id"],
                 },
                 room_id,
             )
