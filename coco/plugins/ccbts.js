@@ -275,6 +275,7 @@ $(document).ready(() => {
                                 )
                             }
                         })
+                        break;
             }
         }
     });
