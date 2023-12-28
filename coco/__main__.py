@@ -993,9 +993,15 @@ class CoCoBot(TaskBot):
         working_state = this_client.get_state("wizard_working")
         reference_state = this_session.states.pop(0)
         current_points = self.calculate_points(working_state, reference_state)
+
+        this_session.points += current_points
         self.log_event(
             "points",
-            {"reference_board": reference_state, "working_board": working_state},
+            {
+                "reference_board": reference_state,
+                "working_board": working_state,
+                "points": current_points,
+            },
             room_id,
         )
 
@@ -1080,7 +1086,10 @@ class CoCoBot(TaskBot):
             )
 
     def calculate_points(self, working_board, reference_board):
-        return random.randint(0, 10)
+        equality, _ = compare_boards(working_board, reference_board)
+        if equality is True:
+            return 1
+        return 0
 
     def terminate_experiment(self, room_id, user_id):
         this_session = self.sessions[room_id]

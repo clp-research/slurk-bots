@@ -324,3 +324,45 @@ def get_patterns():
             patterns.append(this_pattern)
 
     return patterns
+
+
+def compare_boards(board1, board2):
+    """
+    Compare two boards and return True if they are the same, False otherwise.
+    """
+
+    # Check for the existence of 'objs_grid' in both boards
+    if "objs_grid" not in board1 or "objs_grid" not in board2:
+        return False, "No objs_grid"
+
+    # Check if the number of locations is the same in both boards
+    if len(board1["objs_grid"]) != len(board2["objs_grid"]):
+        return False, "Different count of objs_grid"
+
+    for loc, shapes1 in board1["objs_grid"].items():
+        # Check if the location exists in both boards
+        shapes2 = board2["objs_grid"].get(loc)
+        if shapes2 is None:
+            return False, f"Location {loc} not available in board2"
+
+        # Check if the number of shapes is the same in the location
+        if len(shapes1) != len(shapes2):
+            return (
+                False,
+                f"Different count of objs in objs_grid for the location: {loc}",
+            )
+
+        for shape1, shape2 in zip(shapes1, shapes2):
+            values1, values2 = board1["objs"][shape1], board2["objs"][shape2]
+
+            # Check if the type and color of each shape are the same
+            if (values1["type"], values1["color"][0]) != (
+                values2["type"],
+                values2["color"][0],
+            ):
+                return (
+                    False,
+                    f'Different type {values1["type"], values2["type"]} or color {values1["color"][0], values2["color"][0]} in location {loc}',
+                )
+
+    return True, "Equal boards"
