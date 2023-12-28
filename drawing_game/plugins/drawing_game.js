@@ -232,6 +232,7 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
 
 
 $("#keyboard-cont").hide()
+$("#instr").hide()
 $("#grid-area").hide()
 $(document).ready(() => {
     socket.on("command", (data) => {
@@ -258,6 +259,7 @@ $(document).ready(() => {
             switch(data.command.event){
 
                 case "send_instr":
+                    $("#instr").show()
                     $("#text_to_modify").html(data.command.message)
                     break;
                 case "send_grid":
