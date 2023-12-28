@@ -3,6 +3,7 @@
   "html": [
     {
       "layout-type": "div",
+      "id": "instruction_card",
       "class": "card",
       "layout-content": [
         {
@@ -267,6 +268,17 @@
           ]
         }
       ]
+    },
+    {
+      "layout-type": "div",
+      "class": "hidden_card",
+      "id": "survey_card",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "id": "survey"
+        }
+      ]
     }
   ],
   "css": {
@@ -389,6 +401,7 @@
     "typing-users": "typing-users",
     "plain": [
       "ccbts",
+      "cocosurvey",
       "View",
       "COCOLayerView"
     ]

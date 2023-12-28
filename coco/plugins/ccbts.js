@@ -250,6 +250,28 @@ $(document).ready(() => {
                         );
                     }
                     break;
+
+                    case "survey":
+                        $("#golmi_card").hide();
+                        $("#wizard_interface").hide()
+                        $("#instruction_card").hide()
+                        $("#survey_card").show()
+                        $("#survey").html(data.command.survey)
+
+                        $(`#survey_button`).click(() => {
+                            if (validateForm()) {
+                                answers = get_answers();
+                                socket.emit("message_command",
+                                    {
+                                        command: {
+                                            event: "submit_survey",
+                                            answers: answers
+                                        },
+                                        room: self_room
+                                    }
+                                )
+                            }
+                        })
             }
         }
     });

@@ -56,3 +56,4 @@ STATES = Path(
 RULES = json.loads(
     Path(f"{ROOT}/data/allowed_moves.json").read_text()
 )  # file containing placement rules
+SURVEY = Path(f"{ROOT}/data/survey.html").read_text()

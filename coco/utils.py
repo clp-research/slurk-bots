@@ -98,6 +98,7 @@ class Session:
         self.states = Dataloader(STATES)
         self.checkpoint = EMPTYSTATE
         self.game_over = False
+        self.can_close_room = False
         self.can_load_next_episode = False
         self.points = 0
 

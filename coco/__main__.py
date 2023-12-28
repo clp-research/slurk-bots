@@ -190,6 +190,7 @@ class CoCoBot(TaskBot):
             if user_id == self.user:
                 return
 
+            this_session = self.sessions[room_id]
             this_session.timer.reset()
 
         @self.sio.event
@@ -865,6 +866,14 @@ class CoCoBot(TaskBot):
                         self.log_event("working_board_log", current_state, room_id)
                     return
 
+                elif event == "submit_survey":
+                    survey_data = data["command"]["answers"]
+                    survey_data["user_id"] = user_id
+
+                    self.log_event("survey_result", survey_data, room_id)
+                    self.terminate_experiment(room_id, user_id)
+                    return
+
             else:
                 # commands from the user
                 self.sio.emit(
@@ -977,17 +986,8 @@ class CoCoBot(TaskBot):
     def load_next_state(self, room_id):
         this_session = self.sessions[room_id]
         this_client = this_session.golmi_client
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    message="Let's get you to the next board!", color=STANDARD_COLOR
-                ),
-                "room": room_id,
-                "html": True,
-            },
-        )
 
+        # log points for current state
         working_state = this_client.get_state("wizard_working")
         reference_state = this_session.states.pop(0)
         current_points = self.calculate_points(working_state, reference_state)
@@ -998,10 +998,31 @@ class CoCoBot(TaskBot):
         )
 
         this_session.timer.reset()
-        # reload new states if no states left
+
+        # no more states, jump to survey
         if not this_session.states:
             # self.close_game(room_id)
-            self.terminate_experiment(room_id)
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "survey",
+                        "survey": SURVEY
+                    },
+                    "room": room_id,
+                },
+            )
+
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        message="Almost finished! fill out the survey and click on submit to complete the experiment", color=STANDARD_COLOR
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
             return
 
         # switch roles
@@ -1010,6 +1031,16 @@ class CoCoBot(TaskBot):
                 self.switch_roles(room_id)
                 this_session.states.pop(0)
 
+        self.sio.emit(
+            "text",
+            {
+                "message": COLOR_MESSAGE.format(
+                    message="Let's get you to the next board!", color=STANDARD_COLOR
+                ),
+                "room": room_id,
+                "html": True,
+            },
+        )
         self.load_state(room_id)
 
     def load_state(self, room_id, from_disconnect=False):
@@ -1051,19 +1082,29 @@ class CoCoBot(TaskBot):
     def calculate_points(self, working_board, reference_board):
         return random.randint(0, 10)
 
-    def terminate_experiment(self, room_id):
+    def terminate_experiment(self, room_id, user_id):
+        this_session = self.sessions[room_id]
+
         self.sio.emit(
             "text",
             {
                 "room": room_id,
-                "message": (
-                    "The experiment is over 🎉 🎉 thank you very much for your time!"
+                "message": COLOR_MESSAGE.format(
+                    message="The experiment is over 🎉 🎉 thank you very much for your time!",
+                    color=STANDARD_COLOR
                 ),
                 "html": True,
+                "receiver_id": user_id
             },
         )
-        self.confirmation_code(room_id, "sucess")
-        self.close_game(room_id)
+        self.confirmation_code(room_id, "sucess", user_id)
+        
+        # if possible close game for everyone
+        if this_session.can_close_room:
+            self.close_game(room_id)
+            return
+        
+        this_session.can_close_room = True
 
     def timeout_waiting_room(self, user):
         # get layout_id
@@ -1127,17 +1168,11 @@ class CoCoBot(TaskBot):
         # remove user from new task_room
         self.remove_user_from_room(user["id"], room['id'])
 
-    def confirmation_code(self, room_id, status):
+    def confirmation_code(self, room_id, status, user_id=None):
         this_session = self.sessions[room_id]
 
-        # post AMT token to logs
-        self.log_event(
-            "confirmation_log",
-            {"status_txt": status, "reward": this_session.points, "users": this_session.players},
-            room_id,
-        )
-
-        for user in this_session.players:
+        if user_id is not None:
+            completion_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
             self.sio.emit(
                 "text",
                 {
@@ -1146,13 +1181,57 @@ class CoCoBot(TaskBot):
                         message=(
                             "The experiment is over, please remember to "
                             "save your token before you close this browser window. "
-                            f"Your token: {user['name']}"
+                            f"Your token: {completion_token}"
+                        ),
+                    ),
+                    "receiver_id": user_id,
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+
+            # post AMT token to logs
+            self.log_event(
+                "confirmation_log",
+                {
+                    "status_txt": status,
+                    "completion_token": completion_token,
+                    "reward": this_session.points,
+                    "user_id": user_id
+                },
+                room_id,
+            )
+            return
+
+
+        for user in this_session.players:
+            completion_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=(
+                            "The experiment is over, please remember to "
+                            "save your token before you close this browser window. "
+                            f"Your token: {completion_token}"
                         ),
                     ),
                     "receiver_id": user["id"],
                     "room": room_id,
                     "html": True,
                 },
+            )
+
+            self.log_event(
+                "confirmation_log",
+                {
+                    "status_txt": status,
+                    "completion_token": completion_token,
+                    "reward": this_session.points,
+                    "user_id": user["id"]
+                },
+                room_id,
             )
 
     def timeout_close_game(self, room_id, status):
