@@ -232,6 +232,7 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
 
 
 $("#keyboard-cont").hide()
+$("#grid-area").hide()
 $(document).ready(() => {
     socket.on("command", (data) => {
 
@@ -239,6 +240,7 @@ $(document).ready(() => {
             if (data.command.command === "drawing_game_init") {
                 guessesRemaining = NUMBER_OF_GUESSES;
                 currentGuess = [];
+                $("#grid-area").show()
                 $("#keyboard-cont").show()
                 initBoard();
                 for (let i=0; i<5; i++) {
@@ -259,6 +261,7 @@ $(document).ready(() => {
                     $("#text_to_modify").html(data.command.message)
                     break;
                 case "send_grid":
+                    $("#grid-area").show()
                     $("#current-grid").html(data.command.message)
                     break;
                 case "send_keyboard_instructions":
