@@ -262,6 +262,7 @@ class DrawingBot:
                             "receiver_id": other_usr["id"],
                         },
                     )
+
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
                     self.sio.emit(
@@ -796,18 +797,6 @@ class DrawingBot:
             }
         )
 
-        # # Send explainer_ instructions to player_a
-        # response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
-        #                           json={"text": "Describe the grid",
-        #                                 "receiver_id": this_session.player_a},
-        #                           headers={"Authorization": f"Bearer {self.token}"},
-        #                           )
-        # if not response.ok:
-        #     LOG.error(
-        #         f"Could not set task instruction title: {response.status_code}"
-        #     )
-        #     response.raise_for_status()
-        #
         # instructions_a = this_session.player_a_instructions  # Loads instructions but non-collapsible
         # response_e = requests.patch(
         #     f"{self.uri}/rooms/{room_id}/text/instr",
@@ -976,6 +965,12 @@ class DrawingBot:
             )
 
             # Display on display area
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/grid_title",
+                json={"text": "Target grid", "receiver_id": this_session.player_a},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set typing instructions title")
             grid = this_session.target_grid.replace('\n', '<br>')
             self.sio.emit(
                 "message_command",

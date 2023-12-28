@@ -43,15 +43,31 @@ function initBoard() {
 
 
 function deleteLetter() {
-    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
-    let box = row.children[nextLetter - 1]
-    if (box){
-        box.textContent = ""
-        box.classList.remove("filled-box")
-        currentGuess.pop()
-        nextLetter -= 1
+    if (!selected_cell) {
+        return;
     }
+
+    // Calculate the row and column indices based on the selected cell
+    let rowIndex = Array.from(selected_cell.parentElement.parentElement.children).indexOf(selected_cell.parentElement);
+    let colIndex = Array.from(selected_cell.parentElement.children).indexOf(selected_cell);
+
+    // Log the row and column indices
+    console.log(`Deleting letter: ${currentGuess[rowIndex][colIndex]} at row: ${rowIndex} and column: ${colIndex}`);
+
+    // Remove the letter at the correct position in the currentGuess array
+    if (currentGuess[rowIndex]) {
+        currentGuess[rowIndex][colIndex] = '▢';
+    }
+
+    // Update the box content and class
+    let box = selected_cell;
+    box.textContent = "";
+    box.classList.remove("filled-box");
+
+    // Decrement nextLetter
+    nextLetter -= 1;
 }
+
 
 
 //function checkGuess(guessString, rightWordString) {
@@ -237,10 +253,12 @@ function getKeyPressed(letter) {
         return
     }
 
-    let pressedKey = String(letter)
+    let pressedKey = String(letter);
 
-    if (pressedKey === "DEL" && nextLetter !== 0 && !submitted) {
-        deleteLetter()
+    console.log("Pressed Key:", pressedKey);
+
+    if (pressedKey === "DEL") {
+        deleteLetter();
         return
     }
 
