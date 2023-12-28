@@ -123,7 +123,8 @@ function start_golmi(url, password, role, golmi_rooms) {
 
 
 function stop() {
-    golmi_socket.disconnect();
+    golmi_socket_working.disconnect()
+    golmi_socket_target.disconnect()
 }
 
 
@@ -257,6 +258,8 @@ $(document).ready(() => {
                         $("#instruction_card").hide()
                         $("#survey_card").show()
                         $("#survey").html(data.command.survey)
+
+                        stop()
 
                         $(`#survey_button`).click(() => {
                             if (validateForm()) {
