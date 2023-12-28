@@ -69,63 +69,6 @@ function deleteLetter() {
 }
 
 
-
-//function checkGuess(guessString, rightWordString) {
-//    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
-//    let rightGuess = Array.from(rightWordString)
-//
-//    let colors = ["", "", "", "", ""];
-//    let remaining = Array.from(rightWordString)
-//
-//    // first check for green letters
-//    for (let i = 0; i < 5; i++) {
-//        let guessLetter = guessString.charAt(i);
-//        let solutionLetter = rightGuess[i];
-//        if (guessLetter === solutionLetter) {
-//            colors[i] = "green";
-//            remaining[i] = " ";
-//        }
-//    }
-//
-//    // check for yellows and greys
-//    for (let i = 0; i < 5; i++) {
-//        let guessLetter = guessString.charAt(i);
-//
-//        if (remaining.includes(guessLetter) === true) {
-//            if (colors[i] === "") {
-//                colors[i] = "yellow";
-//
-//                // remove this letter from remaining
-//                to_remove_index = remaining.indexOf(guessLetter)
-//                remaining.splice(to_remove_index, 1)
-//            }
-//        } else {
-//            if (colors[i] === "") {
-//                colors[i] = "grey";
-//            }
-//        }
-//    }
-//
-//    for (let i = 0; i < 5; i++) {
-//        let box = row.children[i]
-//        let delay = 250 * i
-//        setTimeout(() => {
-//            // flip box
-//            animateCSS(box, 'flipInX')
-//            // shade box
-//            box.style.backgroundColor = colors[i]
-//            // prevent user's shenanigans
-//            box.textContent = guessString[i]
-////            shadeKeyBoard(guessString[i], colors[i])
-//        }, delay)
-//    }
-//    // update game variables
-//    guessesRemaining -= 1;
-//    currentGuess = [];
-//    nextLetter = 0;
-//}
-
-
 function insertLetter(pressedKey) {
     pressedKey = pressedKey.toLowerCase()
 

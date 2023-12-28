@@ -161,11 +161,6 @@
                                   "layout-type": "button",
                                   "class": "keyboard-button",
                                   "layout-content": "L"
-                                },
-                                {
-                                  "layout-type": "button",
-                                  "class": "keyboard-button",
-                                  "layout-content": "☐"
                                 }
                               ]
                             },
