@@ -1,4 +1,4 @@
-<form id="surveyForm">
+<form id="surveyForm" onkeydown="return event.key != 'Enter';">
     <fieldset style="padding: 10px">
         <legend>1. Rate your playing experience:</legend>
         <div class="horizontal-group">
@@ -31,6 +31,6 @@
         </div>
         <span class="error-message" id="errorPlayWith"></span>
     </fieldset>
-
 </form>
+
 <button class="button" role="button" id="survey_button">Submit</button>
