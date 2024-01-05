@@ -874,6 +874,7 @@ class CoCoBot(TaskBot):
 
                     self.log_event("survey_result", survey_data, room_id)
                     self.terminate_experiment(room_id, user_id)
+                    self.remove_user_from_room(user_id, room_id)
                     return
 
             else:
@@ -1297,16 +1298,19 @@ class CoCoBot(TaskBot):
             response.raise_for_status()
         etag = response.headers["ETag"]
 
-        response = requests.delete(
-            f"{self.uri}/users/{user_id}/rooms/{room_id}",
-            headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-        )
-        if not response.ok:
-            logging.error(
-                f"Could not remove user from task room: {response.status_code}"
+        try:
+            response = requests.delete(
+                f"{self.uri}/users/{user_id}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
             )
-            response.raise_for_status()
-        logging.debug("Removing user from task room was successful.")
+            if not response.ok:
+                logging.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Removing user from task room was successful.")
+        except:
+            logging.debug(f"User {user_id} not in room {room_id}")
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
