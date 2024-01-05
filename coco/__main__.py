@@ -1277,7 +1277,6 @@ class CoCoBot(TaskBot):
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
         this_session = self.sessions[room_id]
-        sleep(2)
         self.sio.emit(
             "text",
             {
