@@ -1030,6 +1030,14 @@ class CoCoBot(TaskBot):
                     "html": True,
                 },
             )
+
+            self.room_to_read_only(
+                room_id,
+                remove_users=False,
+                status_message="Complete the survey to end the experiment",
+            )
+            for user in this_session.players:
+                self.set_message_privilege(user["id"], False)
             return
 
         # switch roles
@@ -1312,7 +1320,9 @@ class CoCoBot(TaskBot):
         except:
             logging.debug(f"User {user_id} not in room {room_id}")
 
-    def room_to_read_only(self, room_id):
+    def room_to_read_only(
+        self, room_id, remove_users=True, status_message="This room is read-only"
+    ):
         """Set room to read only."""
         this_session = self.sessions[room_id]
         # set room to read-only
@@ -1326,7 +1336,7 @@ class CoCoBot(TaskBot):
             response.raise_for_status()
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
-            json={"attribute": "placeholder", "value": "This room is read-only"},
+            json={"attribute": "placeholder", "value": status_message},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
@@ -1334,9 +1344,32 @@ class CoCoBot(TaskBot):
             response.raise_for_status()
 
         # remove user from room
-        if room_id in self.sessions:
-            for usr in this_session.players:
-                self.remove_user_from_room(usr["id"], room_id)
+        if remove_users is True:
+            if room_id in self.sessions:
+                for usr in this_session.players:
+                    self.remove_user_from_room(usr["id"], room_id)
+
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "retrieving user's permissions")
+
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        self.request_feedback(response, "changing user's message permission")
 
 
 if __name__ == "__main__":
