@@ -1119,19 +1119,6 @@ class CoCoBot(TaskBot):
 
     def terminate_experiment(self, room_id, user_id):
         this_session = self.sessions[room_id]
-
-        self.sio.emit(
-            "text",
-            {
-                "room": room_id,
-                "message": COLOR_MESSAGE.format(
-                    message="The experiment is over 🎉 🎉 thank you very much for your time!",
-                    color=STANDARD_COLOR,
-                ),
-                "html": True,
-                "receiver_id": user_id,
-            },
-        )
         self.confirmation_code(room_id, "sucess", user_id)
 
         # if possible close game for everyone
@@ -1219,7 +1206,7 @@ class CoCoBot(TaskBot):
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
                         message=(
-                            "The experiment is over, please remember to "
+                            "The experiment is over 🎉 🎉 thank you for your time! Please remember to "
                             "save your token before you close this browser window. "
                             f"Your token: {completion_token}"
                         ),
