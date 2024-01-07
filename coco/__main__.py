@@ -85,7 +85,7 @@ class CoCoBot(TaskBot):
             random.shuffle(roles)
 
             for usr, role in zip(data["users"], roles):
-                this_session.players.append(
+                this_session.add_user(
                     {**usr, "role": role["role"], "status": "joined"}
                 )
 
@@ -289,7 +289,7 @@ class CoCoBot(TaskBot):
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    if this_session.game_over is False:
+                    if this_session.game_over is False and this_session.submited_survey[user_id] is False:
                         self.sio.emit(
                             "text",
                             {
@@ -869,8 +869,25 @@ class CoCoBot(TaskBot):
                     return
 
                 elif event == "submit_survey":
+                    if this_session.submited_survey[user_id] is True:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": COLOR_MESSAGE.format(
+                                    message="You already submitted an answer!",
+                                    color=WARNING_COLOR,
+                                ),
+                                "room": room_id,
+                                "receiver_id": user_id,
+                                "html": True,
+                            },
+                        )
+                        return
+
                     survey_data = data["command"]["answers"]
                     survey_data["user_id"] = user_id
+
+                    this_session.submited_survey[user_id] = True
 
                     self.log_event("survey_result", survey_data, room_id)
                     self.terminate_experiment(room_id, user_id)

@@ -92,6 +92,7 @@ class ActionNode:
 class Session:
     def __init__(self):
         self.players = list()
+        self.submited_survey = dict()
         self.timer = None
         self.golmi_client = None
         self.current_action = ActionNode.new_tree()
@@ -101,6 +102,10 @@ class Session:
         self.can_close_room = False
         self.can_load_next_episode = False
         self.points = 0
+
+    def add_user(self, user):
+        self.players.append(user)
+        self.submited_survey[user["id"]] = False
 
     def close(self):
         try:
