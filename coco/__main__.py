@@ -85,9 +85,7 @@ class CoCoBot(TaskBot):
             random.shuffle(roles)
 
             for usr, role in zip(data["users"], roles):
-                this_session.add_user(
-                    {**usr, "role": role["role"], "status": "joined"}
-                )
+                this_session.add_user({**usr, "role": role["role"], "status": "joined"})
 
                 self.rename_user(usr["id"], role["name"])
 
@@ -289,7 +287,10 @@ class CoCoBot(TaskBot):
 
                 elif data["type"] == "leave":
                     # send a message to the user that was left alone
-                    if this_session.game_over is False and this_session.submited_survey[user_id] is False:
+                    if (
+                        this_session.game_over is False
+                        and this_session.submited_survey[user_id] is False
+                    ):
                         self.sio.emit(
                             "text",
                             {
