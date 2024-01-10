@@ -57,10 +57,11 @@ with open(ALL_WORDS) as infile:
 
 
 # with open(Path(f"{ROOT}/data/critic_instruction.txt")) as f:
-    # CRITIC_INSTR = f.read().split("\n\n\n")
+    # CRITIC_INSTR = f.read().split("\n\n\n")TASK_GREETING
+
     
-# with open(Path(f"{ROOT}/data/task_greeting.txt")) as f:
-#     TASK_GREETING = f.read().split("\n\n\n")
+with open(Path(f"{ROOT}/data/task_greeting.txt")) as f:
+    TASK_GREETING = f.read().split("\n\n\n")
 
 
 WORDLE_WORDS = Path(f"{ROOT}/data/wordle_words.json")

@@ -252,17 +252,17 @@ class WordleBot2 (TaskBot):
                     )
                     # sleep(0.5)
 
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": COLOR_MESSAGE.format(
-                            color=STANDARD_COLOR,
-                            message=f"Let's start with the first "
-                        ),
-                        "room": room_id,
-                        "html": True,
-                    },
-                )
+                # self.sio.emit(
+                #     "text",
+                #     {
+                #         "message": COLOR_MESSAGE.format(
+                #             color=STANDARD_COLOR,
+                #             message=f"Let's start with the first word "
+                #         ),
+                #         "room": room_id,
+                #         "html": True,
+                #     },
+                # )
                 sleep(0.5)
                 # BUT CAN"T FIND instr_title  IN THE LAYOUT
                 response = requests.patch(
@@ -613,14 +613,15 @@ class WordleBot2 (TaskBot):
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
                 "target_word"].lower()
 
+            round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
             self.sio.emit(
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
-                        message=f"Ok, let's move on to the next round. "
-                                f"{len(self.sessions[room_id].words)} rounds to go!",
+                        message=f"Let's start round {round_n}"
                     ),
+
                     "room": room_id,
                     "html": True,
                 },
