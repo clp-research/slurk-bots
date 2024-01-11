@@ -220,11 +220,13 @@ class CoCoBot(TaskBot):
                         args=[data["user"]],
                     )
                     timer.start()
+                    logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
                     self.sessions.waiting_room_timers[user_id] = timer
 
             if data["type"] == "join":
                 # cancel waiting room timers
                 if user_id in self.sessions.waiting_room_timers:
+                    logging.debug(f"Cancelling waiting room timer for user {user_id}")
                     self.sessions.waiting_room_timers[user_id].cancel()
                     self.sessions.waiting_room_timers.pop(user_id)
 
