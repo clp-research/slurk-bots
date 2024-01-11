@@ -333,26 +333,34 @@ class DrawingBot:
                         self.sio.emit(
                             "text",
                             {
-                                "message": "You sent your drawn grid to the other player.",
+                                "message": "You saved your current drawn grid successfully.",
                                 "room": room_id,
-                                "receiver_id": user_id,
-                                "html": True,
+                                "receiver_id": user_id
                             },
                         )
-                        formatted_grid = self.transform_string_in_grid(this_session.drawn_grid.upper())
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"**CURRENT DRAWN GRID**:<br>{formatted_grid}",
-                                "room": room_id,
-                                "receiver_id": this_session.player_a,
-                                "html": True,
-                            },
-                        )
-                        self.update_rights(room_id, True, False)
 
-                        LOG.debug(f"the drawn grid {this_session.drawn_grid} was sent to the other player")
-                        return
+                        if this_session.rounds_left >= 1:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "What is your next instruction?.",
+                                    "room": room_id,
+                                    "receiver_id": this_session.player_a
+                                },
+                            )
+                            self.update_rights(room_id, True, False)
+                            return
+                        else:
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": "You ran out of turns!",
+                                    "room": room_id,
+                                    "receiver_id": this_session.player_a
+                                },
+                            )
+                            self._command_done(room_id, user_id, data['command'])
+                            return
 
             if this_session.rounds_left is None:
                 if "ready" in command:
@@ -390,16 +398,6 @@ class DrawingBot:
                 if '▢' in command:
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
-                    dislayed_grid = self.transform_string_in_grid(drawn_grid.upper())
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"GRID: <br>{dislayed_grid}",
-                            "room": room_id,
-                            "receiver_id": this_session.player_a,
-                            "html": True
-                        },
-                    )
                     sleep(1)
                     if this_session.rounds_left >= 1:
                         self.sio.emit(
@@ -612,6 +610,16 @@ class DrawingBot:
 
         this_session = self.sessions[room_id]
 
+        self.sio.emit(
+            "text",
+            {
+                "message":
+                    "Let's check how well you did...",
+                "room": room_id,
+                "html": True,
+            },
+        )
+
         # get the grid for this room and the guess from the user
         target_grid = this_session.target_grid
         # target_grid = target_grid.replace('\n', ' ')
@@ -667,37 +675,6 @@ class DrawingBot:
                 },
             )
             self.process_move(room_id, 1)
-
-            # if (word == guess) or (remaining_guesses == 1):
-            #     sleep(2)
-            #
-            #     result = "LOST"
-            #     points = 0
-            #
-            #     if word == guess:
-            #         result = "WON"
-            #         points = self.point_system[int(remaining_guesses)]
-            #
-            #     # update points for this room
-            #     self.sessions[room_id].points += points
-            #
-            #     # self.timers_per_room[room_id].done_timer.cancel()
-            #     self.sio.emit(
-            #         "text",
-            #         {
-            #             "message": COLOR_MESSAGE.format(
-            #                 color=STANDARD_COLOR,
-            #                 message=(
-            #                     f"**YOU {result}! For this round you get {points} points. "
-            #                     f"Your total score is: {self.sessions[room_id].points}**"
-            #                 ),
-            #             ),
-            #             "room": room_id,
-            #             "html": True,
-            #         },
-            #     )
-            #
-            #     self.next_round(room_id)
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
@@ -797,46 +774,6 @@ class DrawingBot:
             }
         )
 
-        # instructions_a = this_session.player_a_instructions  # Loads instructions but non-collapsible
-        # response_e = requests.patch(
-        #     f"{self.uri}/rooms/{room_id}/text/instr",
-        #     json={
-        #         "text": instructions_a,
-        #         "receiver_id": this_session.player_a,
-        #     },
-        #     headers={"Authorization": f"Bearer {self.token}"},
-        # )
-        #
-        # if not response_e.ok:
-        #     LOG.error(f"Could not set task instruction: {response_e.status_code}")
-        #     response_e.raise_for_status()
-
-        # # Send drawer_ instructions to player_b
-        # response = requests.patch(f"{self.uri}/rooms/{room_id}/text/instr_title",
-        #                           json={"text": "Draw the described grid",
-        #                                 "receiver_id": this_session.player_b},
-        #                           headers={"Authorization": f"Bearer {self.token}"},
-        #                           )
-        # if not response.ok:
-        #     LOG.error(
-        #         f"Could not set task instruction title: {response.status_code}"
-        #     )
-        #     response.raise_for_status()
-        #
-        # instructions_b = this_session.player_b_instructions
-        # response_g = requests.patch(
-        #     f"{self.uri}/rooms/{room_id}/text/instr",
-        #     json={
-        #         "class": "collapsible-content",
-        #         "text": instructions_b,
-        #         "receiver_id": this_session.player_b,
-        #     },
-        #     headers={"Authorization": f"Bearer {self.token}"},
-        # )
-        # if not response_g.ok:
-        #     LOG.error(f"Could not set task instruction: {response_g.status_code}")
-        #     response_g.raise_for_status()
-
     def start_game(self, room_id):
         this_session = self.sessions[room_id]
 
@@ -874,6 +811,21 @@ class DrawingBot:
         self.show_item(room_id)
 
     def transform_string_in_grid(self, string):
+        """
+        Reformats string returned from player B into a displayable grid
+        to be emitted as message (html=true)
+        Example:
+            formatted_grid = self.transform_string_in_grid(this_session.drawn_grid.upper())
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"**CURRENT DRAWN GRID**:<br>{formatted_grid}",
+                    "room": room_id,
+                    "receiver_id": this_session.player_a,
+                    "html": True,
+                },
+            )
+        """
         rows = 5
         cols = 5
 
