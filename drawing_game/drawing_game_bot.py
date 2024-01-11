@@ -343,7 +343,7 @@ class DrawingBot:
                             self.sio.emit(
                                 "text",
                                 {
-                                    "message": "What is your next instruction?.",
+                                    "message": "What is your next instruction?",
                                     "room": room_id,
                                     "receiver_id": this_session.player_a
                                 },
@@ -390,6 +390,7 @@ class DrawingBot:
                     },
                 )
                 this_session.rounds_left -= 1
+                LOG.debug(f"There remain {this_session.rounds_left} turns left")
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
@@ -778,7 +779,7 @@ class DrawingBot:
         this_session = self.sessions[room_id]
 
         # 1) Set rounds
-        this_session.rounds_left = 3
+        this_session.rounds_left = 25
         LOG.debug(f"Rounds left {this_session.rounds_left}")
         # 2) Choose players A and B
         self.sessions[room_id].pick_player_a()
@@ -900,7 +901,6 @@ class DrawingBot:
         # user_2 = users[1]
 
         this_session = self.sessions[room_id]
-        this_session.rounds_left = 3
 
         if this_session.target_grid:
             # Display on chat area
