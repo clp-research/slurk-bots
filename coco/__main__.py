@@ -222,6 +222,7 @@ class CoCoBot(TaskBot):
                     timer.start()
                     logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
                     self.sessions.waiting_room_timers[user_id] = timer
+                    return
 
             if data["type"] == "join":
                 # cancel waiting room timers
@@ -1122,7 +1123,7 @@ class CoCoBot(TaskBot):
 
     def terminate_experiment(self, room_id, user_id):
         this_session = self.sessions[room_id]
-        self.confirmation_code(room_id, "sucess", user_id)
+        self.confirmation_code(room_id, "success", user_id)
 
         # if possible close game for everyone
         if this_session.can_close_room:
@@ -1159,7 +1160,7 @@ class CoCoBot(TaskBot):
             LOG.error(f"Could not let user join room: {response.status_code}")
             exit(4)
 
-        sleep(0.5)
+        sleep(2)
 
         requests.patch(
             f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
@@ -1170,6 +1171,10 @@ class CoCoBot(TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
 
+        completion_token = "".join(
+            random.choices(string.ascii_uppercase + string.digits, k=6)
+        )
+
         self.sio.emit(
             "text",
             {
@@ -1178,7 +1183,7 @@ class CoCoBot(TaskBot):
                     message=(
                         "Unfortunately we were not able to find a partner for you, please remember to "
                         "save your token before you close this browser window. "
-                        f"Your token: {user['name']}"
+                        f"Your token: {completion_token}"
                     ),
                 ),
                 "receiver_id": user["id"],
@@ -1189,7 +1194,12 @@ class CoCoBot(TaskBot):
 
         self.log_event(
             "confirmation_log",
-            {"status_txt": "timeout_waiting_room", "reward": 0, "users": [user]},
+            {
+                "status_txt": "timeout_waiting_room",
+                "reward": 0,
+                "user_id": user["id"],
+                "completion_token": completion_token,
+            },
             room["id"],
         )
 
