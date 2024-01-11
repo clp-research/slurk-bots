@@ -1,5 +1,6 @@
 python-engineio == 4.2.0
 python-socketio == 5.3.0
+beautifulsoup4 == 4.12.2
 python-socketio[client]
 
 Requests

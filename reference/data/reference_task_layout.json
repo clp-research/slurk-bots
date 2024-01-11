@@ -2,7 +2,6 @@
   "title": "Reference Picture Task Room",
   "subtitle": "",
   "html": [
-
     {
       "layout-type": "div",
       "class": "cards",
@@ -29,36 +28,63 @@
                       "style": "padding-bottom: 5 px",
                       "layout-content": ""
                     }
-
-                  ]
-                }
-
-
-
                   ]
                 }
               ]
             }
           ]
         },
+
         {
           "layout-type": "div",
           "class": "card",
           "layout-content": [
-
             {
               "layout-type": "div",
-              "id": "image-area",
+              "id": "grid-area",
               "layout-content": [
                 {
-                  "layout-type": "image",
-                  "id": "current-image",
-                  "style": "max-width: 100%; height: auto; object-fit: contain;"
+                  "layout-type": "div",
+                  "id": "grid1_title",
+                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Grid 1"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid1",
+                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "layout-content": ""
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid2_title",
+                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Grid 2"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid2",
+                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "layout-content": ""
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid3_title",
+                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Grid 3"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid3",
+                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "layout-content": ""
                 }
               ]
             }
           ]
         }
+      ]
+    }
   ],
   "css": {
     ".dis-area": {

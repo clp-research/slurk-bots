@@ -22,3 +22,11 @@ with open(Path(f"{ROOT}/data/explainer_instr.html")) as html_explainer:
 
 with open(Path(f"{ROOT}/data/guesser_instr.html")) as html_guesser:
     GUESSER_HTML = html_guesser.read()
+
+with open(Path(f"{ROOT}/data/empty_grid.html")) as html_guesser:
+    EMPTY_GRID = html_guesser.read()
+
+GRIDS = Path(f"{ROOT}/data/instances.json")
+
+GRIDS_PER_ROOM = 4  # -1 to load entire dataset
+

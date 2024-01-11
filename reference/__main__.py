@@ -9,8 +9,9 @@ from templates import TaskBot
 
 import logging
 
-from reference.config import EXPLAINER_HTML, GUESSER_HTML
-# from wordle_words.dataloader import Dataloader
+from reference.config import EXPLAINER_HTML, GUESSER_HTML, EMPTY_GRID, GRIDS, GRIDS_PER_ROOM
+from reference.dataloader import Dataloader
+from reference.grid import GridManager
 
 
 LOG = logging.getLogger(__name__)
@@ -18,7 +19,8 @@ LOG = logging.getLogger(__name__)
 class Session:
     def __init__(self):
         self.players = list()
-        # self.words = Dataloader(WORDLE_WORDS, WORDS_PER_ROOM)
+        self.grids = Dataloader(GRIDS, GRIDS_PER_ROOM)
+        self.grid_manager = GridManager(EMPTY_GRID)
         self.word_to_guess = None
         self.word_letters = {}
         self.guesses = 0
@@ -256,12 +258,50 @@ class ReferenceBot(TaskBot):
                 "receiver_id": user_id,
             }
         )
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "event": "show_grid",
+                    "message": f"{EMPTY_GRID}"
+                },
+                "room": room_id,
+                "receiver_id": user_id,
+            }
+        )
+        sleep(1)
+        # grid = "X ▢ X X X\n▢ ▢ ▢ ▢ X\nX ▢ ▢ ▢ X\nX ▢ ▢ ▢ X\nX X X X X"
+        # self.change_grid(emepty_grid, grid)
+
+
 
 
 
     def start_round(self, room_id):
-
         self.send_message_to_user(f"Let's start round 1", room_id)
+        grid_instance = self.sessions[room_id].grids[0]
+        self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
+        self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
+
+    def show_items(self, room_id, grid_instance, user_id):
+        for i in range(len(grid_instance)):
+            updated_grid = self.sessions[room_id].grid_manager.update_grid(grid_instance[i][1])
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": f"update_grid{i+1}",
+                        "message": updated_grid
+                    },
+                    "room": room_id,
+                    "receiver_id": user_id,
+                }
+            )
+
+
+
+
+
 
 
     def send_message_to_user(self, message, room, receiver=None):
