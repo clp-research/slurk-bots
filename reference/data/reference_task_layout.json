@@ -1,0 +1,129 @@
+{
+  "title": "Reference Picture Task Room",
+  "subtitle": "",
+  "html": [
+
+    {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "class": "card",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "collapsible",
+                  "layout-content": "Click to see/hide task instructions"
+                },
+                {
+                  "layout-type": "div",
+                  "class": "collapsible-content",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "text_to_modify",
+                      "style": "padding-bottom: 5 px",
+                      "layout-content": ""
+                    }
+
+                  ]
+                }
+
+
+
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "layout-type": "div",
+          "class": "card",
+          "layout-content": [
+
+            {
+              "layout-type": "div",
+              "id": "image-area",
+              "layout-content": [
+                {
+                  "layout-type": "image",
+                  "id": "current-image",
+                  "style": "max-width: 100%; height: auto; object-fit: contain;"
+                }
+              ]
+            }
+          ]
+        }
+  ],
+  "css": {
+    ".dis-area": {
+      "display": "none;"
+    },
+    ".cards": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "row",
+      "margin": "0px 10px",
+      "padding": "15px"
+    },
+    ".card": {
+      "position": "relative",
+      "display": "flex",
+      "min-width": "45%",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "1px solid rgba(0,0,0,.125)",
+      "border-radius": ".25rem",
+      "height": "100%",
+      "max-width": "50%",
+      "margin": "0px 10px",
+      "padding": "15px"
+    },
+    ".hr": {
+      "margin": "10px",
+      "background-color": "#abb2b9",
+      "opacity": ".50"
+    },
+    "time:before": {
+      "content": "''"
+    },
+    "#image-area": {
+      "margin": "0 auto",
+      "align-items": "center",
+      "justify-content": "center"
+    },
+    ".collapsible": {
+      "background-color": "#eee",
+      "color": "#444",
+      "font-size": "1rem",
+      "cursor": "pointer",
+      "padding": "18px",
+      "width": "100%",
+      "border": "none",
+      "text-align": "left",
+      "outline": "none"
+    },
+    ".collapsible-content": {
+      "padding": "18px 18px",
+      "display": "none",
+      "overflow": "hidden",
+      "background-color": "#f1f1f1"
+    }
+  },
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": [
+      "attribute-history",
+      "markdown-history"
+    ],
+    "typing-users": "typing-users",
+    "plain": ["collapsible-task-instructions","reference"]
+  }
+}
