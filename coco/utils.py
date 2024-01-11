@@ -336,6 +336,14 @@ def compare_boards(board1, board2):
     Compare two boards and return True if they are the same, False otherwise.
     """
 
+    #board1 - refers to the working board (board of the wizard)
+    #board2 - refers to the reference board (target board)
+    for state_dict in board2:
+        for item in state_dict:
+            if "grid_config" in item:
+                board2 = state_dict
+                break
+
     # Check for the existence of 'objs_grid' in both boards
     if "objs_grid" not in board1 or "objs_grid" not in board2:
         return False, "No objs_grid"
