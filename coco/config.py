@@ -35,7 +35,7 @@ NEGATIVE_REWARD = -5  # wrong piece selected
 # timers
 TIMEOUT_TIMER = 5
 LEAVE_TIMER = 3
-WAITING_ROOM_TIMER = 1
+WAITING_ROOM_TIMER = 5
 
 # data
 CONFIG = {
