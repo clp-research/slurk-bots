@@ -10,9 +10,8 @@ from time import sleep
 import requests
 import socketio
 
-import config
 from config import TASK_GREETING, TASK_DESCR_A, TASK_DESCR_B, \
-    GAME_INSTANCE, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS
+    COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS
 
 LOG = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.resolve()
@@ -70,7 +69,9 @@ class Session:
         self.player_a_instructions = TASK_DESCR_A.read_text()
         self.player_b_instructions = TASK_DESCR_B.read_text()
         self.keyboard_instructions = KEYBOARD_INSTRUCTIONS
-        self.all_grids = GridManager(COMPACT_GRID_INSTANCES)
+        self.all_compact_grids = GridManager(COMPACT_GRID_INSTANCES)
+        self.all_random_grids = GridManager(RANDOM_GRID_INSTANCES)
+        self.grid_type = None
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
         self.game_round = None
@@ -93,10 +94,6 @@ class Session:
         for player in self.players:
             if player["id"] != self.player_a:
                 self.player_b = player["id"]
-
-    def get_grid(self):
-        instance = json.loads(GAME_INSTANCE.read_text())['target_grid']
-        return instance
 
 
 class SessionManager(defaultdict):
@@ -461,9 +458,12 @@ class DrawingBot:
     def next_round(self, room_id):
         this_session = self.sessions[room_id]
         # Remove grid so one instance is not played several times
-        this_session.all_grids.remove_grid(this_session.target_grid)
+        if this_session.grid_type == 'compact':
+            this_session.all_compact_grids.remove_grid(this_session.target_grid)
+        elif this_session.grid_type == 'random':
+            this_session.all_random_grids.remove_grid(this_session.target_grid)
         # Get new grid
-        this_session.target_grid = this_session.all_grids.get_random_grid()
+        this_session.target_grid = this_session.all_compact_grids.get_random_grid()
         # was this the last game round?
         if self.sessions[room_id].game_round >= 4:
             self.sio.emit(
@@ -791,14 +791,13 @@ class DrawingBot:
                 LOG.debug(f'{user["name"]} is player B.')
 
         # 3) Load grid
-        # this_session.target_grid = this_session.get_grid()
-        if this_session.all_grids:
-            random_grid = this_session.all_grids.get_random_grid()
+        grid_type = random.choice(['compact', 'random'])
+        this_session.grid_type = grid_type
+        if grid_type == 'compact' and this_session.all_compact_grids:
+            random_grid = this_session.all_compact_grids.get_random_grid()
             this_session.target_grid = random_grid
         else:
-            random_grids = GridManager(RANDOM_GRID_INSTANCES)
-            this_session.all_grids = random_grids
-            random_grid = this_session.all_grids.get_random_grid()
+            random_grid = this_session.all_random_grids.get_random_grid()
             this_session.target_grid = random_grid
 
         # Resize screen
