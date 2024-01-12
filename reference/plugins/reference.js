@@ -6,6 +6,9 @@ $(document).ready(function () {
                 case "send_instr":
                     $("#text_to_modify").html(data.command.message)
                     break;
+                case "mark_target_grid":
+                    $("#grid1_title").html(data.command.message)
+                    break;
                 case "update_grid1":
                     $("#grid1").html(data.command.message)
                     break;

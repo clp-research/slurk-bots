@@ -245,8 +245,21 @@ class ReferenceBot(TaskBot):
     def send_instr(self, room_id, user_id):
         if user_id == self.sessions[room_id].explainer:
             message = f"{EXPLAINER_HTML}"
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "mark_target_grid",
+                        "message": "Target grid"
+                    },
+                    "room": room_id,
+                    "receiver_id": user_id,
+                }
+            )
+
         else:
             message = f"{GUESSER_HTML}"
+
         self.sio.emit(
             "message_command",
             {

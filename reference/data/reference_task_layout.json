@@ -25,7 +25,7 @@
                     {
                       "layout-type": "div",
                       "id": "text_to_modify",
-                      "style": "padding-bottom: 5 px",
+                      "style": "padding-bottom: 30 px",
                       "layout-content": ""
                     }
                   ]
@@ -33,15 +33,19 @@
               ]
             }
           ]
+        }
+        ]
         },
 
         {
           "layout-type": "div",
-          "class": "card",
+          "class": "card_grids",
+          "style": "padding: 30px; display: flex",
           "layout-content": [
             {
               "layout-type": "div",
               "id": "grid-area",
+              "style": "display: flex",
               "layout-content": [
                 {
                   "layout-type": "div",
@@ -52,7 +56,7 @@
                 {
                   "layout-type": "div",
                   "id": "grid1",
-                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "style": "padding: 30px; margin: 5px;",
                   "layout-content": ""
                 },
                 {
@@ -64,7 +68,7 @@
                 {
                   "layout-type": "div",
                   "id": "grid2",
-                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "style": "padding: 30px; margin: 5px;",
                   "layout-content": ""
                 },
                 {
@@ -76,15 +80,13 @@
                 {
                   "layout-type": "div",
                   "id": "grid3",
-                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "style": "padding: 30px; margin: 5px;",
                   "layout-content": ""
                 }
               ]
             }
           ]
         }
-      ]
-    }
   ],
   "css": {
     ".dis-area": {
@@ -95,21 +97,9 @@
       "display": "flex",
       "flex-direction": "row",
       "margin": "0px 10px",
-      "padding": "15px"
+      "padding": "50px"
     },
-    ".card": {
-      "position": "relative",
-      "display": "flex",
-      "min-width": "45%",
-      "background-color": "#fff",
-      "background-clip": "border-box",
-      "border": "1px solid rgba(0,0,0,.125)",
-      "border-radius": ".25rem",
-      "height": "100%",
-      "max-width": "50%",
-      "margin": "0px 10px",
-      "padding": "15px"
-    },
+
     ".hr": {
       "margin": "10px",
       "background-color": "#abb2b9",
@@ -123,9 +113,37 @@
       "align-items": "center",
       "justify-content": "center"
     },
+    ".card": {
+    "position": "relative",
+    "display": "flex",
+    "min-width": "45%",
+    "background-color": "#fff",
+    "background-clip": "border-box",
+    "border": "1px solid rgba(0,0,0,.125)",
+    "border-radius": ".25rem",
+    "height": "100%",
+    "max-width": "50%",
+    "margin": "0px 10px",
+    "padding": "30px"
+    },
+
+    ".card_grids": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "min-width": "0",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "1px solid rgba(0,0,0,.125)",
+      "border-radius": ".25rem",
+      "height": "100%",
+      "margin": "0px 15px",
+      "padding": "40px"
+    },
+
     ".collapsible": {
       "background-color": "#eee",
-      "color": "#444",
+      "color": "#800080",
       "font-size": "1rem",
       "cursor": "pointer",
       "padding": "18px",
