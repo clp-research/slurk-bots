@@ -133,47 +133,6 @@ function sendGuess() {
         // Log the row and its index
         console.log(`Row ${i}: ${guessString.slice(i * NUMBER_OF_COLUMNS, (i + 1) * NUMBER_OF_COLUMNS)}`);
     }
-// SOLUTION A gets ther right letters at right iondices, but also extra
-//    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
-//        for (let j = 0; j < 5; j++) {
-//            if (currentGuess[i] && currentGuess[i][j]) {
-//                guessString += currentGuess[i][j];
-//            } else {
-//                guessString += '▢'; // Empty space for not guessed letters
-//            }
-//        }
-//    }
-
-//SOLUTION B
-//    // Initialize all cells with empty space
-//    let emptyRow = Array(5).fill('▢');
-//    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
-//        let row = currentGuess[i] ? [...currentGuess[i]] : emptyRow;
-//
-//        // Ensure the row has exactly 5 elements
-//        row = row.concat(Array(Math.max(0, 5 - row.length)).fill('▢'));
-//
-//        guessString += row.join('');
-//    }
-
-//SOLUTION C
-//    // Iterate through each row in the grid
-//    for (let i = 0; i < NUMBER_OF_ROWS; i++) {
-//        let row = currentGuess[i] || Array(5).fill('▢'); // Use currentGuess[i] if available, otherwise use an empty row
-//
-//        // Ensure the row is an array
-//        if (!Array.isArray(row)) {
-//            row = Array(5).fill('▢'); // Use an empty row if currentGuess[i] is not an array
-//        }
-//        // Ensure the row has exactly 5 elements
-//        row = row.concat(Array(Math.max(0, 5 - row.length)).fill('▢'));
-//
-//        // Log the row and its index
-//        console.log(`Row ${i}: ${row.join('')}`);
-//
-//        guessString += row.join('');
-//    }
-
 
     // Log the final guessString
     console.log(`Final Guess: ${guessString}`);
@@ -249,8 +208,6 @@ $(document).ready(() => {
                 }
 
             } else if (data.command.command === "drawing_game_guess") {
-//                checkGuess(data.command.guess, data.command.correct_word);
-//                submitted = false;
                 sendGuess();
             } else if (data.command.command === "unsubmit") {
                 // happens when players submit different guesses
