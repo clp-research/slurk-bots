@@ -13,7 +13,7 @@ from reference.config import EXPLAINER_HTML, GUESSER_HTML, EMPTY_GRID, GRIDS, GR
 from reference.dataloader import Dataloader
 from reference.grid import GridManager
 
-
+TARGET_GRID_NAMES = {"1": "first", "2": "second", "3": "third"}
 LOG = logging.getLogger(__name__)
 
 class Session:
@@ -186,6 +186,44 @@ class ReferenceBot(TaskBot):
             if user_id == self.user:
                 return
 
+            this_session = self.sessions[room_id]
+            if this_session.explainer == user_id:
+                # EXPLAINER sent the command
+                self.set_message_privilege(self.sessions[room_id].explainer, False)
+                self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
+                self.set_message_privilege(self.sessions[room_id].guesser, True)
+                # assign writing rights to other user
+                self.give_writing_rights(room_id, self.sessions[room_id].guesser)
+            else:
+                # GUESSER sent the command
+                # check the guess and inform the user about it??
+                if len(data['message']) == 1 and data['message'][0] in ["1", "2", "3"]:
+                    guess_correct = correct_guess(data['message'][0], self.sessions[room_id].grids[0][6][1])
+                    if guess_correct:
+                        self.send_message_to_user(
+                                f"GUESS was correct! "
+                                f"You both win this round.",
+                                room_id,
+                            )
+                    else:
+                        self.send_message_to_user(
+                                f"GUESS was false."
+                                f"You both win this round.",
+                                room_id,
+                            )
+
+
+
+                else:
+                    self.send_message_to_user(
+                            f"INVALID GUESS! "
+                            f"You both lose this round.",
+                            room_id,
+                        )
+                self.load_next_game(room_id)
+
+
+
 
 
 
@@ -237,7 +275,7 @@ class ReferenceBot(TaskBot):
             self.start_round(room_id)
         else:
             self.send_message_to_user(
-                "Now, waiting for your partner to type 'ready'.",
+                "Now, waiting for your partner to click 'ready'.",
                 room_id,
                 curr_usr["id"],
             )
@@ -283,18 +321,34 @@ class ReferenceBot(TaskBot):
             }
         )
         sleep(1)
-        # grid = "X ▢ X X X\n▢ ▢ ▢ ▢ X\nX ▢ ▢ ▢ X\nX ▢ ▢ ▢ X\nX X X X X"
-        # self.change_grid(emepty_grid, grid)
 
-
-
-
+    def load_next_game(self, room_id):
+        # word list gets smaller, next round starts
+        self.sessions[room_id].grids.pop(0)
+        if not self.sessions[room_id].grids:
+            self.close_room(room_id)
+            return
+        self.start_round(room_id)
 
     def start_round(self, room_id):
-        self.send_message_to_user(f"Let's start round 1", room_id)
+        if not self.sessions[room_id].grids:
+            self.close_room(room_id)
+        round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
+        self.send_message_to_user(f"Let's start round {round_n},the grids are updated!.", room_id)
         grid_instance = self.sessions[room_id].grids[0]
         self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
         self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
+        self.send_message_to_user("Generate the referring expression for the given target.",
+                                  room_id, self.sessions[room_id].explainer)
+        self.send_message_to_user("Wait for the description from the explainer.",
+                                  room_id, self.sessions[room_id].guesser)
+
+        # update writing_rights
+        self.set_message_privilege(self.sessions[room_id].explainer, True)
+        # assign writing rights to other user
+        self.give_writing_rights(room_id, self.sessions[room_id].explainer)
+        self.set_message_privilege(self.sessions[room_id].guesser, False)
+        self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
     def show_items(self, room_id, grid_instance, user_id):
         for i in range(len(grid_instance)):
@@ -400,7 +454,70 @@ class ReferenceBot(TaskBot):
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
 
+    def set_message_privilege(self, user_id, value):
+        """
+        change user's permission to send messages
+        """
+        # get permission_id based on user_id
+        response = requests.get(
+            f"{self.uri}/users/{user_id}/permissions",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "retrieving user's permissions")
 
+        permission_id = response.json()["id"]
+        requests.patch(
+            f"{self.uri}/permissions/{permission_id}",
+            json={"send_message": value},
+            headers={
+                "If-Match": response.headers["ETag"],
+                "Authorization": f"Bearer {self.token}",
+            },
+        )
+        self.request_feedback(response, "changing user's message permission")
+
+    def make_input_field_unresponsive(self, room_id, user_id):
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "true",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Wait for a message from your partner",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+
+    def give_writing_rights(self, room_id, user_id):
+        response = requests.delete(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "placeholder",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "Enter your message here!",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+
+def correct_guess(guess, answer):
+    return answer == TARGET_GRID_NAMES[guess]
 
 
 
@@ -424,8 +541,6 @@ if __name__ == "__main__":
         help="room where users await their partner",
         **waiting_room,
     )
-
-
 
     args = parser.parse_args()
     logging.debug(args)
