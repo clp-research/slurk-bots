@@ -395,6 +395,7 @@ class DrawingBot:
         return grid
 
     def process_move(self, room_id, reward: int):
+        """Compare grids at the end of each episode and update score."""
         this_session = self.sessions[room_id]
         self.update_reward(room_id, reward)
         self.update_title_points(room_id, reward)
@@ -402,12 +403,14 @@ class DrawingBot:
         self.next_round(room_id)
 
     def update_reward(self, room_id, reward):
+        """Compute and keep track of score"""
         score = self.sessions[room_id].points["score"]
         score += reward
         score = round(score, 2)
         self.sessions[room_id].points["score"] = max(0, score)
 
     def update_title_points(self, room_id, reward):
+        """Update displayed score"""
         score = self.sessions[room_id].points["score"]
         correct = self.sessions[room_id].points["history"][0]["correct"]
         wrong = self.sessions[room_id].points["history"][0]["wrong"]
@@ -427,15 +430,23 @@ class DrawingBot:
         self.request_feedback(response, "setting point stand in title")
 
     def next_round(self, room_id):
+        """
+        Before a new round starts, remove played instance from list,
+        pick a new grid instance and show_item if there are rounds left.
+        Otherwise, end the experiment.
+        """
         this_session = self.sessions[room_id]
+
         # Remove grid so one instance is not played several times
         if this_session.grid_type == 'compact':
             this_session.all_compact_grids.remove_grid(this_session.target_grid)
         elif this_session.grid_type == 'random':
             this_session.all_random_grids.remove_grid(this_session.target_grid)
+
         # Get new grid
         this_session.target_grid = this_session.all_compact_grids.get_random_grid()
-        # was this the last game round?
+
+        # Was this the last game round?
         if self.sessions[room_id].game_round >= 4:
             self.sio.emit(
                 "text",
@@ -444,6 +455,7 @@ class DrawingBot:
             )
             self.close_game(room_id)
         else:
+            # Reset keyboard
             self.sio.emit(
                 "message_command",
                 {"command": {"command": "drawing_game_init"}, "room": room_id},
@@ -460,6 +472,8 @@ class DrawingBot:
                  "room": room_id,
                  "receiver_id": this_session.player_b}
             )
+
+            # Show new grid instance to player_a
             self.show_item(room_id)
             self.update_rights(room_id, player_a=True, player_b=False)
 
@@ -592,10 +606,8 @@ class DrawingBot:
             },
         )
 
-        # get the grid for this room and the guess from the user
+        # get the grid for this room and the grid drawn by player_b
         target_grid = this_session.target_grid
-        # target_grid = target_grid.replace('\n', ' ')
-
         drawn_grid = self.transform_string_in_grid(this_session.drawn_grid.upper()).replace('<br>', '\n')
         this_session.drawn_grid = drawn_grid
 
@@ -698,11 +710,6 @@ class DrawingBot:
             self.sessions[room_id].game_round = 1
             LOG.debug(f"Game round {self.sessions[room_id].game_round}")
             self.start_game(room_id)
-            # self.show_item(room_id)
-            # self.sio.emit(
-            #     "message_command",
-            #     {"command": {"command": "drawing_game_init"}, "room": room_id},
-            # )
 
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
@@ -750,6 +757,7 @@ class DrawingBot:
         # 1) Set rounds
         this_session.turns_left = 25
         LOG.debug(f"Rounds left {this_session.turns_left}")
+
         # 2) Choose players A and B
         self.sessions[room_id].pick_player_a()
         self.sessions[room_id].pick_player_b()
@@ -769,9 +777,9 @@ class DrawingBot:
             random_grid = this_session.all_random_grids.get_random_grid()
             this_session.target_grid = random_grid
 
+        # 4) Prepare interface
         # Resize screen
         self.move_divider(room_id, 30, 70)
-
         self.sio.emit(
             "message_command",
             {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
@@ -779,7 +787,8 @@ class DrawingBot:
         self.send_individualised_instructions(room_id)
         self.show_item(room_id)
 
-    def transform_string_in_grid(self, string):
+    @staticmethod
+    def transform_string_in_grid(string):
         """
         Reformats string returned from player B into a displayable grid
         to be emitted as message (html=true)
@@ -824,7 +833,8 @@ class DrawingBot:
             LOG.debug(f"Successfully did {action}.")
 
     def move_divider(self, room_id, chat_area=50, task_area=50):
-        """move the central divider and resize chat and task area
+        """
+        Move the central divider and resize chat and task area
         the sum of char_area and task_area must sum up to 100
         """
         if chat_area + task_area != 100:
@@ -845,28 +855,13 @@ class DrawingBot:
         )
         self.request_feedback(response, "resize content area")
 
-    def _not_done(self, room_id, user_id):
-        """One of the two players was not done."""
-        for usr in self.players_per_room[room_id]:
-            if usr["id"] == user_id:
-                usr["status"] = "ready"
-        self.sio.emit(
-            "text",
-            {
-                "message": "Your partner seems to still want to discuss some more. "
-                           "Send 'done' again once you two are really finished.",
-                "receiver_id": user_id,
-                "room": room_id,
-            },
-        )
-
     def show_item(self, room_id):
-        """Update the image of the players."""
-        LOG.debug("Update the image and task description of the players.")
-        # guarantee fixed user order - necessary for update due to rejoin
-        # users = sorted(self.sessions[room_id].players, key=lambda x: x["id"])
-        # user_1 = users[0]
-        # user_2 = users[1]
+        """
+        Display the target grid to player_a and
+        keyboard instructions to player_b.
+        Hide game board to player_a
+        """
+        LOG.debug("Display the grid and task description to the players.")
 
         this_session = self.sessions[room_id]
 
@@ -927,15 +922,6 @@ class DrawingBot:
             # Hide game board for player a
             self._hide_game_board(room_id, this_session.player_a)
 
-            # response = requests.patch(
-            #     f"{self.uri}/rooms/{room_id}/text/current-grid",
-            #     json={
-            #         "text": this_session.target_grid,
-            #         "receiver_id": this_session.player_a,
-            #     },
-            #     headers={"Authorization": f"Bearer {self.token}"},
-            # )
-            # self.request_feedback(response, "set grid")
             # enable the grid
             response = requests.delete(
                 f"{self.uri}/rooms/{room_id}/class/grid-area",
@@ -944,7 +930,7 @@ class DrawingBot:
             )
             self.request_feedback(response, "enable grid")
 
-    def _hide_game_board(self, room_id, user_id):  # Doesn't work
+    def _hide_game_board(self, room_id, user_id):
         response = requests.post(
             f"{self.uri}/rooms/{room_id}/class/game-board",
             json={"class": "dis-area", "receiver_id": user_id},
