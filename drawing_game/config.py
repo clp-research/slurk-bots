@@ -15,6 +15,10 @@ RANDOM_GRID_INSTANCES = Path(f"{ROOT}/data/random_grids/")
 
 STARTING_POINTS = 0
 
+TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 3  # minutes if a user is alone in a room
+WAITING_PARTNER_TIMER = 10  # minutes a user waits for a partner
+
 N = 1
 
 GAME_MODE = "one_blind"

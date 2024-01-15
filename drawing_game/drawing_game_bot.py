@@ -15,18 +15,57 @@ import requests
 import socketio
 
 from config import TASK_GREETING, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, \
-    INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS
+    INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER
 
 from gridmanager import GridManager
 
 LOG = logging.getLogger(__name__)
 
 
+class RoomTimer:
+    def __init__(self, function, room_id):
+        self.function = function
+        self.room_id = room_id
+        self.start_timer()
+        self.left_room = dict()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
+
+    def cancel_all_timers(self):
+        self.timer.cancel()
+        for timer in self.left_room.values():
+            timer.cancel()
+
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
+        )
+        self.left_room[user].start()
+
+
 class Session:
     def __init__(self):
         self.players = list()
-        self.player_a = None
-        self.player_b = None
+        self.player_a = None  # Instruction giver
+        self.player_b = None  # Instruction follower
         self.task_greeting = TASK_GREETING.read_text()
         self.player_a_instructions = INSTRUCTIONS_A
         self.player_b_instructions = INSTRUCTIONS_B
@@ -47,7 +86,7 @@ class Session:
         }
 
     def close(self):
-        pass
+        self.timer.cancel_all_timers()
 
     def pick_player_a(self):
         self.player_a = random.choice(self.players)["id"]
@@ -103,7 +142,7 @@ class DrawingBot:
         if port is not None:
             self.uri += f":{port}"
         self.uri += "/slurk/api"
-
+        self.waiting_timer = None
         self.players_per_room = dict()
         self.received_waiting_token = set()
 
@@ -120,6 +159,14 @@ class DrawingBot:
         )
         # wait until the connection with the server ends
         self.sio.wait()
+
+    def timeout_close_game(self, room_id, status):
+        self.sio.emit(
+            "text",
+            {"message": "The room is closing because of inactivity", "room": room_id},
+        )
+        # self.confirmation_code(room_id, status)
+        self.close_game(room_id)
 
     def register_callbacks(self):
         @self.sio.event
@@ -145,6 +192,8 @@ class DrawingBot:
 
                 # create a new session for these users
                 self.sessions.create_session(room_id)
+                timer = RoomTimer(self.timeout_close_game, room_id)
+                self.sessions[room_id].timer = timer
 
                 # add players
                 self.players_per_room[room_id] = []
@@ -152,6 +201,7 @@ class DrawingBot:
                     self.sessions[room_id].players.append(
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
+                    #todo: delete player_per_room?
                     self.players_per_room[room_id].append(
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
@@ -198,12 +248,31 @@ class DrawingBot:
             room_id = data["room"]
             # someone joined waiting room
             if room_id == self.waiting_room:
-                pass
-                # if self.waiting_timer is not None:
-                #     LOG.debug("Waiting Timer stopped.")
-                #     self.waiting_timer.cancel()
-                # if data["type"] == "join":
-                #     LOG.debug("Waiting Timer restarted.")
+                if self.waiting_timer is not None:
+                    LOG.debug("Waiting Timer stopped.")
+                    self.waiting_timer.cancel()
+                if data["type"] == "join":
+                    LOG.debug("Waiting Timer restarted.")
+                    self.waiting_timer = Timer(
+                        WAITING_PARTNER_TIMER * 60,
+                        self._no_partner,
+                        args=[room_id, data["user"]["id"]],
+                    )
+                    self.waiting_timer.start()
+                    sleep(10)
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"If nobody shows up within "
+                                        f"{WAITING_PARTNER_TIMER} minutes, I will give "
+                                        f"you a submission link, so that you "
+                                        f"can get paid for your waiting time."
+                            ,
+                            "room": room_id,
+                            "receiver_id": data['user']['id'],
+                            "html": True,
+                        },
+                    )
 
             # some joined a task room
             else:
@@ -252,7 +321,7 @@ class DrawingBot:
                 return
 
             # if the message is part of the main discussion count it
-            for usr in self.players_per_room[room_id]:
+            for usr in self.sessions[room_id].players:
                 if usr["id"] == user_id and usr["status"] == "ready":
                     usr["msg_n"] += 1
 
@@ -429,6 +498,43 @@ class DrawingBot:
 
         self.request_feedback(response, "setting point stand in title")
 
+    def _no_partner(self, room_id, user_id):
+        """Handle the situation that a participant waits in vain."""
+        if user_id not in self.received_waiting_token:
+            self.sio.emit(
+                "text",
+                {"message": "Unfortunately we could not find a partner for you!",
+                 "room": room_id,
+                 "receiver_id": user_id,
+                 },
+            )
+            # create token and send it to user
+            # self.confirmation_code(room_id, "no_partner", receiver_id=user_id)
+            sleep(5)
+            self.sio.emit(
+                "text",
+                {
+                    "message": "You may also wait some more :)",
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+            # no need to cancel
+            # the running out of this timer triggered this event
+            self.waiting_timer = Timer(
+                WAITING_PARTNER_TIMER * 60, self._no_partner, args=[room_id, user_id]
+            )
+            self.waiting_timer.start()
+            self.received_waiting_token.add(user_id)
+        else:
+            self.sio.emit(
+                "text",
+                {"message": "You won't be remunerated for further waiting time.",
+                 "room": room_id,
+                 "receiver_id": user_id,
+                 },
+            )
+
     def next_round(self, room_id):
         """
         Before a new round starts, remove played instance from list,
@@ -476,6 +582,14 @@ class DrawingBot:
             # Show new grid instance to player_a
             self.show_item(room_id)
             self.update_rights(room_id, player_a=True, player_b=False)
+
+            # reset attributes for the new round
+            for usr in self.sessions[room_id].players:
+                usr["status"] = "ready"
+                usr["msg_n"] = 0
+
+            # # restart next_round_timer
+            # self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
