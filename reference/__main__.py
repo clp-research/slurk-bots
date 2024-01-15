@@ -1,5 +1,6 @@
 import logging
 import os
+import string
 import random
 from time import sleep
 
@@ -9,7 +10,7 @@ from templates import TaskBot
 
 import logging
 
-from reference.config import EXPLAINER_HTML, GUESSER_HTML, EMPTY_GRID, GRIDS, GRIDS_PER_ROOM
+from reference.config import EXPLAINER_HTML, GUESSER_HTML, EMPTY_GRID, GRIDS, GRIDS_PER_ROOM, TASK_GREETING, COLOR_MESSAGE
 from reference.dataloader import Dataloader
 from reference.grid import GridManager
 
@@ -113,6 +114,19 @@ class ReferenceBot(TaskBot):
             # send_instructions
             for player in self.sessions[room_id].players:
                 self.send_instr(room_id, player["id"])
+
+            for line in TASK_GREETING:
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": COLOR_MESSAGE.format(
+                            color= "#800080", message=line
+                        ),
+                        "room": room_id,
+                        "html": True,
+                    },
+                )
+            sleep(1)
             self.sio.emit(
                 "text",
                 {
@@ -159,7 +173,6 @@ class ReferenceBot(TaskBot):
                 self.send_message_to_user(
                     f"{user['name']} has joined the game.", room_id
                 )
-                sleep(0.5)
 
             elif event == "leave":
                 self.send_message_to_user(f"{user['name']} has left the game.", room_id)
@@ -202,7 +215,7 @@ class ReferenceBot(TaskBot):
                     if guess_correct:
                         self.send_message_to_user(
                                 f"GUESS was correct! "
-                                f"You both win this round.",
+                                    f"You both win this round.",
                                 room_id,
                             )
                     else:
@@ -326,19 +339,19 @@ class ReferenceBot(TaskBot):
         # word list gets smaller, next round starts
         self.sessions[room_id].grids.pop(0)
         if not self.sessions[room_id].grids:
-            self.close_room(room_id)
+            self.terminate_experiment(room_id)
             return
         self.start_round(room_id)
 
     def start_round(self, room_id):
         if not self.sessions[room_id].grids:
-            self.close_room(room_id)
+            self.terminate_experiment(room_id)
         round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
-        self.send_message_to_user(f"Let's start round {round_n},the grids are updated!.", room_id)
+        self.send_message_to_user(f"Let's start round {round_n}, the grids are updated!.", room_id)
         grid_instance = self.sessions[room_id].grids[0]
         self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
         self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
-        self.send_message_to_user("Generate the referring expression for the given target.",
+        self.send_message_to_user("Generate the description for the given target.",
                                   room_id, self.sessions[room_id].explainer)
         self.send_message_to_user("Wait for the description from the explainer.",
                                   room_id, self.sessions[room_id].guesser)
@@ -448,11 +461,60 @@ class ReferenceBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Removing user from task room was successful.")
 
-    def close_room(self, room_id):
+    def terminate_experiment(self, room_id):
+        self.sio.emit(
+            "text",
+            {
+                "room": room_id,
+                "message": (
+                    "The experiment is over 🎉 🎉 thank you very much for your time!"
+                ),
+                "html": True,
+            },
+        )
+        self.confirmation_code(room_id, "sucess")
+        self.close_game(room_id)
+
+    def close_game(self, room_id):
+
+        self.sio.emit(
+            "text",
+            {"message": "The room is closing, see you next time 👋", "room": room_id},
+        )
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
+
+    def confirmation_code(self, room_id, status):
+        """Generate AMT token that will be sent to each player."""
+        for player in self.sessions[room_id].players:
+            amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        # no points in my code
+        # points = self.sessions[room_id].points
+        # post AMT token to logs
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": status, "amt_token": amt_token, "receiver":  player["id"]},
+            room_id,
+        )
+
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color="#800080",
+                        message=(
+                            "Please remember to "
+                            "save your token before you close this browser window. "
+                            f"Your token: {amt_token}"
+                        ),
+                    ),
+                    "room": room_id,
+                    "html": True,
+                    "receiver_id": player["id"],
+                },
+            )
 
     def set_message_privilege(self, user_id, value):
         """

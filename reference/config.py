@@ -30,3 +30,7 @@ GRIDS = Path(f"{ROOT}/data/instances.json")
 
 GRIDS_PER_ROOM = 4  # -1 to load entire dataset
 
+COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
+
+with open(Path(f"{ROOT}/data/task_greeting.txt"), "r", encoding="utf-8") as f:
+    TASK_GREETING = f.read().split("\n\n\n")
