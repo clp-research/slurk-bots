@@ -27,6 +27,7 @@ class Session:
         self.players = list()
         self.player_a = None
         self.player_b = None
+        self.task_greeting = TASK_GREETING.read_text()
         self.player_a_instructions = INSTRUCTIONS_A
         self.player_b_instructions = INSTRUCTIONS_B
         self.keyboard_instructions = KEYBOARD_INSTRUCTIONS
@@ -35,6 +36,7 @@ class Session:
         self.grid_type = None
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
+        self.turns_left = None
         self.game_round = None
         self.timer = None
         self.points = {
@@ -43,7 +45,6 @@ class Session:
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
-        self.rounds_left = None
 
     def close(self):
         pass
@@ -75,9 +76,11 @@ class DrawingBot:
     waiting_room = None
 
     def __init__(self, token, user, host, port):
-        """This bot allows two players that are shown two different
-        or equal pictures to discuss about what they see and decide
-        whether there are differences.
+        """
+        This bot allows two players to play a game in which the instruction-giver
+        instructs the instruction-follower how to draw a given 5x5 grid.
+        When the instruction-giver is done giving instructions, the drawn grid is
+        compared against the target grid.
 
         :param token: A uuid; a string following the same pattern
             as `0c45b30f-d049-43d1-b80d-e3c3a3ca22a0`
@@ -121,8 +124,8 @@ class DrawingBot:
     def register_callbacks(self):
         @self.sio.event
         def new_task_room(data):
-            """Triggered after a new task room is created.
-
+            """
+            Triggered after a new task room is created.
             An example scenario would be that the concierge
             bot emitted a room_created event once enough
             users for a task have entered the waiting room.
@@ -143,7 +146,7 @@ class DrawingBot:
                 # create a new session for these users
                 self.sessions.create_session(room_id)
 
-                # self.images_per_room.get_image_pairs(room_id)
+                # add players
                 self.players_per_room[room_id] = []
                 for usr in data["users"]:
                     self.sessions[room_id].players.append(
@@ -164,15 +167,13 @@ class DrawingBot:
                     response.raise_for_status()
                 LOG.debug("Sending drawing game bot to new room was successful.")
 
-                # self.start_game(room_id)
-
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
             room_id = data["room"]
 
             # read out task greeting
-            message = TASK_GREETING.read_text()
+            message = self.sessions[room_id].task_greeting
             self.sio.emit(
                 "text",
                 {
@@ -265,12 +266,13 @@ class DrawingBot:
             room_id = data["room"]
             user_id = data["user"]["id"]
             this_session = self.sessions[room_id]
-            if isinstance(data["command"], str):
-                command = data['command'].lower()
 
             # do not process commands from itself
             if str(user_id) == self.user:
                 return
+
+            if isinstance(data["command"], str):
+                command = data['command'].lower()
 
             if isinstance(data["command"], dict):
                 if "guess" in data["command"]:
@@ -297,7 +299,7 @@ class DrawingBot:
                             },
                         )
 
-                        if this_session.rounds_left >= 1:
+                        if this_session.turns_left >= 1:
                             self.sio.emit(
                                 "text",
                                 {
@@ -320,7 +322,8 @@ class DrawingBot:
                             self._command_done(room_id, user_id, data['command'])
                             return
 
-            if this_session.rounds_left is None:
+            # If the game hasn't actually started, check for ready_command
+            if this_session.turns_left is None:
                 if "ready" in command:
                     self._command_ready(room_id, user_id)
                     return
@@ -334,9 +337,12 @@ class DrawingBot:
                         },
                     )
                     return
+
+            # If player_a is done, compare target grid and drawn grid
             if "done" in data["command"]:
                 self._command_done(room_id, user_id, command)
                 return
+
             # player_a
             if this_session.player_a == user_id:
                 self.sio.emit(
@@ -347,18 +353,19 @@ class DrawingBot:
                         "receiver_id": this_session.player_b,
                     },
                 )
-                this_session.rounds_left -= 1
-                LOG.debug(f"There remain {this_session.rounds_left} turns left")
+                this_session.turns_left -= 1
+                LOG.debug(f"There remain {this_session.turns_left} turns left")
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
             # player_b
             elif this_session.player_b == user_id:
+                # In case the grid is returned as string on the chat area
                 if '▢' in command:
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
                     sleep(1)
-                    if this_session.rounds_left >= 1:
+                    if this_session.turns_left >= 1:
                         self.sio.emit(
                             "text",
                             {
@@ -382,12 +389,15 @@ class DrawingBot:
                     )
 
     def reformat_drawn_grid(self, grid):
+        """Reformat grid so the image is clear"""
         grid = grid.lower()
         grid = grid.replace('\n', ' ')
         return grid
 
     def process_move(self, room_id, reward: int):
         this_session = self.sessions[room_id]
+        self.update_reward(room_id, reward)
+        self.update_title_points(room_id, reward)
         this_session.game_round += 1
         self.next_round(room_id)
 
@@ -608,8 +618,7 @@ class DrawingBot:
         if target_grid != drawn_grid:
             result = 'LOST'
             points = 0
-            self.update_reward(room_id, points)
-            self.update_title_points(room_id, points)
+
             self.sio.emit(
                 "text",
                 {
@@ -624,8 +633,7 @@ class DrawingBot:
         else:
             result = 'WON'
             points = 1
-            self.update_reward(room_id, points)
-            self.update_title_points(room_id, points)
+
             self.sio.emit(
                 "text",
                 {
@@ -740,8 +748,8 @@ class DrawingBot:
         this_session = self.sessions[room_id]
 
         # 1) Set rounds
-        this_session.rounds_left = 25
-        LOG.debug(f"Rounds left {this_session.rounds_left}")
+        this_session.turns_left = 25
+        LOG.debug(f"Rounds left {this_session.turns_left}")
         # 2) Choose players A and B
         self.sessions[room_id].pick_player_a()
         self.sessions[room_id].pick_player_b()
@@ -868,7 +876,7 @@ class DrawingBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": f"This is the target grid: <br>{grid}<br><br>You have {this_session.rounds_left} turns "
+                    "message": f"This is the target grid: <br>{grid}<br><br>You have {this_session.turns_left} turns "
                                f"to describe it to the other player.<br><br>Give the first instruction.",
                     "receiver_id": this_session.player_a,
                     "room": room_id,
