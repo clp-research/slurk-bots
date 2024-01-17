@@ -130,13 +130,16 @@ class ReferenceBot(TaskBot):
             self.sio.emit(
                 "text",
                 {
-                "message": (
-                    "Are you ready? <br>"
+                "message": COLOR_MESSAGE.format(
+                    color="#800080",
+                    message =(
+                    "Are you ready?"
+                    " Once you click on 'yes' you will see the grids. <br> <br>"
                     "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
                     "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
                 ),
+                ),
                 "room": room_id,
-                # "receiver_id": player["id"],
                 "html": True,
                 },
             )
@@ -227,15 +230,15 @@ class ReferenceBot(TaskBot):
                                     f"You both win this round.",
                                 room_id,
                             )
-
+                        self.update_reward(room_id, 1)
                         self.log_event("correct guess", {"content": data['message']}, room_id)
                     else:
                         self.send_message_to_user(
                                 f"GUESS was false."
-                                f"You both win this round.",
+                                f"You both lose this round.",
                                 room_id,
                             )
-
+                        self.update_reward(room_id, 0)
                         self.log_event("false guess", {"content": data['message']}, room_id)
 
 
@@ -246,8 +249,8 @@ class ReferenceBot(TaskBot):
                             f"You both lose this round.",
                             room_id,
                         )
-
                     self.log_event("invalid guess", {"content": data['message']}, room_id)
+                    self.update_reward(room_id, 0)
 
                 self.load_next_game(room_id)
 
@@ -505,6 +508,34 @@ class ReferenceBot(TaskBot):
 
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
+
+    def update_reward(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        score += reward
+        score = round(score, 2)
+        self.sessions[room_id].points["score"] = max(0, score)
+        self.update_title_points(room_id, reward)
+
+    def update_title_points(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        correct = self.sessions[room_id].points["history"][0]["correct"]
+        wrong = self.sessions[room_id].points["history"][0]["wrong"]
+        if reward == 0:
+            wrong += 1
+        elif reward == 1:
+            correct += 1
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={
+                "text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.sessions[room_id].points["history"][0]["correct"] = correct
+        self.sessions[room_id].points["history"][0]["wrong"] = wrong
+
+        self.request_feedback(response, "setting point stand in title")
 
     def confirmation_code(self, room_id, status):
         """Generate AMT token that will be sent to each player."""

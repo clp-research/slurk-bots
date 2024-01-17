@@ -95,7 +95,7 @@
     ".cards": {
       "position": "relative",
       "display": "flex",
-      "flex-direction": "row",
+      "flex-direction": "column",
       "margin": "0px 10px",
       "padding": "50px"
     },
@@ -116,13 +116,13 @@
     ".card": {
     "position": "relative",
     "display": "flex",
+      "flex-direction": "column",
     "min-width": "45%",
     "background-color": "#fff",
     "background-clip": "border-box",
     "border": "1px solid rgba(0,0,0,.125)",
     "border-radius": ".25rem",
     "height": "100%",
-    "max-width": "50%",
     "margin": "0px 10px",
     "padding": "30px"
     },
@@ -157,7 +157,26 @@
       "display": "none",
       "overflow": "hidden",
       "background-color": "#f1f1f1"
-    }
+    },
+      ".button, .message_button": {
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+            "margin-top": "10px",
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
+        },
+        ".message_button": {
+            "margin-top": "3px",
+            "padding": "5px",
+            "width":"49%"
+        }
   },
   "scripts": {
     "incoming-text": "markdown",
