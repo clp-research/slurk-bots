@@ -202,6 +202,12 @@ class ReferenceBot(TaskBot):
             this_session = self.sessions[room_id]
             if this_session.explainer == user_id:
                 # EXPLAINER sent the command
+
+                # means that new turn began
+                self.log_event("turn", dict(), room_id)
+
+                self.log_event("clue", {"content": data['message']}, room_id)
+
                 self.set_message_privilege(self.sessions[room_id].explainer, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
                 self.set_message_privilege(self.sessions[room_id].guesser, True)
@@ -210,7 +216,10 @@ class ReferenceBot(TaskBot):
             else:
                 # GUESSER sent the command
                 # check the guess and inform the user about it??
+                self.log_event("guess", {"content": data['message']}, room_id)
+
                 if len(data['message']) == 1 and data['message'][0] in ["1", "2", "3"]:
+
                     guess_correct = correct_guess(data['message'][0], self.sessions[room_id].grids[0][6][1])
                     if guess_correct:
                         self.send_message_to_user(
@@ -218,12 +227,16 @@ class ReferenceBot(TaskBot):
                                     f"You both win this round.",
                                 room_id,
                             )
+
+                        self.log_event("correct guess", {"content": data['message']}, room_id)
                     else:
                         self.send_message_to_user(
                                 f"GUESS was false."
                                 f"You both win this round.",
                                 room_id,
                             )
+
+                        self.log_event("false guess", {"content": data['message']}, room_id)
 
 
 
@@ -233,6 +246,9 @@ class ReferenceBot(TaskBot):
                             f"You both lose this round.",
                             room_id,
                         )
+
+                    self.log_event("invalid guess", {"content": data['message']}, room_id)
+
                 self.load_next_game(room_id)
 
 
@@ -347,6 +363,10 @@ class ReferenceBot(TaskBot):
         if not self.sessions[room_id].grids:
             self.terminate_experiment(room_id)
         round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
+
+        # try to log the round number
+        self.log_event("round", {"number": round_n}, room_id)
+
         self.send_message_to_user(f"Let's start round {round_n}, the grids are updated!.", room_id)
         grid_instance = self.sessions[room_id].grids[0]
         self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
@@ -499,22 +519,22 @@ class ReferenceBot(TaskBot):
             room_id,
         )
 
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color="#800080",
-                        message=(
-                            "Please remember to "
-                            "save your token before you close this browser window. "
-                            f"Your token: {amt_token}"
-                        ),
+        self.sio.emit(
+            "text",
+            {
+                "message": COLOR_MESSAGE.format(
+                    color="#800080",
+                    message=(
+                        "Please remember to "
+                        "save your token before you close this browser window. "
+                        f"Your token: {amt_token}"
                     ),
-                    "room": room_id,
-                    "html": True,
-                    "receiver_id": player["id"],
-                },
-            )
+                ),
+                "room": room_id,
+                "html": True,
+                "receiver_id": player["id"],
+            },
+        )
 
     def set_message_privilege(self, user_id, value):
         """
