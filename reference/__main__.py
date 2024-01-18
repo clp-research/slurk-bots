@@ -184,16 +184,19 @@ class ReferenceBot(TaskBot):
                     self.send_message_to_user(
                         f"{user['name']} has joined the game.", room_id
                     )
+                    # Change to role check like in recolage?
+                    if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
+                        LOG.debug("RESTART ROUND")
+                        self.reload_state(room_id, curr_usr["id"])
+
 
                 elif event == "leave":
                     # self.send_message_to_user(f"{user['name']} has left the game.", room_id)
-                    self.send_message_to_user(
-                        f"{user['name']} has left the game. "
-                        f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
+                    if self.sessions[room_id].game_over is False:
+                        self.send_message_to_user(
+                            f"{user['name']} has left the game. "
+                            f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
 
-                    if not self.sessions[room_id].game_over:
-                        if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
-                            self.start_round(room_id, from_disconnect=True)
 
 
 
@@ -371,46 +374,51 @@ class ReferenceBot(TaskBot):
             return
         self.start_round(room_id)
 
-    def start_round(self, room_id, from_disconnect=False):
-
+    def reload_state(self, room_id, user):
         if not self.sessions[room_id].grids:
             self.terminate_experiment(room_id)
             return
 
-        if from_disconnect:
-            for player in self.sessions[room_id].players:
-                self.send_instr(room_id, player["id"])
-                # update rights
-                if player["id"] == self.sessions[room_id].turn:
-                    self.set_message_privilege(room_id, player["id"], True)
-                    self.give_writing_rights(room_id,  player["id"])
-
-            grid_instance = self.sessions[room_id].grids[0]
+        LOG.debug(f'Reload state for {user}')
+        self.send_instr(room_id, user)
+        if self.sessions[room_id].turn == user:
+            self.set_message_privilege(room_id, user, True)
+            self.give_writing_rights(room_id, user)
+        grid_instance = self.sessions[room_id].grids[0]
+        if user == self.sessions[room_id].explainer:
             self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
-            self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
-        # update rights, check how rights are at the moment
-        # differentiate if the clue/guess was already sent??
         else:
-            round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
-
-            # try to log the round number
-            self.log_event("round", {"number": round_n}, room_id)
-
-            self.send_message_to_user(f"Let's start round {round_n}, the grids are updated!.", room_id)
-            grid_instance = self.sessions[room_id].grids[0]
-            self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
             self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
-            self.send_message_to_user("Generate the description for the given target.",
-                                      room_id, self.sessions[room_id].explainer)
-            self.send_message_to_user("Wait for the description from the explainer.",
-                                      room_id, self.sessions[room_id].guesser)
 
-            # update writing_rights
-            self.set_message_privilege(room_id, self.sessions[room_id].explainer, True)
-            # assign writing rights to other user
-            self.give_writing_rights(room_id, self.sessions[room_id].explainer)
-            self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
-            self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
+    def start_round(self, room_id):
+        if not self.sessions[room_id].grids:
+            self.terminate_experiment(room_id)
+            return
+
+        grid_instance = self.sessions[room_id].grids[0]
+        self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
+        self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
+
+        round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
+
+        # try to log the round number
+        self.log_event("round", {"number": round_n}, room_id)
+
+        self.send_message_to_user(f"Let's start round {round_n}, the grids are updated!.", room_id)
+        grid_instance = self.sessions[room_id].grids[0]
+        self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
+        self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
+        self.send_message_to_user("Generate the description for the given target.",
+                                  room_id, self.sessions[room_id].explainer)
+        self.send_message_to_user("Wait for the description from the explainer.",
+                                  room_id, self.sessions[room_id].guesser)
+
+        # update writing_rights
+        self.set_message_privilege(room_id, self.sessions[room_id].explainer, True)
+        # assign writing rights to other user
+        self.give_writing_rights(room_id, self.sessions[room_id].explainer)
+        self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
+        self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
     def show_items(self, room_id, grid_instance, user_id):
         for i in range(len(grid_instance)):
@@ -426,12 +434,6 @@ class ReferenceBot(TaskBot):
                     "receiver_id": user_id,
                 }
             )
-
-
-
-
-
-
 
     def send_message_to_user(self, message, room, receiver=None):
         if receiver:
