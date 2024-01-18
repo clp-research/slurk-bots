@@ -30,6 +30,8 @@ class Session:
             "score": 0,
             "history": [{"correct": 0, "wrong": 0, "warnings": 0}],
         }
+        self.turn = None
+        self.game_over = False
 
     def close(self):
         pass
@@ -126,7 +128,7 @@ class ReferenceBot(TaskBot):
                         "html": True,
                     },
                 )
-            sleep(1)
+            sleep(2)
             self.sio.emit(
                 "text",
                 {
@@ -170,23 +172,29 @@ class ReferenceBot(TaskBot):
             if user["id"] == self.user:
                 return
 
-            # someone joined a task room
-            if event == "join":
-                # inform everyone about the join event
-                self.send_message_to_user(
-                    f"{user['name']} has joined the game.", room_id
-                )
+            if room_id in self.sessions:
 
-            elif event == "leave":
-                self.send_message_to_user(f"{user['name']} has left the game.", room_id)
+                this_session = self.sessions[room_id]
+                curr_usr, other_usr = this_session.players
+                if curr_usr["id"] != data["user"]["id"]:
+                    curr_usr, other_usr = other_usr, curr_usr
+                # someone joined a task room
+                if event == "join":
+                    # inform everyone about the join event
+                    self.send_message_to_user(
+                        f"{user['name']} has joined the game.", room_id
+                    )
 
-                # # remove this user from current session
-                # this_session.players = list(
-                #     filter(
-                #         lambda player: player["id"] != user["id"], this_session.players
-                #     )
-                # )
-                #
+                elif event == "leave":
+                    # self.send_message_to_user(f"{user['name']} has left the game.", room_id)
+                    self.send_message_to_user(
+                        f"{user['name']} has left the game. "
+                        f"Please wait a bit, your partner may rejoin.", room_id, receiver=other_usr)
+
+                    if not self.sessions[room_id].game_over:
+                        if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
+                            self.start_round(room_id, from_disconnect=True)
+
 
 
 
@@ -211,9 +219,9 @@ class ReferenceBot(TaskBot):
 
                 self.log_event("clue", {"content": data['message']}, room_id)
 
-                self.set_message_privilege(self.sessions[room_id].explainer, False)
+                self.set_message_privilege(room_id, self.sessions[room_id].explainer, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
-                self.set_message_privilege(self.sessions[room_id].guesser, True)
+                self.set_message_privilege(room_id,self.sessions[room_id].guesser, True)
                 # assign writing rights to other user
                 self.give_writing_rights(room_id, self.sessions[room_id].guesser)
             else:
@@ -362,29 +370,46 @@ class ReferenceBot(TaskBot):
             return
         self.start_round(room_id)
 
-    def start_round(self, room_id):
+    def start_round(self, room_id, from_disconnect=False):
+
         if not self.sessions[room_id].grids:
             self.terminate_experiment(room_id)
-        round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
+            return
 
-        # try to log the round number
-        self.log_event("round", {"number": round_n}, room_id)
+        if from_disconnect:
+            for player in self.sessions[room_id].players:
+                self.send_instr(room_id, player["id"])
+                # update rights
+                if player["id"] == self.sessions[room_id].turn:
+                    self.set_message_privilege(room_id, player["id"], True)
+                    self.give_writing_rights(room_id,  player["id"])
 
-        self.send_message_to_user(f"Let's start round {round_n}, the grids are updated!.", room_id)
-        grid_instance = self.sessions[room_id].grids[0]
-        self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
-        self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
-        self.send_message_to_user("Generate the description for the given target.",
-                                  room_id, self.sessions[room_id].explainer)
-        self.send_message_to_user("Wait for the description from the explainer.",
-                                  room_id, self.sessions[room_id].guesser)
+            grid_instance = self.sessions[room_id].grids[0]
+            self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
+            self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
+        # update rights, check how rights are at the moment
+        # differentiate if the clue/guess was already sent??
+        else:
+            round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
 
-        # update writing_rights
-        self.set_message_privilege(self.sessions[room_id].explainer, True)
-        # assign writing rights to other user
-        self.give_writing_rights(room_id, self.sessions[room_id].explainer)
-        self.set_message_privilege(self.sessions[room_id].guesser, False)
-        self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
+            # try to log the round number
+            self.log_event("round", {"number": round_n}, room_id)
+
+            self.send_message_to_user(f"Let's start round {round_n}, the grids are updated!.", room_id)
+            grid_instance = self.sessions[room_id].grids[0]
+            self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
+            self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
+            self.send_message_to_user("Generate the description for the given target.",
+                                      room_id, self.sessions[room_id].explainer)
+            self.send_message_to_user("Wait for the description from the explainer.",
+                                      room_id, self.sessions[room_id].guesser)
+
+            # update writing_rights
+            self.set_message_privilege(room_id, self.sessions[room_id].explainer, True)
+            # assign writing rights to other user
+            self.give_writing_rights(room_id, self.sessions[room_id].explainer)
+            self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
+            self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
     def show_items(self, room_id, grid_instance, user_id):
         for i in range(len(grid_instance)):
@@ -488,11 +513,12 @@ class ReferenceBot(TaskBot):
         self.sio.emit(
             "text",
             {
-                "room": room_id,
                 "message": (
                     "The experiment is over 🎉 🎉 thank you very much for your time!"
                 ),
+                "room": room_id,
                 "html": True,
+
             },
         )
         self.confirmation_code(room_id, "sucess")
@@ -504,8 +530,8 @@ class ReferenceBot(TaskBot):
             "text",
             {"message": "The room is closing, see you next time 👋", "room": room_id},
         )
+        self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
-
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
 
@@ -544,30 +570,30 @@ class ReferenceBot(TaskBot):
         # no points in my code
         # points = self.sessions[room_id].points
         # post AMT token to logs
-        self.log_event(
-            "confirmation_log",
-            {"status_txt": status, "amt_token": amt_token, "receiver":  player["id"]},
-            room_id,
-        )
+            self.log_event(
+                "confirmation_log",
+                {"status_txt": status, "amt_token": amt_token, "receiver":  player["id"]},
+                room_id,
+            )
 
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color="#800080",
-                    message=(
-                        "Please remember to "
-                        "save your token before you close this browser window. "
-                        f"Your token: {amt_token}"
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color="#800080",
+                        message=(
+                            "Please remember to "
+                            "save your token before you close this browser window. "
+                            f"Your token: {amt_token}"
+                        ),
                     ),
-                ),
-                "room": room_id,
-                "html": True,
-                "receiver_id": player["id"],
-            },
-        )
+                    "room": room_id,
+                    "html": True,
+                    "receiver_id": player["id"],
+                },
+            )
 
-    def set_message_privilege(self, user_id, value):
+    def set_message_privilege(self, room_id, user_id, value):
         """
         change user's permission to send messages
         """
@@ -587,6 +613,8 @@ class ReferenceBot(TaskBot):
                 "Authorization": f"Bearer {self.token}",
             },
         )
+        if value:
+            self.sessions[room_id].turn = user_id
         self.request_feedback(response, "changing user's message permission")
 
     def make_input_field_unresponsive(self, room_id, user_id):
