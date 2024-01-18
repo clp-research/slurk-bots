@@ -189,7 +189,7 @@ class ReferenceBot(TaskBot):
                     # self.send_message_to_user(f"{user['name']} has left the game.", room_id)
                     self.send_message_to_user(
                         f"{user['name']} has left the game. "
-                        f"Please wait a bit, your partner may rejoin.", room_id, receiver=other_usr)
+                        f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
 
                     if not self.sessions[room_id].game_over:
                         if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
@@ -322,6 +322,7 @@ class ReferenceBot(TaskBot):
 
     def send_instr(self, room_id, user_id):
         if user_id == self.sessions[room_id].explainer:
+            # LOG.debug("instruction to explainer sent")
             message = f"{EXPLAINER_HTML}"
             self.sio.emit(
                 "message_command",
