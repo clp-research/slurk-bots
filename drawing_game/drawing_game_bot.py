@@ -24,29 +24,36 @@ LOG = logging.getLogger(__name__)
 
 
 class RoomTimer:
-    def __init__(self, function, room_id):
+    def __init__(self):
+        self.left_room = dict()
+        self.timer = None
+        self.function = None
+        self.room_id = None
+
+    def start_timer(self, function, room_id):
+        # cancel old timer if still running
+        if isinstance(self.timer, Timer):
+            self.timer.cancel()
         self.function = function
         self.room_id = room_id
-        self.start_timer()
-        self.left_room = dict()
-
-    def start_timer(self):
         self.timer = Timer(
-            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
-        )
-        self.timer.start()
+            TIMEOUT_TIMER * 60, function, args=[room_id]
+        ).start()
 
-    def reset(self):
-        self.timer.cancel()
-        self.start_timer()
-        logging.info("reset timer")
+        logging.info("Start timer")
 
     def cancel(self):
-        self.timer.cancel()
+        LOG.debug("Cancel one timer")
+        if self.timer:
+            self.timer.cancel()
+        else:
+            LOG.warning("Timer does not exist, cannot cancel")
 
     def cancel_all_timers(self):
-        self.timer.cancel()
+        LOG.debug("Cancel all timers")
+        self.cancel()
         for timer in self.left_room.values():
+            LOG.debug(f"Cancelling timer {timer}")
             timer.cancel()
 
     def user_joined(self, user):
@@ -59,6 +66,7 @@ class RoomTimer:
             LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
         )
         self.left_room[user].start()
+
 
 
 class Session:
@@ -76,8 +84,8 @@ class Session:
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
         self.turns_left = None
-        self.game_round = None
-        self.timer = None
+        self.game_round = 0
+        self.timer = RoomTimer()
         self.points = {
             "score": STARTING_POINTS,
             "history": [
@@ -103,7 +111,7 @@ class SessionManager(defaultdict):
 
     def clear_session(self, room_id):
         if room_id in self:
-            self[room_id].close()
+            self[room_id].timer.cancel_all_timers()
             self.pop(room_id)
 
 
@@ -130,10 +138,6 @@ class DrawingBot:
         :param uri: Full URL including protocol and hostname,
             followed by the assigned port if any.
         :type uri: str
-        :param players_per_room: Each room is mapped to a list of
-            users. Each user is represented as a dict with the
-            keys 'name', 'id', 'msg_n' and 'status'.
-        :type players_per_room: dict
         """
         self.token = token
         self.user = user
@@ -143,7 +147,6 @@ class DrawingBot:
             self.uri += f":{port}"
         self.uri += "/slurk/api"
         self.waiting_timer = None
-        self.players_per_room = dict()
         self.received_waiting_token = set()
 
         LOG.info(f"Running drawing game bot on {self.uri} with token {self.token}")
@@ -189,20 +192,15 @@ class DrawingBot:
 
                 # create image items for this room
                 LOG.debug("Create data for the new task room...")
+                LOG.debug(data)
 
                 # create a new session for these users
                 self.sessions.create_session(room_id)
-                timer = RoomTimer(self.timeout_close_game, room_id)
-                self.sessions[room_id].timer = timer
 
                 # add players
-                self.players_per_room[room_id] = []
+                self.sessions[room_id].players = []
                 for usr in data["users"]:
                     self.sessions[room_id].players.append(
-                        {**usr, "msg_n": 0, "status": "joined"}
-                    )
-                    #todo: delete player_per_room?
-                    self.players_per_room[room_id].append(
                         {**usr, "msg_n": 0, "status": "joined"}
                     )
 
@@ -216,6 +214,11 @@ class DrawingBot:
                     )
                     response.raise_for_status()
                 LOG.debug("Sending drawing game bot to new room was successful.")
+
+                # begin timers
+                self.sessions[room_id].timer.start_timer(
+                    self.time_out_round, room_id
+                )
 
         @self.sio.event
         def joined_room(data):
@@ -274,34 +277,42 @@ class DrawingBot:
                         },
                     )
 
-            # some joined a task room
+            # someone joined a task room
             else:
-                curr_usr, other_usr = self.players_per_room[room_id]
-                if curr_usr["id"] != data["user"]["id"]:
-                    curr_usr, other_usr = other_usr, curr_usr
+                LOG.debug(f"{self.sessions[room_id].players}")
+                if self.sessions[room_id].players:
+                    curr_usr, other_usr = self.sessions[room_id].players
+                    if curr_usr["id"] != data["user"]["id"]:
+                        curr_usr, other_usr = other_usr, curr_usr
 
-                if data["type"] == "join":
-                    # inform game partner about the rejoin event
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{curr_usr['name']} has joined the game. ",
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                        },
-                    )
+                    if data["type"] == "join":
+                        # inform game partner about the rejoin event
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"{curr_usr['name']} has joined the game. ",
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                            },
+                        )
 
-                elif data["type"] == "leave":
-                    # send a message to the user that was left alone
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{curr_usr['name']} has left the game. "
-                                       "Please wait a bit, your partner may rejoin.",
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                        },
-                    )
+                        # cancel leave timers if any
+                        LOG.debug("Cancel timer: user joined")
+                        self.sessions[room_id].timer.user_joined(curr_usr["id"])
+
+                    elif data["type"] == "leave":
+                        # send a message to the user that was left alone
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": f"{curr_usr['name']} has left the game. "
+                                           "Please wait a bit, your partner may rejoin.",
+                                "room": room_id,
+                                "receiver_id": other_usr["id"],
+                            },
+                        )
+                else:
+                    pass
 
         @self.sio.event
         def text_message(data):
@@ -319,6 +330,8 @@ class DrawingBot:
             # filter irrelevant messages
             if user_id == self.user:
                 return
+
+            # self.sessions[room_id].timer.reset()
 
             # if the message is part of the main discussion count it
             for usr in self.sessions[room_id].players:
@@ -339,6 +352,8 @@ class DrawingBot:
             # do not process commands from itself
             if str(user_id) == self.user:
                 return
+
+            # self.sessions[room_id].timer.reset()
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -408,7 +423,7 @@ class DrawingBot:
                     return
 
             # If player_a is done, compare target grid and drawn grid
-            if "done" in data["command"]:
+            if "done" in command:
                 self._command_done(room_id, user_id, command)
                 return
 
@@ -456,6 +471,36 @@ class DrawingBot:
                             "receiver_id": user_id,
                         },
                     )
+
+    def time_out_round(self, room_id):
+        """
+        function called by the round timer once the time is over.
+        Inform the users that the time is up and move to the next round
+        """
+        LOG.debug(f"Triggered time_out_round for room_id {room_id}")
+        if not self.sessions[room_id].drawn_grid:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "**Your time is up! Unfortunately you get no points for this round.**",
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            sleep(1)
+            self.process_move(room_id, 0)
+            return
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "**Your time is up!**",
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            sleep(1)
+            # self._command_done(room_id, self.sessions[room_id].player_a, )
 
     def reformat_drawn_grid(self, grid):
         """Reformat grid so the image is clear"""
@@ -542,6 +587,7 @@ class DrawingBot:
         Otherwise, end the experiment.
         """
         this_session = self.sessions[room_id]
+        LOG.debug(f"Starting game round {this_session.game_round}")
 
         # Remove grid so one instance is not played several times
         if this_session.grid_type == 'compact':
@@ -560,7 +606,8 @@ class DrawingBot:
                  "room": room_id},
             )
             self.close_game(room_id)
-        else:
+            return
+        elif 0 < self.sessions[room_id].game_round < 4:
             # Reset keyboard
             self.sio.emit(
                 "message_command",
@@ -588,8 +635,9 @@ class DrawingBot:
                 usr["status"] = "ready"
                 usr["msg_n"] = 0
 
-            # # restart next_round_timer
-            # self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
+            # restart next_round_timer
+            self.sessions[room_id].timer.start_timer(self.time_out_round, room_id)
+            self.sessions[room_id].turns_left = 25
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
@@ -701,11 +749,6 @@ class DrawingBot:
 
     def _command_done(self, room_id, user_id, command):
         """Must be sent to end a game round."""
-        # identify the user that has not sent this event
-        curr_usr, other_usr = self.sessions[room_id].players
-        if curr_usr["id"] != user_id:
-            curr_usr, other_usr = other_usr, curr_usr
-
         LOG.debug(command)
 
         this_session = self.sessions[room_id]
@@ -722,11 +765,14 @@ class DrawingBot:
 
         # get the grid for this room and the grid drawn by player_b
         target_grid = this_session.target_grid
-        drawn_grid = self.transform_string_in_grid(this_session.drawn_grid.upper()).replace('<br>', '\n')
-        this_session.drawn_grid = drawn_grid
+        if this_session.drawn_grid:
+            drawn_grid = self.transform_string_in_grid(this_session.drawn_grid.upper()).replace('<br>', '\n')
+            this_session.drawn_grid = drawn_grid
+        else:
+            LOG.debug(f"DRAWN GRID is EMPTY")
 
         LOG.debug(f"TARGET GRID is {this_session.target_grid}")
-        LOG.debug(f"DRAWN GRID is {drawn_grid}")
+        LOG.debug(f"DRAWN GRID is {this_session.drawn_grid}")
 
         if this_session.drawn_grid is None:
             self.sio.emit(
@@ -775,7 +821,7 @@ class DrawingBot:
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
         # identify the user that has not sent this event
-        curr_usr, other_usr = self.players_per_room[room_id]
+        curr_usr, other_usr = self.sessions[room_id].players
         if curr_usr["id"] != user_id:
             curr_usr, other_usr = other_usr, curr_usr
 
@@ -870,7 +916,7 @@ class DrawingBot:
 
         # 1) Set rounds
         this_session.turns_left = 25
-        LOG.debug(f"Rounds left {this_session.turns_left}")
+        LOG.debug(f"Turns left {this_session.turns_left}")
 
         # 2) Choose players A and B
         self.sessions[room_id].pick_player_a()
@@ -999,7 +1045,7 @@ class DrawingBot:
                 json={"text": "Target grid", "receiver_id": this_session.player_a},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
-            self.request_feedback(response, "set typing instructions title")
+            self.request_feedback(response, "set grid title")
             grid = this_session.target_grid.replace('\n', '<br>')
             self.sio.emit(
                 "message_command",
@@ -1070,37 +1116,40 @@ class DrawingBot:
             },
         )
         self.room_to_read_only(room_id)
+        # self.sessions[room_id].timer.cancel_all_timers()
+        # clear session
+        self.sessions.clear_session(room_id)
 
-        for usr in self.players_per_room[room_id]:
-            self.rename_users(usr["id"])
-
-            response = requests.post(
-                f"{self.uri}/users/{usr['id']}/rooms/{self.waiting_room}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not let user join waiting room: {response.status_code}"
-                )
-                response.raise_for_status()
-            LOG.debug("Sending user to waiting room was successful.")
-
-            response = requests.delete(
-                f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                headers={
-                    "If-Match": response.headers["ETag"],
-                    "Authorization": f"Bearer {self.token}",
-                },
-            )
-            if not response.ok:
-                LOG.error(
-                    f"Could not remove user from task room: {response.status_code}"
-                )
-                response.raise_for_status()
-            LOG.debug("Removing user from task room was successful.")
-
-        # remove any task room specific objects
-        self.players_per_room.pop(room_id)
+        # for usr in self.sessions[room_id].players:
+        #     self.rename_users(usr["id"])
+        #
+        #     response = requests.post(
+        #         f"{self.uri}/users/{usr['id']}/rooms/{self.waiting_room}",
+        #         headers={"Authorization": f"Bearer {self.token}"},
+        #     )
+        #     if not response.ok:
+        #         LOG.error(
+        #             f"Could not let user join waiting room: {response.status_code}"
+        #         )
+        #         response.raise_for_status()
+        #     LOG.debug("Sending user to waiting room was successful.")
+        #
+        #     response = requests.delete(
+        #         f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+        #         headers={
+        #             "If-Match": response.headers["ETag"],
+        #             "Authorization": f"Bearer {self.token}",
+        #         },
+        #     )
+        #     if not response.ok:
+        #         LOG.error(
+        #             f"Could not remove user from task room: {response.status_code}"
+        #         )
+        #         response.raise_for_status()
+        #     LOG.debug("Removing user from task room was successful.")
+        #
+        # # remove any task room specific objects
+        # self.sessions[room_id].players.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
@@ -1120,6 +1169,29 @@ class DrawingBot:
         if not response.ok:
             LOG.error(f"Could not set room to read_only: {response.status_code}")
             response.raise_for_status()
+
+        # remove users from room to repeated avoid timeout call
+        if room_id in self.sessions:
+            for usr in self.sessions[room_id].players:
+                response = requests.get(
+                    f"{self.uri}/users/{usr['id']}",
+                    headers={"Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(f"Could not get user: {response.status_code}")
+                    response.raise_for_status()
+                etag = response.headers["ETag"]
+
+                response = requests.delete(
+                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                )
+                if not response.ok:
+                    logging.error(
+                        f"Could not remove user from task room: {response.status_code}"
+                    )
+                    response.raise_for_status()
+                logging.debug("Removing user from task room was successful.")
 
     def rename_users(self, user_id):
         """Give all users in a room a new random name."""
