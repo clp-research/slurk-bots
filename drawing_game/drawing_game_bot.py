@@ -24,34 +24,46 @@ LOG = logging.getLogger(__name__)
 
 
 class RoomTimer:
-    def __init__(self):
-        self.left_room = dict()
-        self.timer = None
-        self.function = None
-        self.room_id = None
-
-    def start_timer(self, function, room_id):
-        # cancel old timer if still running
-        if isinstance(self.timer, Timer):
-            self.timer.cancel()
+    # def __init__(self):
+    def __init__(self, function, room_id):
         self.function = function
         self.room_id = room_id
-        self.timer = Timer(
-            TIMEOUT_TIMER * 60, function, args=[room_id]
-        ).start()
+        self.left_room = dict()
+        self.round_timer = None
 
-        logging.info("Start timer")
+    def start_round_timer(self):
+        self.round_timer = Timer(
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
+        )
+        self.round_timer.start()
+
+    # def start_round_timer(self, function, room_id):
+    #     # cancel old timer if still running
+    #     if isinstance(self.round_timer, Timer):
+    #         self.round_timer.cancel()
+    #     self.function = function
+    #     self.room_id = room_id
+    #     timer = Timer(
+    #         TIMEOUT_TIMER * 60, function, args=[room_id]
+    #     ).start()
+    #     self.round_timer = timer
+    #
+    #     logging.info("Start timer")
+    def reset(self):
+        self.round_timer.cancel()
+        self.start_round_timer()
+        logging.info("reset timer")
 
     def cancel(self):
         LOG.debug("Cancel one timer")
-        if self.timer:
-            self.timer.cancel()
+        if self.round_timer:
+            self.round_timer.cancel()
         else:
             LOG.warning("Timer does not exist, cannot cancel")
 
     def cancel_all_timers(self):
         LOG.debug("Cancel all timers")
-        self.cancel()
+        self.round_timer.cancel()
         for timer in self.left_room.values():
             LOG.debug(f"Cancelling timer {timer}")
             timer.cancel()
@@ -63,7 +75,7 @@ class RoomTimer:
 
     def user_left(self, user):
         self.left_room[user] = Timer(
-            LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
+            LEAVE_TIMER * 60, self.function, args=[self.room_id]
         )
         self.left_room[user].start()
 
@@ -85,13 +97,14 @@ class Session:
         self.drawn_grid = None
         self.turns_left = None
         self.game_round = 0
-        self.timer = RoomTimer()
+        self.timer = None # RoomTimer()
         self.points = {
             "score": STARTING_POINTS,
             "history": [
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
+        self.game_over = False
 
     def close(self):
         self.timer.cancel_all_timers()
@@ -216,9 +229,11 @@ class DrawingBot:
                 LOG.debug("Sending drawing game bot to new room was successful.")
 
                 # begin timers
-                self.sessions[room_id].timer.start_timer(
-                    self.time_out_round, room_id
-                )
+                # self.sessions[room_id].timer.start_round_timer(
+                #     self.time_out_round, room_id
+                # )
+                self.sessions[room_id].timer = RoomTimer(self.time_out_round, room_id)
+                self.sessions[room_id].timer.start_round_timer()
 
         @self.sio.event
         def joined_room(data):
@@ -237,6 +252,7 @@ class DrawingBot:
         @self.sio.event
         def status(data):
             """Triggered if a user enters or leaves a room."""
+            LOG.debug(f"{data['user']} did {data['type']} the room")
             # check whether the user is eligible to join this task
             task = requests.get(
                 f"{self.uri}/users/{data['user']['id']}/task",
@@ -311,6 +327,12 @@ class DrawingBot:
                                 "receiver_id": other_usr["id"],
                             },
                         )
+                        # cancel leave timers if any
+                        LOG.debug("Start timer: user left")
+                        self.sessions[room_id].timer.user_left(curr_usr["id"])
+                        self.sessions[room_id].timer.cancel()
+
+
                 else:
                     pass
 
@@ -331,7 +353,7 @@ class DrawingBot:
             if user_id == self.user:
                 return
 
-            # self.sessions[room_id].timer.reset()
+            self.sessions[room_id].timer.reset()
 
             # if the message is part of the main discussion count it
             for usr in self.sessions[room_id].players:
@@ -353,7 +375,7 @@ class DrawingBot:
             if str(user_id) == self.user:
                 return
 
-            # self.sessions[room_id].timer.reset()
+            self.sessions[room_id].timer.reset()
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -478,6 +500,8 @@ class DrawingBot:
         Inform the users that the time is up and move to the next round
         """
         LOG.debug(f"Triggered time_out_round for room_id {room_id}")
+        # if len(self.sessions[room_id].players) < 2:
+        #     return
         if not self.sessions[room_id].drawn_grid:
             self.sio.emit(
                 "text",
@@ -571,6 +595,7 @@ class DrawingBot:
             )
             self.waiting_timer.start()
             self.received_waiting_token.add(user_id)
+            return
         else:
             self.sio.emit(
                 "text",
@@ -635,8 +660,8 @@ class DrawingBot:
                 usr["status"] = "ready"
                 usr["msg_n"] = 0
 
-            # restart next_round_timer
-            self.sessions[room_id].timer.start_timer(self.time_out_round, room_id)
+            # restart round_timer
+            self.sessions[room_id].timer.start_round_timer()
             self.sessions[room_id].turns_left = 25
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
@@ -1115,6 +1140,7 @@ class DrawingBot:
                 "room": room_id,
             },
         )
+        self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
         # self.sessions[room_id].timer.cancel_all_timers()
         # clear session
