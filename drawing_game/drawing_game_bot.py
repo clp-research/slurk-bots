@@ -97,7 +97,7 @@ class Session:
         self.grid_type = None
         self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
         self.drawn_grid = None
-        self.turns_left = None
+        self.turn_number = 0
         self.game_round = 0
         self.timer = None # RoomTimer()
         self.points = {
@@ -498,7 +498,7 @@ class DrawingBot:
                             },
                         )
 
-                        if this_session.turns_left >= 1:
+                        if 0 < this_session.turn_number < 25:
                             self.sio.emit(
                                 "text",
                                 {
@@ -509,7 +509,7 @@ class DrawingBot:
                             )
                             self.update_rights(room_id, True, False)
                             return
-                        else:
+                        elif this_session.turn_number == 25:
                             self.sio.emit(
                                 "text",
                                 {
@@ -522,7 +522,7 @@ class DrawingBot:
                             return
 
             # If the game hasn't actually started, check for ready_command
-            if this_session.turns_left is None:
+            if this_session.turn_number == 0:
                 if "ready" in command:
                     self._command_ready(room_id, user_id)
                     return
@@ -552,8 +552,8 @@ class DrawingBot:
                         "receiver_id": this_session.player_b,
                     },
                 )
-                this_session.turns_left -= 1
-                LOG.debug(f"There remain {this_session.turns_left} turns left")
+                LOG.debug(f"This is turn number  {this_session.turn_number}.")
+                this_session.turn_number += 1
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
@@ -564,7 +564,7 @@ class DrawingBot:
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
                     sleep(1)
-                    if this_session.turns_left >= 1:
+                    if this_session.turn_number < 25:
                         self.sio.emit(
                             "text",
                             {
@@ -690,7 +690,7 @@ class DrawingBot:
             self.close_game(room_id)
             return
         elif 0 < self.sessions[room_id].game_round < 4:
-            # Reset keyboard
+            # Reset and send keyboard to only player_b
             self.sio.emit(
                 "message_command",
                 {"command": {"command": "drawing_game_init"}, "room": room_id,
@@ -711,7 +711,7 @@ class DrawingBot:
 
             # restart round_timer
             self.sessions[room_id].timer.start_round_timer()
-            self.sessions[room_id].turns_left = 25
+            self.sessions[room_id].turn_number = 1
 
             # Show new grid instance to player_a
             self.show_item(room_id)
@@ -1000,8 +1000,8 @@ class DrawingBot:
         this_session = self.sessions[room_id]
 
         # 1) Set rounds
-        this_session.turns_left = 25
-        LOG.debug(f"Turns left {this_session.turns_left}")
+        this_session.turn_number = 1
+        LOG.debug(f"Starting first turn out of 25.")
 
         # 2) Choose players A and B
         self.sessions[room_id].pick_player_a()
@@ -1118,7 +1118,7 @@ class DrawingBot:
             self.sio.emit(
                 "text",
                 {
-                    "message": f"This is the target grid: <br>{grid}<br><br>You have {this_session.turns_left} turns "
+                    "message": f"This is the target grid: <br>{grid}<br><br>You have 25 turns "
                                f"to describe it to the other player.<br><br>Give the first instruction.",
                     "receiver_id": this_session.player_a,
                     "room": room_id,
