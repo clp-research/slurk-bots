@@ -1036,7 +1036,9 @@ class CoCoBot(TaskBot):
         current_points = self.calculate_points(working_state, reference_state)
 
         this_session.points += current_points
-        this_session.total_episodes += 1
+        if this_session.states:
+            this_session.total_episodes += 1
+
         self.log_event(
             "points",
             {
@@ -1152,21 +1154,15 @@ class CoCoBot(TaskBot):
             points = this_session.points
             total_episodes = this_session.total_episodes
 
-            if total_episodes == MAX_EPISODES_PER_SESSION:
-                logging.debug(
-                    f"Completed playing the maximum episodes, no need to update the titlebar"
-                )
-                return
-
         if points == 0:
-            points_json = {
-                "text": f"Correct: {points} | Current Episode: {total_episodes+1}/{MAX_EPISODES_PER_SESSION}"
-            }
+            correct_points = f"Correct: {points}"
         else:
             # Emojis are utf-8 images
-            points_json = {
-                "text": f"Correct: {points} ✅ | Current Episode: {total_episodes}/{MAX_EPISODES_PER_SESSION}"
-            }
+            correct_points = f"Correct: {points} ✅"
+
+        points_json = {
+            "text": f"{correct_points} | Current Episode: {total_episodes+1}/{MAX_EPISODES_PER_SESSION}"
+        }
 
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
