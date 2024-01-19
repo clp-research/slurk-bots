@@ -26,6 +26,7 @@ TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
 BOARDS_PER_ROOM = 20
 BOARDS_PER_LEVEL = 2
 SEQUENCES_PER_ROOM = 1
+MAX_EPISODES_PER_SESSION = 3  # This is used to display in the titlebar to know the number of episodes played in a session
 
 # points system
 STARTING_POINTS = 0
@@ -38,6 +39,8 @@ LEAVE_TIMER = 3
 WAITING_ROOM_TIMER = 5
 
 # data
+# The board width and height to be updated inside the class: QuadrupleClient -> load_config() in golmi_client.py
+# Also to be updated in the file selection_state.json
 CONFIG = {
     "width": 8.0,
     "height": 8.0,

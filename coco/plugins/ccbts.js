@@ -217,9 +217,12 @@ $(document).ready(() => {
                     break;
 
                 case "instruction":
+                    // This is the scenario for legend - dont get confused with the name instruction
                     $("#instr").html(data.command.base);
                     data.command.extra.forEach(element => {
                         $('#instr').append(`<hr style="width: 1px; height: 50px; display: inline-block;">`)
+                        // this is the dynamic legend image
+                        //TODO: list down the steps to display the legend image vertically
                         $('#instr').append(`<img src="${element}" />`)
                     });                    
                     break

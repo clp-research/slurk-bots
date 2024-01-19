@@ -47,9 +47,11 @@ class Dataloader(list):
                         (board["state"], board["instructions"])
                     )
 
+                    # TODO: This has to be moved out of this for loop - recheck the functionality
                     # switch roles ar the end of the sequence except for the last one
-                    if i != len(sequences) - 1:
-                        self.append("switch")
+                    # Commenting for now, check later
+                    # if i != len(sequences) - 1:
+                    #    self.append("switch")
 
     def get_boards(self):
         """sample random boards for a room"""

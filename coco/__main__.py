@@ -32,10 +32,14 @@ class CoCoBot(TaskBot):
     def modify_layout(self, room_id, receiver_id=None):
         base_json = {"receiver_id": receiver_id} if receiver_id is not None else {}
 
+        # Adjust height value for title bar adjustments- handled in both the first and third API calls
+        titlebar_height = "height: 45px"
+        titlebar_width_height = "width:30%; top: 45px"
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/header",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"height: 40px", **base_json},
+            # json={"attribute": "style", "value": f"height: 40px", **base_json},
+            json={"attribute": "style", "value": titlebar_height, **base_json},
         )
 
         response = requests.patch(
@@ -51,7 +55,8 @@ class CoCoBot(TaskBot):
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/content",
             headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"width:30%; top: 40px", **base_json},
+            # json={"attribute": "style", "value": f"width:30%; top: 40px", **base_json},
+            json={"attribute": "style", "value": titlebar_width_height, **base_json},
         )
 
     def on_task_room_creation(self, data):
@@ -65,6 +70,13 @@ class CoCoBot(TaskBot):
         logging.debug(f"This bot is looking for task id: {self.task_id}")
 
         if task_id is not None and task_id == self.task_id:
+            # update points on title
+            logging.debug(f"Updating titlebar during task creation,{room_id}")
+            self.update_title_points(room_id)
+
+            logging.debug(
+                f"Calling modify_Layout for room {room_id} task_id = {task_id}"
+            )
             # move the chat | task area divider
             self.modify_layout(room_id)
             sleep(0.5)
@@ -77,6 +89,7 @@ class CoCoBot(TaskBot):
             self.sessions.create_session(room_id)
             this_session = self.sessions[room_id]
             this_session.timer = RoomTimer(self.timeout_close_game, room_id)
+            this_session.total_episodes = 0
 
             roles = [
                 {"role": "player", "name": "Programmer"},
@@ -88,6 +101,12 @@ class CoCoBot(TaskBot):
                 this_session.add_user({**usr, "role": role["role"], "status": "joined"})
 
                 self.rename_user(usr["id"], role["name"])
+
+                # cancel waiting-room-timers
+                if usr["id"] in self.sessions.waiting_room_timers:
+                    logging.debug(f"Cancelling waiting room timer for user {usr['id']}")
+                    self.sessions.waiting_room_timers[usr["id"]].cancel()
+                    self.sessions.waiting_room_timers.pop(usr["id"])
 
             # join the newly created room
             response = requests.post(
@@ -1017,6 +1036,7 @@ class CoCoBot(TaskBot):
         current_points = self.calculate_points(working_state, reference_state)
 
         this_session.points += current_points
+        this_session.total_episodes += 1
         self.log_event(
             "points",
             {
@@ -1026,6 +1046,12 @@ class CoCoBot(TaskBot):
             },
             room_id,
         )
+
+        # update points on title
+        logging.debug(
+            f"Updating title bar with current scores {this_session.points}, {this_session.total_episodes}"
+        )
+        self.update_title_points(room_id)
 
         this_session.timer.reset()
 
@@ -1083,6 +1109,7 @@ class CoCoBot(TaskBot):
         """load the current board on the golmi server"""
         this_session = self.sessions[room_id]
         # get current state
+        # descriptions -> is actually the list of images used in dynamic legend - maps to 'instructions' key inside statesxxx.jsonl file
         this_state, descriptions = this_session.states[0]
         client = this_session.golmi_client
 
@@ -1114,6 +1141,33 @@ class CoCoBot(TaskBot):
                     "receiver_id": user["id"],
                 },
             )
+
+    def update_title_points(self, room_id):
+        logging.debug(f"inside update_title_points, {room_id} {self.sessions}")
+        if room_id not in self.sessions:
+            points = 0
+            total_episodes = 0
+        else:
+            this_session = self.sessions[room_id]
+            points = this_session.points
+            total_episodes = this_session.total_episodes
+        if points == 0:
+            points_json = {
+                "text": f"Correct: {points} | Total Episodes: {total_episodes}/{MAX_EPISODES_PER_SESSION}"
+            }
+        else:
+            # Emojis are utf-8 images
+            points_json = {
+                "text": f"Correct: {points} ✅ | Total Episodes: {total_episodes}/{MAX_EPISODES_PER_SESSION}"
+            }
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            # json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅"},
+            json=points_json,
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "setting point stand in title")
 
     def calculate_points(self, working_board, reference_board):
         equality, _ = compare_boards(working_board, reference_board)
