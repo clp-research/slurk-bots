@@ -36,3 +36,6 @@ WARNING_COLOR = "FireBrick"
 
 with open(Path(f"{ROOT}/data/task_greeting.txt"), "r", encoding="utf-8") as f:
     TASK_GREETING = f.read().split("\n\n\n")
+
+TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 3  # minutes if a user is alone in a room

@@ -3,7 +3,7 @@ import os
 import string
 import random
 from time import sleep
-
+from threading import Timer
 
 import requests
 from templates import TaskBot
@@ -12,12 +12,52 @@ import logging
 
 from reference.config import EXPLAINER_HTML, GUESSER_HTML, \
     EMPTY_GRID, GRIDS, GRIDS_PER_ROOM, TASK_GREETING, \
-    COLOR_MESSAGE, STANDARD_COLOR, WARNING_COLOR
+    COLOR_MESSAGE, STANDARD_COLOR, WARNING_COLOR, \
+    TIMEOUT_TIMER, LEAVE_TIMER
+
 from reference.dataloader import Dataloader
 from reference.grid import GridManager
 
 TARGET_GRID_NAMES = {"1": "first", "2": "second", "3": "third"}
 LOG = logging.getLogger(__name__)
+
+class RoomTimer:
+    def __init__(self, function, room_id):
+        self.function = function
+        self.room_id = room_id
+        self.start_timer()
+        self.left_room = dict()
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
+
+    def cancel_all_timers(self):
+        self.timer.cancel()
+        for timer in self.left_room.values():
+            timer.cancel()
+
+    def user_joined(self, user):
+        timer = self.left_room.get(user)
+        if timer is not None:
+            self.left_room[user].cancel()
+
+    def user_left(self, user):
+        self.left_room[user] = Timer(
+            LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
+        )
+        self.left_room[user].start()
+
 
 class Session:
     def __init__(self):
@@ -34,9 +74,11 @@ class Session:
         }
         self.turn = None
         self.game_over = False
+        self.timer = None
 
     def close(self):
-        pass
+        self.timer.cancel_all_timers()
+
 
     def pick_explainer(self):
         # assuming there are only 2 players
@@ -95,6 +137,9 @@ class ReferenceBot(TaskBot):
 
             self.move_divider(room_id, 20, 80)
             self.sessions.create_session(room_id)
+
+            timer = RoomTimer(self.timeout_close_game, room_id)
+            self.sessions[room_id].timer = timer
 
             for usr in data["users"]:
                 self.sessions[room_id].players.append(
@@ -174,7 +219,12 @@ class ReferenceBot(TaskBot):
             if user["id"] == self.user:
                 return
 
-            if room_id in self.sessions:
+            # someone joined waiting room
+            if room_id == self.waiting_room:
+                if event == "join":
+                    logging.debug("Waiting Timer restarted.")
+
+            elif room_id in self.sessions:
 
                 this_session = self.sessions[room_id]
                 curr_usr, other_usr = this_session.players
@@ -186,6 +236,10 @@ class ReferenceBot(TaskBot):
                     self.send_message_to_user(STANDARD_COLOR,
                         f"{user['name']} has joined the game.", room_id, other_usr["id"]
                     )
+
+                    # cancel leave timers if any
+                    self.sessions[room_id].timer.user_joined(curr_usr["id"])
+
                     # Change to role check like in recolage?
                     if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
                         LOG.debug("RESTART ROUND")
@@ -199,6 +253,8 @@ class ReferenceBot(TaskBot):
                             f"{user['name']} has left the game. "
                             f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
 
+                        # start a timer
+                        self.sessions[room_id].timer.user_left(curr_usr["id"])
 
 
 
@@ -216,6 +272,8 @@ class ReferenceBot(TaskBot):
                 return
 
             this_session = self.sessions[room_id]
+            this_session.timer.reset()
+
             if this_session.explainer == user_id:
                 # EXPLAINER sent the command
 
@@ -244,7 +302,7 @@ class ReferenceBot(TaskBot):
                     guess_correct = correct_guess(data['message'][0], self.sessions[room_id].grids[0][6][1])
                     if guess_correct:
                         self.send_message_to_user(STANDARD_COLOR,
-                                f"GUESS was correct! "
+                                f"GUESS was correct ✅!"
                                     f"You both win this round.",
                                 room_id,
                             )
@@ -252,7 +310,7 @@ class ReferenceBot(TaskBot):
                         self.log_event("correct guess", {"content": data['message']}, room_id)
                     else:
                         self.send_message_to_user(WARNING_COLOR,
-                                f"GUESS was false."
+                                f"GUESS was false ❌."
                                 f"You both lose this round.",
                                 room_id,
                             )
@@ -288,6 +346,8 @@ class ReferenceBot(TaskBot):
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
+
+            self.sessions[data["room"]].timer.reset()
 
             if isinstance(data["command"], dict):
                 # commands from interface
@@ -374,7 +434,11 @@ class ReferenceBot(TaskBot):
         sleep(1)
 
     def load_next_game(self, room_id):
-        # word list gets smaller, next round starts
+
+        # reset timer here?
+        self.sessions[room_id].timer.reset()
+
+        # grid list gets smaller, next round starts
         self.sessions[room_id].grids.pop(0)
         if not self.sessions[room_id].grids:
             self.terminate_experiment(room_id)
@@ -536,6 +600,13 @@ class ReferenceBot(TaskBot):
         self.send_message_to_user(STANDARD_COLOR, "The experiment is over 🎉 🎉 thank you very much for your time!",
                                   room_id)
         self.confirmation_code(room_id, "sucess")
+        self.close_game(room_id)
+
+    def timeout_close_game(self, room_id, status):
+
+        self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
+                                  room_id)
+        self.confirmation_code(room_id, status)
         self.close_game(room_id)
 
     def close_game(self, room_id):
