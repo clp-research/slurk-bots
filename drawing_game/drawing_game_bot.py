@@ -693,7 +693,8 @@ class DrawingBot:
             # Reset keyboard
             self.sio.emit(
                 "message_command",
-                {"command": {"command": "drawing_game_init"}, "room": room_id},
+                {"command": {"command": "drawing_game_init"}, "room": room_id,
+                 "receiver_id": this_session.player_b}
             )
             self.sio.emit(
                 "text",
@@ -1028,6 +1029,7 @@ class DrawingBot:
             "message_command",
             {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
         )
+
         this_session.timer.close_game_timer.cancel()
         self.send_individualised_instructions(room_id)
         self.show_item(room_id)
@@ -1106,7 +1108,7 @@ class DrawingBot:
         keyboard instructions to player_b.
         Hide game board to player_a
         """
-        LOG.debug("Display the grid and task description to the players.")
+        LOG.debug("Show item: Display the grid and task description to the players.")
 
         this_session = self.sessions[room_id]
 
@@ -1165,7 +1167,7 @@ class DrawingBot:
             )
 
             # Hide game board for player a
-            self._hide_game_board(room_id, this_session.player_a)
+            # self._hide_game_board(room_id, this_session.player_a)
 
             # enable the grid
             response = requests.delete(
@@ -1202,7 +1204,7 @@ class DrawingBot:
                 "room": room_id,
             },
         )
-        self.sessions[room_id].game_over = True
+
         self.room_to_read_only(room_id)
         # self.sessions[room_id].timer.cancel_all_timers()
         # clear session
