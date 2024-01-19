@@ -1151,14 +1151,21 @@ class CoCoBot(TaskBot):
             this_session = self.sessions[room_id]
             points = this_session.points
             total_episodes = this_session.total_episodes
+
+            if total_episodes == MAX_EPISODES_PER_SESSION:
+                logging.debug(
+                    f"Completed playing the maximum episodes, no need to update the titlebar"
+                )
+                return
+
         if points == 0:
             points_json = {
-                "text": f"Correct: {points} | Total Episodes: {total_episodes}/{MAX_EPISODES_PER_SESSION}"
+                "text": f"Correct: {points} | Current Episode: {total_episodes+1}/{MAX_EPISODES_PER_SESSION}"
             }
         else:
             # Emojis are utf-8 images
             points_json = {
-                "text": f"Correct: {points} ✅ | Total Episodes: {total_episodes}/{MAX_EPISODES_PER_SESSION}"
+                "text": f"Correct: {points} ✅ | Current Episode: {total_episodes}/{MAX_EPISODES_PER_SESSION}"
             }
 
         response = requests.patch(
