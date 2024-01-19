@@ -49,11 +49,11 @@ class RoomTimer:
         )
         self.close_game_timer.start()
 
-    def reset(self):
+    def reset_round_timer(self):
         if self.round_timer:
             self.round_timer.cancel()
         self.start_round_timer()
-        LOG.debug("reset timer")
+        LOG.debug("reset round timer")
 
     def cancel(self):
         if self.round_timer:
@@ -99,7 +99,7 @@ class Session:
         self.drawn_grid = None
         self.turn_number = 0
         self.game_round = 0
-        self.timer = None # RoomTimer()
+        self.timers = None # RoomTimer()
         self.points = {
             "score": STARTING_POINTS,
             "history": [
@@ -109,7 +109,7 @@ class Session:
         self.game_over = False
 
     def close(self):
-        self.timer.cancel_all_timers()
+        self.timers.cancel_all_timers()
 
     def pick_player_a(self):
         self.player_a = random.choice(self.players)["id"]
@@ -126,8 +126,8 @@ class SessionManager(defaultdict):
 
     def clear_session(self, room_id):
         if room_id in self:
-            if self[room_id].timer:
-                self[room_id].timer.cancel_all_timers()
+            if self[room_id].timers:
+                self[room_id].timers.cancel_all_timers()
             self.pop(room_id)
 
 
@@ -323,10 +323,10 @@ class DrawingBot:
                 # self.sessions[room_id].timer.start_round_timer(
                 #     self.time_out_round, room_id
                 # )
-                self.sessions[room_id].timer = RoomTimer(
+                self.sessions[room_id].timers = RoomTimer(
                     self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
-                self.sessions[room_id].timer.start_close_game_timer()
-                # self.sessions[room_id].timer.start_round_timer()
+                self.sessions[room_id].timers.start_close_game_timer()
+                # self.sessions[room_id].timers.start_round_timer()
 
 
         @self.sio.event
@@ -408,7 +408,7 @@ class DrawingBot:
 
                         # cancel leave timers if any
                         LOG.debug("Cancel timer: user joined")
-                        self.sessions[room_id].timer.user_joined(curr_usr["id"])
+                        self.sessions[room_id].timers.user_joined(curr_usr["id"])
 
                     elif data["type"] == "leave":
                         # send a message to the user that was left alone
@@ -422,9 +422,9 @@ class DrawingBot:
                             },
                         )
                         # cancel round timer and start left_user timer
-                        self.sessions[room_id].timer.cancel()
+                        self.sessions[room_id].timers.cancel()
                         LOG.debug("Start timer: user left")
-                        self.sessions[room_id].timer.user_left(curr_usr["id"])
+                        self.sessions[room_id].timers.user_left(curr_usr["id"])
                 else:
                     pass
 
@@ -446,7 +446,7 @@ class DrawingBot:
                 return
 
             # Cancel and restarts round_timer
-            # self.sessions[room_id].timer.reset()
+            # self.sessions[room_id].timers.reset()
 
             # if the message is part of the main discussion count it
             for usr in self.sessions[room_id].players:
@@ -468,7 +468,7 @@ class DrawingBot:
             if str(user_id) == self.user:
                 return
 
-            # self.sessions[room_id].timer.reset()
+            # self.sessions[room_id].timers.reset()
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -710,7 +710,7 @@ class DrawingBot:
             )
 
             # restart round_timer
-            self.sessions[room_id].timer.start_round_timer()
+            self.sessions[room_id].timers.start_round_timer()
             self.sessions[room_id].turn_number = 1
 
             # Show new grid instance to player_a
@@ -924,7 +924,6 @@ class DrawingBot:
             return
         curr_usr["status"] = "ready"
 
-        # self.timers_per_room[room_id].ready_timer.cancel()
         # a first ready command was sent
         if other_usr["status"] == "joined":
             sleep(0.5)
@@ -1030,7 +1029,7 @@ class DrawingBot:
             {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
         )
 
-        this_session.timer.close_game_timer.cancel()
+        this_session.timers.close_game_timer.cancel()
         self.send_individualised_instructions(room_id)
         self.show_item(room_id)
 
@@ -1176,7 +1175,7 @@ class DrawingBot:
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
-            this_session.timer.start_round_timer()
+            this_session.timers.start_round_timer()
 
     def _hide_game_board(self, room_id, user_id):
         response = requests.post(
@@ -1206,7 +1205,7 @@ class DrawingBot:
         )
 
         self.room_to_read_only(room_id)
-        # self.sessions[room_id].timer.cancel_all_timers()
+        # self.sessions[room_id].timers.cancel_all_timers()
         # clear session
         self.sessions.clear_session(room_id)
 
