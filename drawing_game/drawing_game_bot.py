@@ -108,9 +108,6 @@ class Session:
         }
         self.game_over = False
 
-    def close(self):
-        self.timers.cancel_all_timers()
-
     def pick_player_a(self):
         self.player_a = random.choice(self.players)["id"]
 
@@ -186,6 +183,40 @@ class DrawingBot:
         )
         self.confirmation_code(room_id, 'timeout')
         self.close_game(room_id)
+
+    def time_out_round(self, room_id):
+        """
+        function called by the round timer once the time is over.
+        Inform the users that the time is up and move to the next round
+        """
+        LOG.debug(f"Triggered time_out_round for room_id {room_id}")
+        # if len(self.sessions[room_id].players) < 2:
+        #     return
+        if not self.sessions[room_id].drawn_grid:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "**Your time is up! Unfortunately you get no points for this round.**",
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            sleep(1)
+            self.process_move(room_id, 0)
+            return
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "**Your time is up!**",
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+            sleep(1)
+            # self.sessions[room_id].game_round += 1
+            # self.next_round(room_id)
+            self._command_done(room_id, user_id=self.sessions[room_id].player_a, command='time up')
 
     def user_did_not_rejoin(self, room_id):
         self.sio.emit(
@@ -587,40 +618,6 @@ class DrawingBot:
                         },
                     )
 
-    def time_out_round(self, room_id):
-        """
-        function called by the round timer once the time is over.
-        Inform the users that the time is up and move to the next round
-        """
-        LOG.debug(f"Triggered time_out_round for room_id {room_id}")
-        # if len(self.sessions[room_id].players) < 2:
-        #     return
-        if not self.sessions[room_id].drawn_grid:
-            self.sio.emit(
-                "text",
-                {
-                    "message": "**Your time is up! Unfortunately you get no points for this round.**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-            sleep(1)
-            self.process_move(room_id, 0)
-            return
-        else:
-            self.sio.emit(
-                "text",
-                {
-                    "message": "**Your time is up!**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-            sleep(1)
-            # self.sessions[room_id].game_round += 1
-            # self.next_round(room_id)
-            self._command_done(room_id, user_id=self.sessions[room_id].player_a, command='time up')
-
     def reformat_drawn_grid(self, grid):
         """Reformat grid so the image is clear"""
         grid = grid.lower()
@@ -721,8 +718,6 @@ class DrawingBot:
             for usr in self.sessions[room_id].players:
                 usr["status"] = "ready"
                 usr["msg_n"] = 0
-
-
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
