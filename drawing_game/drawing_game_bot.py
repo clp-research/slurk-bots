@@ -14,11 +14,12 @@ from time import sleep
 import requests
 import socketio
 
-from config import TASK_GREETING, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, \
+from .config import TASK_GREETING, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, \
     INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
     TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER
 
-from gridmanager import GridManager
+from .gridmanager import GridManager
+from templates import TaskBot
 
 LOG = logging.getLogger(__name__)
 
@@ -128,20 +129,19 @@ class SessionManager(defaultdict):
             self.pop(room_id)
 
 
-class DrawingBot:
+class DrawingBot(TaskBot):
     sio = socketio.Client(logger=True)
     """The ID of the task the bot is involved in."""
     task_id = None
     """The ID of the room where users for this task are waiting."""
     waiting_room = None
 
-    def __init__(self, token, user, host, port):
+    def __init__(self, *args, **kwargs):
         """
         This bot allows two players to play a game in which the instruction-giver
         instructs the instruction-follower how to draw a given 5x5 grid.
         When the instruction-giver is done giving instructions, the drawn grid is
         compared against the target grid.
-
         :param token: A uuid; a string following the same pattern
             as `0c45b30f-d049-43d1-b80d-e3c3a3ca22a0`
         :type token: str
@@ -152,19 +152,10 @@ class DrawingBot:
             followed by the assigned port if any.
         :type uri: str
         """
-        self.token = token
-        self.user = user
+        super().__init__(*args, **kwargs)
         self.sessions = SessionManager(Session)
-        self.uri = host
-        if port is not None:
-            self.uri += f":{port}"
-        self.uri += "/slurk/api"
-        self.waiting_timer = None
         self.received_waiting_token = set()
-
-        LOG.info(f"Running drawing game bot on {self.uri} with token {self.token}")
-        # register all event handlers
-        self.register_callbacks()
+        self.waiting_timer = None
 
     def run(self):
         # establish a connection to the server
@@ -306,73 +297,119 @@ class DrawingBot:
         #
         # return confirmation_token
 
-    def register_callbacks(self):
-        @self.sio.event
-        def new_task_room(data):
-            """
-            Triggered after a new task room is created.
-            An example scenario would be that the concierge
-            bot emitted a room_created event once enough
-            users for a task have entered the waiting room.
-            """
-            room_id = data["room"]
-            task_id = data["task"]
+    def on_task_room_creation(self, data):
+        room_id = data["room"]
+        task_id = data["task"]
 
-            LOG.debug(f"A new task room was created with id: {data['task']}")
-            LOG.debug(f"This bot is looking for task id: {self.task_id}")
+        LOG.debug(f"A new task room was created with id: {data['task']}")
+        LOG.debug(f"This bot is looking for task id: {self.task_id}")
 
-            if task_id is not None and task_id == self.task_id:
-                for usr in data["users"]:
-                    self.received_waiting_token.discard(usr["id"])
+        if task_id is not None and task_id == self.task_id:
+            for usr in data["users"]:
+                self.received_waiting_token.discard(usr["id"])
 
-                # create image items for this room
-                LOG.debug("Create data for the new task room...")
-                LOG.debug(data)
+            # create image items for this room
+            LOG.debug("Create data for the new task room...")
+            LOG.debug(data)
 
-                # create a new session for these users
-                self.sessions.create_session(room_id)
+            # create a new session for these users
+            self.sessions.create_session(room_id)
 
-                # add players
-                self.sessions[room_id].players = []
-                for usr in data["users"]:
-                    self.sessions[room_id].players.append(
-                        {**usr, "msg_n": 0, "status": "joined"}
-                    )
-
-                response = requests.post(
-                    f"{self.uri}/users/{self.user}/rooms/{room_id}",
-                    headers={"Authorization": f"Bearer {self.token}"},
+            # add players
+            self.sessions[room_id].players = []
+            for usr in data["users"]:
+                self.sessions[room_id].players.append(
+                    {**usr, "msg_n": 0, "status": "joined"}
                 )
-                if not response.ok:
-                    LOG.error(
-                        f"Could not let drawing game bot join room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                LOG.debug("Sending drawing game bot to new room was successful.")
 
-                # begin timers
-                # self.sessions[room_id].timer.start_round_timer(
-                #     self.time_out_round, room_id
-                # )
-                self.sessions[room_id].timers = RoomTimer(
-                    self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
-                self.sessions[room_id].timers.start_close_game_timer()
-                # self.sessions[room_id].timers.start_round_timer()
+            response = requests.post(
+                f"{self.uri}/users/{self.user}/rooms/{room_id}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not let drawing game bot join room: {response.status_code}"
+                )
+                response.raise_for_status()
+            LOG.debug("Sending drawing game bot to new room was successful.")
 
+            # begin timers
+            # self.sessions[room_id].timer.start_round_timer(
+            #     self.time_out_round, room_id
+            # )
+            self.sessions[room_id].timers = RoomTimer(
+                self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
+            self.sessions[room_id].timers.start_close_game_timer()
+            # self.sessions[room_id].timers.start_round_timer()
+
+    def register_callbacks(self):
+        # @self.sio.event
+        # def new_task_room(data):
+        #     """
+        #     Triggered after a new task room is created.
+        #     An example scenario would be that the concierge
+        #     bot emitted a room_created event once enough
+        #     users for a task have entered the waiting room.
+        #     """
+        #     room_id = data["room"]
+        #     task_id = data["task"]
+        #
+        #     LOG.debug(f"A new task room was created with id: {data['task']}")
+        #     LOG.debug(f"This bot is looking for task id: {self.task_id}")
+        #
+        #     if task_id is not None and task_id == self.task_id:
+        #         for usr in data["users"]:
+        #             self.received_waiting_token.discard(usr["id"])
+        #
+        #         # create image items for this room
+        #         LOG.debug("Create data for the new task room...")
+        #         LOG.debug(data)
+        #
+        #         # create a new session for these users
+        #         self.sessions.create_session(room_id)
+        #
+        #         # add players
+        #         self.sessions[room_id].players = []
+        #         for usr in data["users"]:
+        #             self.sessions[room_id].players.append(
+        #                 {**usr, "msg_n": 0, "status": "joined"}
+        #             )
+        #
+        #         response = requests.post(
+        #             f"{self.uri}/users/{self.user}/rooms/{room_id}",
+        #             headers={"Authorization": f"Bearer {self.token}"},
+        #         )
+        #         if not response.ok:
+        #             LOG.error(
+        #                 f"Could not let drawing game bot join room: {response.status_code}"
+        #             )
+        #             response.raise_for_status()
+        #         LOG.debug("Sending drawing game bot to new room was successful.")
+        #
+        #         # begin timers
+        #         # self.sessions[room_id].timer.start_round_timer(
+        #         #     self.time_out_round, room_id
+        #         # )
+        #         self.sessions[room_id].timers = RoomTimer(
+        #             self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
+        #         self.sessions[room_id].timers.start_close_game_timer()
+        #         # self.sessions[room_id].timers.start_round_timer()
 
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
+            LOG.debug('Triggered joined_room')
             room_id = data["room"]
 
-            # read out task greeting
-            message = self.sessions[room_id].task_greeting
-            self.sio.emit(
-                "text",
-                {
-                    "message": message, "room": room_id, "html": True,
-                }
-            )
+            if room_id in self.sessions:
+                # read out task greeting
+                message = self.sessions[room_id].task_greeting
+                self.sio.emit(
+                    "text",
+                    {
+                        "message": message, "room": room_id, "html": True,
+                    }
+                )
 
         @self.sio.event
         def status(data):
@@ -390,6 +427,9 @@ class DrawingBot:
                 return
 
             room_id = data["room"]
+            event = data["type"]
+            user = data["user"]
+
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if self.waiting_timer is not None:
@@ -419,45 +459,43 @@ class DrawingBot:
                     )
 
             # someone joined a task room
+            elif room_id in self.sessions:
+                curr_usr, other_usr = self.sessions[room_id].players
+                if curr_usr["id"] != data["user"]["id"]:
+                    curr_usr, other_usr = other_usr, curr_usr
+
+                if data["type"] == "join":
+                    # inform game partner about the rejoin event
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"{curr_usr['name']} has joined the game. ",
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                        },
+                    )
+
+                    # cancel leave timers if any
+                    LOG.debug("Cancel timer: user joined")
+                    self.sessions[room_id].timers.user_joined(curr_usr["id"])
+
+                elif data["type"] == "leave":
+                    # send a message to the user that was left alone
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"{curr_usr['name']} has left the game. "
+                                       "Please wait a bit, your partner may rejoin.",
+                            "room": room_id,
+                            "receiver_id": other_usr["id"],
+                        },
+                    )
+                    # cancel round timer and start left_user timer
+                    self.sessions[room_id].timers.cancel()
+                    LOG.debug("Start timer: user left")
+                    self.sessions[room_id].timers.user_left(curr_usr["id"])
             else:
-                LOG.debug(f"{self.sessions[room_id].players}")
-                if self.sessions[room_id].players:
-                    curr_usr, other_usr = self.sessions[room_id].players
-                    if curr_usr["id"] != data["user"]["id"]:
-                        curr_usr, other_usr = other_usr, curr_usr
-
-                    if data["type"] == "join":
-                        # inform game partner about the rejoin event
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"{curr_usr['name']} has joined the game. ",
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                            },
-                        )
-
-                        # cancel leave timers if any
-                        LOG.debug("Cancel timer: user joined")
-                        self.sessions[room_id].timers.user_joined(curr_usr["id"])
-
-                    elif data["type"] == "leave":
-                        # send a message to the user that was left alone
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": f"{curr_usr['name']} has left the game. "
-                                           "Please wait a bit, your partner may rejoin.",
-                                "room": room_id,
-                                "receiver_id": other_usr["id"],
-                            },
-                        )
-                        # cancel round timer and start left_user timer
-                        self.sessions[room_id].timers.cancel()
-                        LOG.debug("Start timer: user left")
-                        self.sessions[room_id].timers.user_left(curr_usr["id"])
-                else:
-                    pass
+                pass
 
         @self.sio.event
         def text_message(data):

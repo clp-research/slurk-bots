@@ -6,7 +6,7 @@ import argparse
 import logging
 import os
 
-from drawing_game_bot import DrawingBot
+from drawing_game.drawing_game_bot import DrawingBot
 
 
 if __name__ == "__main__":
@@ -51,8 +51,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # create bot instance
-    drawing_bot = DrawingBot(args.token, args.user, args.host, args.port)
-    drawing_bot.task_id = args.task_id
+    drawing_bot = DrawingBot(args.token, args.user, args.task_id, args.host, args.port)
     drawing_bot.waiting_room = args.waiting_room
 
     # connect to chat server
