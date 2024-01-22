@@ -14,17 +14,17 @@ def select_logs(file_in):
             log = json.loads(json_str)
             if log["event"] in {"round", "turn", "clue", "guess", "invalid format", "invalid clue", "correct guess", "max turns reached"}:
                 text_messages.append(log)
-    with open('text_messages.json', 'w', encoding ='utf8') as json_file:
+    with open(os.path.join(ROOT, "data", "logs", 'text_messages.json'), 'w', encoding ='utf8') as json_file:
         json.dump(text_messages, json_file, indent=4, ensure_ascii = False)
 
     return "Selected logs saved in text_messages.json"
 
 
-print(select_logs(os.path.join(ROOT, "taboo", "2_new.jsonl")))
+print(select_logs(os.path.join(ROOT, "data", "logs", "2_new.jsonl")))
 
 # BUILD DATA like  interactions_json in clembench
 
-with open(os.path.join(ROOT, "taboo", "text_messages.json"), "r") as f:
+with open(os.path.join(ROOT, "data", "logs", "text_messages.json"), "r") as f:
     logs = json.load(f)
 
 all_rounds = []
