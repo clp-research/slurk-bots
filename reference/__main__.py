@@ -136,8 +136,8 @@ class ReferenceBot(TaskBot):
             # this_session = self.sessions[room_id]
 
             self.move_divider(room_id, 20, 80)
-            self.sessions.create_session(room_id)
 
+            self.sessions.create_session(room_id)
             timer = RoomTimer(self.timeout_close_game, room_id)
             self.sessions[room_id].timer = timer
 
@@ -215,9 +215,22 @@ class ReferenceBot(TaskBot):
             event = data["type"]
             user = data["user"]
 
-            # don't do this for the bot itself
-            if user["id"] == self.user:
+            # check whether the user is eligible to join this task
+            task = requests.get(
+                f"{self.uri}/users/{user['id']}/task",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not task.ok:
+                logging.error(
+                    f"Could not set task instruction title: {task.status_code}"
+                )
+                task.raise_for_status()
+            if not task.json() or task.json()["id"] != int(self.task_id):
                 return
+
+            # # don't do this for the bot itself
+            # if user["id"] == self.user:
+            #     return
 
             # someone joined waiting room
             if room_id == self.waiting_room:
@@ -262,13 +275,13 @@ class ReferenceBot(TaskBot):
         @self.sio.event
         def text_message(data):
             """Parse user messages."""
-            LOG.debug(
-                f"Received a message from {data['user']['name']}: {data['message']}"
-            )
+            # LOG.debug(
+            #     f"Received a message from {data['user']['name']}: {data['message']}"
+            # )
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            if user_id == self.user:
+            if room_id not in self.sessions or user_id == self.user:
                 return
 
             this_session = self.sessions[room_id]
@@ -465,10 +478,6 @@ class ReferenceBot(TaskBot):
         if not self.sessions[room_id].grids:
             self.terminate_experiment(room_id)
             return
-        grid_instance = self.sessions[room_id].grids[0]
-        LOG.debug(f"{grid_instance}")
-        self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
-        self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
 
         round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
 
@@ -599,7 +608,7 @@ class ReferenceBot(TaskBot):
     def terminate_experiment(self, room_id):
         self.send_message_to_user(STANDARD_COLOR, "The experiment is over 🎉 🎉 thank you very much for your time!",
                                   room_id)
-        self.confirmation_code(room_id, "sucess")
+        self.confirmation_code(room_id, "success")
         self.close_game(room_id)
 
     def timeout_close_game(self, room_id, status):
