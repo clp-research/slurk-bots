@@ -7,6 +7,7 @@
 import logging
 import os
 import random
+import string
 from collections import defaultdict
 from threading import Timer
 from time import sleep
@@ -16,7 +17,7 @@ import socketio
 
 from .config import TASK_GREETING, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, \
     INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
-    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, PROLIFIC_URL
 
 from .gridmanager import GridManager
 from templates import TaskBot
@@ -37,14 +38,14 @@ class RoomTimer:
     def start_round_timer(self):
         if self.round_timer is not None:
             self.round_timer.cancel()
-        LOG.debug("Star round timer")
+        LOG.debug("Start round timer")
         self.round_timer = Timer(
             TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
         )
         self.round_timer.start()
 
     def start_close_game_timer(self):
-        LOG.debug("Star close_game timer")
+        LOG.debug("Start close_game timer")
         self.close_game_timer = Timer(
             TIMEOUT_TIMER * 60, self.close_game_function, args=[self.room_id]
         )
@@ -52,9 +53,10 @@ class RoomTimer:
 
     def reset_round_timer(self):
         if self.round_timer:
+            LOG.debug("Cancel round timer")
             self.round_timer.cancel()
         self.start_round_timer()
-        LOG.debug("reset round timer")
+
 
     def cancel(self):
         if self.round_timer:
@@ -76,6 +78,8 @@ class RoomTimer:
         timer = self.left_room.get(user)
         if timer is not None:
             self.left_room[user].cancel()
+        else:
+            pass
 
     def user_left(self, user):
         self.left_room[user] = Timer(
@@ -156,6 +160,7 @@ class DrawingBot(TaskBot):
         self.sessions = SessionManager(Session)
         self.received_waiting_token = set()
         self.waiting_timer = None
+        self.data_collection = PLATFORM
 
     def run(self):
         # establish a connection to the server
@@ -258,45 +263,6 @@ class DrawingBot(TaskBot):
             )
             self.close_game(room_id)
 
-    def confirmation_code(self, room_id, status, receiver_id=None):
-        """Generate AMT token that will be sent to each player."""
-        self.sio.emit(
-            "text",
-            {
-                "message": f"This is your test token :) because of {status}",
-                "room": room_id,
-                "receiver_id": receiver_id,
-            },
-        )
-        # kwargs = dict()
-        # # either only for one user or for both
-        # if receiver_id is not None:
-        #     kwargs["receiver_id"] = receiver_id
-        #
-        # confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
-        # # post confirmation token to logs
-        # response = requests.post(
-        #     f"{self.uri}/logs",
-        #     json={
-        #         "event": "confirmation_log",
-        #         "room_id": room_id,
-        #         "data": {"status_txt": status, "confirmation_token": confirmation_token},
-        #         **kwargs,
-        #     },
-        #     headers={"Authorization": f"Bearer {self.token}"},
-        # )
-        # self.request_feedback(response, "post confirmation token to logs")
-        #
-        # if self.data_collection == "AMT":
-        #     self._show_amt_token(room_id, receiver_id, confirmation_token)
-        # elif self.data_collection == "Prolific":
-        #     self._show_prolific_link(room_id, receiver_id)
-        #
-        # self._hide_image(room_id)
-        # self._hide_image_desc(room_id)
-        #
-        # return confirmation_token
-
     def on_task_room_creation(self, data):
         room_id = data["room"]
         task_id = data["task"]
@@ -314,6 +280,9 @@ class DrawingBot(TaskBot):
 
             # create a new session for these users
             self.sessions.create_session(room_id)
+            self.sessions[room_id].timers = RoomTimer(
+                self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
+            self.sessions[room_id].timers.start_close_game_timer()
 
             # add players
             self.sessions[room_id].players = []
@@ -321,6 +290,7 @@ class DrawingBot(TaskBot):
                 self.sessions[room_id].players.append(
                     {**usr, "msg_n": 0, "status": "joined"}
                 )
+            LOG.debug(f"The players are {self.sessions[room_id].players}")
 
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
@@ -337,9 +307,7 @@ class DrawingBot(TaskBot):
             # self.sessions[room_id].timer.start_round_timer(
             #     self.time_out_round, room_id
             # )
-            self.sessions[room_id].timers = RoomTimer(
-                self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
-            self.sessions[room_id].timers.start_close_game_timer()
+
             # self.sessions[room_id].timers.start_round_timer()
 
     def register_callbacks(self):
@@ -398,8 +366,8 @@ class DrawingBot(TaskBot):
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
-            LOG.debug('Triggered joined_room')
             room_id = data["room"]
+            LOG.debug(f"Triggered joined_room for room_id {room_id}")
 
             if room_id in self.sessions:
                 # read out task greeting
@@ -414,7 +382,7 @@ class DrawingBot(TaskBot):
         @self.sio.event
         def status(data):
             """Triggered if a user enters or leaves a room."""
-            LOG.debug(f"Triggered status: {data['user']} did {data['type']} the room")
+            LOG.debug(f"Triggered status: {data['user']} did {data['type']} the room {data['room']}")
             # check whether the user is eligible to join this task
             task = requests.get(
                 f"{self.uri}/users/{data['user']['id']}/task",
@@ -458,8 +426,10 @@ class DrawingBot(TaskBot):
                         },
                     )
 
+
             # someone joined a task room
             elif room_id in self.sessions:
+                LOG.debug(f"The players in task room are {self.sessions[room_id].players}")
                 curr_usr, other_usr = self.sessions[room_id].players
                 if curr_usr["id"] != data["user"]["id"]:
                     curr_usr, other_usr = other_usr, curr_usr
@@ -480,20 +450,22 @@ class DrawingBot(TaskBot):
                     self.sessions[room_id].timers.user_joined(curr_usr["id"])
 
                 elif data["type"] == "leave":
-                    # send a message to the user that was left alone
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{curr_usr['name']} has left the game. "
-                                       "Please wait a bit, your partner may rejoin.",
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                        },
-                    )
-                    # cancel round timer and start left_user timer
-                    self.sessions[room_id].timers.cancel()
-                    LOG.debug("Start timer: user left")
-                    self.sessions[room_id].timers.user_left(curr_usr["id"])
+                    if room_id in self.sessions:
+                        if self.sessions[room_id].game_over is False:
+                            # send a message to the user that was left alone
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": f"{curr_usr['name']} has left the game. "
+                                               "Please wait a bit, your partner may rejoin.",
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                },
+                            )
+                            # cancel round timer and start left_user timer
+                            self.sessions[room_id].timers.cancel()
+                            LOG.debug("Start timer: user left")
+                            self.sessions[room_id].timers.user_left(curr_usr["id"])
             else:
                 pass
 
@@ -511,11 +483,16 @@ class DrawingBot(TaskBot):
             user_id = data["user"]["id"]
 
             # filter irrelevant messages
-            if user_id == self.user:
+            if room_id not in self.sessions or user_id == self.user:
                 return
 
+            # get user
+            curr_usr, other_usr = self.sessions[room_id].players
+            if curr_usr["id"] != user_id:
+                curr_usr, other_usr = other_usr, curr_usr
+
             # Cancel and restarts round_timer
-            # self.sessions[room_id].timers.reset()
+            # self.sessions[room_id].timers.reset_round_timer()
 
             # if the message is part of the main discussion count it
             for usr in self.sessions[room_id].players:
@@ -537,7 +514,8 @@ class DrawingBot(TaskBot):
             if str(user_id) == self.user:
                 return
 
-            # self.sessions[room_id].timers.reset()
+            if not self.sessions[room_id].timers.user_left(user_id):
+                self.sessions[room_id].timers.reset_round_timer()
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -662,100 +640,135 @@ class DrawingBot(TaskBot):
         grid = grid.replace('\n', ' ')
         return grid
 
-    def process_move(self, room_id, reward: int):
-        """Compare grids at the end of each episode and update score."""
+    def _command_ready(self, room_id, user_id):
+        """Must be sent to begin a conversation."""
+        # identify the user that has not sent this event
+        curr_usr, other_usr = self.sessions[room_id].players
+        if curr_usr["id"] != user_id:
+            curr_usr, other_usr = other_usr, curr_usr
+
+        # only one user has sent /ready repetitively
+        if curr_usr["status"] in {"ready", "done"}:
+            sleep(0.5)
+            self.sio.emit(
+                "text",
+                {
+                    "message": "You have already typed 'ready'.",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                },
+            )
+            return
+        curr_usr["status"] = "ready"
+
+        # a first ready command was sent
+        if other_usr["status"] == "joined":
+            sleep(0.5)
+            # give the user feedback that his command arrived
+            self.sio.emit(
+                "text",
+                {
+                    "message": "Now, waiting for your partner to type 'ready'.",
+                    "receiver_id": curr_usr["id"],
+                    "room": room_id,
+                },
+            )
+            self.sio.emit(
+                "text",
+                {
+                    "message": "Your partner is ready. Please, type 'ready'!",
+                    "room": room_id,
+                    "receiver_id": other_usr["id"],
+                },
+            )
+        else:
+            # both users are ready and the game begins
+            self.sio.emit(
+                "text",
+                {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
+            )
+            sleep(1)
+            self.sessions[room_id].game_round = 1
+            LOG.debug(f"Game round {self.sessions[room_id].game_round}")
+            self.start_game(room_id)
+
+    def start_game(self, room_id):
         this_session = self.sessions[room_id]
-        self.update_reward(room_id, reward)
-        self.update_title_points(room_id, reward)
-        this_session.game_round += 1
-        self.next_round(room_id)
 
-    def update_reward(self, room_id, reward):
-        """Compute and keep track of score"""
-        score = self.sessions[room_id].points["score"]
-        score += reward
-        score = round(score, 2)
-        self.sessions[room_id].points["score"] = max(0, score)
+        # 1) Set rounds
+        this_session.turn_number = 1
+        LOG.debug(f"Starting first turn out of 25.")
 
-    def update_title_points(self, room_id, reward):
-        """Update displayed score"""
-        score = self.sessions[room_id].points["score"]
-        correct = self.sessions[room_id].points["history"][0]["correct"]
-        wrong = self.sessions[room_id].points["history"][0]["wrong"]
-        if reward == 0:
-            wrong += 1
-        elif reward == 1:
-            correct += 1
+        # 2) Choose players A and B
+        self.sessions[room_id].pick_player_a()
+        self.sessions[room_id].pick_player_b()
+        for user in this_session.players:
+            if user["id"] == this_session.player_a:
+                LOG.debug(f'{user["name"]} is player A.')
+            else:
+                LOG.debug(f'{user["name"]} is player B.')
 
+        # 3) Load grid
+        grid_type = random.choice(['compact', 'random'])
+        this_session.grid_type = grid_type
+        if grid_type == 'compact' and this_session.all_compact_grids:
+            random_grid = this_session.all_compact_grids.get_random_grid()
+            this_session.target_grid = random_grid
+        else:
+            random_grid = this_session.all_random_grids.get_random_grid()
+            this_session.target_grid = random_grid
+
+        # 4) Prepare interface
+        # Resize screen
+        self.move_divider(room_id, 30, 70)
+        self.sio.emit(
+            "message_command",
+            {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
+        )
+
+        this_session.timers.close_game_timer.cancel()
+        self.send_individualised_instructions(room_id)
+        self.show_item(room_id)
+
+    def send_individualised_instructions(self, room_id):
+        this_session = self.sessions[room_id]
+
+        # Display  instructions for player_a
         response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/title",
-            json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"},
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={"text": "You are the describer", "receiver_id": this_session.player_a},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        self.sessions[room_id].points["history"][0]["correct"] = correct
-        self.sessions[room_id].points["history"][0]["wrong"] = wrong
-
-        self.request_feedback(response, "setting point stand in title")
-
-    def next_round(self, room_id):
-        """
-        Before a new round starts, remove played instance from list,
-        pick a new grid instance and show_item if there are rounds left.
-        Otherwise, end the experiment.
-        """
-        this_session = self.sessions[room_id]
-        LOG.debug(f"Starting game round {this_session.game_round}")
-
-        # Remove grid so one instance is not played several times
-        if this_session.grid_type == 'compact':
-            this_session.all_compact_grids.remove_grid(this_session.target_grid)
-        elif this_session.grid_type == 'random':
-            this_session.all_random_grids.remove_grid(this_session.target_grid)
-
-        # Get new grid
-        this_session.target_grid = this_session.all_compact_grids.get_random_grid()
-
-        # Was this the last game round?
-        if self.sessions[room_id].game_round >= 4:
-            self.sio.emit(
-                "text",
-                {"message": "The experiment is over! Thank you for participating :)",
-                 "room": room_id},
-            )
-            self.close_game(room_id)
-            return
-        elif 0 < self.sessions[room_id].game_round < 4:
-            # Reset and send keyboard to only player_b
-            self.sio.emit(
-                "message_command",
-                {"command": {"command": "drawing_game_init"}, "room": room_id,
-                 "receiver_id": this_session.player_b}
-            )
-            self.sio.emit(
-                "text",
-                {"message": f"You are starting round {this_session.game_round} out of 3",
-                 "room": room_id,
-                 }
-            )
-            self.sio.emit(
-                "text",
-                {"message": "Wait for a new instruction.",
-                 "room": room_id,
-                 "receiver_id": this_session.player_b}
-            )
-
-            # restart round_timer
-            self.sessions[room_id].timers.start_round_timer()
-            self.sessions[room_id].turn_number = 1
-
-            # Show new grid instance to player_a
-            self.show_item(room_id)
-            self.update_rights(room_id, player_a=True, player_b=False)
-
-            # reset attributes for the new round
-            for usr in self.sessions[room_id].players:
-                usr["status"] = "ready"
-                usr["msg_n"] = 0
+        self.request_feedback(response, "set task instruction title")
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "event": "send_instr",
+                    "message": f"{INSTRUCTIONS_A}"
+                },
+                "room": room_id,
+                "receiver_id": this_session.player_a,
+            }
+        )
+        # Display  instructions for player_b
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={"text": "You have to draw the grid", "receiver_id": this_session.player_b},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "set task instruction title")
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "event": "send_instr",
+                    "message": f"{INSTRUCTIONS_B}"
+                },
+                "room": room_id,
+                "receiver_id": this_session.player_b,
+            }
+        )
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
@@ -865,6 +878,101 @@ class DrawingBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
 
+    def process_move(self, room_id, reward: int):
+        """Compare grids at the end of each episode and update score."""
+        this_session = self.sessions[room_id]
+        self.update_reward(room_id, reward)
+        self.update_title_points(room_id, reward)
+        this_session.game_round += 1
+        self.next_round(room_id)
+
+    def update_reward(self, room_id, reward):
+        """Compute and keep track of score"""
+        score = self.sessions[room_id].points["score"]
+        score += reward
+        score = round(score, 2)
+        self.sessions[room_id].points["score"] = max(0, score)
+
+    def update_title_points(self, room_id, reward):
+        """Update displayed score"""
+        score = self.sessions[room_id].points["score"]
+        correct = self.sessions[room_id].points["history"][0]["correct"]
+        wrong = self.sessions[room_id].points["history"][0]["wrong"]
+        if reward == 0:
+            wrong += 1
+        elif reward == 1:
+            correct += 1
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={"text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.sessions[room_id].points["history"][0]["correct"] = correct
+        self.sessions[room_id].points["history"][0]["wrong"] = wrong
+
+        self.request_feedback(response, "setting point stand in title")
+
+    def next_round(self, room_id):
+        """
+        Before a new round starts, remove played instance from list,
+        pick a new grid instance and show_item if there are rounds left.
+        Otherwise, end the experiment.
+        """
+        this_session = self.sessions[room_id]
+        LOG.debug(f"Starting game round {this_session.game_round}")
+
+        # Remove grid so one instance is not played several times
+        if this_session.grid_type == 'compact':
+            this_session.all_compact_grids.remove_grid(this_session.target_grid)
+        elif this_session.grid_type == 'random':
+            this_session.all_random_grids.remove_grid(this_session.target_grid)
+
+        # Get new grid
+        this_session.target_grid = this_session.all_compact_grids.get_random_grid()
+
+        # Was this the last game round?
+        if self.sessions[room_id].game_round >= 4:
+            self.sio.emit(
+                "text",
+                {"message": "The experiment is over! Thank you for participating :)",
+                 "room": room_id},
+            )
+            self.close_game(room_id)
+            return
+        elif 0 < self.sessions[room_id].game_round < 4:
+            # Reset and send keyboard to only player_b
+            self.sio.emit(
+                "message_command",
+                {"command": {"command": "drawing_game_init"}, "room": room_id,
+                 "receiver_id": this_session.player_b}
+            )
+            self.sio.emit(
+                "text",
+                {"message": f"You are starting round {this_session.game_round} out of 3",
+                 "room": room_id,
+                 }
+            )
+            self.sio.emit(
+                "text",
+                {"message": "Wait for a new instruction.",
+                 "room": room_id,
+                 "receiver_id": this_session.player_b}
+            )
+
+            # restart round_timer
+            self.sessions[room_id].timers.start_round_timer()
+            self.sessions[room_id].turn_number = 1
+
+            # Show new grid instance to player_a
+            self.show_item(room_id)
+            self.update_rights(room_id, player_a=True, player_b=False)
+
+            # reset attributes for the new round
+            for usr in self.sessions[room_id].players:
+                usr["status"] = "ready"
+                usr["msg_n"] = 0
+
     def _command_done(self, room_id, user_id, command):
         """Must be sent to end a game round."""
         LOG.debug(command)
@@ -935,136 +1043,6 @@ class DrawingBot(TaskBot):
                 },
             )
             self.process_move(room_id, 1)
-
-    def _command_ready(self, room_id, user_id):
-        """Must be sent to begin a conversation."""
-        # identify the user that has not sent this event
-        curr_usr, other_usr = self.sessions[room_id].players
-        if curr_usr["id"] != user_id:
-            curr_usr, other_usr = other_usr, curr_usr
-
-        # only one user has sent /ready repetitively
-        if curr_usr["status"] in {"ready", "done"}:
-            sleep(0.5)
-            self.sio.emit(
-                "text",
-                {
-                    "message": "You have already typed 'ready'.",
-                    "receiver_id": curr_usr["id"],
-                    "room": room_id,
-                },
-            )
-            return
-        curr_usr["status"] = "ready"
-
-        # a first ready command was sent
-        if other_usr["status"] == "joined":
-            sleep(0.5)
-            # give the user feedback that his command arrived
-            self.sio.emit(
-                "text",
-                {
-                    "message": "Now, waiting for your partner to type 'ready'.",
-                    "receiver_id": curr_usr["id"],
-                    "room": room_id,
-                },
-            )
-            self.sio.emit(
-                "text",
-                {
-                    "message": "Your partner is ready. Please, type 'ready'!",
-                    "room": room_id,
-                    "receiver_id": other_usr["id"],
-                },
-            )
-        else:
-            # both users are ready and the game begins
-            self.sio.emit(
-                "text",
-                {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
-            )
-            sleep(1)
-            self.sessions[room_id].game_round = 1
-            LOG.debug(f"Game round {self.sessions[room_id].game_round}")
-            self.start_game(room_id)
-
-    def send_individualised_instructions(self, room_id):
-        this_session = self.sessions[room_id]
-
-        # Display  instructions for player_a
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr_title",
-            json={"text": "You are the describer", "receiver_id": this_session.player_a},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "set task instruction title")
-        self.sio.emit(
-            "message_command",
-            {
-                "command": {
-                    "event": "send_instr",
-                    "message": f"{INSTRUCTIONS_A}"
-                },
-                "room": room_id,
-                "receiver_id": this_session.player_a,
-            }
-        )
-        # Display  instructions for player_b
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/text/instr_title",
-            json={"text": "You have to draw the grid", "receiver_id": this_session.player_b},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "set task instruction title")
-        self.sio.emit(
-            "message_command",
-            {
-                "command": {
-                    "event": "send_instr",
-                    "message": f"{INSTRUCTIONS_B}"
-                },
-                "room": room_id,
-                "receiver_id": this_session.player_b,
-            }
-        )
-
-    def start_game(self, room_id):
-        this_session = self.sessions[room_id]
-
-        # 1) Set rounds
-        this_session.turn_number = 1
-        LOG.debug(f"Starting first turn out of 25.")
-
-        # 2) Choose players A and B
-        self.sessions[room_id].pick_player_a()
-        self.sessions[room_id].pick_player_b()
-        for user in this_session.players:
-            if user["id"] == this_session.player_a:
-                LOG.debug(f'{user["name"]} is player A.')
-            else:
-                LOG.debug(f'{user["name"]} is player B.')
-
-        # 3) Load grid
-        grid_type = random.choice(['compact', 'random'])
-        this_session.grid_type = grid_type
-        if grid_type == 'compact' and this_session.all_compact_grids:
-            random_grid = this_session.all_compact_grids.get_random_grid()
-            this_session.target_grid = random_grid
-        else:
-            random_grid = this_session.all_random_grids.get_random_grid()
-            this_session.target_grid = random_grid
-
-        # 4) Prepare interface
-        # Resize screen
-        self.move_divider(room_id, 30, 70)
-        self.sio.emit(
-            "message_command",
-            {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
-        )
-
-        this_session.timers.close_game_timer.cancel()
-        self.send_individualised_instructions(room_id)
-        self.show_item(room_id)
 
     @staticmethod
     def transform_string_in_grid(string):
@@ -1226,20 +1204,77 @@ class DrawingBot(TaskBot):
         )
         self.request_feedback(response, "hide description")
 
-    def close_game(self, room_id):
-        """Erase any data structures no longer necessary."""
-        LOG.debug("Triggered close game")
+    def confirmation_code(self, room_id, status, receiver_id=None):
+        """Generate token that will be sent to each player."""
+        LOG.debug("Triggered confirmation_code")
+        kwargs = dict()
+        # either only for one user or for both
+        if receiver_id is not None:
+            kwargs["receiver_id"] = receiver_id
+
+        confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        # post confirmation token to logs
+        response = requests.post(
+            f"{self.uri}/logs",
+            json={
+                "event": "confirmation_log",
+                "room_id": room_id,
+                "data": {"status_txt": status, "confirmation_token": confirmation_token},
+                **kwargs,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "post confirmation token to logs")
+
+        if self.data_collection == PLATFORM:
+            LOG.debug("Triggered show_prolific_link")
+            # self._show_prolific_link(room_id, receiver_id)
+
         self.sio.emit(
             "text",
             {
-                "message": "You will be moved out of this room ",
+                "message": f"This is your test token :) because of {status}",
                 "room": room_id,
+                "receiver_id": receiver_id,
             },
         )
 
+        return confirmation_token
+
+    def _show_prolific_link(self, room, receiver, token=None):
+
+        if token is None:
+            # use the username
+            response = requests.get(
+                f"{self.uri}/users/{receiver}",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "get user")
+            token = response.json().get("name", f"{room}–{receiver}")
+
+        url = f"{PROLIFIC_URL}{token}"
+        self.sio.emit(
+            "text",
+            {"message": f"Please return to <a href='{url}'>{url}</a> to complete your submission.",
+             "room": room,
+             "html": True,
+             "receiver_id": receiver
+             }
+        )
+
+    def close_game(self, room_id):
+        """Erase any data structures no longer necessary."""
+        LOG.debug(f"Triggered close game for room {room_id}")
+        self.sio.emit(
+            "text",
+            {
+                "message": "The room is closing, see you next time 👋",
+                "room": room_id
+            }
+        )
+
+        self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
-        # self.sessions[room_id].timers.cancel_all_timers()
-        # clear session
         self.sessions.clear_session(room_id)
 
         # for usr in self.sessions[room_id].players:

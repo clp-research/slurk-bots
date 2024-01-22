@@ -15,9 +15,9 @@ RANDOM_GRID_INSTANCES = Path(f"{ROOT}/data/random_grids/")
 
 STARTING_POINTS = 0
 
-TIMEOUT_TIMER = 1  # 5 minutes of inactivity before the room is closed automatically
-LEAVE_TIMER = 1  # 3 minutes if a user is alone in a room
-WAITING_PARTNER_TIMER = 1  # 10 minutes a user waits for a partner
+TIMEOUT_TIMER = 0.5  # 5 minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 0.5  # 3 minutes if a user is alone in a room
+WAITING_PARTNER_TIMER = 0.5  # 10 minutes a user waits for a partner
 
 N = 1
 
@@ -26,6 +26,9 @@ GAME_MODE = "one_blind"
 SEED = None
 # Whether to randomly sample images or present them in linear order.
 SHUFFLE = True
+
+PLATFORM = 'Prolific'
+PROLIFIC_URL = "https://app.prolific.co/submissions/complete?cc="
 
 with open(Path(f"{ROOT}/data/instr_player_A.html")) as html_f:
     INSTRUCTIONS_A = html_f.read()
