@@ -68,6 +68,7 @@ class Session:
         self.word_letters = {}
         self.guesses = 0
         self.guesser = None
+        self.explainer = None
         self.points = {
             "score": 0,
             "history": [{"correct": 0, "wrong": 0, "warnings": 0}],
@@ -79,8 +80,7 @@ class Session:
     def close(self):
         self.timer.cancel_all_timers()
 
-
-    def pick_explainer(self):
+    def assign_roles(self):
         # assuming there are only 2 players
         self.explainer = random.choice(self.players)["id"]
         for player in self.players:
@@ -153,12 +153,14 @@ class ReferenceBot(TaskBot):
             )
 
         # 2) Choose an explainer/guesser
-            self.sessions[room_id].pick_explainer()
+            self.sessions[room_id].assign_roles()
             for user in data["users"]:
                 if user["id"] == self.sessions[room_id].explainer:
+                    self.log_event("user_data", {"id": user["id"], "name": user["name"], "role": "explainer"}, room_id)
                     LOG.debug(f'{user["name"]} is the explainer.')
                 else:
                     LOG.debug(f'{user["name"]} is the guesser.')
+                    self.log_event("user_data", {"id": user["id"], "name": user["name"], "role": "guesser"}, room_id)
 
             # send_instructions
             for player in self.sessions[room_id].players:
@@ -663,7 +665,7 @@ class ReferenceBot(TaskBot):
         # post AMT token to logs
             self.log_event(
                 "confirmation_log",
-                {"status_txt": status, "amt_token": amt_token, "receiver":  player["id"]},
+                {"status_txt": status, "amt_token": amt_token, "receiver":  player["id"], "points": self.sessions[room_id].points},
                 room_id,
             )
 
