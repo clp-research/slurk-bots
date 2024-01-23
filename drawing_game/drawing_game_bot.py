@@ -398,6 +398,10 @@ class DrawingBot(TaskBot):
             event = data["type"]
             user = data["user"]
 
+            # don't do this for the bot itself
+            if user["id"] == self.user:
+                return
+
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if self.waiting_timer is not None:
@@ -487,9 +491,9 @@ class DrawingBot(TaskBot):
                 return
 
             # get user
-            curr_usr, other_usr = self.sessions[room_id].players
-            if curr_usr["id"] != user_id:
-                curr_usr, other_usr = other_usr, curr_usr
+            # curr_usr, other_usr = self.sessions[room_id].players
+            # if curr_usr["id"] != user_id:
+            #     curr_usr, other_usr = other_usr, curr_usr
 
             # Cancel and restarts round_timer
             # self.sessions[room_id].timers.reset_round_timer()
@@ -591,6 +595,11 @@ class DrawingBot(TaskBot):
 
             # player_a
             if this_session.player_a == user_id:
+                # means that new turn began
+                self.log_event("turn", dict(), room_id)
+                # log event
+                self.log_event("clue", {"content": data['command']}, room_id)
+
                 self.sio.emit(
                     "text",
                     {
@@ -606,6 +615,8 @@ class DrawingBot(TaskBot):
 
             # player_b
             elif this_session.player_b == user_id:
+                self.log_event("guess", {"content": data['command']}, room_id)
+
                 # In case the grid is returned as string on the chat area
                 if '▢' in command:
                     drawn_grid = self.reformat_drawn_grid(command)

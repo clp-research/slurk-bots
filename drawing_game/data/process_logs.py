@@ -20,7 +20,7 @@ def select_logs(file_in):
     return "Selected logs saved in text_messages.json"
 
 
-print(select_logs(os.path.join(ROOT, "data", "logs", "2_new.jsonl")))
+print(select_logs(os.path.join(ROOT, "data", "logs", "3506.jsonl")))
 
 # BUILD DATA like  interactions_json in clembench
 
