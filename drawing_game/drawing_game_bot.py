@@ -490,6 +490,8 @@ class DrawingBot(TaskBot):
             if room_id not in self.sessions or user_id == self.user:
                 return
 
+            this_session = self.sessions[room_id]
+
             # get user
             # curr_usr, other_usr = self.sessions[room_id].players
             # if curr_usr["id"] != user_id:
@@ -497,11 +499,6 @@ class DrawingBot(TaskBot):
 
             # Cancel and restarts round_timer
             # self.sessions[room_id].timers.reset_round_timer()
-
-            # if the message is part of the main discussion count it
-            for usr in self.sessions[room_id].players:
-                if usr["id"] == user_id and usr["status"] == "ready":
-                    usr["msg_n"] += 1
 
         @self.sio.event
         def command(data):
@@ -634,8 +631,11 @@ class DrawingBot(TaskBot):
                         self.update_rights(room_id, True, False)
                         sleep(1)
                         return
-                    self._command_done(room_id, user_id, command)
+                    else:
+                        self.log_event("max turns reached", {"content": str(25)}, room_id)
+                        self._command_done(room_id, user_id, command)
                 else:
+                    self.log_event("invalid format", {"content": data['command']}, room_id)
                     self.sio.emit(
                         "text",
                         {
@@ -709,6 +709,7 @@ class DrawingBot(TaskBot):
         # 1) Set rounds
         this_session.turn_number = 1
         LOG.debug(f"Starting first turn out of 25.")
+        self.log_event("round", {"number": this_session.game_round}, room_id)
 
         # 2) Choose players A and B
         self.sessions[room_id].pick_player_a()
@@ -932,6 +933,7 @@ class DrawingBot(TaskBot):
         """
         this_session = self.sessions[room_id]
         LOG.debug(f"Starting game round {this_session.game_round}")
+        self.log_event("round", {"number": this_session.game_round}, room_id)
 
         # Remove grid so one instance is not played several times
         if this_session.grid_type == 'compact':
@@ -1040,6 +1042,7 @@ class DrawingBot(TaskBot):
             )
             self.process_move(room_id, 0)
         else:
+            self.log_event("correct guess", {"content": drawn_grid}, room_id)
             result = 'WON'
             points = 1
 
