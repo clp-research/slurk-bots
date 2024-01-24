@@ -25,69 +25,6 @@ from templates import TaskBot
 LOG = logging.getLogger(__name__)
 
 
-# class RoomTimer:
-#     def __init__(self, function, user_left_function, close_game_function, room_id):
-#         self.function = function
-#         self.user_left_function = user_left_function
-#         self.close_game_function = close_game_function
-#         self.room_id = room_id
-#         self.round_timer = None
-#         self.close_game_timer = None
-#         self.left_room = dict()
-#
-#     def start_round_timer(self):
-#         if self.round_timer is not None:
-#             self.round_timer.cancel()
-#         LOG.debug("Start round timer")
-#         self.round_timer = Timer(
-#             TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
-#         )
-#         self.round_timer.start()
-#
-#     def start_close_game_timer(self):
-#         LOG.debug("Start close_game timer")
-#         self.close_game_timer = Timer(
-#             TIMEOUT_TIMER * 60, self.close_game_function, args=[self.room_id]
-#         )
-#         self.close_game_timer.start()
-#
-#     def reset_round_timer(self):
-#         if self.round_timer:
-#             LOG.debug("Cancel round timer")
-#             self.round_timer.cancel()
-#         self.start_round_timer()
-#
-#
-#     def cancel(self):
-#         if self.round_timer:
-#             LOG.debug("Cancel round timer")
-#             self.round_timer.cancel()
-#         else:
-#             LOG.warning("Timer does not exist, cannot cancel")
-#
-#     def cancel_all_timers(self):
-#         LOG.debug("Cancel all timers")
-#         if self.round_timer:
-#             self.round_timer.cancel()
-#         if self.left_room:
-#             for timer in self.left_room.values():
-#                 LOG.debug(f"Cancelling left_room timer {timer}")
-#                 timer.cancel()
-#
-#     def user_joined(self, user):
-#         timer = self.left_room.get(user)
-#         if timer is not None:
-#             self.left_room[user].cancel()
-#         else:
-#             pass
-#
-#     def user_left(self, user):
-#         self.left_room[user] = Timer(
-#             LEAVE_TIMER * 60, self.user_left_function, args=[self.room_id]
-#         )
-#         self.left_room[user].start()
-
-
 class Session:
     def __init__(self):
         self.players = list()
@@ -100,7 +37,7 @@ class Session:
         self.all_compact_grids = GridManager(COMPACT_GRID_INSTANCES)
         self.all_random_grids = GridManager(RANDOM_GRID_INSTANCES)
         self.grid_type = None
-        self.target_grid = None  # Looks like this  ▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢
+        self.target_grid = None  # Looks like this  X ▢ ▢ ▢ ▢\n▢ X ▢ ▢ ▢\n▢ ▢ X ▢ ▢\n▢ ▢ ▢ X ▢\n▢ ▢ ▢ ▢ X
         self.drawn_grid = None
         self.turn_number = 0
         self.game_round = 0
@@ -121,44 +58,6 @@ class Session:
         for player in self.players:
             if player["id"] != self.player_a:
                 self.player_b = player["id"]
-    # def start_round_timer(self):
-    #     if self.timer is not None:
-    #         self.timer.cancel()
-    #     LOG.debug("Start round timer")
-    #     self.timer = Timer(
-    #         TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
-    #     )
-    #     self.timer.start()
-
-    # def start_close_game_timer(self):
-    #     LOG.debug("Start close_game timer")
-    #     self.timer = Timer(
-    #         TIMEOUT_TIMER * 60, self.close_game_function, args=[self.room_id]
-    #     )
-    #     self.close_game_timer.start()
-    #
-    # def reset_round_timer(self):
-    #     if self.round_timer:
-    #         LOG.debug("Cancel round timer")
-    #         self.round_timer.cancel()
-    #     self.start_round_timer()
-    #
-    #
-    # def cancel(self):
-    #     if self.round_timer:
-    #         LOG.debug("Cancel round timer")
-    #         self.round_timer.cancel()
-    #     else:
-    #         LOG.warning("Timer does not exist, cannot cancel")
-    #
-    # def cancel_all_timers(self):
-    #     LOG.debug("Cancel all timers")
-    #     if self.round_timer:
-    #         self.round_timer.cancel()
-    #     if self.left_room:
-    #         for timer in self.left_room.values():
-    #             LOG.debug(f"Cancelling left_room timer {timer}")
-    #             timer.cancel()
 
 
 class SessionManager(defaultdict):
@@ -225,46 +124,6 @@ class DrawingBot(TaskBot):
         else:
             pass
 
-    # def user_left(self, user):
-    #     self.left_room_timer[user] = Timer(
-    #         LEAVE_TIMER * 60, user, args=[self.room_id]
-    #     )
-    #     self.left_room_timer[user].start()
-
-    def time_out_round(self, room_id):
-        """
-        function called by the round timer once the time is over.
-        Inform the users that the time is up and move to the next round
-        """
-        LOG.debug(f"Triggered time_out_round for room_id {room_id}")
-        # if len(self.sessions[room_id].players) < 2:
-        #     return
-        if not self.sessions[room_id].drawn_grid:
-            self.sio.emit(
-                "text",
-                {
-                    "message": "**Your time is up! Unfortunately you get no points for this round.**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-            sleep(1)
-            self.process_move(room_id, 0)
-            return
-        else:
-            self.sio.emit(
-                "text",
-                {
-                    "message": "**Your time is up!**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
-            sleep(1)
-            # self.sessions[room_id].game_round += 1
-            # self.next_round(room_id)
-            self._command_done(room_id, user_id=self.sessions[room_id].player_a, command='time up')
-
     def user_did_not_rejoin(self, room_id):
         self.sio.emit(
             "text",
@@ -284,6 +143,8 @@ class DrawingBot(TaskBot):
                  "receiver_id": user_id,
                  },
             )
+            #todo:display messages?
+
             # create token and send it to user
             self.confirmation_code(room_id, status="no_partner")
             sleep(2)
@@ -342,66 +203,15 @@ class DrawingBot(TaskBot):
                 response.raise_for_status()
             LOG.debug("Sending drawing game bot to new room was successful.")
 
-            # begin timers
-            # self.sessions[room_id].timer.start_round_timer(
-            #     self.time_out_round, room_id
-            # )
-
-            # self.sessions[room_id].timers.start_round_timer()
+    @staticmethod
+    def request_feedback(response, action):
+        if not response.ok:
+            LOG.error(f"Could not {action}: {response.status_code}")
+            response.raise_for_status()
+        else:
+            LOG.debug(f"Successfully did {action}.")
 
     def register_callbacks(self):
-        # @self.sio.event
-        # def new_task_room(data):
-        #     """
-        #     Triggered after a new task room is created.
-        #     An example scenario would be that the concierge
-        #     bot emitted a room_created event once enough
-        #     users for a task have entered the waiting room.
-        #     """
-        #     room_id = data["room"]
-        #     task_id = data["task"]
-        #
-        #     LOG.debug(f"A new task room was created with id: {data['task']}")
-        #     LOG.debug(f"This bot is looking for task id: {self.task_id}")
-        #
-        #     if task_id is not None and task_id == self.task_id:
-        #         for usr in data["users"]:
-        #             self.received_waiting_token.discard(usr["id"])
-        #
-        #         # create image items for this room
-        #         LOG.debug("Create data for the new task room...")
-        #         LOG.debug(data)
-        #
-        #         # create a new session for these users
-        #         self.sessions.create_session(room_id)
-        #
-        #         # add players
-        #         self.sessions[room_id].players = []
-        #         for usr in data["users"]:
-        #             self.sessions[room_id].players.append(
-        #                 {**usr, "msg_n": 0, "status": "joined"}
-        #             )
-        #
-        #         response = requests.post(
-        #             f"{self.uri}/users/{self.user}/rooms/{room_id}",
-        #             headers={"Authorization": f"Bearer {self.token}"},
-        #         )
-        #         if not response.ok:
-        #             LOG.error(
-        #                 f"Could not let drawing game bot join room: {response.status_code}"
-        #             )
-        #             response.raise_for_status()
-        #         LOG.debug("Sending drawing game bot to new room was successful.")
-        #
-        #         # begin timers
-        #         # self.sessions[room_id].timer.start_round_timer(
-        #         #     self.time_out_round, room_id
-        #         # )
-        #         self.sessions[room_id].timers = RoomTimer(
-        #             self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
-        #         self.sessions[room_id].timers.start_close_game_timer()
-        #         # self.sessions[room_id].timers.start_round_timer()
-
         @self.sio.event
         def joined_room(data):
             """Triggered once after the bot joins a room."""
@@ -469,7 +279,6 @@ class DrawingBot(TaskBot):
                         },
                     )
 
-
             # someone joined a task room
             elif room_id in self.sessions:
                 LOG.debug(f"The players in task room are {self.sessions[room_id].players}")
@@ -506,14 +315,12 @@ class DrawingBot(TaskBot):
                                 },
                             )
                             # cancel round timer and start left_user timer
-                            # self.sessions[room_id].timer.cancel()
                             LOG.debug("Start timer: user left")
                             self.sessions[room_id].left_room_timer[curr_usr["id"]] = Timer(
                                 LEAVE_TIMER * 60, self.user_did_not_rejoin,
                                 args=[room_id],
                             )
                             self.sessions[room_id].left_room_timer[curr_usr["id"]].start()
-
             else:
                 pass
 
@@ -698,12 +505,6 @@ class DrawingBot(TaskBot):
                         },
                     )
 
-    def reformat_drawn_grid(self, grid):
-        """Reformat grid so the image is clear"""
-        grid = grid.lower()
-        grid = grid.replace('\n', ' ')
-        return grid
-
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
         # identify the user that has not sent this event
@@ -841,6 +642,104 @@ class DrawingBot(TaskBot):
                 "receiver_id": this_session.player_b,
             }
         )
+
+    def move_divider(self, room_id, chat_area=50, task_area=50):
+        """
+        Move the central divider and resize chat and task area
+        the sum of char_area and task_area must sum up to 100
+        """
+        if chat_area + task_area != 100:
+            LOG.error("Could not resize chat and task area: invalid parameters.")
+            raise ValueError("chat_area and task_area must sum up to 100")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {task_area}%"},
+        )
+        self.request_feedback(response, "resize sidebar")
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/content",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"attribute": "style", "value": f"width: {chat_area}%"},
+        )
+        self.request_feedback(response, "resize content area")
+
+    def show_item(self, room_id):
+        """
+        Display the target grid to player_a and
+        keyboard instructions to player_b.
+        Hide game board to player_a
+        """
+        LOG.debug("Show item: Display the grid and task description to the players.")
+
+        this_session = self.sessions[room_id]
+
+        if this_session.target_grid:
+            # Display on chat area
+            grid = this_session.target_grid.replace('\n', '<br>')
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"This is the target grid: <br>{grid}<br><br>You have 25 turns "
+                               f"to describe it to the other player.<br><br>Give the first instruction.",
+                    "receiver_id": this_session.player_a,
+                    "room": room_id,
+                    "html": True
+                },
+            )
+
+            # Display on display area
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/grid_title",
+                json={"text": "Target grid", "receiver_id": this_session.player_a},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set grid title")
+            grid = this_session.target_grid.replace('\n', '<br>')
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "send_grid",
+                        "message": f"<br><br>{grid}",
+                    },
+                    "room": room_id,
+                    "receiver_id": this_session.player_a,
+                }
+            )
+
+            # Display keyboard instructions for player_b
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/grid_title",
+                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set typing instructions title")
+            keyboard_instructions = this_session.keyboard_instructions
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "send_keyboard_instructions",
+                        "message": f"{keyboard_instructions}",
+                    },
+                    "room": room_id,
+                    "receiver_id": this_session.player_b,
+                }
+            )
+
+            # Hide game board for player a
+            # self._hide_game_board(room_id, this_session.player_a)
+
+            # enable the grid
+            response = requests.delete(
+                f"{self.uri}/rooms/{room_id}/class/grid-area",
+                json={"class": "dis-area", "receiver_id": this_session.player_a},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "enable grid")
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
@@ -1059,10 +958,60 @@ class DrawingBot(TaskBot):
                 usr["status"] = "ready"
                 usr["msg_n"] = 0
 
+    @staticmethod
+    def transform_string_in_grid(string):
+        """
+        Reformats string returned from player B into a displayable grid
+        to be emitted as message (html=true)
+        Example:
+            formatted_grid = self.transform_string_in_grid(this_session.drawn_grid.upper())
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"**CURRENT DRAWN GRID**:<br>{formatted_grid}",
+                    "room": room_id,
+                    "receiver_id": this_session.player_a,
+                    "html": True,
+                },
+            )
+        """
+        rows = 5
+        cols = 5
+
+        # Split the input string into individual characters
+        characters = [char for char in string if char != ' ']
+
+        # Initialize an empty grid
+        grid = [['▢' for _ in range(cols)] for _ in range(rows)]
+
+        # Fill the grid with characters
+        for i in range(rows):
+            for j in range(cols):
+                if characters:
+                    grid[i][j] = characters.pop(0)
+
+        # Convert the grid to a string representation
+        grid_string = '<br>'.join([' '.join(row) for row in grid])
+
+        return grid_string
+
+    def reformat_drawn_grid(self, grid):
+        """Reformat grid so the image is clear"""
+        grid = grid.lower()
+        grid = grid.replace('\n', ' ')
+        return grid
+
+    def _hide_game_board(self, room_id, user_id):
+        response = requests.post(
+            f"{self.uri}/rooms/{room_id}/class/game-board",
+            json={"class": "dis-area", "receiver_id": user_id},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "hide game board")
+
     def _command_done(self, room_id, user_id, command):
         """Must be sent to end a game round."""
         LOG.debug(command)
-
         this_session = self.sessions[room_id]
 
         self.sio.emit(
@@ -1077,6 +1026,7 @@ class DrawingBot(TaskBot):
 
         # get the grid for this room and the grid drawn by player_b
         target_grid = this_session.target_grid
+
         if this_session.drawn_grid:
             drawn_grid = self.transform_string_in_grid(this_session.drawn_grid.upper()).replace('<br>', '\n')
             this_session.drawn_grid = drawn_grid
@@ -1130,166 +1080,6 @@ class DrawingBot(TaskBot):
                 },
             )
             self.process_move(room_id, 1)
-
-    @staticmethod
-    def transform_string_in_grid(string):
-        """
-        Reformats string returned from player B into a displayable grid
-        to be emitted as message (html=true)
-        Example:
-            formatted_grid = self.transform_string_in_grid(this_session.drawn_grid.upper())
-            self.sio.emit(
-                "text",
-                {
-                    "message": f"**CURRENT DRAWN GRID**:<br>{formatted_grid}",
-                    "room": room_id,
-                    "receiver_id": this_session.player_a,
-                    "html": True,
-                },
-            )
-        """
-        rows = 5
-        cols = 5
-
-        # Split the input string into individual characters
-        characters = [char for char in string if char != ' ']
-
-        # Initialize an empty grid
-        grid = [['▢' for _ in range(cols)] for _ in range(rows)]
-
-        # Fill the grid with characters
-        for i in range(rows):
-            for j in range(cols):
-                if characters:
-                    grid[i][j] = characters.pop(0)
-
-        # Convert the grid to a string representation
-        grid_string = '<br>'.join([' '.join(row) for row in grid])
-
-        return grid_string
-
-    @staticmethod
-    def request_feedback(response, action):
-        if not response.ok:
-            LOG.error(f"Could not {action}: {response.status_code}")
-            response.raise_for_status()
-        else:
-            LOG.debug(f"Successfully did {action}.")
-
-    def move_divider(self, room_id, chat_area=50, task_area=50):
-        """
-        Move the central divider and resize chat and task area
-        the sum of char_area and task_area must sum up to 100
-        """
-        if chat_area + task_area != 100:
-            LOG.error("Could not resize chat and task area: invalid parameters.")
-            raise ValueError("chat_area and task_area must sum up to 100")
-
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/attribute/id/sidebar",
-            headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"width: {task_area}%"},
-        )
-        self.request_feedback(response, "resize sidebar")
-
-        response = requests.patch(
-            f"{self.uri}/rooms/{room_id}/attribute/id/content",
-            headers={"Authorization": f"Bearer {self.token}"},
-            json={"attribute": "style", "value": f"width: {chat_area}%"},
-        )
-        self.request_feedback(response, "resize content area")
-
-    def show_item(self, room_id):
-        """
-        Display the target grid to player_a and
-        keyboard instructions to player_b.
-        Hide game board to player_a
-        """
-        LOG.debug("Show item: Display the grid and task description to the players.")
-
-        this_session = self.sessions[room_id]
-
-        if this_session.target_grid:
-            # Display on chat area
-            grid = this_session.target_grid.replace('\n', '<br>')
-            self.sio.emit(
-                "text",
-                {
-                    "message": f"This is the target grid: <br>{grid}<br><br>You have 25 turns "
-                               f"to describe it to the other player.<br><br>Give the first instruction.",
-                    "receiver_id": this_session.player_a,
-                    "room": room_id,
-                    "html": True
-                },
-            )
-
-            # Display on display area
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/grid_title",
-                json={"text": "Target grid", "receiver_id": this_session.player_a},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "set grid title")
-            grid = this_session.target_grid.replace('\n', '<br>')
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "send_grid",
-                        "message": f"<br><br>{grid}",
-                    },
-                    "room": room_id,
-                    "receiver_id": this_session.player_a,
-                }
-            )
-
-            # Display keyboard instructions for player_b
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/grid_title",
-                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "set typing instructions title")
-            keyboard_instructions = this_session.keyboard_instructions
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "send_keyboard_instructions",
-                        "message": f"{keyboard_instructions}",
-                    },
-                    "room": room_id,
-                    "receiver_id": this_session.player_b,
-                }
-            )
-
-            # Hide game board for player a
-            # self._hide_game_board(room_id, this_session.player_a)
-
-            # enable the grid
-            response = requests.delete(
-                f"{self.uri}/rooms/{room_id}/class/grid-area",
-                json={"class": "dis-area", "receiver_id": this_session.player_a},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "enable grid")
-            # this_session.timer.start_round_timer()
-
-    def _hide_game_board(self, room_id, user_id):
-        response = requests.post(
-            f"{self.uri}/rooms/{room_id}/class/game-board",
-            json={"class": "dis-area", "receiver_id": user_id},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "hide game board")
-
-    def _hide_image_desc(self, room_id):
-        response = requests.post(
-            f"{self.uri}/rooms/{room_id}/class/image-desc",
-            json={"class": "dis-area"},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "hide description")
 
     def confirmation_code(self, room_id, status):
         """Generate token that will be sent to each player."""
@@ -1355,37 +1145,6 @@ class DrawingBot(TaskBot):
         self.room_to_read_only(room_id)
         self.sessions.clear_session(room_id)
 
-        # for usr in self.sessions[room_id].players:
-        #     self.rename_users(usr["id"])
-        #
-        #     response = requests.post(
-        #         f"{self.uri}/users/{usr['id']}/rooms/{self.waiting_room}",
-        #         headers={"Authorization": f"Bearer {self.token}"},
-        #     )
-        #     if not response.ok:
-        #         LOG.error(
-        #             f"Could not let user join waiting room: {response.status_code}"
-        #         )
-        #         response.raise_for_status()
-        #     LOG.debug("Sending user to waiting room was successful.")
-        #
-        #     response = requests.delete(
-        #         f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-        #         headers={
-        #             "If-Match": response.headers["ETag"],
-        #             "Authorization": f"Bearer {self.token}",
-        #         },
-        #     )
-        #     if not response.ok:
-        #         LOG.error(
-        #             f"Could not remove user from task room: {response.status_code}"
-        #         )
-        #         response.raise_for_status()
-        #     LOG.debug("Removing user from task room was successful.")
-        #
-        # # remove any task room specific objects
-        # self.sessions[room_id].players.pop(room_id)
-
     def room_to_read_only(self, room_id):
         """Set room to read only."""
         response = requests.patch(
@@ -1427,35 +1186,6 @@ class DrawingBot(TaskBot):
                     )
                     response.raise_for_status()
                 logging.debug("Removing user from task room was successful.")
-
-    def rename_users(self, user_id):
-        """Give all users in a room a new random name."""
-        names_f = os.path.join(ROOT, "data", "names.txt")
-        with open(names_f, "r", encoding="utf-8") as f:
-            names = [line.rstrip() for line in f]
-
-            new_name = random.choice(names)
-
-            response = requests.get(
-                f"{self.uri}/users/{user_id}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                LOG.error(f"Could not get user: {response.status_code}")
-                response.raise_for_status()
-
-            response = requests.patch(
-                f"{self.uri}/users/{user_id}",
-                json={"name": new_name},
-                headers={
-                    "If-Match": response.headers["ETag"],
-                    "Authorization": f"Bearer {self.token}",
-                },
-            )
-            if not response.ok:
-                LOG.error(f"Could not rename user: {response.status_code}")
-                response.raise_for_status()
-            LOG.debug(f"Successfuly renamed user to '{new_name}'.")
 
 # class ImageGame:
 #
