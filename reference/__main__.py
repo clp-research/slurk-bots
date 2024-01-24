@@ -178,22 +178,11 @@ class ReferenceBot(TaskBot):
                     },
                 )
             sleep(2)
-            self.sio.emit(
-                "text",
-                {
-                "message": COLOR_MESSAGE.format(
-                    color="#800080",
-                    message =(
-                    "Are you ready?"
+
+            self.send_message_to_user(STANDARD_COLOR, "Are you ready?"
                     " Once you click on 'yes' you will see the grids. <br> <br>"
                     "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
-                    "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
-                ),
-                ),
-                "room": room_id,
-                "html": True,
-                },
-            )
+                    "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>", room_id)
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -302,51 +291,12 @@ class ReferenceBot(TaskBot):
                 self.set_message_privilege(room_id,self.sessions[room_id].guesser, True)
                 # assign writing rights to other user
                 self.give_writing_rights(room_id, self.sessions[room_id].guesser)
-                self.send_message_to_user(STANDARD_COLOR,
-                    f"Type only the number: 1, 2, or 3 of the grid that the given description matches.",
-                    room_id,
-                    self.sessions[room_id].guesser,
-                )
-            else:
-                # GUESSER sent the command
-                # check the guess and inform the user about it??
-                self.log_event("guess", {"content": data['message']}, room_id)
 
-                if len(data['message']) == 1 and data['message'][0] in ["1", "2", "3"]:
-
-                    guess_correct = correct_guess(data['message'][0], self.sessions[room_id].grids[0][6][1])
-                    if guess_correct:
-                        self.send_message_to_user(STANDARD_COLOR,
-                                f"GUESS was correct ✅!"
-                                    f"You both win this round.",
-                                room_id,
-                            )
-                        self.update_reward(room_id, 1)
-                        self.log_event("correct guess", {"content": data['message']}, room_id)
-                    else:
-                        self.send_message_to_user(WARNING_COLOR,
-                                f"GUESS was false ❌."
-                                f"You both lose this round.",
-                                room_id,
-                            )
-                        self.update_reward(room_id, 0)
-                        self.log_event("false guess", {"content": data['message']}, room_id)
-
-
-
-                else:
-                    self.send_message_to_user(WARNING_COLOR,
-                            f"INVALID GUESS! "
-                            f"You both lose this round.",
-                            room_id,
-                        )
-                    self.log_event("invalid guess", {"content": data['message']}, room_id)
-                    self.update_reward(room_id, 0)
-
-                self.load_next_game(room_id)
-
-
-
+                self.send_message_to_user(STANDARD_COLOR,  " Click on the number of the grid the description above matches. <br> <br>"
+                                                          "<button class='message_button' id='Button1' onclick=\"choose_grid('1')\">1</button> "
+                                                          "<button class='message_button' id='Button2' onclick=\"choose_grid('2')\">2</button>"
+                                                          "<button class='message_button' id='Button3' onclick=\"choose_grid('3')\">3</button>",
+                room_id, this_session.guesser)
 
 
 
@@ -354,28 +304,64 @@ class ReferenceBot(TaskBot):
         def command(data):
             """Parse user commands."""
 
-            # do not prcess commands from itself
+            # do not process commands from itself
             if data["user"]["id"] == self.user:
                 return
+
+            room_id = data["room"]
+            user_id = data["user"]["id"]
 
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
             )
 
-            self.sessions[data["room"]].timer.reset()
+            self.sessions[room_id].timer.reset()
 
             if isinstance(data["command"], dict):
                 # commands from interface
                 event = data["command"]["event"]
                 if event == "confirm_ready":
                     if data["command"]["answer"] == "yes":
-                        self._command_ready(data["room"], data["user"]["id"])
+                        self._command_ready(room_id, user_id)
                     elif data["command"]["answer"] == "no":
                         self.send_message_to_user(STANDARD_COLOR,
                             "OK, read the instructions carefully and click on <yes> once you are ready.",
-                            data["room"],
-                            data["user"]["id"],
+                            room_id,
+                            user_id,
                         )
+                elif event == "choose_grid":
+                    guess = data["command"]["answer"]
+                    LOG.debug(f"GUESS was {guess}")
+
+                    self.log_event("guess", {"content": guess}, room_id)
+
+                    guess_correct = correct_guess(guess, self.sessions[room_id].grids[0][6][1])
+                    if guess_correct:
+                        self.send_message_to_user(STANDARD_COLOR,
+                                                      f"GUESS was correct ✅!"
+                                                      f"You both win this round."
+                                                  "<script> document.getElementById('Button1').disabled = true</script>"
+                                                  "<script> document.getElementById('Button2').disabled = true</script>"
+                                                  "<script> document.getElementById('Button3').disabled = true</script>",
+                                                      room_id,
+                                                      )
+                        self.update_reward(room_id, 1)
+                        self.log_event("correct guess", {"content": guess}, room_id)
+                    else:
+                        self.send_message_to_user(WARNING_COLOR,
+                                                      f"GUESS was false ❌."
+                                                      f"You both lose this round."
+                                                      "<script> document.getElementById('Button1').disabled = true</script>"
+                                                      "<script> document.getElementById('Button2').disabled = true</script>"
+                                                      "<script> document.getElementById('Button3').disabled = true</script>",
+
+                                                      room_id,
+                                                      )
+                        self.update_reward(room_id, 0)
+                        self.log_event("false guess", {"content": guess}, room_id)
+
+                    self.load_next_game(room_id)
+
 
     def _command_ready(self, room_id, user):
         """Must be sent to begin a conversation."""

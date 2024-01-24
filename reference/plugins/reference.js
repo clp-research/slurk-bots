@@ -34,3 +34,15 @@ function confirm_ready(answer){
         }
     )
 }
+
+function choose_grid(answer){
+    socket.emit("message_command",
+        {
+            "command": {
+                "event": "choose_grid",
+                "answer": answer
+            },
+            "room": self_room
+        }
+    )
+}
