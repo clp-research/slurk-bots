@@ -25,67 +25,67 @@ from templates import TaskBot
 LOG = logging.getLogger(__name__)
 
 
-class RoomTimer:
-    def __init__(self, function, user_left_function, close_game_function, room_id):
-        self.function = function
-        self.user_left_function = user_left_function
-        self.close_game_function = close_game_function
-        self.room_id = room_id
-        self.round_timer = None
-        self.close_game_timer = None
-        self.left_room = dict()
-
-    def start_round_timer(self):
-        if self.round_timer is not None:
-            self.round_timer.cancel()
-        LOG.debug("Start round timer")
-        self.round_timer = Timer(
-            TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
-        )
-        self.round_timer.start()
-
-    def start_close_game_timer(self):
-        LOG.debug("Start close_game timer")
-        self.close_game_timer = Timer(
-            TIMEOUT_TIMER * 60, self.close_game_function, args=[self.room_id]
-        )
-        self.close_game_timer.start()
-
-    def reset_round_timer(self):
-        if self.round_timer:
-            LOG.debug("Cancel round timer")
-            self.round_timer.cancel()
-        self.start_round_timer()
-
-
-    def cancel(self):
-        if self.round_timer:
-            LOG.debug("Cancel round timer")
-            self.round_timer.cancel()
-        else:
-            LOG.warning("Timer does not exist, cannot cancel")
-
-    def cancel_all_timers(self):
-        LOG.debug("Cancel all timers")
-        if self.round_timer:
-            self.round_timer.cancel()
-        if self.left_room:
-            for timer in self.left_room.values():
-                LOG.debug(f"Cancelling left_room timer {timer}")
-                timer.cancel()
-
-    def user_joined(self, user):
-        timer = self.left_room.get(user)
-        if timer is not None:
-            self.left_room[user].cancel()
-        else:
-            pass
-
-    def user_left(self, user):
-        self.left_room[user] = Timer(
-            LEAVE_TIMER * 60, self.user_left_function, args=[self.room_id]
-        )
-        self.left_room[user].start()
+# class RoomTimer:
+#     def __init__(self, function, user_left_function, close_game_function, room_id):
+#         self.function = function
+#         self.user_left_function = user_left_function
+#         self.close_game_function = close_game_function
+#         self.room_id = room_id
+#         self.round_timer = None
+#         self.close_game_timer = None
+#         self.left_room = dict()
+#
+#     def start_round_timer(self):
+#         if self.round_timer is not None:
+#             self.round_timer.cancel()
+#         LOG.debug("Start round timer")
+#         self.round_timer = Timer(
+#             TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
+#         )
+#         self.round_timer.start()
+#
+#     def start_close_game_timer(self):
+#         LOG.debug("Start close_game timer")
+#         self.close_game_timer = Timer(
+#             TIMEOUT_TIMER * 60, self.close_game_function, args=[self.room_id]
+#         )
+#         self.close_game_timer.start()
+#
+#     def reset_round_timer(self):
+#         if self.round_timer:
+#             LOG.debug("Cancel round timer")
+#             self.round_timer.cancel()
+#         self.start_round_timer()
+#
+#
+#     def cancel(self):
+#         if self.round_timer:
+#             LOG.debug("Cancel round timer")
+#             self.round_timer.cancel()
+#         else:
+#             LOG.warning("Timer does not exist, cannot cancel")
+#
+#     def cancel_all_timers(self):
+#         LOG.debug("Cancel all timers")
+#         if self.round_timer:
+#             self.round_timer.cancel()
+#         if self.left_room:
+#             for timer in self.left_room.values():
+#                 LOG.debug(f"Cancelling left_room timer {timer}")
+#                 timer.cancel()
+#
+#     def user_joined(self, user):
+#         timer = self.left_room.get(user)
+#         if timer is not None:
+#             self.left_room[user].cancel()
+#         else:
+#             pass
+#
+#     def user_left(self, user):
+#         self.left_room[user] = Timer(
+#             LEAVE_TIMER * 60, self.user_left_function, args=[self.room_id]
+#         )
+#         self.left_room[user].start()
 
 
 class Session:
@@ -104,7 +104,8 @@ class Session:
         self.drawn_grid = None
         self.turn_number = 0
         self.game_round = 0
-        self.timers = None # RoomTimer()
+        self.timer = None # RoomTimer()
+        self.left_room_timer = dict()
         self.points = {
             "score": STARTING_POINTS,
             "history": [
@@ -120,6 +121,44 @@ class Session:
         for player in self.players:
             if player["id"] != self.player_a:
                 self.player_b = player["id"]
+    # def start_round_timer(self):
+    #     if self.timer is not None:
+    #         self.timer.cancel()
+    #     LOG.debug("Start round timer")
+    #     self.timer = Timer(
+    #         TIMEOUT_TIMER * 60, self.function, args=[self.room_id]
+    #     )
+    #     self.timer.start()
+
+    # def start_close_game_timer(self):
+    #     LOG.debug("Start close_game timer")
+    #     self.timer = Timer(
+    #         TIMEOUT_TIMER * 60, self.close_game_function, args=[self.room_id]
+    #     )
+    #     self.close_game_timer.start()
+    #
+    # def reset_round_timer(self):
+    #     if self.round_timer:
+    #         LOG.debug("Cancel round timer")
+    #         self.round_timer.cancel()
+    #     self.start_round_timer()
+    #
+    #
+    # def cancel(self):
+    #     if self.round_timer:
+    #         LOG.debug("Cancel round timer")
+    #         self.round_timer.cancel()
+    #     else:
+    #         LOG.warning("Timer does not exist, cannot cancel")
+    #
+    # def cancel_all_timers(self):
+    #     LOG.debug("Cancel all timers")
+    #     if self.round_timer:
+    #         self.round_timer.cancel()
+    #     if self.left_room:
+    #         for timer in self.left_room.values():
+    #             LOG.debug(f"Cancelling left_room timer {timer}")
+    #             timer.cancel()
 
 
 class SessionManager(defaultdict):
@@ -128,8 +167,6 @@ class SessionManager(defaultdict):
 
     def clear_session(self, room_id):
         if room_id in self:
-            if self[room_id].timers:
-                self[room_id].timers.cancel_all_timers()
             self.pop(room_id)
 
 
@@ -160,6 +197,7 @@ class DrawingBot(TaskBot):
         self.sessions = SessionManager(Session)
         self.received_waiting_token = set()
         self.waiting_timer = None
+        self.left_room_timer = dict()
         self.data_collection = PLATFORM
 
     def run(self):
@@ -175,10 +213,23 @@ class DrawingBot(TaskBot):
     def timeout_close_game(self, room_id):
         self.sio.emit(
             "text",
-            {"message": "The room is closing because of inactivity", "room": room_id},
+            {"message": "Closing session because of inactivity", "room": room_id},
         )
-        self.confirmation_code(room_id, 'timeout')
+        self.confirmation_code(room_id, status='timeout')
         self.close_game(room_id)
+
+    def user_joined(self, user):
+        timer = self.left_room_timer.get(user)
+        if timer is not None:
+            self.left_room_timer[user].cancel()
+        else:
+            pass
+
+    # def user_left(self, user):
+    #     self.left_room_timer[user] = Timer(
+    #         LEAVE_TIMER * 60, user, args=[self.room_id]
+    #     )
+    #     self.left_room_timer[user].start()
 
     def time_out_round(self, room_id):
         """
@@ -220,7 +271,7 @@ class DrawingBot(TaskBot):
             {"message": "Your partner didn't rejoin, you will receive a token so you can get paid for your time",
              "room": room_id},
         )
-        self.confirmation_code(room_id, 'user_left')
+        self.confirmation_code(room_id, status='user_left')
         self.close_game(room_id)
 
     def _no_partner(self, room_id, user_id):
@@ -234,22 +285,8 @@ class DrawingBot(TaskBot):
                  },
             )
             # create token and send it to user
-            self.confirmation_code(room_id, "no_partner", receiver_id=user_id)
+            self.confirmation_code(room_id, status="no_partner")
             sleep(2)
-            # self.sio.emit(
-            #     "text",
-            #     {
-            #         "message": "You may also wait some more :)",
-            #         "room": room_id,
-            #         "receiver_id": user_id,
-            #     },
-            # )
-            # no need to cancel
-            # the running out of this timer triggered this event
-            # self.waiting_timer = Timer(
-            #     WAITING_PARTNER_TIMER * 60, self._no_partner, args=[room_id, user_id]
-            # )
-            # self.waiting_timer.start()
             self.received_waiting_token.add(user_id)
             self.close_game(room_id)
             return
@@ -280,9 +317,11 @@ class DrawingBot(TaskBot):
 
             # create a new session for these users
             self.sessions.create_session(room_id)
-            self.sessions[room_id].timers = RoomTimer(
-                self.time_out_round, self.user_did_not_rejoin, self.timeout_close_game, room_id)
-            self.sessions[room_id].timers.start_close_game_timer()
+            timer = Timer(
+                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+            )
+            timer.start()
+            self.sessions[room_id].timer = timer
 
             # add players
             self.sessions[room_id].players = []
@@ -408,7 +447,7 @@ class DrawingBot(TaskBot):
                     LOG.debug("Waiting Timer stopped.")
                     self.waiting_timer.cancel()
                 if data["type"] == "join":
-                    LOG.debug("Waiting Timer restarted.")
+                    LOG.debug("Waiting Timer started.")
                     self.waiting_timer = Timer(
                         WAITING_PARTNER_TIMER * 60,
                         self._no_partner,
@@ -451,7 +490,7 @@ class DrawingBot(TaskBot):
 
                     # cancel leave timers if any
                     LOG.debug("Cancel timer: user joined")
-                    self.sessions[room_id].timers.user_joined(curr_usr["id"])
+                    self.user_joined(curr_usr["id"])
 
                 elif data["type"] == "leave":
                     if room_id in self.sessions:
@@ -467,9 +506,14 @@ class DrawingBot(TaskBot):
                                 },
                             )
                             # cancel round timer and start left_user timer
-                            self.sessions[room_id].timers.cancel()
+                            # self.sessions[room_id].timer.cancel()
                             LOG.debug("Start timer: user left")
-                            self.sessions[room_id].timers.user_left(curr_usr["id"])
+                            self.sessions[room_id].left_room_timer[curr_usr["id"]] = Timer(
+                                LEAVE_TIMER * 60, self.user_did_not_rejoin,
+                                args=[room_id],
+                            )
+                            self.sessions[room_id].left_room_timer[curr_usr["id"]].start()
+
             else:
                 pass
 
@@ -491,14 +535,15 @@ class DrawingBot(TaskBot):
                 return
 
             this_session = self.sessions[room_id]
-
-            # get user
-            # curr_usr, other_usr = self.sessions[room_id].players
-            # if curr_usr["id"] != user_id:
-            #     curr_usr, other_usr = other_usr, curr_usr
-
-            # Cancel and restarts round_timer
-            # self.sessions[room_id].timers.reset_round_timer()
+            # Reset timer
+            LOG.debug("Reset timeout timer")
+            if this_session.timer:
+                this_session.timer.cancel()
+            timer = Timer(
+                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+            )
+            timer.start()
+            self.sessions[room_id].timer = timer
 
         @self.sio.event
         def command(data):
@@ -515,8 +560,16 @@ class DrawingBot(TaskBot):
             if str(user_id) == self.user:
                 return
 
-            if not self.sessions[room_id].timers.user_left(user_id):
-                self.sessions[room_id].timers.reset_round_timer()
+            this_session = self.sessions[room_id]
+            # Reset timer
+            LOG.debug("Reset timeout timer")
+            if this_session.timer:
+                this_session.timer.cancel()
+            timer = Timer(
+                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+            )
+            timer.start()
+            self.sessions[room_id].timer = timer
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -738,7 +791,14 @@ class DrawingBot(TaskBot):
             {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
         )
 
-        this_session.timers.close_game_timer.cancel()
+        # Restart timer
+        if this_session.timer:
+            this_session.timer.cancel()
+        timer = Timer(
+            TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+        )
+        timer.start()
+        this_session.timer.timer = timer
         self.send_individualised_instructions(room_id)
         self.show_item(room_id)
 
@@ -948,9 +1008,15 @@ class DrawingBot(TaskBot):
         if self.sessions[room_id].game_round >= 4:
             self.sio.emit(
                 "text",
-                {"message": "The experiment is over! Thank you for participating :)",
-                 "room": room_id},
+                {
+                    "room": room_id,
+                    "message": (
+                        "The experiment is over 🎉 🎉 thank you very much for your time!"
+                    ),
+                    "html": True,
+                },
             )
+            self.confirmation_code(room_id, status='success')
             self.close_game(room_id)
             return
         elif 0 < self.sessions[room_id].game_round < 4:
@@ -973,9 +1039,16 @@ class DrawingBot(TaskBot):
                  "receiver_id": this_session.player_b}
             )
 
-            # restart round_timer
-            self.sessions[room_id].timers.start_round_timer()
-            self.sessions[room_id].turn_number = 1
+            # restart round_timer #todo: simplify in function
+            LOG.debug("Reset timeout timer")
+            if this_session.timer:
+                this_session.timer.cancel()
+            timer = Timer(
+                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+            )
+            timer.start()
+            this_session.timer.timer = timer
+            this_session.timer.turn_number = 1
 
             # Show new grid instance to player_a
             self.show_item(room_id)
@@ -1200,7 +1273,7 @@ class DrawingBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
-            this_session.timers.start_round_timer()
+            # this_session.timer.start_round_timer()
 
     def _hide_game_board(self, room_id, user_id):
         response = requests.post(
@@ -1218,42 +1291,31 @@ class DrawingBot(TaskBot):
         )
         self.request_feedback(response, "hide description")
 
-    def confirmation_code(self, room_id, status, receiver_id=None):
+    def confirmation_code(self, room_id, status):
         """Generate token that will be sent to each player."""
         LOG.debug("Triggered confirmation_code")
-        kwargs = dict()
-        # either only for one user or for both
-        if receiver_id is not None:
-            kwargs["receiver_id"] = receiver_id
-
         confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        points = self.sessions[room_id].points
         # post confirmation token to logs
-        response = requests.post(
-            f"{self.uri}/logs",
-            json={
-                "event": "confirmation_log",
-                "room_id": room_id,
-                "data": {"status_txt": status, "confirmation_token": confirmation_token},
-                **kwargs,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": status, "token": confirmation_token, "reward": points},
+            room_id,
         )
-        self.request_feedback(response, "post confirmation token to logs")
 
-        if self.data_collection == PLATFORM:
-            LOG.debug("Triggered show_prolific_link")
-            # self._show_prolific_link(room_id, receiver_id)
-
+        # Or check in wordle how the user is given the link to prolific
+        #todo: why is the message not always displayed?
         self.sio.emit(
             "text",
             {
-                "message": f"This is your test token :) because of {status}",
+                "message": f"This is your token:  **{confirmation_token}** <br>"
+                           "Please remember to save it"
+                           "before you close this browser window. "
+                ,
                 "room": room_id,
-                "receiver_id": receiver_id,
+                "html": True
             },
         )
-
-        return confirmation_token
 
     def _show_prolific_link(self, room, receiver, token=None):
 
@@ -1279,6 +1341,8 @@ class DrawingBot(TaskBot):
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
         LOG.debug(f"Triggered close game for room {room_id}")
+
+        #todo: why is the message not always displayed?
         self.sio.emit(
             "text",
             {
