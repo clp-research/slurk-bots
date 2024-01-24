@@ -77,6 +77,8 @@ class Session:
         self.game_over = False
         self.timer = None
 
+        self.button_number = 0
+
     def close(self):
         self.timer.cancel_all_timers()
 
@@ -292,10 +294,11 @@ class ReferenceBot(TaskBot):
                 # assign writing rights to other user
                 self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
-                self.send_message_to_user(STANDARD_COLOR,  " Click on the number of the grid the description above matches. <br> <br>"
-                                                          "<button class='message_button' id='Button1' onclick=\"choose_grid('1')\">1</button> "
-                                                          "<button class='message_button' id='Button2' onclick=\"choose_grid('2')\">2</button>"
-                                                          "<button class='message_button' id='Button3' onclick=\"choose_grid('3')\">3</button>",
+                LOG.debug(f"Button{this_session.button_number}")
+                self.send_message_to_user(STANDARD_COLOR,  f" Click on the number of the grid the description above matches. <br> <br>"
+                                                          f"<button class='message_button' id='Button{this_session.button_number}' onclick=\"choose_grid('1')\">1</button> "
+                                                          f"<button class='message_button' id='Button{this_session.button_number + 1}' onclick=\"choose_grid('2')\">2</button>"
+                                                          f"<button class='message_button' id='Button{this_session.button_number + 2}' onclick=\"choose_grid('3')\">3</button>",
                 room_id, this_session.guesser)
 
 
@@ -329,7 +332,17 @@ class ReferenceBot(TaskBot):
                             room_id,
                             user_id,
                         )
+                    return
                 elif event == "choose_grid":
+                    LOG.debug(f"{self.sessions[room_id].button_number}")
+                    LOG.debug(f"Button{self.sessions[room_id].button_number}")
+                    self.send_message_to_user(STANDARD_COLOR,
+                                              f"Guess was submitted. You can not change it."
+                                              f"<script> document.getElementById('Button{self.sessions[room_id].button_number}').disabled = true;</script>"
+                                              f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 1}').disabled = true;</script>"
+                                              f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 2}').disabled = true;</script>",
+                                              room_id,
+                                              self.sessions[room_id].guesser)
                     guess = data["command"]["answer"]
                     LOG.debug(f"GUESS was {guess}")
 
@@ -339,10 +352,7 @@ class ReferenceBot(TaskBot):
                     if guess_correct:
                         self.send_message_to_user(STANDARD_COLOR,
                                                       f"GUESS was correct ✅!"
-                                                      f"You both win this round."
-                                                  "<script> document.getElementById('Button1').disabled = true</script>"
-                                                  "<script> document.getElementById('Button2').disabled = true</script>"
-                                                  "<script> document.getElementById('Button3').disabled = true</script>",
+                                                      f"You both win this round.",
                                                       room_id,
                                                       )
                         self.update_reward(room_id, 1)
@@ -350,15 +360,13 @@ class ReferenceBot(TaskBot):
                     else:
                         self.send_message_to_user(WARNING_COLOR,
                                                       f"GUESS was false ❌."
-                                                      f"You both lose this round."
-                                                      "<script> document.getElementById('Button1').disabled = true</script>"
-                                                      "<script> document.getElementById('Button2').disabled = true</script>"
-                                                      "<script> document.getElementById('Button3').disabled = true</script>",
+                                                      f"You both lose this round.",
 
                                                       room_id,
                                                       )
                         self.update_reward(room_id, 0)
                         self.log_event("false guess", {"content": guess}, room_id)
+
 
                     self.load_next_game(room_id)
 
@@ -468,6 +476,7 @@ class ReferenceBot(TaskBot):
             return
 
         round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
+        self.sessions[room_id].button_number = round_n * 3
 
         # try to log the round number
         self.log_event("round", {"number": round_n}, room_id)
