@@ -48,6 +48,11 @@
               "style": "display: flex",
               "layout-content": [
                 {
+                "layout-type": "div",
+                "id": "grid1_container",
+                "style": "display: flex; flex-direction: column; align-items: center;",
+                "layout-content": [
+                {
                   "layout-type": "div",
                   "id": "grid1_title",
                   "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
@@ -58,7 +63,14 @@
                   "id": "grid1",
                   "style": "padding: 30px; margin: 5px;",
                   "layout-content": ""
-                },
+                }]},
+                {
+                  "layout-type": "div",
+                  "id": "grid2_container",
+                  "style": "display: flex; flex-direction: column; align-items: center;",
+                  "layout-content": [
+
+
                 {
                   "layout-type": "div",
                   "id": "grid2_title",
@@ -70,7 +82,12 @@
                   "id": "grid2",
                   "style": "padding: 30px; margin: 5px;",
                   "layout-content": ""
-                },
+                }]},
+                {
+                 "layout-type": "div",
+                  "id": "grid2_container",
+                  "style": "display: flex; flex-direction: column; align-items: center;",
+                  "layout-content": [
                 {
                   "layout-type": "div",
                   "id": "grid3_title",
@@ -82,7 +99,7 @@
                   "id": "grid3",
                   "style": "padding: 30px; margin: 5px;",
                   "layout-content": ""
-                }
+                }]}
               ]
             }
           ]
