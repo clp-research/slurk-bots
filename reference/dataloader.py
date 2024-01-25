@@ -42,8 +42,8 @@ def preprocess(grid):
 
 
 
-if __name__ == "__main__":
-    from pathlib import Path
-    d = Dataloader(Path("data/instances.json"), n=4)
-    print(d)
+# if __name__ == "__main__":
+#     from pathlib import Path
+#     d = Dataloader(Path("data/instances.json"), n=4)
+#     print(d[0][-1][1])
 
