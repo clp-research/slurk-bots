@@ -64,9 +64,6 @@ class Session:
         self.players = list()
         self.grids = Dataloader(GRIDS, GRIDS_PER_ROOM)
         self.grid_manager = GridManager(EMPTY_GRID)
-        self.word_to_guess = None
-        self.word_letters = {}
-        self.guesses = 0
         self.guesser = None
         self.explainer = None
         self.points = {
@@ -134,8 +131,6 @@ class ReferenceBot(TaskBot):
             for usr in data["users"]:
                 self.received_waiting_token.discard(usr["id"])
             logging.debug("Create data for the new task room...")
-            # create a new session for these users
-            # this_session = self.sessions[room_id]
 
             self.move_divider(room_id, 20, 80)
 
@@ -167,6 +162,15 @@ class ReferenceBot(TaskBot):
             # send_instructions
             for player in self.sessions[room_id].players:
                 self.send_instr(room_id, player["id"])
+
+            self.set_message_privilege(room_id, self.sessions[room_id].explainer, False)
+            self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
+
+            self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
+            self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
+            # self.set_message_privilege(room_id,self.sessions[room_id].guesser, True)
+            # # assign writing rights to other user
+            # self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
             for line in TASK_GREETING:
                 self.sio.emit(
@@ -290,9 +294,9 @@ class ReferenceBot(TaskBot):
 
                 self.set_message_privilege(room_id, self.sessions[room_id].explainer, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
-                self.set_message_privilege(room_id,self.sessions[room_id].guesser, True)
-                # assign writing rights to other user
-                self.give_writing_rights(room_id, self.sessions[room_id].guesser)
+                # self.set_message_privilege(room_id,self.sessions[room_id].guesser, True)
+                # # assign writing rights to other user
+                # self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
                 LOG.debug(f"Button{this_session.button_number}")
                 self.send_message_to_user(STANDARD_COLOR,  f" Click on the number of the grid the description above matches. <br> <br>"
@@ -306,13 +310,15 @@ class ReferenceBot(TaskBot):
         @self.sio.event
         def command(data):
             """Parse user commands."""
-
-            # do not process commands from itself
-            if data["user"]["id"] == self.user:
-                return
-
             room_id = data["room"]
             user_id = data["user"]["id"]
+
+            # do not process commands from itself
+            if user_id == self.user:
+                return
+
+            if room_id not in self.sessions:
+                return
 
             logging.debug(
                 f"Received a command from {data['user']['name']}: {data['command']}"
@@ -744,6 +750,7 @@ class ReferenceBot(TaskBot):
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
+
 
 def correct_guess(guess, answer):
     return answer == TARGET_GRID_NAMES[guess]
