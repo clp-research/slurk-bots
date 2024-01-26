@@ -2,16 +2,12 @@
 # Sandra Sánchez Páez
 # Bachelorarbeit Computerlinguistik 2024
 # University of Potsdam
-import copy
 import logging
-import os
 import random
 import string
 from collections import defaultdict
-from datetime import datetime
 from threading import Timer
 from time import sleep
-from typing import Any, Dict, Tuple, List
 
 import requests
 import socketio
@@ -477,7 +473,7 @@ class DrawingBot(TaskBot):
                 )
                 LOG.debug(f"This is turn number  {this_session.current_turn}.")
                 this_session.current_turn += 1
-                self.log_event('turn', str(this_session.current_turn), room_id)
+                self.log_event('turn', dict(), room_id)
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
@@ -598,9 +594,11 @@ class DrawingBot(TaskBot):
             random_grid = this_session.all_compact_grids.get_random_grid()
             this_session.target_grid = random_grid
         else:
+            this_session.grid_type = 'random'
             random_grid = this_session.all_random_grids.get_random_grid()
             this_session.target_grid = random_grid
         self.log_event("target grid", {"content": this_session.target_grid}, room_id)
+        self.log_event("grid type", {"content": this_session.grid_type}, room_id)
 
         # 4) Prepare interface
         # Resize screen
@@ -619,6 +617,7 @@ class DrawingBot(TaskBot):
         timer.start()
         this_session.timer.timer = timer
         self.send_individualised_instructions(room_id)
+        self.update_rights(room_id, True, False)
         self.show_item(room_id)
 
     def send_individualised_instructions(self, room_id):

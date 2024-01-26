@@ -16,7 +16,7 @@ def select_logs(file_in):
         # print(log)
         if log["event"] in {
             "round", "turn", "clue", "guess", "invalid format", "invalid clue", "players",
-            "correct guess", "max turns reached", "target grid", "command"}:
+            "correct guess", "max turns reached", "target grid", "command", "grid type"}:
             # print(log)
             text_messages.append(log)
     # print(text_messages)
@@ -26,19 +26,21 @@ def select_logs(file_in):
     return f"Selected logs saved in {file_in}'text_messages.json'"
 
 
-print(select_logs(os.path.join(ROOT, "data", "logs", "6.jsonl")))
+print(select_logs(os.path.join(ROOT, "data", "logs", "4.jsonl")))
+
 
 # BUILD DATA like  interactions_json in clembench
+
 def build_interactions_file(messages_jsonfile):
-    # Need to build a dict for each instance with 'players' and 'turns': []
+    # Need to build a dict for each instance (=round) with 'players': {} and 'turns': []
     with open(os.path.join(ROOT, "data", "logs", messages_jsonfile), "r") as f:
         logs = json.load(f)
         all_rounds = []
-        round = {}
+        round = {"players": dict(), "turns": []}
         turns_for_scores = []
         turn = []
         for log in logs:
-            print(log)
+            # print(log)
             if log["event"] == "round":
                 # added 3 lines
                 if len(turn) != 0:
@@ -59,7 +61,8 @@ def build_interactions_file(messages_jsonfile):
             if log["event"] == "players":
                 round["players"] = log["data"]
             # add "max turns reached" and "command",but it is not logged yet
-            if log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess", "target grid", "max turns reached"}:
+            if log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess", "target grid",
+                                "max turns reached", "grid type"}:
                 new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
                            "action": {"type": log["event"], "content": log["data"]["content"]}}
                 turn.append(new_log)
@@ -86,5 +89,4 @@ def build_interactions_file(messages_jsonfile):
         return all_rounds
 
 
-interactions_file = build_interactions_file("6.jsonl_text_messages.json")
-
+interactions_file = build_interactions_file("10.jsonl_text_messages.json")
