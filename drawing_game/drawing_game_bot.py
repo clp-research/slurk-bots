@@ -2,15 +2,16 @@
 # Sandra Sánchez Páez
 # Bachelorarbeit Computerlinguistik 2024
 # University of Potsdam
-
-
+import copy
 import logging
 import os
 import random
 import string
 from collections import defaultdict
+from datetime import datetime
 from threading import Timer
 from time import sleep
+from typing import Any, Dict, Tuple, List
 
 import requests
 import socketio
@@ -39,7 +40,7 @@ class Session:
         self.grid_type = None
         self.target_grid = None  # Looks like this  X ▢ ▢ ▢ ▢\n▢ X ▢ ▢ ▢\n▢ ▢ X ▢ ▢\n▢ ▢ ▢ X ▢\n▢ ▢ ▢ ▢ X
         self.drawn_grid = None
-        self.turn_number = 0
+        self.current_turn = 0
         self.game_round = 0
         self.timer = None # RoomTimer()
         self.left_room_timer = dict()
@@ -52,12 +53,12 @@ class Session:
         self.game_over = False
 
     def pick_player_a(self):
-        self.player_a = random.choice(self.players)["id"]
+        self.player_a = random.choice(self.players)
 
     def pick_player_b(self):
         for player in self.players:
-            if player["id"] != self.player_a:
-                self.player_b = player["id"]
+            if player != self.player_a:
+                self.player_b = player
 
 
 class SessionManager(defaultdict):
@@ -98,6 +99,14 @@ class DrawingBot(TaskBot):
         self.waiting_timer = None
         self.left_room_timer = dict()
         self.data_collection = PLATFORM
+        self.interactions = {
+            "players": {},
+            "turns": []
+        }
+        self.scores = {
+            "turn scores": {},
+            "episode scores": {},
+        }
 
     def run(self):
         # establish a connection to the server
@@ -367,7 +376,6 @@ class DrawingBot(TaskBot):
             if str(user_id) == self.user:
                 return
 
-            this_session = self.sessions[room_id]
             # Reset timer
             LOG.debug("Reset timeout timer")
             if this_session.timer:
@@ -397,7 +405,7 @@ class DrawingBot(TaskBot):
                         return
                     else:
                         this_session.drawn_grid = data["command"]["guess"].strip()
-                        # self.log_event('guess', this_session.drawn_grid, room_id)
+                        # self.log_event('guess', this_session.drawn_grid, room_id) is logged through plugin
                         LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                         self.sio.emit(
                             "text",
@@ -408,31 +416,31 @@ class DrawingBot(TaskBot):
                             },
                         )
 
-                        if 0 < this_session.turn_number < 25:
+                        if 0 < this_session.current_turn < 25:
                             self.sio.emit(
                                 "text",
                                 {
                                     "message": "What is your next instruction?",
                                     "room": room_id,
-                                    "receiver_id": this_session.player_a
+                                    "receiver_id": this_session.player_a["id"]
                                 },
                             )
                             self.update_rights(room_id, True, False)
                             return
-                        elif this_session.turn_number == 25:
+                        elif this_session.current_turn == 25:
                             self.sio.emit(
                                 "text",
                                 {
                                     "message": "You ran out of turns!",
                                     "room": room_id,
-                                    "receiver_id": this_session.player_a
+                                    "receiver_id": this_session.player_a["id"]
                                 },
                             )
                             self._command_done(room_id, user_id, data['command'])
                             return
 
             # If the game hasn't actually started, check for ready_command
-            if this_session.turn_number == 0:
+            if this_session.current_turn == 0:
                 if "ready" in command:
                     self._command_ready(room_id, user_id)
                     return
@@ -453,9 +461,9 @@ class DrawingBot(TaskBot):
                 return
 
             # player_a
-            if this_session.player_a == user_id:
+            if this_session.player_a["id"] == user_id:
                 # means that new turn began
-                self.log_event("turn", dict(), room_id)
+                # self.log_event("turn", [], room_id)
                 # log event
                 self.log_event("clue", {"content": data['command']}, room_id)
 
@@ -464,16 +472,17 @@ class DrawingBot(TaskBot):
                     {
                         "message": command,
                         "room": room_id,
-                        "receiver_id": this_session.player_b,
+                        "receiver_id": this_session.player_b["id"],
                     },
                 )
-                LOG.debug(f"This is turn number  {this_session.turn_number}.")
-                this_session.turn_number += 1
+                LOG.debug(f"This is turn number  {this_session.current_turn}.")
+                this_session.current_turn += 1
+                self.log_event('turn', str(this_session.current_turn), room_id)
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
             # player_b
-            elif this_session.player_b == user_id:
+            elif this_session.player_b["id"] == user_id:
                 self.log_event("guess", {"content": data['command']}, room_id)
 
                 # In case the grid is returned as string on the chat area
@@ -481,13 +490,13 @@ class DrawingBot(TaskBot):
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
                     sleep(1)
-                    if this_session.turn_number < 25:
+                    if this_session.current_turn < 25:
                         self.sio.emit(
                             "text",
                             {
                                 "message": "What is your next instruction?",
                                 "room": room_id,
-                                "receiver_id": this_session.player_a,
+                                "receiver_id": this_session.player_a["id"],
                             },
                         )
                         self.update_rights(room_id, True, False)
@@ -563,7 +572,7 @@ class DrawingBot(TaskBot):
         this_session = self.sessions[room_id]
 
         # 1) Set rounds
-        this_session.turn_number = 1
+        this_session.current_turn = 1
         LOG.debug(f"Starting first turn out of 25.")
         self.log_event("round", {"number": this_session.game_round}, room_id)
 
@@ -571,10 +580,16 @@ class DrawingBot(TaskBot):
         self.sessions[room_id].pick_player_a()
         self.sessions[room_id].pick_player_b()
         for user in this_session.players:
-            if user["id"] == this_session.player_a:
+            if user["id"] == this_session.player_a["id"]:
                 LOG.debug(f'{user["name"]} is player A.')
             else:
                 LOG.debug(f'{user["name"]} is player B.')
+        self.log_event('players', {
+            "GM": "DrawingBot",
+            "Player_1": self.sessions[room_id].player_a["name"],
+            "Player_2": self.sessions[room_id].player_b["name"]},
+            room_id
+        )
 
         # 3) Load grid
         grid_type = random.choice(['compact', 'random'])
@@ -592,7 +607,7 @@ class DrawingBot(TaskBot):
         self.move_divider(room_id, 30, 70)
         self.sio.emit(
             "message_command",
-            {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b},
+            {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b["id"]},
         )
 
         # Restart timer
@@ -612,7 +627,7 @@ class DrawingBot(TaskBot):
         # Display  instructions for player_a
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr_title",
-            json={"text": "You are the describer", "receiver_id": this_session.player_a},
+            json={"text": "You are the describer", "receiver_id": this_session.player_a["id"]},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "set task instruction title")
@@ -624,13 +639,13 @@ class DrawingBot(TaskBot):
                     "message": f"{INSTRUCTIONS_A}"
                 },
                 "room": room_id,
-                "receiver_id": this_session.player_a,
+                "receiver_id": this_session.player_a["id"],
             }
         )
         # Display  instructions for player_b
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/instr_title",
-            json={"text": "You have to draw the grid", "receiver_id": this_session.player_b},
+            json={"text": "You have to draw the grid", "receiver_id": this_session.player_b["id"]},
             headers={"Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "set task instruction title")
@@ -642,7 +657,7 @@ class DrawingBot(TaskBot):
                     "message": f"{INSTRUCTIONS_B}"
                 },
                 "room": room_id,
-                "receiver_id": this_session.player_b,
+                "receiver_id": this_session.player_b["id"],
             }
         )
 
@@ -687,7 +702,7 @@ class DrawingBot(TaskBot):
                 {
                     "message": f"This is the target grid: <br>{grid}<br><br>You have 25 turns "
                                f"to describe it to the other player.<br><br>Give the first instruction.",
-                    "receiver_id": this_session.player_a,
+                    "receiver_id": this_session.player_a["id"],
                     "room": room_id,
                     "html": True
                 },
@@ -696,7 +711,7 @@ class DrawingBot(TaskBot):
             # Display on display area
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/grid_title",
-                json={"text": "Target grid", "receiver_id": this_session.player_a},
+                json={"text": "Target grid", "receiver_id": this_session.player_a["id"]},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "set grid title")
@@ -709,14 +724,14 @@ class DrawingBot(TaskBot):
                         "message": f"<br><br>{grid}",
                     },
                     "room": room_id,
-                    "receiver_id": this_session.player_a,
+                    "receiver_id": this_session.player_a["id"],
                 }
             )
 
             # Display keyboard instructions for player_b
             response = requests.patch(
                 f"{self.uri}/rooms/{room_id}/text/grid_title",
-                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b},
+                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b["id"]},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "set typing instructions title")
@@ -729,7 +744,7 @@ class DrawingBot(TaskBot):
                         "message": f"{keyboard_instructions}",
                     },
                     "room": room_id,
-                    "receiver_id": this_session.player_b,
+                    "receiver_id": this_session.player_b["id"],
                 }
             )
 
@@ -739,7 +754,7 @@ class DrawingBot(TaskBot):
             # enable the grid
             response = requests.delete(
                 f"{self.uri}/rooms/{room_id}/class/grid-area",
-                json={"class": "dis-area", "receiver_id": this_session.player_a},
+                json={"class": "dis-area", "receiver_id": this_session.player_a["id"]},
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
@@ -747,13 +762,13 @@ class DrawingBot(TaskBot):
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
         curr_usr, other_usr = self.sessions[room_id].players
-        if curr_usr['id'] != this_session.player_a:
+        if curr_usr['id'] != this_session.player_a["id"]:
             curr_usr, other_usr = other_usr, curr_usr
         # update writing rights to player_a (assign or revoke)
-        self.set_message_privilege(this_session.player_a, player_a)
+        self.set_message_privilege(this_session.player_a["id"], player_a)
         self.check_writing_right(room_id, curr_usr, player_a)
         # update writing rights to other user (assign or revoke)
-        self.set_message_privilege(this_session.player_b, player_b)
+        self.set_message_privilege(this_session.player_b["id"], player_b)
         self.check_writing_right(room_id, other_usr, player_b)
 
     def set_message_privilege(self, user_id, value):
@@ -926,7 +941,7 @@ class DrawingBot(TaskBot):
             self.sio.emit(
                 "message_command",
                 {"command": {"command": "drawing_game_init"}, "room": room_id,
-                 "receiver_id": this_session.player_b}
+                 "receiver_id": this_session.player_b["id"]}
             )
             self.sio.emit(
                 "text",
@@ -938,7 +953,7 @@ class DrawingBot(TaskBot):
                 "text",
                 {"message": "Wait for a new instruction.",
                  "room": room_id,
-                 "receiver_id": this_session.player_b}
+                 "receiver_id": this_session.player_b["id"]}
             )
 
             # restart round_timer #todo: simplify in function
@@ -950,7 +965,7 @@ class DrawingBot(TaskBot):
             )
             timer.start()
             this_session.timer.timer = timer
-            this_session.timer.turn_number = 1
+            this_session.current_turn = 1
 
             # Show new grid instance to player_a
             self.show_item(room_id)

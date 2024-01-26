@@ -15,8 +15,8 @@ def select_logs(file_in):
         log = json.loads(json_str)
         # print(log)
         if log["event"] in {
-            "round", "turn", "clue", "guess", "invalid format", "invalid clue",
-            "correct guess", "max turns reached", "target grid", "command", "send_grid"}:
+            "round", "turn", "clue", "guess", "invalid format", "invalid clue", "players",
+            "correct guess", "max turns reached", "target grid", "command"}:
             # print(log)
             text_messages.append(log)
     # print(text_messages)
@@ -26,7 +26,7 @@ def select_logs(file_in):
     return f"Selected logs saved in {file_in}'text_messages.json'"
 
 
-print(select_logs(os.path.join(ROOT, "data", "logs", "2.jsonl")))
+print(select_logs(os.path.join(ROOT, "data", "logs", "6.jsonl")))
 
 # BUILD DATA like  interactions_json in clembench
 def build_interactions_file(messages_jsonfile):
@@ -38,7 +38,7 @@ def build_interactions_file(messages_jsonfile):
         turns_for_scores = []
         turn = []
         for log in logs:
-            # print(log)
+            print(log)
             if log["event"] == "round":
                 # added 3 lines
                 if len(turn) != 0:
@@ -56,12 +56,14 @@ def build_interactions_file(messages_jsonfile):
                     # if turn not in turns_for_scores and len(turn) != 0:
                     turns_for_scores.append(turn)
                 turn = []
+            if log["event"] == "players":
+                round["players"] = log["data"]
             # add "max turns reached" and "command",but it is not logged yet
             if log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess", "target grid", "max turns reached"}:
                 new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
                            "action": {"type": log["event"], "content": log["data"]["content"]}}
                 turn.append(new_log)
-                print(new_log)
+                # print(new_log)
             elif log["event"] in {"command"}:
                 if "guess" in log["data"]["command"]:
                     content = log["data"]["command"]["guess"]
@@ -84,5 +86,5 @@ def build_interactions_file(messages_jsonfile):
         return all_rounds
 
 
-interactions_file = build_interactions_file("2.jsonl_text_messages.json")
+interactions_file = build_interactions_file("6.jsonl_text_messages.json")
 
