@@ -384,6 +384,7 @@ class DrawingBot(TaskBot):
             if isinstance(data["command"], dict):
                 if "guess" in data["command"]:
                     if data["command"]["guess"].strip() == "":
+                        self.log_event("invalid format", '', room_id)
                         self.sio.emit(
                             "text",
                             {
@@ -396,6 +397,7 @@ class DrawingBot(TaskBot):
                         return
                     else:
                         this_session.drawn_grid = data["command"]["guess"].strip()
+                        # self.log_event('guess', this_session.drawn_grid, room_id)
                         LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                         self.sio.emit(
                             "text",
@@ -583,6 +585,7 @@ class DrawingBot(TaskBot):
         else:
             random_grid = this_session.all_random_grids.get_random_grid()
             this_session.target_grid = random_grid
+        self.log_event("target grid", {"content": this_session.target_grid}, room_id)
 
         # 4) Prepare interface
         # Resize screen
