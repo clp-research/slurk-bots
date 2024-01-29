@@ -21,18 +21,19 @@ SEED = None
 # - PLATFORM influences how the confirmation token will be supplied
 # - For Prolific, participants will receive a link
 # - For AMT, participants will get a token to copy
-PUBLIC = False
+
 PLATFORM = "Prolific"
 
 # All below *TIME_* variables are in minutes.
 # They indicate how long a situation has to persist for something to happen.
 
 # TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
-TIME_WAITING = 10  # how many minutes a user can wait for a partner
-TIME_ROUND = 20  # how many minutes users can play on a single image
+TIME_WAITING_ROOM = 0.5  # how many minutes a user can wait for a partner
+# TIME_ROUND = 20  # how many minutes users can play on a single image
 
-# TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
-LEAVE_TIMER = 3  # minutes if a user is alone in a room
+
+TIMEOUT_TIMER = 1  # minutes of inactivity before the room is closed automatically
+LEAVE_TIMER = 1  # minutes if a user is alone in a room
 
 
 # colored messages

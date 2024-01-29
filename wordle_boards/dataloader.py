@@ -33,5 +33,3 @@ class Dataloader(list):
 #     from pathlib import Path
 #     d = Dataloader(Path("data/wordle_words.json"), n=3)
 #     print(d)
-# #     print(d[0]['related_word'])
-#     # random.choice(list(d.keys()))

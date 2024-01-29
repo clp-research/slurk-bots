@@ -19,15 +19,15 @@ from .config import (
     COLOR_MESSAGE,
     PLATFORM,
     PROLIFIC_URL,
-    PUBLIC,
     SEED,
     STANDARD_COLOR,
     WARNING_COLOR,
     TASK_GREETING,
     TASK_TITLE,
     LEAVE_TIMER,
-    TIME_ROUND,
-    TIME_WAITING,
+    # TIME_ROUND,
+    TIMEOUT_TIMER,
+    TIME_WAITING_ROOM,
     VALID_WORDS,
     WORDLE_WORDS,
     WORDS_PER_ROOM,
@@ -42,19 +42,29 @@ from .config import (
 
 LOG = logging.getLogger(__name__)
 
-
-class RoomTimers:
-    """A number of timed events during the game.
-    :param round_timer: After 15 minutes the image will change
-        and players get no points
-    """
-
-    def __init__(self):
+class RoomTimer:
+    def __init__(self, function, room_id):
+        self.function = function
+        self.room_id = room_id
+        self.start_timer()
         self.left_room = dict()
-        self.round_timer = None
+
+    def start_timer(self):
+        self.timer = Timer(
+            TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
+        )
+        self.timer.start()
+
+    def reset(self):
+        self.timer.cancel()
+        self.start_timer()
+        logging.info("reset timer")
+
+    def cancel(self):
+        self.timer.cancel()
 
     def cancel_all_timers(self):
-        self.round_timer.cancel()
+        self.timer.cancel()
         for timer in self.left_room.values():
             timer.cancel()
 
@@ -69,19 +79,10 @@ class RoomTimers:
         )
         self.left_room[user].start()
 
-    def start_round_timer(self, function, room_id):
-        # cancel old timer if still running
-        if isinstance(self.round_timer, Timer):
-            self.round_timer.cancel()
-
-        timer = Timer(TIME_ROUND * 60, function, args=[room_id])
-        timer.start()
-        self.round_timer = timer
 
 
 class Session:
     def __init__(self):
-        self.timer = RoomTimers()
         self.words = Dataloader(WORDLE_WORDS, WORDS_PER_ROOM)
         self.word_to_guess = None
         self.players = list()
@@ -99,6 +100,9 @@ class Session:
         self.turn = -1
         self.critic_provided = False
 
+        self.timer = None
+
+
     def close(self):
         self.timer.cancel_all_timers()
 
@@ -111,6 +115,8 @@ class Session:
 
 
 class SessionManager(dict):
+    waiting_room_timers = dict()
+
     def create_session(self, room_id):
         self[room_id] = Session()
 
@@ -124,16 +130,17 @@ class WordleBot2 (TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.sessions = SessionManager()
-        self.public = PUBLIC
-
 
         # ensure all the words from the initial image file are guessable
         # with open(DATA_PATH) as infile:
         #     self.wordlist.update(line.split("\t")[0] for line in infile)
 
-        self.waiting_timer = None
         # WHAT IS THIS?
         self.received_waiting_token = set()
+
+        # self.waiting_timer = None
+
+        self.data_collection = PLATFORM
 
     def post_init(self, waiting_room, version):
         """save extra variables after the __init__() method has been called"""
@@ -162,12 +169,20 @@ class WordleBot2 (TaskBot):
 
             self.sessions.create_session(room_id)
 
+            timer = RoomTimer(self.timeout_close_game, room_id)
+            self.sessions[room_id].timer = timer
+
             LOG.debug(self.sessions[room_id].words)
 
             for usr in data["users"]:
                 self.sessions[room_id].players.append(
                     {**usr, "msg_n": 0, "status": "joined"}
                 )
+                # cancel waiting-room-timers
+                if usr["id"] in self.sessions.waiting_room_timers:
+                    logging.debug(f"Cancelling waiting room timer for user {usr['id']}")
+                    self.sessions.waiting_room_timers[usr["id"]].cancel()
+                    self.sessions.waiting_room_timers.pop(usr["id"])
 
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
@@ -187,10 +202,6 @@ class WordleBot2 (TaskBot):
             # self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
             #     "target_word"].lower()
 
-            # begin timers
-            self.sessions[room_id].timer.start_round_timer(
-                self.time_out_round, room_id
-            )
 
             self.set_message_privilege(self.sessions[room_id].guesser, False)
 
@@ -286,49 +297,78 @@ class WordleBot2 (TaskBot):
             room_id = data["room"]
             # someone joined waiting room
             if room_id == self.waiting_room:
-                if self.waiting_timer is not None:
-                    LOG.debug("Waiting Timer stopped.")
-                    self.waiting_timer.cancel()
+                # if self.waiting_timer is not None:
+                #     LOG.debug("Waiting Timer stopped.")
+                #     self.waiting_timer.cancel()
                 if data["type"] == "join":
-                    LOG.debug("Waiting Timer restarted.")
-                    self.waiting_timer = Timer(
-                        TIME_WAITING * 60,
-                        self._no_partner,
-                        args=[room_id, data["user"]["id"]],
-                        )
-                    self.waiting_timer.start()
-                    sleep(10)
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": COLOR_MESSAGE.format(
-                                color=STANDARD_COLOR,
-                                message=f"If nobody shows up within "
-                                        f"{TIME_WAITING} minutes, I will give "
-                                        f"you a submission link, so that you "
-                                        f"can get paid for your waiting time."
-                            ),
-                            "room": room_id,
-                            "receiver_id": data['user']['id'],
-                            "html": True,
-                        },
+                    # start no_partner timer
+                    timer = Timer(
+                        TIME_WAITING_ROOM * 60,
+                        self.timeout_waiting_room,
+                        args=[data["user"]],
                     )
+                    timer.start()
+                    logging.debug(f"Started a waiting room/no partner timer: {TIME_WAITING_ROOM}")
+                    self.sessions.waiting_room_timers[data['user']['id']] = timer
+                    return
+                    # LOG.debug("Waiting Timer restarted.")
+                    # self.waiting_timer = Timer(
+                    #     TIME_WAITING_ROOM * 60,
+                    #     self.timeout_waiting_room,
+                    #     args=[data["user"]],
+                    #     )
+                    # self.waiting_timer.start()
+                    # sleep(10)
 
-        # some joined a task room
-                if data["type"] == "join":
-                    # inform everyone about the join event
-                    self.send_message_to_user(STANDARD_COLOR,
-                        f"{data['user']['name']} has joined the game.", room_id
-                    )
+                    # Pay for waiting time?
+                    # self.send_message_to_user(STANDARD_COLOR,
+                    #                     f"If nobody shows up within"
+                    #                     f"{TIME_WAITING_ROOM} minutes, I will give"
+                    #                     f"you a token, so that you "
+                    #                     f"can get paid for your waiting time.", room_id, data['user']['id'])
 
-                            # # cancel timer
-                            # LOG.debug(
-                            #     f"Cancelling Timer: left room for user {curr_usr['name']}"
-                            # )
-                            # self.sessions[room_id].timer.user_joined(curr_usr["id"])
 
-                elif data["type"] == "leave":
-                    self.send_message_to_user(STANDARD_COLOR, f"{data['user']['name']} has left the game.", room_id)
+            # someone joined a task room
+            elif room_id in self.sessions:
+                if self.version == "critic":
+                    this_session = self.sessions[room_id]
+                    curr_usr, other_usr = this_session.players
+                    if curr_usr["id"] != data["user"]["id"]:
+                        curr_usr, other_usr = other_usr, curr_usr
+                    if data["type"] == "join":
+                        if self.sessions[room_id].game_over is False:
+                            # inform the other user about join event
+                            self.send_message_to_user(STANDARD_COLOR,
+                                                  f"{data['user']['name']} has joined the game.", room_id, other_usr["id"]
+                                                  )
+                            # cancel timer
+                            # LOG.debug( f"Cancelling Timer: left room for user {curr_usr['name']}")
+
+                            if curr_usr["id"]in self.sessions.waiting_room_timers:
+                                logging.debug(f"Cancelling waiting room timer for user {curr_usr['id']}")
+                                self.sessions.waiting_room_timers[curr_usr["id"]].cancel()
+                                self.sessions.waiting_room_timers.pop(curr_usr["id"])
+
+                            self.sessions[room_id].timer.user_joined(curr_usr["id"])
+
+                            timer = this_session.timer.left_room.get(curr_usr["id"])
+                            if timer is not None:
+                                timer.cancel()
+
+                    elif data["type"] == "leave":
+                        if self.sessions[room_id].game_over is False:
+                            self.send_message_to_user(STANDARD_COLOR,
+                                f"{data['user']['name']} has left the game. "
+                                f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
+
+                            # start a timer
+                            self.sessions[room_id].timer.user_left(curr_usr["id"])
+
+                else:
+                    if data["type"] == "join":
+                        self.sessions[room_id].timer.user_joined(data["user"]["id"])
+                    elif data["type"] == "leave":
+                        self.sessions[room_id].timer.user_left(data["user"]["id"])
 
         @self.sio.event
         def text_message(data):
@@ -521,6 +561,7 @@ class WordleBot2 (TaskBot):
                 result, points = ("win", 1)
 
             # self.timers_per_room[room_id].done_timer.cancel()
+            self.sessions[room_id].timer.reset()
             self.sio.emit(
                 "text",
                 {
@@ -564,14 +605,14 @@ class WordleBot2 (TaskBot):
                 room_id, {self.sessions[room_id].players[0]["id"]: "success"}
             )
             sleep(1)
-            self.close_room(room_id)
+            self.close_game(room_id)
         else:
             # load the next word
             self.start_round(room_id)
 
     def start_round(self, room_id):
         if not self.sessions[room_id].words:
-            self.close_room(room_id)
+            self.close_game(room_id)
         else:
             if self.version == "critic":
                 self.set_message_privilege(self.sessions[room_id].critic, False)
@@ -617,7 +658,8 @@ class WordleBot2 (TaskBot):
 
 
             # restart next_round_timer
-            self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
+            # self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
+            self.sessions[room_id].timer.reset()
             self.sessions[room_id].turn = 0
 
     def _command_ready(self, room_id, user):
@@ -752,72 +794,59 @@ class WordleBot2 (TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
 
-    def time_out_round(self, room_id):
-        """
-        function called by the round timer once the time is over.
-        Inform the users that the time is up and move to the next round
-        """
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color=WARNING_COLOR,
-                    message="**Your time is up! Unfortunately you get no points for this round.**",
-                ),
-                "room": room_id,
-                "html": True,
-            },
+    def timeout_close_game(self, room_id, status):
+
+        self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
+                                  room_id)
+        for player in self.sessions[room_id].players:
+            self.confirmation_code(room_id, status, player["id"])
+        self.close_game(room_id)
+
+    def timeout_waiting_room(self, user):
+        # get layout_id
+        response = requests.get(
+            f"{self.uri}/rooms/{self.waiting_room}",
+            headers={"Authorization": f"Bearer {self.token}"},
         )
-        self.load_next_game(room_id)
+        layout_id = response.json()["layout_id"]
 
-    def _no_partner(self, room_id, user_id):
-        """Handle the situation that a participant waits in vain."""
-        if user_id not in self.received_waiting_token:
-            self.sio.emit(
-                "text",
-                {"message": "Unfortunately we could not find a partner for you!",
-                 "room": room_id,
-                 "receiver_id": user_id,
-                },
-            )
-            # create token and send it to user
-            self.confirmation_code(room_id, "no_partner", receiver_id=user_id)
-            sleep(5)
-            self.sio.emit(
-                "text",
-                {
-                    "message": "You may also wait some more :)",
-                    "room": room_id,
-                    "receiver_id": user_id,
-                },
-            )
-            # no need to cancel
-            # the running out of this timer triggered this event
-            self.waiting_timer = Timer(
-                TIME_WAITING * 60, self._no_partner, args=[room_id, user_id]
-            )
-            self.waiting_timer.start()
-            self.received_waiting_token.add(user_id)
-        else:
-            self.sio.emit(
-                "text",
-                {"message": "You won't be remunerated for further waiting time.",
-                 "room": room_id,
-                 "receiver_id": user_id,
-                },
-            )
+        # create a new task room for this user
+        room = requests.post(
+            f"{self.uri}/rooms",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"layout_id": layout_id},
+        )
+        room = room.json()
 
-    # def send_message_to_user(self, message, room, receiver=None):
-    #     if receiver:
-    #         self.sio.emit(
-    #             "text",
-    #             {"message": f"{message}", "room": room, "receiver_id": receiver},
-    #         )
-    #     else:
-    #         self.sio.emit(
-    #             "text",
-    #             {"message": f"{message}", "room": room},
-    #         )
+        # remove user from waiting_room
+        self.remove_user_from_room(user["id"], self.waiting_room)
+
+        # move user to new task room
+        response = requests.post(
+            f"{self.uri}/users/{user['id']}/rooms/{room['id']}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not let user join room: {response.status_code}")
+            exit(4)
+
+        sleep(2)
+
+        requests.patch(
+            f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
+            json={
+                "attribute": "src",
+                "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg",
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+
+
+        self.send_message_to_user(STANDARD_COLOR, "Unfortunately we were not able to find a partner for you, "
+                                                  "you will now get a token.", room["id"], user["id"])
+
+        self.confirmation_code(room["id"], "timeout_waiting_room", user["id"])
+        self.close_game(room["id"])
 
 
     def send_message_to_user(self, color, message, room, receiver=None):
@@ -845,130 +874,65 @@ class WordleBot2 (TaskBot):
                 },
             )
 
-    def confirmation_code(self, room_id, status, receiver_id=None):
+
+    def confirmation_code(self, room_id, status, user_id):
         """Generate AMT token that will be sent to each player."""
-        kwargs = dict()
-        # either only for one user or for both
-        if receiver_id is not None:
-            kwargs["receiver_id"] = receiver_id
-
-        confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
-        # post confirmation token to logs
-        response = requests.post(
-            f"{self.uri}/logs",
-            json={
-                "event": "confirmation_log",
-                "room_id": room_id,
-                "data": {"status_txt": status, "confirmation_token": confirmation_token},
-                **kwargs,
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "post confirmation token to logs")
-
-        if self.data_collection == "AMT":
-            self._show_amt_token(room_id, receiver_id, confirmation_token)
-        elif self.data_collection == "Prolific":
-            self._show_prolific_link(room_id, receiver_id)
-
-        return confirmation_token
-
-    def _show_prolific_link(self, room, receiver, token=None):
-
-        if token is None:
-            # use the username
-            response = requests.get(
-                f"{self.uri}/users/{receiver}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "get user")
-            token = response.json().get("name", f"{room}–{receiver}")
-
-        url = f"{PROLIFIC_URL}{token}"
-        self.sio.emit(
-            "text",
-            {"message": f"Please return to <a href='{url}'>{url}</a> to complete your submission.",
-             "room": room,
-             "html": True,
-             "receiver_id": receiver
-             }
+        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        if room_id in self.sessions:
+            points = self.sessions[room_id].points
+        else:
+            points = 0
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": status, "amt_token": amt_token, "receiver": user_id,
+             "points": points},
+            room_id,
         )
 
-    def _show_amt_token(self, room, receiver, token):
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR,
-                    message="Please enter the following token into "
-                            "the field on the HIT webpage, and close "
-                            "this browser window.",
-                ),
-                "room": room,
-                "html": True,
-                "receiver_id": receiver
-            },
-        )
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR, message=f"Here's your token: {token}"
-                ),
-                "room": room,
-                "html": True,
-                "receiver_id": receiver
-            },
-        )
-
-        # TODO: show token also in display area
-
-    def social_media_post(self, room_id, this_user_id, other_user_name):
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR,
-                    message=(
-                        "Please share the following text on social media: "
-                        "I played slurdle and helped science! "
-                        f"Together with {other_user_name}, "
-                        f"I got {self.sessions[room_id].points} "
-                        f"points for {self.sessions[room_id].words.n} puzzle(s). "
-                        f"Play here: {self.uri}. #slurdle"
-                    ),
-                ),
-                "receiver_id": this_user_id,
-                "room": room_id,
-                "html": True,
-            },
-        )
+        self.send_message_to_user(STANDARD_COLOR, "Please remember to "
+                        "save your token before you close this browser window. "
+                        f"Your token: {amt_token}", room_id, user_id)
 
     def end_game(self, room_id, user_dict):
-        # if self.public:
-        #     self.social_media_post(room_id, self.sessions[room_id].players[0]["id"])
-        # else:
+
         for user_id, status in user_dict.items():
             self.confirmation_code(room_id, status, user_id)
             sleep(0.5)
 
-    def close_room(self, room_id):
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR,
-                    message="This room is closing now.",
-                ),
-                "room": room_id,
-                "html": True,
-            },
-        )
+    def close_game(self, room_id):
+        self.send_message_to_user(STANDARD_COLOR, "The room is closing, see you next time 👋",
+                                  room_id)
+
+        self.sessions[room_id].game_over = True
 
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
+
+    def remove_user_from_room(self, user_id, room_id):
+        response = requests.get(
+            f"{self.uri}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+            response.raise_for_status()
+        etag = response.headers["ETag"]
+
+        try:
+            response = requests.delete(
+                f"{self.uri}/users/{user_id}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Removing user from task room was successful.")
+        except:
+            logging.debug(f"User {user_id} not in room {room_id}")
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
