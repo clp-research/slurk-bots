@@ -4,37 +4,37 @@
             "broadcast": false,
             "command": "ready"
         },
-        "date_created": "2024-01-26T11:20:57",
+        "date_created": "2024-01-28T13:36:20",
         "date_modified": null,
         "event": "command",
-        "id": 8298,
+        "id": 17,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 24
+        "room_id": 2,
+        "user_id": 4
     },
     {
         "data": {
             "broadcast": false,
             "command": "ready"
         },
-        "date_created": "2024-01-26T11:21:01",
+        "date_created": "2024-01-28T13:36:25",
         "date_modified": null,
         "event": "command",
-        "id": 8301,
+        "id": 20,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 23
+        "room_id": 2,
+        "user_id": 3
     },
     {
         "data": {
             "number": 1
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "round",
-        "id": 8309,
+        "id": 22,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
         "user_id": null
     },
     {
@@ -43,36 +43,36 @@
             "Player_1": "user_1",
             "Player_2": "user_0"
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "players",
-        "id": 8310,
+        "id": 23,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
         "user_id": null
     },
     {
         "data": {
-            "content": "▢ ▢ ▢ E E\n▢ ▢ ▢ E E\n▢ ▢ ▢ E E\n▢ ▢ ▢ E E\n▢ ▢ ▢ E E"
+            "content": "G G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\n▢ ▢ ▢ ▢ G"
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "target grid",
-        "id": 8311,
+        "id": 24,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
         "user_id": null
     },
     {
         "data": {
             "content": "compact"
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "grid type",
-        "id": 8312,
+        "id": 25,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
         "user_id": null
     },
     {
@@ -82,13 +82,13 @@
                 "command": "drawing_game_init"
             }
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "command",
-        "id": 8315,
-        "receiver_id": 23,
-        "room_id": 12,
-        "user_id": 22
+        "id": 28,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
@@ -98,13 +98,12 @@
                 "message": "<p>Let us play a game. The goal is to fill an empty grid that looks like this:</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;</p>\n<br>\n<p>A filled grid below is 5 by 5 and can look like this:</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; E &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\nX X X X X</p>\n<br>\n<p>I want you to describe this grid to the other player, step by step. You don't need to describe the empty squares, which are denoted with &quot;&#9634;&quot;. Only describe the location of letters in the grid. Then you wait for the other player to say &quot;What is your next instruction?&quot;, and then you continue with the next step. Take the size of the grid into consideration while giving instructions. When you have described everything, you say &quot;DONE&quot;.</p>\n<br>\n<p>For the filled grid above, here are the example steps.</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put an E in second row third column</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Fill the last row with X</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: DONE</p>\n<br>\n<p>Another example with the following 5 by 5 grid:</p>\n<br>\n<p>W &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; W &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; W &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; W &#9634;<br>\nZ &#9634; &#9634; &#9634; W</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put an W in five cells diagonally starting from top left going to bottom right</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put Z in the last row first column</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: DONE</p>\n<br>\n<p>Ok. Please do this for the following example.</p>\n<br>\n<br>\n\n"
             }
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
-        "event": "command",
-        "id": 8318,
-        "receiver_id": 24,
-        "room_id": 12,
-        "user_id": 22
+        "id": 30,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
@@ -114,29 +113,29 @@
                 "message": "<p>Let us draw something together. There is an empty grid with a size 5 by 5, like so:</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;</p>\n<br>\n<p>The other player will give you instructions like &quot;put an X in the top left&quot;, and you save the grid (hit 'ENTER') after applying the given instruction, like so:</p>\n<br>\n<p>Instruction: put an X in the top left</p>\n<br>\n<p>X &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;</p>\n<br>\n<p>Or for another instruction such as &quot;fill the fifth column with T&quot;, you save the updated grid by applying the given instruction in all places that the command corresponds to (and, again, hitting 'ENTER'), like so:</p>\n<br>\n<p>Instruction: fill the fifth column with T</p>\n<br>\n<p>X &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; &#9634; T</p>\n<br>\n<p>Or for another instruction such as &quot;fill the fourth column second row with P&quot;, you save the updated grid by applying the given instruction in all places that the command corresponds to (plus ENTER), like so:</p>\n<br>\n<p>Instruction: fill the fourth column second row with P</p>\n<br>\n<p>X &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; P T<br>\n&#9634; &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; &#9634; T<br>\n&#9634; &#9634; &#9634; &#9634; T</p>\n<br>\n<p>Now start with the provided 5x5 empty grid and execute the following commands at each step. Once you have typed all necessary characters just type 'ENTER' and wait for a message confirming your grid was saved. Do not send any other message to the other player on the chat area.</p>\n<br>\n<br>"
             }
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "command",
-        "id": 8319,
-        "receiver_id": 23,
-        "room_id": 12,
-        "user_id": 22
+        "id": 32,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
             "broadcast": false,
             "command": {
                 "event": "send_grid",
-                "message": "<br><br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E"
+                "message": "<br><br>G G G G G<br>▢ G ▢ ▢ ▢<br>▢ ▢ G ▢ ▢<br>▢ ▢ ▢ G ▢<br>▢ ▢ ▢ ▢ G"
             }
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "command",
-        "id": 8322,
-        "receiver_id": 24,
-        "room_id": 12,
-        "user_id": 22
+        "id": 43,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
@@ -146,119 +145,176 @@
                 "message": "<br>\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; E &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;</p>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\nX X X X X</p>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>"
             }
         },
-        "date_created": "2024-01-26T11:21:02",
+        "date_created": "2024-01-28T13:36:26",
         "date_modified": null,
         "event": "command",
-        "id": 8325,
-        "receiver_id": 23,
-        "room_id": 12,
-        "user_id": 22
+        "id": 45,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
             "broadcast": false,
             "command": "1bla1"
         },
-        "date_created": "2024-01-26T11:21:07",
+        "date_created": "2024-01-28T13:36:32",
         "date_modified": null,
         "event": "command",
-        "id": 8326,
+        "id": 46,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 24
+        "room_id": 2,
+        "user_id": 4
     },
     {
         "data": {
             "content": "1bla1"
         },
-        "date_created": "2024-01-26T11:21:07",
+        "date_created": "2024-01-28T13:36:32",
         "date_modified": null,
         "event": "clue",
-        "id": 8327,
+        "id": 47,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-01-28T13:36:32",
+        "date_modified": null,
+        "event": "turn",
+        "id": 49,
+        "receiver_id": null,
+        "room_id": 2,
         "user_id": null
     },
     {
         "data": {
             "broadcast": false,
             "command": {
-                "guess": "▢▢▢▢▢▢▢▢▢o▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢",
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢r▢▢▢▢▢▢▢▢▢▢▢▢▢",
                 "remaining": 6
             }
         },
-        "date_created": "2024-01-26T11:21:13",
+        "date_created": "2024-01-28T13:36:36",
         "date_modified": null,
         "event": "command",
-        "id": 8339,
+        "id": 57,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 23
+        "room_id": 2,
+        "user_id": 3
     },
     {
         "data": {
             "broadcast": false,
             "command": "1bla2"
         },
-        "date_created": "2024-01-26T11:21:17",
+        "date_created": "2024-01-28T13:36:40",
         "date_modified": null,
         "event": "command",
-        "id": 8357,
+        "id": 67,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 24
+        "room_id": 2,
+        "user_id": 4
     },
     {
         "data": {
             "content": "1bla2"
         },
-        "date_created": "2024-01-26T11:21:17",
+        "date_created": "2024-01-28T13:36:40",
         "date_modified": null,
         "event": "clue",
-        "id": 8358,
+        "id": 68,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-01-28T13:36:40",
+        "date_modified": null,
+        "event": "turn",
+        "id": 70,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "j"
+        },
+        "date_created": "2024-01-28T13:36:50",
+        "date_modified": null,
+        "event": "command",
+        "id": 78,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {
+            "content": "j"
+        },
+        "date_created": "2024-01-28T13:36:50",
+        "date_modified": null,
+        "event": "guess",
+        "id": 79,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "j"
+        },
+        "date_created": "2024-01-28T13:36:50",
+        "date_modified": null,
+        "event": "invalid format",
+        "id": 80,
+        "receiver_id": null,
+        "room_id": 2,
         "user_id": null
     },
     {
         "data": {
             "broadcast": false,
             "command": {
-                "guess": "▢▢▢▢▢▢▢▢▢o▢▢▢▢▢▢▢y▢▢▢▢▢▢▢",
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢r▢▢▢▢▢▢▢▢▢▢▢▢▢",
                 "remaining": 6
             }
         },
-        "date_created": "2024-01-26T11:21:24",
+        "date_created": "2024-01-28T13:36:53",
         "date_modified": null,
         "event": "command",
-        "id": 8372,
+        "id": 82,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 23
+        "room_id": 2,
+        "user_id": 3
     },
     {
         "data": {
             "broadcast": false,
             "command": "done"
         },
-        "date_created": "2024-01-26T11:21:28",
+        "date_created": "2024-01-28T13:36:57",
         "date_modified": null,
         "event": "command",
-        "id": 8382,
+        "id": 92,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 24
+        "room_id": 2,
+        "user_id": 4
     },
     {
         "data": {
             "number": 2
         },
-        "date_created": "2024-01-26T11:21:28",
+        "date_created": "2024-01-28T13:36:57",
         "date_modified": null,
         "event": "round",
-        "id": 8386,
+        "id": 96,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
         "user_id": null
     },
     {
@@ -268,29 +324,29 @@
                 "command": "drawing_game_init"
             }
         },
-        "date_created": "2024-01-26T11:21:28",
+        "date_created": "2024-01-28T13:36:57",
         "date_modified": null,
         "event": "command",
-        "id": 8387,
-        "receiver_id": 23,
-        "room_id": 12,
-        "user_id": 22
+        "id": 97,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
             "broadcast": false,
             "command": {
                 "event": "send_grid",
-                "message": "<br><br>▢ ▢ A A ▢<br>▢ ▢ A A ▢<br>▢ ▢ A A ▢<br>▢ ▢ A A ▢<br>▢ ▢ A A ▢"
+                "message": "<br><br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E<br>▢ ▢ ▢ E E"
             }
         },
-        "date_created": "2024-01-26T11:21:28",
+        "date_created": "2024-01-28T13:36:57",
         "date_modified": null,
         "event": "command",
-        "id": 8393,
-        "receiver_id": 24,
-        "room_id": 12,
-        "user_id": 22
+        "id": 103,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
@@ -300,37 +356,114 @@
                 "message": "<br>\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; E &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;</p>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this</p>\n<br>\n<p>&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\n&#9634; &#9634; &#9634; &#9634; &#9634;<br>\nX X X X X</p>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>"
             }
         },
-        "date_created": "2024-01-26T11:21:28",
+        "date_created": "2024-01-28T13:36:57",
         "date_modified": null,
         "event": "command",
-        "id": 8395,
-        "receiver_id": 23,
-        "room_id": 12,
-        "user_id": 22
+        "id": 105,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
     },
     {
         "data": {
             "broadcast": false,
             "command": "2bla1"
         },
-        "date_created": "2024-01-26T11:21:31",
+        "date_created": "2024-01-28T13:37:01",
         "date_modified": null,
         "event": "command",
-        "id": 8403,
+        "id": 113,
         "receiver_id": null,
-        "room_id": 12,
-        "user_id": 24
+        "room_id": 2,
+        "user_id": 4
     },
     {
         "data": {
             "content": "2bla1"
         },
-        "date_created": "2024-01-26T11:21:31",
+        "date_created": "2024-01-28T13:37:01",
         "date_modified": null,
         "event": "clue",
-        "id": 8404,
+        "id": 114,
         "receiver_id": null,
-        "room_id": 12,
+        "room_id": 2,
         "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-01-28T13:37:01",
+        "date_modified": null,
+        "event": "turn",
+        "id": 116,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢e▢▢▢▢▢▢▢▢▢",
+                "remaining": 6
+            }
+        },
+        "date_created": "2024-01-28T13:37:06",
+        "date_modified": null,
+        "event": "command",
+        "id": 124,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "2bla2"
+        },
+        "date_created": "2024-01-28T13:37:14",
+        "date_modified": null,
+        "event": "command",
+        "id": 134,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "content": "2bla2"
+        },
+        "date_created": "2024-01-28T13:37:14",
+        "date_modified": null,
+        "event": "clue",
+        "id": 135,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-01-28T13:37:14",
+        "date_modified": null,
+        "event": "turn",
+        "id": 137,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢▢▢▢ye▢▢▢▢▢▢▢▢▢",
+                "remaining": 6
+            }
+        },
+        "date_created": "2024-01-28T13:37:22",
+        "date_modified": null,
+        "event": "command",
+        "id": 145,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
     }
 ]

@@ -35,6 +35,7 @@ class Session:
         self.all_random_grids = GridManager(RANDOM_GRID_INSTANCES)
         self.grid_type = None
         self.target_grid = None  # Looks like this  X ▢ ▢ ▢ ▢\n▢ X ▢ ▢ ▢\n▢ ▢ X ▢ ▢\n▢ ▢ ▢ X ▢\n▢ ▢ ▢ ▢ X
+        self.html_grid = None
         self.drawn_grid = None
         self.current_turn = 0
         self.game_round = 0
@@ -183,6 +184,7 @@ class DrawingBot(TaskBot):
 
             # create a new session for these users
             self.sessions.create_session(room_id)
+            LOG.debug("Create timeout timer for this session")
             timer = Timer(
                 TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
             )
@@ -348,7 +350,34 @@ class DrawingBot(TaskBot):
 
             this_session = self.sessions[room_id]
             # Reset timer
-            LOG.debug("Reset timeout timer")
+            LOG.debug("Reset timeout timer after sending message")
+            if this_session.timer:
+                this_session.timer.cancel()
+            timer = Timer(
+                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+            )
+            timer.start()
+            self.sessions[room_id].timer = timer
+
+        @self.sio.event
+        def mouse(data):
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+            this_session = self.sessions[room_id]
+
+            # do not process events from itself
+            if user_id == self.user:
+                return
+
+            if room_id not in self.sessions:
+                return
+
+            # don't react to mouse movements
+            if data["type"] != "click":
+                return
+
+            # Reset timer
+            LOG.debug("Reset timeout timer after mouse click")
             if this_session.timer:
                 this_session.timer.cancel()
             timer = Timer(
@@ -373,7 +402,7 @@ class DrawingBot(TaskBot):
                 return
 
             # Reset timer
-            LOG.debug("Reset timeout timer")
+            LOG.debug("Reset timeout timer after sending command")
             if this_session.timer:
                 this_session.timer.cancel()
             timer = Timer(
@@ -695,6 +724,20 @@ class DrawingBot(TaskBot):
 
         if this_session.target_grid:
             # Display on chat area
+            # grid = self.string_to_html_grid(room_id)
+            # self.sessions[room_id].html_grid = grid
+            # self.sio.emit(
+            #     "message_command",
+            #     {
+            #         "command": {
+            #             "event": "send_html_grid",
+            #             "message": f"{grid}"
+            #         },
+            #         "room": room_id,
+            #         "receiver_id": this_session.player_b["id"],
+            #     }
+            # )
+            #
             grid = this_session.target_grid.replace('\n', '<br>')
             self.sio.emit(
                 "text",
@@ -757,6 +800,25 @@ class DrawingBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "enable grid")
+
+    def string_to_html_grid(self, room_id):
+        rows = self.sessions[room_id].target_grid.strip().split('\n')
+        with open("grid.html", "w") as html_file:
+            html_file.write(
+                '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n')
+
+            for row in rows:
+                html_file.write('<tr>\n')
+                cells = row.split(' ')
+                for cell in cells:
+                    if cell == '▢':
+                        html_file.write('<td class="empty"></td>\n')
+                    else:
+                        html_file.write(f'<td>{cell}</td>\n')
+                html_file.write('</tr>\n')
+
+            html_file.write('</table>\n\n</body>\n</html>')
+
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]

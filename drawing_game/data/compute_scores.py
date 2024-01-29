@@ -2,7 +2,7 @@ import math
 import re
 from typing import Dict
 
-from metrics import (
+from drawing_game.data.metrics import (
     METRIC_ABORTED,
     METRIC_SUCCESS,
     METRIC_LOSE,

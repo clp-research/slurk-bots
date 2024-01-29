@@ -1,7 +1,7 @@
 import json
 import os
 
-from compute_scores import compute_scores
+from drawing_game.data.compute_scores import compute_scores
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,20 +20,20 @@ def select_logs(file_in):
             # print(log)
             text_messages.append(log)
     # print(text_messages)
-    with open(os.path.join(ROOT, "data", "logs", f'{file_in}_text_messages.json'), 'w', encoding='utf8') as json_file:
+    with open(os.path.join(ROOT, "data", "", f'{file_in}_text_messages.json'), 'w', encoding='utf8') as json_file:
         json.dump(text_messages, json_file, indent=4, ensure_ascii=False)
 
     return f"Selected logs saved in {file_in}'text_messages.json'"
 
 
-print(select_logs(os.path.join(ROOT, "data", "logs", "4.jsonl")))
+print(select_logs(os.path.join(ROOT, "logs", "results/10.jsonl")))
 
 
 # BUILD DATA like  interactions_json in clembench
 
 def build_interactions_file(messages_jsonfile):
     # Need to build a dict for each instance (=round) with 'players': {} and 'turns': []
-    with open(os.path.join(ROOT, "data", "logs", messages_jsonfile), "r") as f:
+    with open(os.path.join(ROOT, "logs", "results", messages_jsonfile), "r") as f:
         logs = json.load(f)
         all_rounds = []
         round = {"players": dict(), "turns": []}
