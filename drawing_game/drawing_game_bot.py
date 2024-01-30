@@ -63,6 +63,7 @@ class SessionManager(defaultdict):
         self[room_id] = Session()
 
     def clear_session(self, room_id):
+        LOG.debug('Triggered clear session')
         if room_id in self:
             self.pop(room_id)
 
@@ -141,22 +142,20 @@ class DrawingBot(TaskBot):
 
     def _no_partner(self, room_id, user_id):
         """Handle the situation that a participant waits in vain."""
-        if user_id not in self.received_waiting_token:
-            self.sio.emit(
-                "text",
-                {"message": "Unfortunately we could not find a partner for you!",
-                 "room": room_id,
-                 "receiver_id": user_id,
-                 },
-            )
-            #todo:display messages?
+        # if user_id not in self.received_waiting_token:
+        self.sio.emit(
+            "text",
+            {"message": "Unfortunately we could not find a partner for you!",
+             "room": room_id,
+             "receiver_id": user_id,
+             },
+        )
 
+        if user_id not in self.received_waiting_token:
             # create token and send it to user
             self.confirmation_code(room_id, status="no_partner")
             sleep(2)
             self.received_waiting_token.add(user_id)
-            self.close_game(room_id)
-            return
         else:
             self.sio.emit(
                 "text",
@@ -165,7 +164,7 @@ class DrawingBot(TaskBot):
                  "receiver_id": user_id,
                  },
             )
-            self.close_game(room_id)
+        self.close_game(room_id)
 
     def on_task_room_creation(self, data):
         room_id = data["room"]
@@ -345,7 +344,7 @@ class DrawingBot(TaskBot):
             user_id = data["user"]["id"]
 
             # filter irrelevant messages
-            if room_id not in self.sessions or user_id == self.user:
+            if user_id == self.user:
                 return
 
             this_session = self.sessions[room_id]
@@ -489,8 +488,6 @@ class DrawingBot(TaskBot):
             if this_session.player_a["id"] == user_id:
                 # means that new turn began
                 # self.log_event("turn", [], room_id)
-                # log event
-                self.log_event("clue", {"content": data['command']}, room_id)
 
                 self.sio.emit(
                     "text",
@@ -503,15 +500,19 @@ class DrawingBot(TaskBot):
                 LOG.debug(f"This is turn number  {this_session.current_turn}.")
                 this_session.current_turn += 1
                 self.log_event('turn', dict(), room_id)
+                # log event
+                self.log_event("clue", {"content": data['command'], "from": data['user']['name'], "to": this_session.player_b['name']}, room_id)
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
             # player_b
             elif this_session.player_b["id"] == user_id:
-                self.log_event("guess", {"content": data['command']}, room_id)
+
 
                 # In case the grid is returned as string on the chat area
                 if '▢' in command:
+                    self.log_event("guess", {"content": data['command'], "from": data['user']['name'],
+                                             "to": this_session.player_a['name']}, room_id)
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
                     sleep(1)
@@ -1164,6 +1165,7 @@ class DrawingBot(TaskBot):
         """Generate token that will be sent to each player."""
         LOG.debug("Triggered confirmation_code")
         confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        LOG.debug(f'confirmation token is {confirmation_token}')
         points = self.sessions[room_id].points
         # post confirmation token to logs
         self.log_event(
@@ -1226,6 +1228,7 @@ class DrawingBot(TaskBot):
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
+        LOG.debug('Triggered room read only')
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "readonly", "value": "True"},

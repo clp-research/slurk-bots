@@ -142,7 +142,7 @@ function sendGuess() {
         {
             "command": {
                 "guess": guessString,
-                "remaining": guessesRemaining
+                "from": 'player_b'
             },
             "room": self_room
         }

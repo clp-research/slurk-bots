@@ -17,7 +17,7 @@ STARTING_POINTS = 0
 
 TIMEOUT_TIMER = 5  # 5 minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 1  # 3 minutes if a user is alone in a room
-WAITING_PARTNER_TIMER = 1  # 10 minutes a user waits for a partner
+WAITING_PARTNER_TIMER = 0.2  # 10 minutes a user waits for a partner
 
 N = 1
 

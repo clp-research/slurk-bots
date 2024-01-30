@@ -8,8 +8,9 @@ class Clue:
     room_id : int
 
 
-def test_test():
-    with open("./results/2.jsonl_text_messages.json") as f:
+def test_clue():
+    """Player a triggers log_event('clue', content, room_id) after sending each message."""
+    with open("./results/10.jsonl_text_messages.json") as f:
         logs = json.load(f)
         clues = []
         for log in logs:

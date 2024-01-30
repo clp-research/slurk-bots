@@ -26,7 +26,7 @@ def select_logs(file_in):
     return f"Selected logs saved in {file_in}'text_messages.json'"
 
 
-print(select_logs(os.path.join(ROOT, "logs", "results/10.jsonl")))
+print(select_logs(os.path.join(ROOT, "logs", "results/2a.jsonl")))
 
 
 # BUILD DATA like  interactions_json in clembench
@@ -42,40 +42,41 @@ def build_interactions_file(messages_jsonfile):
         for log in logs:
             # print(log)
             if log["event"] == "round":
-                # added 3 lines
-                if len(turn) != 0:
-                    turns_for_scores.append(turn)
-                turn = []
-                # if len(turns_for_scores["turns"]) != 0:
-                round["turns"] = [turn for turn in turns_for_scores]
-                # turns_for_scores = []
-                if len(round["turns"]) != 0:
-                    all_rounds.append(round)
-                round = {}
-                turns_for_scores = []
-            elif log["event"] == "turn":
-                if len(turn) != 0:
-                    # if turn not in turns_for_scores and len(turn) != 0:
-                    turns_for_scores.append(turn)
-                turn = []
-            if log["event"] == "players":
-                round["players"] = log["data"]
-            # add "max turns reached" and "command",but it is not logged yet
-            if log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess", "target grid",
-                                "max turns reached", "grid type"}:
-                new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
-                           "action": {"type": log["event"], "content": log["data"]["content"]}}
-                turn.append(new_log)
-                # print(new_log)
-            elif log["event"] in {"command"}:
-                if "guess" in log["data"]["command"]:
-                    content = log["data"]["command"]["guess"]
-                    new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
-                               "action": {"type": "guess", "content": content}}
-                    turn.append(new_log)
-                    # print(new_log)
-                else:
-                    pass
+
+            #     # added 3 lines
+            #     if len(turn) != 0:
+            #         turns_for_scores.append(turn)
+            #     turn = []
+            #     # if len(turns_for_scores["turns"]) != 0:
+            #     round["turns"] = [turn for turn in turns_for_scores]
+            #     # turns_for_scores = []
+            #     if len(round["turns"]) != 0:
+            #         all_rounds.append(round)
+            #     round = {}
+            #     turns_for_scores = []
+            # elif log["event"] == "turn":
+            #     if len(turn) != 0:
+            #         # if turn not in turns_for_scores and len(turn) != 0:
+            #         turns_for_scores.append(turn)
+            #     turn = []
+            # if log["event"] == "players":
+            #     round["players"] = log["data"]
+            # # add "max turns reached" and "command",but it is not logged yet
+            # if log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess", "target grid",
+            #                     "max turns reached", "grid type"}:
+            #     new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
+            #                "action": {"type": log["event"], "content": log["data"]["content"]}}
+            #     turn.append(new_log)
+            #     # print(new_log)
+            # elif log["event"] in {"command"}:
+            #     if "guess" in log["data"]["command"]:
+            #         content = log["data"]["command"]["guess"]
+            #         new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
+            #                    "action": {"type": "guess", "content": content}}
+            #         turn.append(new_log)
+            #         # print(new_log)
+            #     else:
+            #         pass
 
         turns_for_scores.append(turn)
         round["turns"] = [turn for turn in turns_for_scores]
