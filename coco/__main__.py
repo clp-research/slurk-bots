@@ -232,16 +232,20 @@ class CoCoBot(TaskBot):
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if data["type"] == "join":
-                    # start no_partner timer
-                    timer = Timer(
-                        WAITING_ROOM_TIMER * 60,
-                        self.timeout_waiting_room,
-                        args=[data["user"]],
-                    )
-                    timer.start()
-                    logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
-                    self.sessions.waiting_room_timers[user_id] = timer
-                    return
+
+                    if user_id not in self.sessions.waiting_room_timers:
+                        # start no_partner timer
+                        timer = Timer(
+                            WAITING_ROOM_TIMER * 60,
+                            self.timeout_waiting_room,
+                            args=[data["user"]],
+                        )
+                        timer.start()
+                        logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
+                        self.sessions.waiting_room_timers[user_id] = timer
+                        return
+
+                return
 
             if data["type"] == "join":
                 # cancel waiting room timers
@@ -1192,7 +1196,7 @@ class CoCoBot(TaskBot):
     def timeout_waiting_room(self, user):
         # get layout_id
         response = requests.get(
-            f"{self.uri}/rooms/{self.waiting_room}",
+            f"{self.uri}/tasks/{self.task_id}",
             headers={"Authorization": f"Bearer {self.token}"},
         )
         layout_id = response.json()["layout_id"]
@@ -1218,15 +1222,6 @@ class CoCoBot(TaskBot):
             exit(4)
 
         sleep(2)
-
-        requests.patch(
-            f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
-            json={
-                "attribute": "src",
-                "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg",
-            },
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
 
         completion_token = "".join(
             random.choices(string.ascii_uppercase + string.digits, k=6)

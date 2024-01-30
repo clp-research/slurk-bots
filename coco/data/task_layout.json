@@ -4,7 +4,7 @@
     {
       "layout-type": "div",
       "id": "instruction_card",
-      "class": "card",
+      "class": "hidden_card",
       "layout-content": [
         {
           "layout-type": "div",
