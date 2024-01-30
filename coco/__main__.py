@@ -232,7 +232,6 @@ class CoCoBot(TaskBot):
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if data["type"] == "join":
-
                     if user_id not in self.sessions.waiting_room_timers:
                         # start no_partner timer
                         timer = Timer(
@@ -243,7 +242,6 @@ class CoCoBot(TaskBot):
                         timer.start()
                         logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
                         self.sessions.waiting_room_timers[user_id] = timer
-                        return
 
                 return
 
