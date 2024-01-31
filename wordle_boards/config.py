@@ -32,7 +32,7 @@ TIME_WAITING_ROOM = 0.5  # how many minutes a user can wait for a partner
 # TIME_ROUND = 20  # how many minutes users can play on a single image
 
 
-TIMEOUT_TIMER = 2  # minutes of inactivity before the room is closed automatically
+TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 1  # minutes if a user is alone in a room
 
 
@@ -86,3 +86,6 @@ with open(Path(f"{ROOT}/data/clue_mode.txt")) as f3:
 with open(Path(f"{ROOT}/data/critic_mode.txt")) as f4:
     CRITIC_MODE = f4.read()
 
+INPUT_FIELD_UNRESP_CRITIC = "Wait for the guess proposal"
+
+INPUT_FIELD_UNRESP_GUESSER = "You can't send messages, you can only get them"

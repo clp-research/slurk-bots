@@ -35,6 +35,10 @@ from .config import (
     CLUE_MODE,
     CRITIC_MODE,
 
+    INPUT_FIELD_UNRESP_CRITIC,
+    INPUT_FIELD_UNRESP_GUESSER
+
+
 )
 
 
@@ -201,12 +205,13 @@ class WordleBot2 (TaskBot):
 
             logging.info(room_id)
 
-            # WHY HERE? COMMENTED IT
-            # self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
-            #     "target_word"].lower()
-
-
             self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
+            self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
+
+            if self.version == "critic":
+                self.set_message_privilege(room_id, self.sessions[room_id].critic, False)
+                self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
+
 
 
 
@@ -372,32 +377,6 @@ class WordleBot2 (TaskBot):
                 else:
                     if data["type"] == "join":
                         self.reload_state(room_id, data["user"]["id"])
-                        # self.sio.emit(
-                        #     "message_command",
-                        #     {
-                        #         "command": {
-                        #             "command": "wordle_init",
-                        #         },
-                        #         "room": room_id,
-                        #         "receiver_id": data["user"]["id"],
-                        #     },
-                        # )
-                        # # enter all the guesses that this user sent to the bot
-                        # # to catch up with the other user
-                        # word = self.sessions[room_id].words[0]["target_word"].lower()
-                        # for guess in self.sessions[room_id].round_guesses_history:
-                        #     self.sio.emit(
-                        #         "message_command",
-                        #         {
-                        #             "command": {
-                        #                 "command": "wordle_guess",
-                        #                 "guess": guess,
-                        #                 "correct_word": word,
-                        #             },
-                        #             "room": room_id,
-                        #             "receiver_id":  data["user"]["id"],
-                        #         },
-                        #     )
                         self.sessions[room_id].timer.user_joined(data["user"]["id"])
                     elif data["type"] == "leave":
                         self.sessions[room_id].timer.user_left(data["user"]["id"])
@@ -424,10 +403,13 @@ class WordleBot2 (TaskBot):
                     usr["msg_n"] += 1
 
             if user_id == self.sessions[room_id].critic:
+                self.sessions[room_id].turn = self.sessions[room_id].guesser
                 self.sessions[room_id].proposal_submitted = False
                 self.sessions[room_id].critic_provided = True
                 self.set_message_privilege(room_id, self.sessions[room_id].critic, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
+
+                self.set_message_privilege(room_id, self.sessions[room_id].guesser, True)
 
 
         @self.sio.event
@@ -454,18 +436,6 @@ class WordleBot2 (TaskBot):
                                                       room_id,
                                                       user_id,
                                                       )
-                            # self.sio.emit(
-                            #     "text",
-                            #     {
-                            #         "message": COLOR_MESSAGE.format(
-                            #             color=WARNING_COLOR,
-                            #             message="**You need to provide a guess!**",
-                            #         ),
-                            #         "room": room_id,
-                            #         "receiver_id": user_id,
-                            #         "html": True,
-                            #     },
-                            # )
                         else:
                             if not self.sessions[room_id].proposal_submitted:
                                 self._command_guess(room_id, user_id, data["command"])
@@ -575,6 +545,8 @@ class WordleBot2 (TaskBot):
             self.send_message_to_user(STANDARD_COLOR, f"Your proposal <b> {guess.upper()} </b> was submitted.", room_id,
                                       self.sessions[room_id].guesser)
             self.send_message_to_user(STANDARD_COLOR, f"Now let's wait for the critic!", room_id, self.sessions[room_id].guesser)
+
+            self.sessions[room_id].turn = self.sessions[room_id].critic
             self.sio.emit(
                 "message_command",
                 {
@@ -664,6 +636,11 @@ class WordleBot2 (TaskBot):
             if self.sessions[room_id].turn == self.sessions[room_id].critic:
                 self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
                 self.give_writing_rights(room_id, self.sessions[room_id].critic)
+            # else:
+            #     self.set_message_privilege(room_id, self.sessions[room_id].critic, False)
+            #     self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
+
+
             init_command = "wordle_init_critic"
 
         self.sio.emit(
@@ -859,8 +836,8 @@ class WordleBot2 (TaskBot):
                 "Authorization": f"Bearer {self.token}",
             },
         )
-        if value:
-            self.sessions[room_id].turn = user_id
+        # if value:
+        #     self.sessions[room_id].turn = user_id
         self.request_feedback(response, "changing user's message permission")
 
     def make_input_field_unresponsive(self, room_id, user_id):
@@ -873,11 +850,15 @@ class WordleBot2 (TaskBot):
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
+        message = INPUT_FIELD_UNRESP_GUESSER
+        if user_id == self.sessions[room_id].critic:
+            message = INPUT_FIELD_UNRESP_CRITIC
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={
                 "attribute": "placeholder",
-                "value": "Wait for the guess proposal",
+                "value": f"{message}",
                 "receiver_id": user_id,
             },
             headers={"Authorization": f"Bearer {self.token}"},
