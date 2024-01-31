@@ -6,6 +6,7 @@ import logging
 import random
 import string
 from collections import defaultdict
+from pathlib import Path
 from threading import Timer
 from time import sleep
 
@@ -725,7 +726,9 @@ class DrawingBot(TaskBot):
 
         if this_session.target_grid:
             # Display on chat area
-            # grid = self.string_to_html_grid(room_id)
+            self.string_to_html_grid(room_id)
+            with open(Path(f"{ROOT}/data/{room_id}_grid.html")) as html_f:
+                grid = html_f.read()
             # self.sessions[room_id].html_grid = grid
             # self.sio.emit(
             #     "message_command",
@@ -736,10 +739,11 @@ class DrawingBot(TaskBot):
             #         },
             #         "room": room_id,
             #         "receiver_id": this_session.player_b["id"],
+            #         "html": True
             #     }
             # )
             #
-            grid = this_session.target_grid.replace('\n', '<br>')
+            # grid = this_session.target_grid.replace('\n', '<br>')
             self.sio.emit(
                 "text",
                 {
@@ -804,7 +808,7 @@ class DrawingBot(TaskBot):
 
     def string_to_html_grid(self, room_id):
         rows = self.sessions[room_id].target_grid.strip().split('\n')
-        with open("grid.html", "w") as html_file:
+        with open(Path(f"{ROOT}/data/{room_id}_grid.html"), "w") as html_file:
             html_file.write(
                 '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n')
 
@@ -819,7 +823,8 @@ class DrawingBot(TaskBot):
                 html_file.write('</tr>\n')
 
             html_file.write('</table>\n\n</body>\n</html>')
-
+            self.sessions[room_id].html_grid = html_file
+        LOG.debug(f"HTML file '{room_id}_grid.html' has been created.")
 
     def update_rights(self, room_id, player_a: bool, player_b: bool):
         this_session = self.sessions[room_id]
