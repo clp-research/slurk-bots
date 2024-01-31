@@ -1044,7 +1044,7 @@ class DrawingBot(TaskBot):
         Reformats string returned from player B into a displayable grid
         to be emitted as message (html=true)
         Example:
-            formatted_grid = self.transform_string_in_grid(this_session.drawn_grid.upper())
+            formatted_grid = self.transform_string_in_grid(this_session.drawn_grid)
             self.sio.emit(
                 "text",
                 {
@@ -1108,7 +1108,7 @@ class DrawingBot(TaskBot):
         target_grid = this_session.target_grid
 
         if this_session.drawn_grid:
-            drawn_grid = self.transform_string_in_grid(this_session.drawn_grid.upper()).replace('<br>', '\n')
+            drawn_grid = self.transform_string_in_grid(this_session.drawn_grid).replace('<br>', '\n')
             this_session.drawn_grid = drawn_grid
         else:
             LOG.debug(f"DRAWN GRID is EMPTY")
