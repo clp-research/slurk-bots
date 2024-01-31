@@ -32,7 +32,7 @@ TIME_WAITING_ROOM = 0.5  # how many minutes a user can wait for a partner
 # TIME_ROUND = 20  # how many minutes users can play on a single image
 
 
-TIMEOUT_TIMER = 1  # minutes of inactivity before the room is closed automatically
+TIMEOUT_TIMER = 2  # minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 1  # minutes if a user is alone in a room
 
 

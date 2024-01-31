@@ -17,8 +17,6 @@ from templates import TaskBot
 from .dataloader import Dataloader
 from .config import (
     COLOR_MESSAGE,
-    PLATFORM,
-    PROLIFIC_URL,
     SEED,
     STANDARD_COLOR,
     WARNING_COLOR,
@@ -97,10 +95,17 @@ class Session:
 
         self.guesser = None
         self.critic = None
-        self.turn = -1
+
+        self.turn = None
         self.critic_provided = False
+        self.proposal_submitted = False
 
         self.timer = None
+
+        self.round_guesses_history = []
+
+
+
 
 
     def close(self):
@@ -139,8 +144,6 @@ class WordleBot2 (TaskBot):
         self.received_waiting_token = set()
 
         # self.waiting_timer = None
-
-        self.data_collection = PLATFORM
 
     def post_init(self, waiting_room, version):
         """save extra variables after the __init__() method has been called"""
@@ -203,7 +206,7 @@ class WordleBot2 (TaskBot):
             #     "target_word"].lower()
 
 
-            self.set_message_privilege(self.sessions[room_id].guesser, False)
+            self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
 
 
 
@@ -337,6 +340,8 @@ class WordleBot2 (TaskBot):
                         curr_usr, other_usr = other_usr, curr_usr
                     if data["type"] == "join":
                         if self.sessions[room_id].game_over is False:
+                            self.reload_state(room_id, data["user"]["id"])
+
                             # inform the other user about join event
                             self.send_message_to_user(STANDARD_COLOR,
                                                   f"{data['user']['name']} has joined the game.", room_id, other_usr["id"]
@@ -366,6 +371,33 @@ class WordleBot2 (TaskBot):
 
                 else:
                     if data["type"] == "join":
+                        self.reload_state(room_id, data["user"]["id"])
+                        # self.sio.emit(
+                        #     "message_command",
+                        #     {
+                        #         "command": {
+                        #             "command": "wordle_init",
+                        #         },
+                        #         "room": room_id,
+                        #         "receiver_id": data["user"]["id"],
+                        #     },
+                        # )
+                        # # enter all the guesses that this user sent to the bot
+                        # # to catch up with the other user
+                        # word = self.sessions[room_id].words[0]["target_word"].lower()
+                        # for guess in self.sessions[room_id].round_guesses_history:
+                        #     self.sio.emit(
+                        #         "message_command",
+                        #         {
+                        #             "command": {
+                        #                 "command": "wordle_guess",
+                        #                 "guess": guess,
+                        #                 "correct_word": word,
+                        #             },
+                        #             "room": room_id,
+                        #             "receiver_id":  data["user"]["id"],
+                        #         },
+                        #     )
                         self.sessions[room_id].timer.user_joined(data["user"]["id"])
                     elif data["type"] == "leave":
                         self.sessions[room_id].timer.user_left(data["user"]["id"])
@@ -392,8 +424,9 @@ class WordleBot2 (TaskBot):
                     usr["msg_n"] += 1
 
             if user_id == self.sessions[room_id].critic:
+                self.sessions[room_id].proposal_submitted = False
                 self.sessions[room_id].critic_provided = True
-                self.set_message_privilege(self.sessions[room_id].critic, False)
+                self.set_message_privilege(room_id, self.sessions[room_id].critic, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
 
 
@@ -417,20 +450,33 @@ class WordleBot2 (TaskBot):
                 if isinstance(data["command"], dict):
                     if "guess" in data["command"]:
                         if data["command"]["guess"].strip() == "":
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": COLOR_MESSAGE.format(
-                                        color=WARNING_COLOR,
-                                        message="**You need to provide a guess!**",
-                                    ),
-                                    "room": room_id,
-                                    "receiver_id": user_id,
-                                    "html": True,
-                                },
-                            )
+                            self.send_message_to_user(WARNING_COLOR, "**You need to provide a guess!**",
+                                                      room_id,
+                                                      user_id,
+                                                      )
+                            # self.sio.emit(
+                            #     "text",
+                            #     {
+                            #         "message": COLOR_MESSAGE.format(
+                            #             color=WARNING_COLOR,
+                            #             message="**You need to provide a guess!**",
+                            #         ),
+                            #         "room": room_id,
+                            #         "receiver_id": user_id,
+                            #         "html": True,
+                            #     },
+                            # )
                         else:
-                            self._command_guess(room_id, user_id, data["command"])
+                            if not self.sessions[room_id].proposal_submitted:
+                                self._command_guess(room_id, user_id, data["command"])
+                            else:
+                                self.send_message_to_user(WARNING_COLOR,
+                                                          "You have already submitted a proposal! "
+                                                          "Let's wait for the critic.",
+                                                          room_id,
+                                                          user_id,
+                                                          )
+
 
                     elif data["command"]["event"] == "confirm_ready":
                         if data["command"]["answer"] == "yes":
@@ -469,7 +515,7 @@ class WordleBot2 (TaskBot):
         remaining_guesses = command["remaining"]
 
         # make sure the guess has the right length
-        if len(word ) != len(guess):
+        if len(word) != len(guess):
             self.sio.emit(
                 "text",
                 {
@@ -518,13 +564,13 @@ class WordleBot2 (TaskBot):
             )
             return
 
-        self.sessions[room_id].turn += 1
 
         # check if not and!
         if not self.sessions[room_id].critic_provided and self.version == "critic":
+            self.sessions[room_id].proposal_submitted = True
             self.send_message_to_user(STANDARD_COLOR, f"PROPOSAL: <b> {guess.upper()} </b>", room_id, self.sessions[room_id].critic)
             self.send_message_to_user(STANDARD_COLOR, f"Please, provide your critic", room_id, self.sessions[room_id].critic)
-            self.set_message_privilege(self.sessions[room_id].critic, True)
+            self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
             self.give_writing_rights(room_id, self.sessions[room_id].critic)
             self.send_message_to_user(STANDARD_COLOR, f"Your proposal <b> {guess.upper()} </b> was submitted.", room_id,
                                       self.sessions[room_id].guesser)
@@ -538,6 +584,7 @@ class WordleBot2 (TaskBot):
                 },
             )
             return
+        self.sessions[room_id].round_guesses_history.append(guess)
         self.sio.emit(
             "message_command",
             {
@@ -551,7 +598,7 @@ class WordleBot2 (TaskBot):
         )
         if self.version == "critic":
             self.sessions[room_id].critic_provided = False
-            self.set_message_privilege(self.sessions[room_id].critic,True)
+            self.set_message_privilege(room_id, self.sessions[room_id].critic,True)
 
         if (word == guess) or (remaining_guesses == 1):
             sleep(2)
@@ -610,12 +657,53 @@ class WordleBot2 (TaskBot):
             # load the next word
             self.start_round(room_id)
 
+    def reload_state(self, room_id, user_id):
+        LOG.debug(f'Reload state for {user_id}')
+        init_command = "wordle_init"
+        if user_id == self.sessions[room_id].critic:
+            if self.sessions[room_id].turn == self.sessions[room_id].critic:
+                self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
+                self.give_writing_rights(room_id, self.sessions[room_id].critic)
+            init_command = "wordle_init_critic"
+
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {
+                    "command": f"{init_command}",
+                },
+                "room": room_id,
+                "receiver_id": user_id,
+            },
+        )
+        LOG.debug(f'Init {init_command }')
+        # enter all the guesses that this user sent to the bot
+        # to catch up with the other user
+        word = self.sessions[room_id].words[0]["target_word"].lower()
+        for guess in self.sessions[room_id].round_guesses_history:
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "command": "wordle_guess",
+                        "guess": guess,
+                        "correct_word": word,
+                    },
+                    "room": room_id,
+                    "receiver_id":  user_id,
+                },
+            )
+
+
+
     def start_round(self, room_id):
         if not self.sessions[room_id].words:
             self.close_game(room_id)
+
         else:
+            self.sessions[room_id].round_guesses_history = []
             if self.version == "critic":
-                self.set_message_privilege(self.sessions[room_id].critic, False)
+                self.set_message_privilege(room_id, self.sessions[room_id].critic, False)
                 self.make_input_field_unresponsive(room_id, self.sessions[room_id].critic)
 
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
@@ -660,7 +748,6 @@ class WordleBot2 (TaskBot):
             # restart next_round_timer
             # self.sessions[room_id].timer.start_round_timer(self.time_out_round, room_id)
             self.sessions[room_id].timer.reset()
-            self.sessions[room_id].turn = 0
 
     def _command_ready(self, room_id, user):
         """Must be sent to begin a conversation."""
@@ -752,7 +839,7 @@ class WordleBot2 (TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
 
-    def set_message_privilege(self, user_id, value):
+    def set_message_privilege(self, room_id, user_id, value):
         """
         change user's permission to send messages
         """
@@ -772,6 +859,8 @@ class WordleBot2 (TaskBot):
                 "Authorization": f"Bearer {self.token}",
             },
         )
+        if value:
+            self.sessions[room_id].turn = user_id
         self.request_feedback(response, "changing user's message permission")
 
     def make_input_field_unresponsive(self, room_id, user_id):

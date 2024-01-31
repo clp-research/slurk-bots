@@ -4,18 +4,6 @@
   "html": [
     {
       "layout-type": "div",
-      "id": "fullscreen-overlay",
-      "layout-content": [
-        {
-          "layout-type": "div",
-          "id": "fullscreenButton",
-          "class": "button",
-          "layout-content": "Enter Fullscreen"
-        }
-      ]
-    },
-    {
-      "layout-type": "div",
       "class": "cards",
       "layout-content": [
         {
@@ -388,31 +376,6 @@
       "text-justify": "inter-word",
       "margin": "10px"
     },
-    "#fullscreenButton:hover": {
-      "background-color": "rgb(129, 139, 172)!important"
-    },
-    "#fullscreen-overlay":{
-      "background-color": "rgba(0,0,0,0.8)",
-      "position": "fixed",
-      "top": "0px",
-      "left": "0px",
-      "height": "100vh",
-      "width": "100vw",
-      "z-index": 3
-    },
-    "#fullscreenButton": {
-      "width": "300px",
-      "height": "100px",
-      "position": "absolute",
-      "left": "calc(50vw - 150px)",
-      "top": "calc(50vh - 90px)",
-      "font-size": "2em",
-      "border-radius": "100px",
-      "line-height": "100px",
-      "background-color": "white",
-      "text-align": "center",
-      "z-index": 4
-    },
     ".collapsible": {
       "background-color": "#eee",
       "color": "#444",
@@ -440,6 +403,6 @@
       "markdown-history"
     ],
     "typing-users": "typing-users",
-    "plain": ["collapsible-task-instructions","enforce-fullscreen","wordle_boards"]
+    "plain": ["collapsible-task-instructions","wordle_boards"]
   }
 }
