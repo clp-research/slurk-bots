@@ -40,7 +40,7 @@ class Session:
         self.drawn_grid = None
         self.current_turn = 0
         self.game_round = 0
-        self.timer = None # RoomTimer()
+        self.timer = None # Timer()
         self.left_room_timer = dict()
         self.points = {
             "score": STARTING_POINTS,
@@ -729,6 +729,7 @@ class DrawingBot(TaskBot):
             self.string_to_html_grid(room_id)
             with open(Path(f"{ROOT}/data/{room_id}_grid.html")) as html_f:
                 grid = html_f.read()
+                this_session.html_grid = grid
             # self.sessions[room_id].html_grid = grid
             # self.sio.emit(
             #     "message_command",
@@ -743,11 +744,11 @@ class DrawingBot(TaskBot):
             #     }
             # )
             #
-            # grid = this_session.target_grid.replace('\n', '<br>')
+
             self.sio.emit(
                 "text",
                 {
-                    "message": f"This is the target grid: <br>{grid}<br><br>You have 25 turns "
+                    "message": f"This is the target grid: <br><br>{grid}<br><br>You have 25 turns "
                                f"to describe it to the other player.<br><br>Give the first instruction.",
                     "receiver_id": this_session.player_a["id"],
                     "room": room_id,
@@ -762,13 +763,13 @@ class DrawingBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "set grid title")
-            grid = this_session.target_grid.replace('\n', '<br>')
+            # grid = this_session.target_grid.replace('\n', '<br>')
             self.sio.emit(
                 "message_command",
                 {
                     "command": {
                         "event": "send_grid",
-                        "message": f"<br><br>{grid}",
+                        "message": f"<br><br>{this_session.html_grid}",
                     },
                     "room": room_id,
                     "receiver_id": this_session.player_a["id"],
@@ -810,7 +811,11 @@ class DrawingBot(TaskBot):
         rows = self.sessions[room_id].target_grid.strip().split('\n')
         with open(Path(f"{ROOT}/data/{room_id}_grid.html"), "w") as html_file:
             html_file.write(
-                '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n')
+                '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" '
+                'content="width=device-width, initial-scale=1.0">\n<style>\ntable {\nborder-collapse: '
+                'collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: '
+                '30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color '
+                'property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n')
 
             for row in rows:
                 html_file.write('<tr>\n')
