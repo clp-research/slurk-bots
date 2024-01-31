@@ -1,7 +1,5 @@
-const NUMBER_OF_GUESSES = 6;
 const NUMBER_OF_ROWS = 5;
 const NUMBER_OF_COLUMNS = 5;
-let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
 let submitted = false;  // whether a guess was submitted
@@ -151,10 +149,6 @@ function sendGuess() {
 
 
 function getKeyPressed(letter) {
-    if (guessesRemaining === 0) {
-        return
-    }
-
     let pressedKey = String(letter);
 
     console.log("Pressed Key:", pressedKey);
@@ -198,7 +192,6 @@ $(document).ready(() => {
 
         if (typeof (data.command) === "object") {
             if (data.command.command === "drawing_game_init") {
-                guessesRemaining = NUMBER_OF_GUESSES;
                 currentGuess = [];
                 $("#grid-area").show()
                 $("#keyboard-cont").show()

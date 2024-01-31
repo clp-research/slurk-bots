@@ -1,0 +1,165 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "user_1",
+            "Player_2": "user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:19:18",
+                    "action": {
+                        "type": "clue",
+                        "content": "1bla1"
+                    }
+                },
+                {
+                    "from": 3,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:19:27",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2t\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:19:43",
+                    "action": {
+                        "type": "clue",
+                        "content": "1bla2"
+                    }
+                },
+                {
+                    "from": 3,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:19:48",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2t\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2r\u25a2\u25a2\u25a2"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "user_1",
+            "Player_2": "user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:19:58",
+                    "action": {
+                        "type": "clue",
+                        "content": "2bla1"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:02",
+                    "action": {
+                        "type": "guess",
+                        "content": "j"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:02",
+                    "action": {
+                        "type": "invalid format",
+                        "content": "j"
+                    }
+                },
+                {
+                    "from": 3,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:05",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2r\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:09",
+                    "action": {
+                        "type": "clue",
+                        "content": "2bla2"
+                    }
+                },
+                {
+                    "from": 3,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:16",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2r\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2\u25a2u\u25a2"
+                    }
+                },
+                {
+                    "from": 3,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:33",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2\u25a2\u25a2\u25a2p\u25a2\u25a2\u25a2\u25a2p\u25a2\u25a2\u25a2\u25a2p\u25a2\u25a2\u25a2\u25a2p\u25a2\u25a2\u25a2\u25a2p"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "user_1",
+            "Player_2": "user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:20:45",
+                    "action": {
+                        "type": "clue",
+                        "content": "3bla1"
+                    }
+                },
+                {
+                    "from": 3,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:21:03",
+                    "action": {
+                        "type": "guess",
+                        "content": "pppppp\u25a2\u25a2\u25a2pp\u25a2\u25a2\u25a2pp\u25a2\u25a2\u25a2pp\u25a2\u25a2\u25a2p"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-01-30T07:21:06",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "P P P P P\nP \u25a2 \u25a2 \u25a2 P\nP \u25a2 \u25a2 \u25a2 P\nP \u25a2 \u25a2 \u25a2 P\nP \u25a2 \u25a2 \u25a2 P"
+                    }
+                }
+            ]
+        ]
+    }
+]
