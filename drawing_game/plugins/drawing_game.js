@@ -68,7 +68,6 @@ function deleteLetter() {
 
 
 function insertLetter(pressedKey) {
-    pressedKey = pressedKey.toLowerCase()
 
     // Calculate the row and column based on the selected_cell
     let rowIndex = Array.from(selected_cell.parentElement.parentElement.children).indexOf(selected_cell.parentElement);
