@@ -611,17 +611,7 @@ class DrawingBot(TaskBot):
                        )
 
         # 3) Load grid
-        grid_type = random.choice(['compact', 'random'])
-        this_session.grid_type = grid_type
-        if grid_type == 'compact' and this_session.all_compact_grids:
-            random_grid = this_session.all_compact_grids.get_random_grid()
-            this_session.target_grid = random_grid
-        else:
-            this_session.grid_type = 'random'
-            random_grid = this_session.all_random_grids.get_random_grid()
-            this_session.target_grid = random_grid
-        self.log_event("target grid", {"content": this_session.target_grid}, room_id)
-        self.log_event("grid type", {"content": this_session.grid_type}, room_id)
+        self.get_grid(room_id)
 
         # 4) Prepare interface
         # Resize screen
@@ -642,6 +632,20 @@ class DrawingBot(TaskBot):
         self.send_individualised_instructions(room_id)
         self.update_rights(room_id, True, False)
         self.show_item(room_id)
+
+    def get_grid(self, room_id):
+        grid_type = random.choice(['compact', 'random'])
+        this_session = self.sessions[room_id]
+        this_session.grid_type = grid_type
+        if grid_type == 'compact' and this_session.all_compact_grids:
+            random_grid = this_session.all_compact_grids.get_random_grid()
+            this_session.target_grid = random_grid
+        else:
+            this_session.grid_type = 'random'
+            random_grid = this_session.all_random_grids.get_random_grid()
+            this_session.target_grid = random_grid
+        self.log_event("target grid", {"content": this_session.target_grid}, room_id)
+        self.log_event("grid type", {"content": this_session.grid_type}, room_id)
 
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
@@ -983,7 +987,7 @@ class DrawingBot(TaskBot):
             this_session.all_random_grids.remove_grid(this_session.target_grid)
 
         # Get new grid
-        this_session.target_grid = this_session.all_compact_grids.get_random_grid()
+        self.get_grid(room_id)
 
         # Was this the last game round?
         if self.sessions[room_id].game_round >= 4:

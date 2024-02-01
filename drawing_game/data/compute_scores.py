@@ -127,8 +127,11 @@ def compute_scores(episode_interactions: Dict) -> None:
         turn_parsed_request_count = 0
         turn_violated_request_count = 0
 
+        # Target grid
+        target_grid = turn[0]['action']['content']
+
         # Player 1 message
-        player_1_message = turn[0]['action']['content']
+        player_1_message = turn[1]['action']['content']
 
 
         # Player generates "DONE"
@@ -166,7 +169,7 @@ def compute_scores(episode_interactions: Dict) -> None:
             break
 
         # Player 2 message
-        player_2_message = turn[1]['action']['content']
+        player_2_message = turn[2]['action']['content']
         turn_request_count += 1
         episode_request_count += 1
 
@@ -184,7 +187,7 @@ def compute_scores(episode_interactions: Dict) -> None:
         # calculate player-specific and turn-specific metrics
 
         try:
-            precision, recall, f1 = evaluate(target_grid, player_2_message)  #todo:load target_grid
+            precision, recall, f1 = evaluate(target_grid, player_2_message)
         except:
             pass
 

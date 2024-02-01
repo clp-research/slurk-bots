@@ -39,18 +39,18 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
         round_data = {"players": players_data, "turns": []}  # Initialize round_data with players_data
         turn = []
         for log in logs:
-
             if log["event"] == "round":
                 round_data = {"players": players_data, "turns": []}  # Reset round_data for each new round
-
             elif log["event"] == "turn":
                 turn = []  # Reset turn for each new turn event
             elif log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess",
-                                  "target grid",
                                   "max turns reached", "grid type"}:
                 new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
                            "action": {"type": log["event"], "content": log["data"]["content"]}}
                 turn.append(new_log)
+            elif log["event"] == "target grid":
+                grid = {"from": "GM", "to": "GM", "timestamp": log["date_created"],
+                           "action": {"type": log["event"], "content": log["data"]["content"]}}
             elif log["event"] in {"command"}:
                 if "guess" in log["data"]["command"]:
                     content = log["data"]["command"]["guess"]
@@ -65,8 +65,10 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
                                "action": {"type": "command", "content": content}}
                     turn.append(new_log)
             if log["event"] == "turn":
+                turn.append(grid)  # Append target grid in every turn
                 round_data["turns"].append(turn)  # Append turn to round_data's turns
-            if log["event"] == "round":
+
+            elif log["event"] == "round":
                 all_rounds.append(round_data)  # Append round_data to all_rounds
     all_rounds = [_round for _round in all_rounds if _round['turns']] # Save only rounds with turns (=actually played)
     with open(output_jsonfile, "w") as outfile:
@@ -75,13 +77,14 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
     # COMPUTE SCORES
     for round in all_rounds:
         print("round")
-        compute_scores(round)
+        print(round)
+        # compute_scores(round)
         print("__________")
 
     return f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'"
 
 
 
-print(select_logs(os.path.join(ROOT, "logs", "results/2a.jsonl")))
-result = build_interactions_file("2a.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))
+print(select_logs(os.path.join(ROOT, "logs", "results/2.jsonl")))
+build_interactions_file("2.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))
 

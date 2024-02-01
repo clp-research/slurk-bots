@@ -1,0 +1,757 @@
+[
+    {
+        "data": {
+            "broadcast": false,
+            "command": "ready"
+        },
+        "date_created": "2024-02-01T13:19:13",
+        "date_modified": null,
+        "event": "command",
+        "id": 19,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "ready"
+        },
+        "date_created": "2024-02-01T13:19:18",
+        "date_modified": null,
+        "event": "command",
+        "id": 22,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "round",
+        "id": 24,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "GM": "DrawingBot",
+            "Player_1": "user_0",
+            "Player_2": "user_1"
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "players",
+        "id": 25,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "D ▢ ▢ ▢ D\nD D ▢ D D\nD ▢ D ▢ D\nD ▢ ▢ ▢ D\nD ▢ ▢ ▢ D"
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 26,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 27,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "command",
+        "id": 31,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_instr",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Description</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Let us play a game. The goal is to fill an empty grid that looks like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>A filled grid below is 5 by 5 and can look like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>I want you to describe this grid to the other player, step by step. You don't need to describe the empty squares, which are denoted with &quot;&#9634;&quot;. Only describe the location of letters in the grid. Then you wait for the other player to say &quot;What is your next instruction?&quot;, and then you continue with the next step. Take the size of the grid into consideration while giving instructions. When you have described everything, you say &quot;DONE&quot;.</p>\n<br>\n<p>For the filled grid above, here are the example steps.</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put an E in first row third column</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Fill the last row with X</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: DONE</p>\n<br>\n<p>Another example with the following 5 by 5 grid:</p>\n<br>\n<table>\n    <tr>\n        <td>W</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td>W</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>W</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>W</td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>Z</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>W</td>\n    </tr>\n</table>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put an W in five cells diagonally starting from top left going to bottom right</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put Z in the last row first column</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: DONE</p>\n<br>\n<p>Ok. Please do this for the following example.</p>\n<br>\n<br>\n</body>\n</html>\n\n\n\n"
+            }
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "command",
+        "id": 33,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_instr",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Drawing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Let us draw something together. There is an empty grid with a size 5x5, like so:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>The other player will give you instructions like \"put an X in the top left\", and you save the grid (hit 'ENTER') after applying the given instruction, like so:</p>\n<br>\n<table>\n    <tr>\n        <td>X</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Or for another instruction such as \"fill the fifth column with T\", you save the updated grid by applying the given instruction in all places that the command corresponds to (and, again, hitting 'ENTER'), like so:</p>\n<br>\n<table>\n    <tr>\n        <td>X</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n</table>\n<br>\n<p>Or for another instruction such as \"fill the fourth column first row with P\", you save the updated grid by applying the given instruction in all places that the command corresponds to (plus ENTER), like so:</p>\n<br>\n<table>\n    <tr>\n        <td>X</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>P</td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>T</td>\n    </tr>\n</table>\n<br>\n<p>Now start with the provided 5x5 empty grid and execute the following commands at each step. Once you have typed all necessary characters just type 'ENTER' and wait for a message confirming your grid was saved. Do not send any other message to the other player on the chat area.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "command",
+        "id": 34,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td>D</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>D</td>\n</tr>\n<tr>\n<td>D</td>\n<td>D</td>\n<td class=\"empty\"></td>\n<td>D</td>\n<td>D</td>\n</tr>\n<tr>\n<td>D</td>\n<td class=\"empty\"></td>\n<td>D</td>\n<td class=\"empty\"></td>\n<td>D</td>\n</tr>\n<tr>\n<td>D</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>D</td>\n</tr>\n<tr>\n<td>D</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>D</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "command",
+        "id": 45,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_keyboard_instructions",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Typing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-02-01T13:19:19",
+        "date_modified": null,
+        "event": "command",
+        "id": 47,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "1bla1"
+        },
+        "date_created": "2024-02-01T13:19:22",
+        "date_modified": null,
+        "event": "command",
+        "id": 48,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:19:22",
+        "date_modified": null,
+        "event": "turn",
+        "id": 50,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "1bla1",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:19:22",
+        "date_modified": null,
+        "event": "clue",
+        "id": 51,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢R▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-02-01T13:19:28",
+        "date_modified": null,
+        "event": "command",
+        "id": 59,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "1bla2"
+        },
+        "date_created": "2024-02-01T13:19:33",
+        "date_modified": null,
+        "event": "command",
+        "id": 69,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:19:33",
+        "date_modified": null,
+        "event": "turn",
+        "id": 70,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "1bla2",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:19:33",
+        "date_modified": null,
+        "event": "clue",
+        "id": 72,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "j"
+        },
+        "date_created": "2024-02-01T13:19:36",
+        "date_modified": null,
+        "event": "command",
+        "id": 80,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "content": "j"
+        },
+        "date_created": "2024-02-01T13:19:36",
+        "date_modified": null,
+        "event": "invalid format",
+        "id": 81,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢U▢R▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-02-01T13:19:40",
+        "date_modified": null,
+        "event": "command",
+        "id": 83,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "1bla3"
+        },
+        "date_created": "2024-02-01T13:19:46",
+        "date_modified": null,
+        "event": "command",
+        "id": 93,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:19:46",
+        "date_modified": null,
+        "event": "turn",
+        "id": 95,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "1bla3",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:19:46",
+        "date_modified": null,
+        "event": "clue",
+        "id": 96,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "D▢▢▢▢DD▢U▢D▢D▢▢D▢▢▢▢D▢▢▢▢"
+            }
+        },
+        "date_created": "2024-02-01T13:20:04",
+        "date_modified": null,
+        "event": "command",
+        "id": 104,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "1bla4"
+        },
+        "date_created": "2024-02-01T13:20:11",
+        "date_modified": null,
+        "event": "command",
+        "id": 114,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:20:11",
+        "date_modified": null,
+        "event": "turn",
+        "id": 115,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "1bla4",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:20:11",
+        "date_modified": null,
+        "event": "clue",
+        "id": 117,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "D▢▢▢DDD▢DDD▢D▢DD▢▢▢DD▢▢▢D"
+            }
+        },
+        "date_created": "2024-02-01T13:20:26",
+        "date_modified": null,
+        "event": "command",
+        "id": 125,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "done"
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "command",
+        "id": 135,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {
+            "content": "D ▢ ▢ ▢ D\nD D ▢ D D\nD ▢ D ▢ D\nD ▢ ▢ ▢ D\nD ▢ ▢ ▢ D"
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 137,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "round",
+        "id": 140,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "G G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\n▢ ▢ ▢ ▢ G"
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 141,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 142,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "command",
+        "id": 143,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td>G</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>G</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>G</td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>G</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "command",
+        "id": 149,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_keyboard_instructions",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Typing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-02-01T13:20:30",
+        "date_modified": null,
+        "event": "command",
+        "id": 151,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "2bla1"
+        },
+        "date_created": "2024-02-01T13:20:39",
+        "date_modified": null,
+        "event": "command",
+        "id": 159,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:20:39",
+        "date_modified": null,
+        "event": "turn",
+        "id": 161,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2bla1",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:20:39",
+        "date_modified": null,
+        "event": "clue",
+        "id": 162,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢▢U▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-02-01T13:20:47",
+        "date_modified": null,
+        "event": "command",
+        "id": 170,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "done"
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "command",
+        "id": 180,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "round",
+        "id": 184,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "▢ J J J ▢\n▢ J J J ▢\nJ J J J J\n▢ J J J ▢\n▢ J J J ▢"
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 185,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 186,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "command",
+        "id": 187,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td class=\"empty\"></td>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td>J</td>\n<td>J</td>\n<td>J</td>\n<td class=\"empty\"></td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "command",
+        "id": 193,
+        "receiver_id": 3,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_keyboard_instructions",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Typing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-02-01T13:20:51",
+        "date_modified": null,
+        "event": "command",
+        "id": 195,
+        "receiver_id": 4,
+        "room_id": 2,
+        "user_id": 2
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "3bla1"
+        },
+        "date_created": "2024-02-01T13:20:56",
+        "date_modified": null,
+        "event": "command",
+        "id": 203,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:20:56",
+        "date_modified": null,
+        "event": "turn",
+        "id": 204,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3bla1",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:20:56",
+        "date_modified": null,
+        "event": "clue",
+        "id": 205,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢D▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-02-01T13:21:03",
+        "date_modified": null,
+        "event": "command",
+        "id": 214,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "3bla2"
+        },
+        "date_created": "2024-02-01T13:21:07",
+        "date_modified": null,
+        "event": "command",
+        "id": 224,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 3
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-01T13:21:07",
+        "date_modified": null,
+        "event": "turn",
+        "id": 226,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3bla2",
+            "from": "user_0",
+            "to": "user_1"
+        },
+        "date_created": "2024-02-01T13:21:07",
+        "date_modified": null,
+        "event": "clue",
+        "id": 227,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢DT▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-02-01T13:21:11",
+        "date_modified": null,
+        "event": "command",
+        "id": 235,
+        "receiver_id": null,
+        "room_id": 2,
+        "user_id": 4
+    }
+]
