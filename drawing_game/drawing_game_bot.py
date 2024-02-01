@@ -40,7 +40,7 @@ class Session:
         self.drawn_grid = None
         self.current_turn = 0
         self.game_round = 0
-        self.timer = None # Timer()
+        self.timer = None  # Timer()
         self.left_room_timer = dict()
         self.points = {
             "score": STARTING_POINTS,
@@ -48,7 +48,14 @@ class Session:
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
-        self.game_over = False
+        self._game_over = False
+
+    @property
+    def game_over(self):
+        return self._game_over
+
+    def set_game_over(self, new_value: bool):
+        self._game_over = new_value
 
     def pick_player_a(self):
         self.player_a = random.choice(self.players)
@@ -118,6 +125,7 @@ class DrawingBot(TaskBot):
         self.sio.wait()
 
     def timeout_close_game(self, room_id):
+        self.sessions[room_id].set_game_over(True)
         self.sio.emit(
             "text",
             {"message": "Closing session because of inactivity", "room": room_id},
@@ -133,6 +141,7 @@ class DrawingBot(TaskBot):
             pass
 
     def user_did_not_rejoin(self, room_id):
+        self.sessions[room_id].set_game_over(True)
         self.sio.emit(
             "text",
             {"message": "Your partner didn't rejoin, you will receive a token so you can get paid for your time",
@@ -143,6 +152,7 @@ class DrawingBot(TaskBot):
 
     def _no_partner(self, room_id, user_id):
         """Handle the situation that a participant waits in vain."""
+        self.sessions[room_id].set_game_over(True)
         # if user_id not in self.received_waiting_token:
         self.sio.emit(
             "text",
@@ -276,9 +286,9 @@ class DrawingBot(TaskBot):
                         "text",
                         {
                             "message": f"If nobody shows up within "
-                                        f"{WAITING_PARTNER_TIMER} minutes, I will give "
-                                        f"you a submission link, so that you "
-                                        f"can get paid for your waiting time."
+                                       f"{WAITING_PARTNER_TIMER} minutes, I will give "
+                                       f"you a submission link, so that you "
+                                       f"can get paid for your waiting time."
                             ,
                             "room": room_id,
                             "receiver_id": data['user']['id'],
@@ -310,7 +320,7 @@ class DrawingBot(TaskBot):
 
                 elif data["type"] == "leave":
                     if room_id in self.sessions:
-                        if self.sessions[room_id].game_over is False:
+                        if not self.sessions[room_id].game_over:
                             # send a message to the user that was left alone
                             self.sio.emit(
                                 "text",
@@ -349,42 +359,19 @@ class DrawingBot(TaskBot):
                 return
 
             this_session = self.sessions[room_id]
-            # Reset timer
-            LOG.debug("Reset timeout timer after sending message")
-            if this_session.timer:
-                this_session.timer.cancel()
-            timer = Timer(
-                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-            )
-            timer.start()
-            self.sessions[room_id].timer = timer
 
-        @self.sio.event
-        def mouse(data):
-            room_id = data["room"]
-            user_id = data["user"]["id"]
-            this_session = self.sessions[room_id]
-
-            # do not process events from itself
-            if user_id == self.user:
-                return
-
-            if room_id not in self.sessions:
-                return
-
-            # don't react to mouse movements
-            if data["type"] != "click":
-                return
-
-            # Reset timer
-            LOG.debug("Reset timeout timer after mouse click")
-            if this_session.timer:
-                this_session.timer.cancel()
-            timer = Timer(
-                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-            )
-            timer.start()
-            self.sessions[room_id].timer = timer
+            if this_session.game_over:
+                LOG.debug("Game is over, do not reset timeout timer after sending command")
+            else:
+                # Reset timer
+                LOG.debug("Reset timeout timer after sending message")
+                if this_session.timer:
+                    this_session.timer.cancel()
+                timer = Timer(
+                    TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+                )
+                timer.start()
+                self.sessions[room_id].timer = timer
 
         @self.sio.event
         def command(data):
@@ -401,15 +388,18 @@ class DrawingBot(TaskBot):
             if str(user_id) == self.user:
                 return
 
-            # Reset timer
-            LOG.debug("Reset timeout timer after sending command")
-            if this_session.timer:
-                this_session.timer.cancel()
-            timer = Timer(
-                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-            )
-            timer.start()
-            self.sessions[room_id].timer = timer
+            if this_session.game_over:
+                LOG.debug("Game is over, do not reset timeout timer after sending command")
+            else:
+                # Reset timer
+                LOG.debug("Reset timeout timer after sending command")
+                if this_session.timer:
+                    this_session.timer.cancel()
+                timer = Timer(
+                    TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+                )
+                timer.start()
+                self.sessions[room_id].timer = timer
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -489,26 +479,28 @@ class DrawingBot(TaskBot):
             if this_session.player_a["id"] == user_id:
                 # means that new turn began
                 # self.log_event("turn", [], room_id)
-
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": command,
-                        "room": room_id,
-                        "receiver_id": this_session.player_b["id"],
-                    },
-                )
+                for user in this_session.players:
+                    if user["id"] != user_id:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "message": command,
+                                "room": room_id,
+                                "receiver_id": this_session.player_b["id"],
+                                "impersonate": user_id,
+                            },
+                        )
                 LOG.debug(f"This is turn number  {this_session.current_turn}.")
                 this_session.current_turn += 1
                 self.log_event('turn', dict(), room_id)
                 # log event
-                self.log_event("clue", {"content": data['command'], "from": data['user']['name'], "to": this_session.player_b['name']}, room_id)
+                self.log_event("clue", {"content": data['command'], "from": data['user']['name'],
+                                        "to": this_session.player_b['name']}, room_id)
                 self.update_rights(room_id, False, True)
                 sleep(1)
 
             # player_b
             elif this_session.player_b["id"] == user_id:
-
 
                 # In case the grid is returned as string on the chat area
                 if '▢' in command:
@@ -615,8 +607,8 @@ class DrawingBot(TaskBot):
             "GM": "DrawingBot",
             "Player_1": self.sessions[room_id].player_a["name"],
             "Player_2": self.sessions[room_id].player_b["name"]},
-            room_id
-        )
+                       room_id
+                       )
 
         # 3) Load grid
         grid_type = random.choice(['compact', 'random'])
@@ -639,14 +631,14 @@ class DrawingBot(TaskBot):
             {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b["id"]},
         )
 
-        # Restart timer
-        if this_session.timer:
-            this_session.timer.cancel()
-        timer = Timer(
-            TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-        )
-        timer.start()
-        this_session.timer.timer = timer
+        # # Restart timer
+        # if this_session.timer:
+        #     this_session.timer.cancel()
+        # timer = Timer(
+        #     TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+        # )
+        # timer.start()
+        # this_session.timer.timer = timer
         self.send_individualised_instructions(room_id)
         self.update_rights(room_id, True, False)
         self.show_item(room_id)
@@ -1028,15 +1020,15 @@ class DrawingBot(TaskBot):
                  "receiver_id": this_session.player_b["id"]}
             )
 
-            # restart round_timer #todo: simplify in function
-            LOG.debug("Reset timeout timer")
-            if this_session.timer:
-                this_session.timer.cancel()
-            timer = Timer(
-                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-            )
-            timer.start()
-            this_session.timer.timer = timer
+            # # restart round_timer #todo: simplify in function
+            # LOG.debug("Reset timeout timer")
+            # if this_session.timer:
+            #     this_session.timer.cancel()
+            # timer = Timer(
+            #     TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+            # )
+            # timer.start()
+            # this_session.timer.timer = timer
             this_session.current_turn = 1
 
             # Show new grid instance to player_a
@@ -1185,12 +1177,11 @@ class DrawingBot(TaskBot):
         )
 
         # Or check in wordle how the user is given the link to prolific
-        #todo: why is the message not always displayed?
         self.sio.emit(
             "text",
             {
                 "message": f"This is your token:  **{confirmation_token}** <br>"
-                           "Please remember to save it"
+                           "Please remember to save it "
                            "before you close this browser window. "
                 ,
                 "room": room_id,
@@ -1223,7 +1214,6 @@ class DrawingBot(TaskBot):
         """Erase any data structures no longer necessary."""
         LOG.debug(f"Triggered close game for room {room_id}")
 
-        #todo: why is the message not always displayed?
         self.sio.emit(
             "text",
             {
@@ -1232,7 +1222,7 @@ class DrawingBot(TaskBot):
             }
         )
 
-        self.sessions[room_id].game_over = True
+        self.sessions[room_id].set_game_over(True)
         self.room_to_read_only(room_id)
         self.sessions.clear_session(room_id)
 

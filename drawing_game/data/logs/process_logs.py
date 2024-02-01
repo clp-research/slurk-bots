@@ -58,6 +58,12 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
                                "timestamp": log["date_created"],
                                "action": {"type": "guess", "content": content}}
                     turn.append(new_log)
+                if "done" in log["data"]["command"]:
+                    content = log["data"]["command"]
+                    new_log = {"from": log["user_id"], "to": log["receiver_id"],
+                               "timestamp": log["date_created"],
+                               "action": {"type": "command", "content": content}}
+                    turn.append(new_log)
             if log["event"] == "turn":
                 round_data["turns"].append(turn)  # Append turn to round_data's turns
             if log["event"] == "round":
@@ -66,15 +72,16 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
     with open(output_jsonfile, "w") as outfile:
         json.dump(all_rounds, outfile, indent=4)
 
+    # COMPUTE SCORES
+    for round in all_rounds:
+        print("round")
+        compute_scores(round)
+        print("__________")
+
     return f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'"
 
-    # # COMPUTE SCORES
-    # for round in all_rounds:
-    #     print("round")
-    #     compute_scores(round)
-    #     print("__________")
-    # return all_rounds
+
 
 print(select_logs(os.path.join(ROOT, "logs", "results/2a.jsonl")))
 result = build_interactions_file("2a.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))
-print(result)
+

@@ -128,7 +128,7 @@ def compute_scores(episode_interactions: Dict) -> None:
         turn_violated_request_count = 0
 
         # Player 1 message
-        player_1_message = turn[1]['action']['content']
+        player_1_message = turn[0]['action']['content']
 
 
         # Player generates "DONE"
@@ -142,22 +142,22 @@ def compute_scores(episode_interactions: Dict) -> None:
         #todo: don't compute since we are not enforcing 'instruction'
 
         # check the Player 1 message if it matches the rule, start with "Instruction:"
-        # player_1_message_matched = False
-        # if player_1_message.startswith('Instruction:'):
-        #     if '\n' in player_1_message:
-        #         parsed_instruction = player_1_message.split('\n')[0]
-        #         player_1_message = parsed_instruction
-        #     player_1_message_matched = True
-        #
-        # if player_1_message_matched:
-        #     turn_parsed_request_count += 1
-        #     episode_parsed_request_count += 1
-        # else:
-        #     turn_violated_request_count += 1
-        #     episode_violated_request_count += 1
-        #     aborted = True
-        #     # do not continue processing the rest of the turn when the game is aborted
-        #     break
+        player_1_message_matched = False
+        if player_1_message.startswith('Instruction:'):
+            if '\n' in player_1_message:
+                parsed_instruction = player_1_message.split('\n')[0]
+                player_1_message = parsed_instruction
+            player_1_message_matched = True
+
+        if player_1_message_matched:
+            turn_parsed_request_count += 1
+            episode_parsed_request_count += 1
+        else:
+            turn_violated_request_count += 1
+            episode_violated_request_count += 1
+            aborted = True
+            # do not continue processing the rest of the turn when the game is aborted
+            break
 
         # check if the turn includes the Player 2 message
         # in case the turn doesn't include an item and index position 4, it means the game has been aborted
@@ -166,7 +166,7 @@ def compute_scores(episode_interactions: Dict) -> None:
             break
 
         # Player 2 message
-        player_2_message = turn[4]['action']['content']
+        player_2_message = turn[1]['action']['content']
         turn_request_count += 1
         episode_request_count += 1
 
