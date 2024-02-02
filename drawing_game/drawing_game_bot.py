@@ -420,7 +420,10 @@ class DrawingBot(TaskBot):
                         return
                     else:
                         this_session.drawn_grid = data["command"]["guess"].strip()
-                        # self.log_event('guess', this_session.drawn_grid, room_id) is logged through plugin
+                        grid = self.transform_grid_string(room_id)
+                        this_session.drawn_grid = grid
+                        self.log_event("guess", {"content": this_session.drawn_grid, "from": data['user']['name'],
+                                                 "to": "GM"}, room_id)
                         LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                         self.sio.emit(
                             "text",
@@ -472,6 +475,10 @@ class DrawingBot(TaskBot):
 
             # If player_a is done, compare target grid and drawn grid
             if "done" in command:
+                self.log_event('turn', dict(), room_id)
+                # log event
+                self.log_event("clue", {"content": data['command'], "from": data['user']['name'],
+                                        "to": this_session.player_b['name']}, room_id)
                 self._command_done(room_id, user_id, command)
                 return
 
@@ -508,6 +515,7 @@ class DrawingBot(TaskBot):
                                              "to": this_session.player_a['name']}, room_id)
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
+                    LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                     sleep(1)
                     if this_session.current_turn < 25:
                         self.sio.emit(
@@ -646,6 +654,16 @@ class DrawingBot(TaskBot):
             this_session.target_grid = random_grid
         self.log_event("target grid", {"content": this_session.target_grid}, room_id)
         self.log_event("grid type", {"content": this_session.grid_type}, room_id)
+
+    def transform_grid_string(self, room_id):
+        grid_string = self.sessions[room_id].drawn_grid.strip()  # Remove leading/trailing spaces
+        rows = [grid_string[i:i + 5] for i in range(0, len(grid_string), 5)]  # Split string into chunks of 5 characters
+        formatted_rows = []
+        for row in rows:
+            formatted_row = ' '.join(list(row))  # Insert space between characters
+            formatted_rows.append(formatted_row)
+        formatted_grid = '\n'.join(formatted_rows)  # Join the rows with newline characters
+        return formatted_grid
 
     def send_individualised_instructions(self, room_id):
         this_session = self.sessions[room_id]
@@ -1116,6 +1134,7 @@ class DrawingBot(TaskBot):
         if this_session.drawn_grid:
             drawn_grid = self.transform_string_in_grid(this_session.drawn_grid).replace('<br>', '\n')
             this_session.drawn_grid = drawn_grid
+            LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
         else:
             LOG.debug(f"DRAWN GRID is EMPTY")
 

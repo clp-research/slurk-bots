@@ -12,7 +12,7 @@ class Clue:
 
 def test_clue():
     """Player a triggers log_event('clue', content, room_id) after sending each message."""
-    with open("./results/10.jsonl_text_messages.json") as f:
+    with open("results/10a.jsonl_text_messages.json") as f:
         logs = json.load(f)
         clues = []
         for log in logs:
@@ -21,7 +21,7 @@ def test_clue():
         assert logs
 
 def test_target_grid():
-    with open("./results/10.jsonl_text_messages.json") as f:
+    with open("results/10a.jsonl_text_messages.json") as f:
         logs = json.load(f)
         grids = []
         for log in logs:
@@ -30,4 +30,4 @@ def test_target_grid():
         assert logs
 
 def test_process_logs():
-    build_interactions_file("./results/10.jsonl_text_messages.json", 'foo')
+    build_interactions_file("./results/10a.jsonl_text_messages.json", 'foo')

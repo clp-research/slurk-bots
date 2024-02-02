@@ -43,21 +43,29 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
                 round_data = {"players": players_data, "turns": []}  # Reset round_data for each new round
             elif log["event"] == "turn":
                 turn = []  # Reset turn for each new turn event
-            elif log["event"] in {"clue", "guess", "invalid format", "invalid clue", "correct guess",
+            elif log["event"] == "clue":
+                clue = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
+                        "action": {"type": log["event"], "content": log["data"]["content"]}}
+                turn.append(clue)
+            elif log["event"] == "guess":
+                guess = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
+                         "action": {"type": log["event"], "content": log["data"]["content"]}}
+                turn.append(guess)
+            elif log["event"] in {"invalid format", "invalid clue", "correct guess",
                                   "max turns reached", "grid type"}:
                 new_log = {"from": log["user_id"], "to": log["receiver_id"], "timestamp": log["date_created"],
                            "action": {"type": log["event"], "content": log["data"]["content"]}}
                 turn.append(new_log)
             elif log["event"] == "target grid":
                 grid = {"from": "GM", "to": "GM", "timestamp": log["date_created"],
-                           "action": {"type": log["event"], "content": log["data"]["content"]}}
+                        "action": {"type": log["event"], "content": log["data"]["content"]}}
             elif log["event"] in {"command"}:
-                if "guess" in log["data"]["command"]:
-                    content = log["data"]["command"]["guess"]
-                    new_log = {"from": log["user_id"], "to": log["receiver_id"],
-                               "timestamp": log["date_created"],
-                               "action": {"type": "guess", "content": content}}
-                    turn.append(new_log)
+                # if "guess" in log["data"]["command"]:
+                #     content = log["data"]["command"]["guess"]
+                #     new_log = {"from": log["user_id"], "to": log["receiver_id"],
+                #                "timestamp": log["date_created"],
+                #                "action": {"type": "guess", "content": content}}
+                #     turn.append(new_log)
                 if "done" in log["data"]["command"]:
                     content = log["data"]["command"]
                     new_log = {"from": log["user_id"], "to": log["receiver_id"],
@@ -70,21 +78,20 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
 
             elif log["event"] == "round":
                 all_rounds.append(round_data)  # Append round_data to all_rounds
-    all_rounds = [_round for _round in all_rounds if _round['turns']] # Save only rounds with turns (=actually played)
+    all_rounds = [_round for _round in all_rounds if _round['turns']]  # Save only rounds with turns (=actually played)
     with open(output_jsonfile, "w") as outfile:
         json.dump(all_rounds, outfile, indent=4)
 
     # COMPUTE SCORES
     for round in all_rounds:
-        print("round")
-        print(round)
-        # compute_scores(round)
+        for t_index, turn in enumerate(round["turns"]):
+            print(t_index, turn)
+        # print(round)
+        compute_scores(round)
         print("__________")
 
     return f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'"
 
 
-
-print(select_logs(os.path.join(ROOT, "logs", "results/2.jsonl")))
-build_interactions_file("2.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))
-
+print(select_logs(os.path.join(ROOT, "logs", "results/10.jsonl")))
+build_interactions_file("10.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))

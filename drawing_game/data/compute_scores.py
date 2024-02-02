@@ -120,7 +120,7 @@ def compute_scores(episode_interactions: Dict) -> None:
     terminate_pattern = r'^\s*(?i)done\s*$'  # optional whitespace, followed by 'done' (or any case variation), and optional whitespace.
 
     # loop over each turn and calculate the metrics for both Player 1 and 2.
-
+    # print(episode_interactions["turns"])
     for t_index, turn in enumerate(episode_interactions["turns"]):
         print(t_index, turn)
         turn_request_count = 0
@@ -145,12 +145,14 @@ def compute_scores(episode_interactions: Dict) -> None:
         #todo: don't compute since we are not enforcing 'instruction'
 
         # check the Player 1 message if it matches the rule, start with "Instruction:"
-        player_1_message_matched = False
-        if player_1_message.startswith('Instruction:'):
-            if '\n' in player_1_message:
-                parsed_instruction = player_1_message.split('\n')[0]
-                player_1_message = parsed_instruction
-            player_1_message_matched = True
+        # player_1_message_matched = False
+        # if player_1_message.startswith('Instruction:'):
+        #     if '\n' in player_1_message:
+        #         parsed_instruction = player_1_message.split('\n')[0]
+        #         player_1_message = parsed_instruction
+        #     player_1_message_matched = True
+
+        player_1_message_matched = True  # We don't check for instruction, just assume the message is correct
 
         if player_1_message_matched:
             turn_parsed_request_count += 1
@@ -164,7 +166,7 @@ def compute_scores(episode_interactions: Dict) -> None:
 
         # check if the turn includes the Player 2 message
         # in case the turn doesn't include an item and index position 4, it means the game has been aborted
-        if len(turn) < 4:
+        if len(turn) < 3:
             aborted = True
             break
 
