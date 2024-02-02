@@ -83,5 +83,5 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
     return f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'"
 
 
-print(select_logs(os.path.join(ROOT, "logs", "results/12.jsonl")))
-build_interactions_file("12.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))
+print(select_logs(os.path.join(ROOT, "logs", "results/18.jsonl")))
+build_interactions_file("18.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "18_interactions.json"))

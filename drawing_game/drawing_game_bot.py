@@ -1028,6 +1028,16 @@ class DrawingBot(TaskBot):
 
         # Was this the last game round?
         if self.sessions[room_id].game_round >= 4:
+            # self.sio.emit(
+            #     "text",
+            #     {
+            #         "room": room_id,
+            #         "message": (
+            #             f"**That was the last round! Your final score is {this_session.points['score']}**"
+            #         ),
+            #         "html": True,
+            #     },
+            # )
             self.sio.emit(
                 "text",
                 {
@@ -1152,7 +1162,7 @@ class DrawingBot(TaskBot):
         drawn_grid = this_session.drawn_grid
 
         if this_session.drawn_grid:
-            drawn_grid = self.transform_string_in_grid(this_session.drawn_grid).replace('<br>', '\n')
+            # drawn_grid = self.transform_string_in_grid(this_session.drawn_grid).replace('<br>', '\n')
             this_session.drawn_grid = drawn_grid
             LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
         else:
@@ -1199,7 +1209,7 @@ class DrawingBot(TaskBot):
                 {
                     "message":
                         f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {self.sessions[room_id].points['score']}**",
+                        f"Your total score is: {self.sessions[room_id].points['score']+points}**",
                     "room": room_id,
                     "html": True,
                 },
