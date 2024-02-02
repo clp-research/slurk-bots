@@ -384,6 +384,8 @@ class DrawingBot(TaskBot):
             user_id = data["user"]["id"]
             this_session = self.sessions[room_id]
 
+            command = ''
+
             # do not process commands from itself
             if str(user_id) == self.user:
                 return
@@ -406,7 +408,8 @@ class DrawingBot(TaskBot):
 
             if isinstance(data["command"], dict):
                 if "guess" in data["command"]:
-                    if data["command"]["guess"].strip() == "":
+                    command = data["command"]["guess"]
+                    if command.strip() == "":
                         self.log_event("invalid format", '', room_id)
                         self.sio.emit(
                             "text",
@@ -419,7 +422,7 @@ class DrawingBot(TaskBot):
                         )
                         return
                     else:
-                        this_session.drawn_grid = data["command"]["guess"].strip()
+                        this_session.drawn_grid = command.strip()
                         grid = self.transform_grid_string(room_id)
                         this_session.drawn_grid = grid
                         self.log_event("guess", {"content": this_session.drawn_grid, "from": data['user']['name'],
@@ -473,15 +476,6 @@ class DrawingBot(TaskBot):
                     )
                     return
 
-            # If player_a is done, compare target grid and drawn grid
-            if "done" in command:
-                self.log_event('turn', dict(), room_id)
-                # log event
-                self.log_event("clue", {"content": data['command'], "from": data['user']['name'],
-                                        "to": this_session.player_b['name']}, room_id)
-                self._command_done(room_id, user_id, command)
-                return
-
             # player_a
             if this_session.player_a["id"] == user_id:
                 # means that new turn began
@@ -504,6 +498,10 @@ class DrawingBot(TaskBot):
                 self.log_event("clue", {"content": data['command'], "from": data['user']['name'],
                                         "to": this_session.player_b['name']}, room_id)
                 self.update_rights(room_id, False, True)
+                # If player_a is done, compare target grid and drawn grid
+                if "done" in command:
+                    self._command_done(room_id, user_id, command)
+                    return
                 sleep(1)
 
             # player_b
@@ -1130,6 +1128,7 @@ class DrawingBot(TaskBot):
 
         # get the grid for this room and the grid drawn by player_b
         target_grid = this_session.target_grid
+        drawn_grid = this_session.drawn_grid
 
         if this_session.drawn_grid:
             drawn_grid = self.transform_string_in_grid(this_session.drawn_grid).replace('<br>', '\n')
