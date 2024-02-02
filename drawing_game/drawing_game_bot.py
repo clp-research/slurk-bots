@@ -498,6 +498,7 @@ class DrawingBot(TaskBot):
                 self.log_event("clue", {"content": data['command'], "from": data['user']['name'],
                                         "to": this_session.player_b['name']}, room_id)
                 self.update_rights(room_id, False, True)
+                self.make_chat_area_unresponsive(room_id, this_session.player_b['id'])
                 # If player_a is done, compare target grid and drawn grid
                 if "done" in command:
                     self._command_done(room_id, user_id, command)
@@ -950,6 +951,26 @@ class DrawingBot(TaskBot):
                 },
                 headers={"Authorization": f"Bearer {self.token}"},
             )
+
+    def make_chat_area_unresponsive(self, room_id, user_id):
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "readonly",
+                "value": "true",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/attribute/id/text",
+            json={
+                "attribute": "placeholder",
+                "value": "You cannot use the chat area, just use the keyboard to draw the grid!",
+                "receiver_id": user_id,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
 
     def process_move(self, room_id, reward: int):
         """Compare grids at the end of each episode and update score."""

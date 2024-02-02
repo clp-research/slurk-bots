@@ -1,0 +1,203 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "user_1",
+            "Player_2": "user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-02T09:54:28",
+                    "action": {
+                        "type": "target grid",
+                        "content": "B \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB B B B B"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:54:33",
+                    "action": {
+                        "type": "clue",
+                        "content": "1bla1"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:54:44",
+                    "action": {
+                        "type": "guess",
+                        "content": "B \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-02T09:54:28",
+                    "action": {
+                        "type": "target grid",
+                        "content": "B \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB B B B B"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:54:49",
+                    "action": {
+                        "type": "clue",
+                        "content": "1bla2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:03",
+                    "action": {
+                        "type": "guess",
+                        "content": "B \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB B B B B"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-02T09:54:28",
+                    "action": {
+                        "type": "target grid",
+                        "content": "B \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB \u25a2 \u25a2 \u25a2 \u25a2\nB B B B B"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:06",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:06",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "user_1",
+            "Player_2": "user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-02T09:55:06",
+                    "action": {
+                        "type": "target grid",
+                        "content": "S \u25a2 S S S\n\u25a2 S \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nS \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:27",
+                    "action": {
+                        "type": "clue",
+                        "content": "2bla1"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:34",
+                    "action": {
+                        "type": "invalid format",
+                        "content": "k"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:41",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 U \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-02T09:55:06",
+                    "action": {
+                        "type": "target grid",
+                        "content": "S \u25a2 S S S\n\u25a2 S \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nS \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:45",
+                    "action": {
+                        "type": "clue",
+                        "content": "2bla2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:50",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 U \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 R \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-02T09:55:06",
+                    "action": {
+                        "type": "target grid",
+                        "content": "S \u25a2 S S S\n\u25a2 S \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nS \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:53",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-02T09:55:53",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    }
+]

@@ -59,19 +59,6 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
             elif log["event"] == "target grid":
                 grid = {"from": "GM", "to": "GM", "timestamp": log["date_created"],
                         "action": {"type": log["event"], "content": log["data"]["content"]}}
-            # elif log["event"] in {"command"}:
-            #     # if "guess" in log["data"]["command"]:
-            #     #     content = log["data"]["command"]["guess"]
-            #     #     new_log = {"from": log["user_id"], "to": log["receiver_id"],
-            #     #                "timestamp": log["date_created"],
-            #     #                "action": {"type": "guess", "content": content}}
-            #     #     turn.append(new_log)
-            #     if "done" in log["data"]["command"]:
-            #         content = log["data"]["command"]
-            #         new_log = {"from": log["user_id"], "to": log["receiver_id"],
-            #                    "timestamp": log["date_created"],
-            #                    "action": {"type": "command", "content": content}}
-            #         turn.append(new_log)
             if log["event"] == "turn":
                 turn.append(grid)  # Append target grid in every turn
                 round_data["turns"].append(turn)  # Append turn to round_data's turns
@@ -97,4 +84,4 @@ def build_interactions_file(messages_jsonfile, output_jsonfile):
 
 
 print(select_logs(os.path.join(ROOT, "logs", "results/12.jsonl")))
-build_interactions_file("12.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "1_interactions.json"))
+build_interactions_file("12.jsonl_text_messages.json", os.path.join(ROOT, "logs", "results", "interactions.json"))
