@@ -344,6 +344,11 @@
       "cursor": "pointer",
       "text-transform": "uppercase"
     },
+    ".message_button": {
+      "margin-top": "3px",
+      "padding": "5px",
+      "width":"49%"
+        },
     "#instr": {
       "text-justify": "inter-word",
       "margin": "10px"

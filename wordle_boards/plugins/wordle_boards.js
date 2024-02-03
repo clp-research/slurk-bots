@@ -262,3 +262,15 @@ function confirm_ready(answer){
         }
     )
 }
+
+function critic_feedback(answer){
+    socket.emit("message_command",
+        {
+            "command": {
+                "event": "critic_feedback",
+                "answer": answer
+            },
+            "room": self_room
+        }
+    )
+}
