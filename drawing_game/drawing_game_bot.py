@@ -1223,11 +1223,11 @@ class DrawingBot(TaskBot):
         LOG.debug("Triggered confirmation_code")
         confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
         LOG.debug(f'confirmation token is {confirmation_token, room_id, status}')
-        points = self.sessions[room_id].points
+        # points = self.sessions[room_id].points
         # post confirmation token to logs
         self.log_event(
             "confirmation_log",
-            {"status_txt": status, "token": confirmation_token, "reward": points},
+            {"status_txt": status, "token": confirmation_token},
             room_id,
         )
 
