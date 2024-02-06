@@ -1,0 +1,337 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "lean-cache",
+            "Player_2": "paper-diffuse"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:46:48.791828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:48:02.168841",
+                    "action": {
+                        "type": "clue",
+                        "content": "Please put E in the top right box"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:48:31.407897",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 E\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:46:48.791828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:49:01.690685",
+                    "action": {
+                        "type": "clue",
+                        "content": "Please put E in every box under the top right one, so every box is filled"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:49:34.753038",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 E\n\u25a2 \u25a2 \u25a2 \u25a2 E\n\u25a2 \u25a2 \u25a2 \u25a2 E\n\u25a2 \u25a2 \u25a2 \u25a2 E\n\u25a2 \u25a2 \u25a2 \u25a2 E"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:46:48.791828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:50:08.226128",
+                    "action": {
+                        "type": "clue",
+                        "content": "now put an E in the box to the left of each filled box"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:50:31.376194",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:46:48.791828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:51:19.891703",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:51:20.725557",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E\n\u25a2 \u25a2 \u25a2 E E"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:51:20.970235",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "lean-cache",
+            "Player_2": "paper-diffuse"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:51:20.912102",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nA A \u25a2 A \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 A\nA \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:53:15.977580",
+                    "action": {
+                        "type": "clue",
+                        "content": "Write A in the middle box on the left side "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:53:24.715420",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 S \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:51:20.912102",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nA A \u25a2 A \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 A\nA \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:54:03.072779",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:54:04.074354",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_1": "lean-cache",
+            "Player_2": "paper-diffuse"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:54:04.013030",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:54:43.584339",
+                    "action": {
+                        "type": "clue",
+                        "content": "Write C in every box in the second row from the top"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:55:09.616366",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:54:04.013030",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:55:28.174479",
+                    "action": {
+                        "type": "clue",
+                        "content": "Now put a C in every box underneath this row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:55:48.364153",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:54:04.013030",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:56:05.711180",
+                    "action": {
+                        "type": "clue",
+                        "content": "Now put a C in every box in the bottom row "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:56:24.937243",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-04T17:54:04.013030",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:56:29.056557",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:56:29.879038",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-04T17:56:30.118401",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    }
+]

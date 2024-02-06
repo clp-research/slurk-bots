@@ -1,0 +1,6 @@
+{"data": {}, "date_created": "2024-02-05T13:09:39.846935", "date_modified": null, "event": "join", "id": 4778176, "receiver_id": null, "room_id": 3581, "user_id": 4586}
+{"data": {}, "date_created": "2024-02-05T13:09:40.754236", "date_modified": null, "event": "join", "id": 4778182, "receiver_id": null, "room_id": 3581, "user_id": 4585}
+{"data": {"broadcast": false, "command": "Hola?"}, "date_created": "2024-02-05T13:09:55.083909", "date_modified": null, "event": "command", "id": 4778229, "receiver_id": null, "room_id": 3581, "user_id": 4585}
+{"data": {"broadcast": false, "command": "ready"}, "date_created": "2024-02-05T13:10:01.685539", "date_modified": null, "event": "command", "id": 4778233, "receiver_id": null, "room_id": 3581, "user_id": 4586}
+{"data": {}, "date_created": "2024-02-05T13:10:27.337358", "date_modified": null, "event": "leave", "id": 4778234, "receiver_id": null, "room_id": 3581, "user_id": 4585}
+{"data": {}, "date_created": "2024-02-05T13:10:49.361297", "date_modified": null, "event": "leave", "id": 4778241, "receiver_id": null, "room_id": 3581, "user_id": 4586}

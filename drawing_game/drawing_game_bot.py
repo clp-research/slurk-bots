@@ -82,6 +82,7 @@ class DrawingBot(TaskBot):
     task_id = None
     """The ID of the room where users for this task are waiting."""
     waiting_room = None
+    LOG.debug(f"Waiting room is {waiting_room}")
 
     def __init__(self, *args, **kwargs):
         """
@@ -175,6 +176,7 @@ class DrawingBot(TaskBot):
                  "receiver_id": user_id,
                  },
             )
+        LOG.debug(f"Received token values are {self.received_waiting_token}")
         self.close_game(room_id)
 
     def on_task_room_creation(self, data):
@@ -1220,7 +1222,7 @@ class DrawingBot(TaskBot):
         """Generate token that will be sent to each player."""
         LOG.debug("Triggered confirmation_code")
         confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
-        LOG.debug(f'confirmation token is {confirmation_token}')
+        LOG.debug(f'confirmation token is {confirmation_token, room_id, status}')
         points = self.sessions[room_id].points
         # post confirmation token to logs
         self.log_event(

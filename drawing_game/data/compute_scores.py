@@ -82,7 +82,7 @@ def compute_scores(episode_interactions: Dict) -> None:
             break
 
         # check if the turn includes the Player 2 message
-        # in case the turn doesn't include an item and index position 4, it means the game has been aborted
+        # in case the turn doesn't include at least 3 messages, it means the game has been aborted
         if len(turn) < 3:
             aborted = True
             break

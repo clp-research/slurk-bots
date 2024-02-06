@@ -1,0 +1,358 @@
+[
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-02-04T18:03:10.112820",
+        "date_modified": null,
+        "event": "round",
+        "id": 4777207,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:03:52.325292",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777216,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this is something that you buy, like groceries"
+        },
+        "date_created": "2024-02-04T18:03:52.382798",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777217,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "flower"
+        },
+        "date_created": "2024-02-04T18:04:09.272558",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777223,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:05:12.025650",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777239,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this word means making a resource available"
+        },
+        "date_created": "2024-02-04T18:05:12.083841",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777240,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "root"
+        },
+        "date_created": "2024-02-04T18:05:49.961690",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777246,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:06:06.224329",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777262,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "it is something that is provided"
+        },
+        "date_created": "2024-02-04T18:06:06.283826",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777263,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "dairy"
+        },
+        "date_created": "2024-02-04T18:06:54.401046",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777269,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-02-04T18:06:54.915722",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4777274,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-02-04T18:06:54.981040",
+        "date_modified": null,
+        "event": "round",
+        "id": 4777276,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:08:26.496938",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777289,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this is a person like you and me, maybe a runner"
+        },
+        "date_created": "2024-02-04T18:08:26.556349",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777290,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "athlet"
+        },
+        "date_created": "2024-02-04T18:09:45.629594",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777296,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:10:24.526727",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777312,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "like a sprinter or high jumper"
+        },
+        "date_created": "2024-02-04T18:10:24.583909",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777313,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "athlete"
+        },
+        "date_created": "2024-02-04T18:10:42.111920",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777319,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "athlete"
+        },
+        "date_created": "2024-02-04T18:10:42.624496",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4777324,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-02-04T18:10:42.691197",
+        "date_modified": null,
+        "event": "round",
+        "id": 4777326,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:11:07.545672",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777339,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this word means when a place has a good feeling"
+        },
+        "date_created": "2024-02-04T18:11:07.603274",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777340,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "paradise"
+        },
+        "date_created": "2024-02-04T18:11:35.132773",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777346,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:12:01.188084",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777362,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "more general, when you feel a good mood in a place, a bar maybe"
+        },
+        "date_created": "2024-02-04T18:12:01.246252",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777363,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "laughing"
+        },
+        "date_created": "2024-02-04T18:12:28.343092",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777369,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-02-04T18:13:18.677640",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4777385,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "you could also say it has a good vibe, or it is..."
+        },
+        "date_created": "2024-02-04T18:13:18.735260",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4777386,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "relaxing"
+        },
+        "date_created": "2024-02-04T18:14:24.214905",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4777392,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-02-04T18:14:24.737573",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4777397,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-02-04T18:14:24.801408",
+        "date_modified": null,
+        "event": "round",
+        "id": 4777399,
+        "receiver_id": null,
+        "room_id": 3572,
+        "user_id": null
+    }
+]
