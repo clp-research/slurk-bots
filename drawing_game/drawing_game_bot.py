@@ -209,28 +209,15 @@ class DrawingBot(TaskBot):
         self.log_event(
             "confirmation_log",
             {
-                "status_txt": "no partner",
+                "status_txt": "no_partner",
                 "token": completion_token,
                 "reward": 0,
                 "user_id": user_id,
             },
             room["id"],
         )
+        LOG.debug(f'Confirmation token is {completion_token}')
 
-        if user_id not in self.received_waiting_token:
-            # create token and send it to user
-            self.confirmation_code(room['id'], status="no_partner")
-            sleep(2)
-            self.received_waiting_token.add(user_id)
-        else:
-            self.sio.emit(
-                "text",
-                {"message": "You won't be remunerated for further waiting time.",
-                 "room": room['id'],
-                 "receiver_id": user_id,
-                 },
-            )
-        LOG.debug(f"Received token values are {self.received_waiting_token}")
         # remove user from new task_room
         self.remove_user_from_room(user_id, room["id"])
         self.sessions[room_id].set_game_over(True)
@@ -1280,31 +1267,65 @@ class DrawingBot(TaskBot):
             )
             self.process_move(room_id, 1)
 
-    def confirmation_code(self, room_id, status):
+    def confirmation_code(self, room_id, status, user_id=None):
         """Generate token that will be sent to each player."""
         LOG.debug("Triggered confirmation_code")
-        confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
-        LOG.debug(f'confirmation token is {confirmation_token, room_id, status}')
         points = self.sessions[room_id].points
-        # post confirmation token to logs
-        self.log_event(
-            "confirmation_log",
-            {"status_txt": status, "token": confirmation_token, "reward": points},
-            room_id,
-        )
+        if user_id is not None:
+            confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            LOG.debug(f'confirmation token is {confirmation_token, room_id, status, user_id}')
 
-        # Or check in wordle how the user is given the link to prolific
-        self.sio.emit(
-            "text",
-            {
-                "message": f"This is your token:  **{confirmation_token}** <br>"
-                           "Please remember to save it "
-                           "before you close this browser window. "
-                ,
-                "room": room_id,
-                "html": True
-            },
-        )
+            # Or check in wordle how the user is given the link to prolific
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"This is your token:  **{confirmation_token}** <br>"
+                               "Please remember to save it "
+                               "before you close this browser window. "
+                    ,
+                    "receiver_id": user_id,
+                    "room": room_id,
+                    "html": True
+                },
+            )
+            # post confirmation token to logs
+            self.log_event(
+                "confirmation_log",
+                {"status_txt": status, "token": confirmation_token, "reward": points, "receiver_id": user_id},
+                room_id,
+            )
+            return
+        for user in self.sessions[room_id].players:
+            completion_token = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=6)
+            )
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=(
+                            "The experiment is over, please remember to "
+                            "save your token before you close this browser window. "
+                            f"Your token: **{completion_token}**"
+                        ),
+                    ),
+                    "receiver_id": user["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+
+            self.log_event(
+                "confirmation_log",
+                {
+                    "status_txt": status,
+                    "token": completion_token,
+                    "reward": self.sessions[room_id].points,
+                    "receiver_id": user["id"],
+                },
+                room_id,
+            )
 
     def _show_prolific_link(self, room, receiver, token=None):
 
