@@ -15,7 +15,7 @@ import socketio
 
 from .config import TASK_GREETING, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, \
     INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
-    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, PROLIFIC_URL
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, PROLIFIC_URL, COLOR_MESSAGE, STANDARD_COLOR
 
 from .gridmanager import GridManager
 from templates import TaskBot
@@ -153,30 +153,87 @@ class DrawingBot(TaskBot):
 
     def _no_partner(self, room_id, user_id):
         """Handle the situation that a participant waits in vain."""
-        self.sessions[room_id].set_game_over(True)
-        # if user_id not in self.received_waiting_token:
+        LOG.debug('Triggered _no_partner')
+
+        # get layout_id
+        response = requests.get(
+            f"{self.uri}/tasks/{self.task_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        layout_id = response.json()["layout_id"]
+
+        # create a new task room for this user
+        room = requests.post(
+            f"{self.uri}/rooms",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"layout_id": layout_id},
+        )
+        room = room.json()
+
+        # remove user from waiting_room
+        self.remove_user_from_room(user_id, self.waiting_room)
+
+        # move user to new task room
+        response = requests.post(
+            f"{self.uri}/users/{user_id}/rooms/{room['id']}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not let user join room: {response.status_code}")
+            exit(4)
+
+        sleep(1)
+
+        completion_token = "".join(
+            random.choices(string.ascii_uppercase + string.digits, k=6)
+        )
+
         self.sio.emit(
             "text",
-            {"message": "Unfortunately we could not find a partner for you!",
-             "room": room_id,
-             "receiver_id": user_id,
-             },
+            {
+                "message": COLOR_MESSAGE.format(
+                    color=STANDARD_COLOR,
+                    message=(
+                        "Unfortunately we could not find a partner for you!<br>"
+                        "Please remember to "
+                        "save your token before you close this browser window. "
+                        f"Your token: **{completion_token}**"
+                    ),
+                ),
+                "receiver_id": user_id,
+                "room": room["id"],
+                "html": True,
+            },
+        )
+
+        self.log_event(
+            "confirmation_log",
+            {
+                "status_txt": "no partner",
+                "token": completion_token,
+                "reward": 0,
+                "user_id": user_id,
+            },
+            room["id"],
         )
 
         if user_id not in self.received_waiting_token:
             # create token and send it to user
-            self.confirmation_code(room_id, status="no_partner")
+            self.confirmation_code(room['id'], status="no_partner")
             sleep(2)
             self.received_waiting_token.add(user_id)
         else:
             self.sio.emit(
                 "text",
                 {"message": "You won't be remunerated for further waiting time.",
-                 "room": room_id,
+                 "room": room['id'],
                  "receiver_id": user_id,
                  },
             )
         LOG.debug(f"Received token values are {self.received_waiting_token}")
+        # remove user from new task_room
+        self.remove_user_from_room(user_id, room["id"])
+        self.sessions[room_id].set_game_over(True)
         self.close_game(room_id)
 
     def on_task_room_creation(self, data):
@@ -202,6 +259,11 @@ class DrawingBot(TaskBot):
             )
             timer.start()
             self.sessions[room_id].timer = timer
+
+            # Cancel waiting timer if there is one
+            if self.waiting_timer:
+                LOG.debug('Cancel waiting timer')
+                self.waiting_timer.cancel()
 
             # add players
             self.sessions[room_id].players = []
@@ -1223,11 +1285,11 @@ class DrawingBot(TaskBot):
         LOG.debug("Triggered confirmation_code")
         confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
         LOG.debug(f'confirmation token is {confirmation_token, room_id, status}')
-        # points = self.sessions[room_id].points
+        points = self.sessions[room_id].points
         # post confirmation token to logs
         self.log_event(
             "confirmation_log",
-            {"status_txt": status, "token": confirmation_token},
+            {"status_txt": status, "token": confirmation_token, "reward": points},
             room_id,
         )
 
@@ -1264,6 +1326,30 @@ class DrawingBot(TaskBot):
              "receiver_id": receiver
              }
         )
+
+    def remove_user_from_room(self, user_id, room_id):
+        response = requests.get(
+            f"{self.uri}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+            response.raise_for_status()
+        etag = response.headers["ETag"]
+
+        try:
+            response = requests.delete(
+                f"{self.uri}/users/{user_id}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            LOG.debug("Removing user from task room was successful.")
+        except:
+            LOG.debug(f"User {user_id} not in room {room_id}")
 
     def close_game(self, room_id):
         """Erase any data structures no longer necessary."""
