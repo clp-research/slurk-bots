@@ -315,6 +315,9 @@ class WordleBot2 (TaskBot):
                                 f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
 
                             # start timer since user left the room
+                            logging.debug(
+                                f"Starting Timer: left room for user {curr_usr['name']}"
+                            )
                             self.sessions[room_id].timer.user_left(curr_usr["id"])
 
                 else:
@@ -874,12 +877,14 @@ class WordleBot2 (TaskBot):
         )
 
     def timeout_close_game(self, room_id, status):
+        # added on febr 6 from coco (see note, room id is not found after 2 users disconnected)
+        if room_id in self.sessions:
 
-        self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
-                                  room_id)
-        for player in self.sessions[room_id].players:
-            self.confirmation_code(room_id, status, player["id"])
-        self.close_game(room_id)
+            self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
+                                      room_id)
+            for player in self.sessions[room_id].players:
+                self.confirmation_code(room_id, status, player["id"])
+            self.close_game(room_id)
 
     def timeout_waiting_room(self, user):
         # get layout_id
