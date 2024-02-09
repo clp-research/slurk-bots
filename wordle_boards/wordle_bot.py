@@ -209,11 +209,16 @@ class WordleBot2 (TaskBot):
             critic_index = 1 - guesser_index
             session.players[critic_index]["role"] = "critic"
             session.critic = session.players[critic_index]["id"]
-            self.log_event("player_critic", session.players[critic_index], room_id)
+            # self.log_event("player_critic", session.players[critic_index], room_id)
+            # need to think
+            self.log_event("player", session.players[critic_index], room_id)
+
 
         session.players[guesser_index]["role"] = "guesser"
         session.guesser = session.players[guesser_index]["id"]
-        self.log_event("player_guesser", session.players[guesser_index], room_id)
+        # self.log_event("player_guesser", session.players[guesser_index], room_id)
+        # need to think
+        self.log_event("player", session.players[guesser_index], room_id)
 
     def register_callbacks(self):
         @self.sio.event
@@ -554,7 +559,7 @@ class WordleBot2 (TaskBot):
 
         if word != guess:
             self.log_event("FALSE_GUESS", {"content": guess}, room_id)
-            self.log_event("turn", dict(), room_id)
+            # self.log_event("turn", dict(), room_id)
 
         if (word == guess) or (remaining_guesses == 1):
             sleep(2)
@@ -563,7 +568,8 @@ class WordleBot2 (TaskBot):
             if word == guess:
                 result, points = ("win", 1)
                 self.log_event("CORRECT_GUESS", {"content": guess}, room_id)
-                self.log_event("turn", dict(), room_id)
+                # no sense because new round is started
+                # self.log_event("turn", dict(), room_id)
 
             # self.timers_per_room[room_id].done_timer.cancel()
 
@@ -582,6 +588,11 @@ class WordleBot2 (TaskBot):
             )
             self.update_reward(room_id, points)
             self.load_next_game(room_id)
+            return
+        else:
+            # is it ok?
+            # next turn is only possible if this is not the last guess, and the guess is false
+            self.log_event("turn", dict(), room_id)
 
     def load_next_game(self, room_id):
         """
@@ -661,6 +672,7 @@ class WordleBot2 (TaskBot):
         else:
             round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
             self.log_event("round", {"number": round_n}, room_id)
+            self.log_event("turn", dict(), room_id)
 
             self.sessions[room_id].round_guesses_history = []
             if self.version == "critic":
