@@ -156,7 +156,7 @@ class WordleBot2 (TaskBot):
             for usr in data["users"]:
                 self.received_waiting_token.discard(usr["id"])
 
-            self.log_event("bot_version_log", {"version": self.version}, room_id)
+            self.log_event("bot_version", {"version": self.version}, room_id)
 
             # create image items for this room
             LOG.debug("Create data for the new task room...")
@@ -534,7 +534,7 @@ class WordleBot2 (TaskBot):
                                       room_id, self.sessions[room_id].critic)
             return
 
-        self.log_event("turn", dict(), room_id)
+        # self.log_event("turn", dict(), room_id)
         self.log_event("GUESS", {"content": guess}, room_id)
         self.sessions[room_id].round_guesses_history.append(guess)
         self.sio.emit(
@@ -554,14 +554,16 @@ class WordleBot2 (TaskBot):
 
         if word != guess:
             self.log_event("FALSE_GUESS", {"content": guess}, room_id)
+            self.log_event("turn", dict(), room_id)
 
-        elif (word == guess) or (remaining_guesses == 1):
+        if (word == guess) or (remaining_guesses == 1):
             sleep(2)
             result, points = ("lose", 0)
 
             if word == guess:
                 result, points = ("win", 1)
                 self.log_event("CORRECT_GUESS", {"content": guess}, room_id)
+                self.log_event("turn", dict(), room_id)
 
             # self.timers_per_room[room_id].done_timer.cancel()
 
