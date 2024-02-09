@@ -229,6 +229,8 @@ class TabooBot(TaskBot):
                                 },
                             )
                             # cancel round timer and start left_user timer
+                            if self.sessions[room_id].timer:
+                                self.sessions[room_id].timer.cancel()
                             LOG.debug("Start timer: user left")
                             self.sessions[room_id].left_room_timer[curr_usr["id"]] = Timer(
                                 LEAVE_TIMER * 60, self.user_did_not_rejoin,
@@ -663,7 +665,8 @@ class TabooBot(TaskBot):
         self.sessions[room_id].timer = timer
 
     def timeout_close_game(self, room_id):
-        self.sessions[room_id].set_game_over(True)
+        LOG.debug('Triggered timeout_close_game')
+        # self.sessions[room_id].set_game_over(True)
         self.sio.emit(
             "text",
             {"message": "Closing session because of inactivity", "room": room_id},
@@ -672,7 +675,8 @@ class TabooBot(TaskBot):
         self.close_game(room_id)
 
     def user_did_not_rejoin(self, room_id):
-        self.sessions[room_id].set_game_over(True)
+        LOG.debug('Triggered user_did_not_rejoin')
+        # self.sessions[room_id].set_game_over(True)
         self.sio.emit(
             "text",
             {"message": "Your partner didn't rejoin, you will receive a token so you can get paid for your time",
