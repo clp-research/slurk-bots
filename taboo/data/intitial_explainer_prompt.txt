@@ -11,8 +11,6 @@
 
     3) Type the description of the word in the chat at the bottom of the page.
 
-    Guesses from the other player will start with "GUESS".
-
     End conditions:
 
     i) If you use the target word or a related word in your description, then you lose.
@@ -21,4 +19,4 @@
 
     Important: You are under time pressure, give short descriptions that are to the point!
 
-    Please type "/ready" to begin the game!
+    Please type "ready" to begin the game!

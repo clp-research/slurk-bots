@@ -1,5 +1,7 @@
 from collections import defaultdict
 import logging
+from threading import Timer
+
 import requests
 from time import sleep
 import random
@@ -16,11 +18,9 @@ nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
 
-from typing import List, Dict, Tuple, Any
-from datetime import datetime
-
 from taboo.dataloader import Dataloader
-from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM
+from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM, COLOR_MESSAGE, STANDARD_COLOR, \
+    STARTING_POINTS, TIMEOUT_TIMER, LEAVE_TIMER
 from templates import TaskBot
 
 
@@ -36,8 +36,23 @@ class Session:
         self.guesses = 0
         self.explainer = None
         self.guesser = None
+        self.points = {
+            "score": STARTING_POINTS,
+            "history": [
+                {"correct": 0, "wrong": 0, "warnings": 0}
+            ]
+        }
+        self.timer = None
+        self.left_room_timer = dict()
+        self._game_over = False
 
     # log next turn?
+    @property
+    def game_over(self):
+        return self._game_over
+
+    def set_game_over(self, new_value: bool):
+        self._game_over = new_value
 
     def close(self):
         pass
@@ -108,6 +123,8 @@ class TabooBot(TaskBot):
             # create a new session for these users
             # this_session = self.sessions[room_id]
             self.sessions.create_session(room_id)
+            LOG.debug("Create timeout timer for this session")
+            self.start_timeout_timer(room_id)
 
             for usr in data["users"]:
                 self.sessions[room_id].players.append(
@@ -182,52 +199,105 @@ class TabooBot(TaskBot):
             if user["id"] == self.user:
                 return
 
+            if room_id == self.waiting_room:
+                pass
+
             # someone joined a task room
-            if event == "join":
-                # inform everyone about the join event
-                self.send_message_to_user(
-                    f"{user['name']} has joined the game.", room_id
-                )
+            elif room_id in self.sessions:
+                LOG.debug(f"The players in task room are {self.sessions[room_id].players}")
+                curr_usr, other_usr = self.sessions[room_id].players
+                if curr_usr["id"] != data["user"]["id"]:
+                    curr_usr, other_usr = other_usr, curr_usr
 
-            elif event == "leave":
-                self.send_message_to_user(f"{user['name']} has left the game.", room_id)
+                if event == "join":
+                    # inform everyone about the join event
+                    self.send_message_to_user(
+                        f"{user['name']} has joined the game.", room_id
+                    )
 
-                # # remove this user from current session
-                # this_session.players = list(
-                #     filter(
-                #         lambda player: player["id"] != user["id"], this_session.players
-                #     )
-                # )
-                #
+                elif event == "leave":
+                    if room_id in self.sessions:
+                        if not self.sessions[room_id].game_over:
+                            # send a message to the user that was left alone
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "message": f"{curr_usr['name']} has left the game. "
+                                               "Please wait a bit, your partner may rejoin.",
+                                    "room": room_id,
+                                    "receiver_id": other_usr["id"],
+                                },
+                            )
+                            # cancel round timer and start left_user timer
+                            LOG.debug("Start timer: user left")
+                            self.sessions[room_id].left_room_timer[curr_usr["id"]] = Timer(
+                                LEAVE_TIMER * 60, self.user_did_not_rejoin,
+                                args=[room_id],
+                            )
+                            self.sessions[room_id].left_room_timer[curr_usr["id"]].start()
+
+
+                    # # remove this user from current session
+                    # this_session.players = list(
+                    #     filter(
+                    #         lambda player: player["id"] != user["id"], this_session.players
+                    #     )
+                    # )
+                    #
 
         @self.sio.event
         def command(data):
-            if data["command"].startswith("ready"):
-                self._command_ready(data["room"], data["user"]["id"])
-
-        @self.sio.event
-        def text_message(data):
             """Parse user commands."""
             LOG.debug(
-                f"Received a message from {data['user']['name']}: {data['message']}"
+                f"Received a command from {data['user']['name']}: {data['command']}"
             )
-
+            user_id = data["user"]['id']
+            command = data["command"]
             room_id = data["room"]
-            user_id = data["user"]["id"]
+            this_session = self.sessions[room_id]
 
             if user_id == self.user:
                 return
 
-            this_session = self.sessions[room_id]
-            if data['message'] == "ready":
-                self.send_message_to_user(
-                    f"Pleasy type a backshlash before ready, like this '/ready'",
-                    room_id,
-                    user_id
-                )
+            if this_session.game_over:
+                LOG.debug("Game is over, do not reset timeout timer after sending command")
+            else:
+                # Reset timer
+                LOG.debug("Reset timeout timer after sending command")
+                if this_session.timer:
+                    this_session.timer.cancel()
+                self.start_timeout_timer(room_id)
+
+            if data["command"].startswith("ready"):
+                self._command_ready(room_id, user_id)
                 return
-
-
+            # elif isinstance(data["command"], dict):
+            #     if command["event"] == "confirm_ready":
+            #         if command["answer"] == "yes":
+            #             self.sio.emit(
+            #                 "text",
+            #                 {
+            #                     "message": "You typed 'YES",
+            #                     "room": room_id,
+            #                     "receiver_id": user_id,
+            #                 },
+            #             )
+            #             # self._command_ready(room_id, user_id)
+            #         elif data["command"]["answer"] == "no":
+            #             self.sio.emit(
+            #                 "text",
+            #                 {
+            #                     "message": "You typed 'NO'",
+            #                     "room": room_id,
+            #                     "receiver_id": user_id,
+            #                 },
+            #             )
+            #             # self.send_message_to_user(STANDARD_COLOR,
+            #             #                           "OK, read the instructions carefully and click on <yes> once you are ready.",
+            #             #                           room_id,
+            #             #                           user_id,
+            #             #                           )
+            #         return
             if this_session.explainer == user_id:
 
                 # EXPLAINER sent a message
@@ -235,9 +305,22 @@ class TabooBot(TaskBot):
 
                 # means that new turn began
                 self.log_event("turn", dict(), room_id)
-
                 # log event
-                self.log_event("clue", {"content": data['message']}, room_id)
+                self.log_event("clue", {"content": data['command']}, room_id)
+
+                #todo: 258-269 I added extra bc message not displayed
+                for user in this_session.players:
+                    if user["id"] != user_id:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "room": room_id,
+                                "receiver_id": this_session.guesser,
+                                "message": f"{command}",
+                                "impersonate": user_id,
+                            },
+                            callback=self.message_callback,
+                        )
 
                 self.set_message_privilege(self.sessions[room_id].explainer, False)
                 self.make_input_field_unresponsive(
@@ -246,7 +329,7 @@ class TabooBot(TaskBot):
 
                 # check whether the explainer used a forbidden word
                 explanation_errors = check_clue(
-                    data["message"].lower(),
+                    data["command"].lower(),
                     this_session.word_to_guess,
                     this_session.words[0]["related_word"],
                 )
@@ -254,7 +337,7 @@ class TabooBot(TaskBot):
 
                 if explanation_errors:
                     message = explanation_errors[0]["message"]
-                    self.update_interactions(room_id, "invalid clue", message)
+                    # self.update_interactions(room_id, "invalid clue", message)
                     self.log_event("invalid clue", {"content": message}, room_id)
                     # for player in this_session.players:
                     self.send_message_to_user(
@@ -270,8 +353,21 @@ class TabooBot(TaskBot):
 
             else:
                 # GUESSER sent the command
-                self.update_interactions(room_id, "guess", data['message'])
-                self.log_event("guess", {"content": data['message']}, room_id)
+                # self.update_interactions(room_id, "guess", data['message'])
+                self.log_event("guess", {"content": data['command']}, room_id)
+
+                for user in this_session.players:
+                    if user["id"] != user_id:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "room": room_id,
+                                "receiver_id": this_session.explainer,
+                                "message": f"{command}",
+                                "impersonate": user_id,
+                            },
+                            callback=self.message_callback,
+                        )
 
                 self.set_message_privilege(self.sessions[room_id].explainer, True)
                 # assign writing rights to other user
@@ -281,15 +377,15 @@ class TabooBot(TaskBot):
                 self.make_input_field_unresponsive(
                     room_id, self.sessions[room_id].guesser
                 )
-                valid_guess = check_guess(data["message"].lower())
+                valid_guess = check_guess(data["command"].lower())
 
                 if not valid_guess:
-                    self.update_interactions(room_id, "invalid format", "abort game")
-                    self.log_event("invalid format", {"content": data['message']}, room_id)
+                    # self.update_interactions(room_id, "invalid format", "abort game")
+                    self.log_event("invalid format", {"content": data['command']}, room_id)
 
                     # for player in this_session.players:
                     self.send_message_to_user(
-                            f"INVALID GUESS: '{data['message'].lower()}' contains more than one word."
+                            f"INVALID GUESS: '{data['command'].lower()}' contains more than one word."
                             f"You both lose this round.",
                             room_id,
                             # player["id"],
@@ -297,14 +393,14 @@ class TabooBot(TaskBot):
                     self.load_next_game(room_id)
                     return
 
-                guess_is_correct = correct_guess(this_session.word_to_guess, data["message"].lower())
+                guess_is_correct = correct_guess(this_session.word_to_guess, data["command"].lower())
                 #  before 2 guesses were made
                 if this_session.guesses < 2:
                     this_session.guesses += 1
                     if guess_is_correct:
 
-                        self.update_interactions(room_id, "correct guess", data["message"].lower())
-                        self.log_event("correct guess", {"content": data['message']}, room_id)
+                        # self.update_interactions(room_id, "correct guess", data["message"].lower())
+                        self.log_event("correct guess", {"content": data['command']}, room_id)
 
                         # for player in this_session.players:
                         self.send_message_to_user(
@@ -319,7 +415,7 @@ class TabooBot(TaskBot):
                     else:
                         # guess is false
                         self.send_message_to_user(
-                                f"GUESS {this_session.guesses} '{data['message']}' was false",
+                                f"GUESS {this_session.guesses} '{data['command']}' was false",
                                 room_id,
                                 # player["id"],
                             )
@@ -345,17 +441,16 @@ class TabooBot(TaskBot):
                     # last guess (guess number 3)
                     this_session.guesses += 1
                     if guess_is_correct:
-                        self.update_interactions(room_id, "correct guess", data["message"].lower())
-                        self.log_event("correct guess", {"content": data['message']}, room_id)
+                        # self.update_interactions(room_id, "correct guess", data["message"].lower())
+                        self.log_event("correct guess", {"content": data['command']}, room_id)
                         self.send_message_to_user(
                                 f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
                                 f"You both win this round.",
                                 room_id,
                             )
-
                     else:
                         # guess is false
-                        self.update_interactions(room_id, "max turns reached", str(3))
+                        # self.update_interactions(room_id, "max turns reached", str(3))
                         self.log_event("max turns reached", {"content": str(3)}, room_id)
                         self.send_message_to_user(
                                 f"3 guesses have been already used. You lost this round.",
@@ -369,13 +464,40 @@ class TabooBot(TaskBot):
 
                 # assign writing rights to other user
                 self.give_writing_rights(room_id, self.sessions[room_id].explainer)
-
                 self.set_message_privilege(self.sessions[room_id].guesser, False)
 
                 # make input field unresponsive
                 self.make_input_field_unresponsive(
                     room_id, self.sessions[room_id].guesser
                 )
+
+        @self.sio.event
+        def text_message(data):
+            """Parse user commands."""
+            LOG.debug(
+                f"Received a message from {data['user']['name']}: {data['message']}"
+            )
+
+            room_id = data["room"]
+            user_id = data["user"]["id"]
+
+            if user_id == self.user:
+                return
+
+            self.sio.emit(
+                "text", {"message": data['message'], "room": room_id, }
+            )
+
+            this_session = self.sessions[room_id]
+
+            if this_session.game_over:
+                LOG.debug("Game is over, do not reset timeout timer after sending command")
+            else:
+                # Reset timer
+                LOG.debug("Reset timeout timer after sending message")
+                if this_session.timer:
+                    this_session.timer.cancel()
+                self.start_timeout_timer(room_id)
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
@@ -408,7 +530,18 @@ class TabooBot(TaskBot):
     def start_round(self, room_id):
 
         if not self.sessions[room_id].words:
-            self.close_room(room_id)
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": (
+                        "The experiment is over 🎉 🎉 thank you very much for your time!"
+                    ),
+                    "html": True,
+                },
+            )
+            self.confirmation_code(room_id, 'success')
+            self.close_game(room_id)
         # send the instructions for the round
         round_n = (WORDS_PER_ROOM - len(self.sessions[room_id].words)) + 1
 
@@ -443,15 +576,123 @@ class TabooBot(TaskBot):
         self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
 
     def load_next_game(self, room_id):
+        LOG.debug(f"Triggered load_next_game for room {room_id}")
         # word list gets smaller, next round starts
         self.sessions[room_id].words.pop(0)
         if not self.sessions[room_id].words:
-            self.close_room(room_id)
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": (
+                        "The experiment is over 🎉 🎉 thank you very much for your time!"
+                    ),
+                    "html": True,
+                },
+            )
+            self.confirmation_code(room_id, 'success')
+            self.close_game(room_id)
             return
         self.start_round(room_id)
 
-    def close_room(self, room_id):
+    def confirmation_code(self, room_id, status, user_id=None):
+        """Generate token that will be sent to each player."""
+        LOG.debug("Triggered confirmation_code")
+        points = self.sessions[room_id].points
+        if user_id is not None:
+            confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            LOG.debug(f'confirmation token is {confirmation_token, room_id, status, user_id}')
 
+            # Or check in wordle how the user is given the link to prolific
+            self.sio.emit(
+                "text",
+                {
+                    "message": f"This is your token:  **{confirmation_token}** <br>"
+                               "Please remember to save it "
+                               "before you close this browser window. "
+                    ,
+                    "receiver_id": user_id,
+                    "room": room_id,
+                    "html": True
+                },
+            )
+            # post confirmation token to logs
+            self.log_event(
+                "confirmation_log",
+                {"status_txt": status, "token": confirmation_token, "reward": points, "receiver_id": user_id},
+                room_id,
+            )
+            return
+        for user in self.sessions[room_id].players:
+            completion_token = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=6)
+            )
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=(
+                            "Please remember to "
+                            "save your token before you close this browser window. "
+                            f"Your token: **{completion_token}**"
+                        ),
+                    ),
+                    "receiver_id": user["id"],
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+
+            self.log_event(
+                "confirmation_log",
+                {
+                    "status_txt": status,
+                    "token": completion_token,
+                    "reward": self.sessions[room_id].points,
+                    "receiver_id": user["id"],
+                },
+                room_id,
+            )
+
+    def start_timeout_timer(self, room_id):
+        timer = Timer(
+            TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+        )
+        timer.start()
+        self.sessions[room_id].timer = timer
+
+    def timeout_close_game(self, room_id):
+        self.sessions[room_id].set_game_over(True)
+        self.sio.emit(
+            "text",
+            {"message": "Closing session because of inactivity", "room": room_id},
+        )
+        self.confirmation_code(room_id, status='timeout')
+        self.close_game(room_id)
+
+    def user_did_not_rejoin(self, room_id):
+        self.sessions[room_id].set_game_over(True)
+        self.sio.emit(
+            "text",
+            {"message": "Your partner didn't rejoin, you will receive a token so you can get paid for your time",
+             "room": room_id},
+        )
+        self.confirmation_code(room_id, status='user_left')
+        self.close_game(room_id)
+
+    def close_game(self, room_id):
+        LOG.debug(f"Triggered close game for room {room_id}")
+
+        self.sio.emit(
+            "text",
+            {
+                "message": "The room is closing, see you next time 👋",
+                "room": room_id
+            }
+        )
+
+        self.sessions[room_id].set_game_over(True)
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
@@ -563,7 +804,6 @@ def check_guess(user_guess):
 
 def correct_guess(correct_answer, user_guess):
     return correct_answer in user_guess
-
 
 
 def remove_punctuation(text: str) -> str:

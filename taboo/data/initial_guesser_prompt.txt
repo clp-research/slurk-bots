@@ -11,8 +11,6 @@
 
     3) After each trial you will get a new hint from the other player.
 
-    Explanations from your partner will start with "HINT".
-
     Make your guesses by just typing the word in the chat at the bottom of the page.
 
-     Please type "/ready" to begin the game!
+     Please type "ready" to begin the game!
