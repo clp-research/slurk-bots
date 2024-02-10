@@ -247,7 +247,7 @@ class TabooBot(TaskBot):
                     )
                     # cancel leave timers if any
                     LOG.debug("Cancel timer: user joined")
-                    self.user_joined(curr_usr["id"])
+                    self.user_joined(room_id, curr_usr["id"])
 
                 elif event == "leave":
                     if room_id in self.sessions:
