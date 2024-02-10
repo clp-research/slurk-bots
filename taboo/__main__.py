@@ -245,6 +245,9 @@ class TabooBot(TaskBot):
                     self.send_message_to_user(
                         f"{user['name']} has joined the game.", room_id
                     )
+                    # cancel leave timers if any
+                    LOG.debug("Cancel timer: user joined")
+                    self.user_joined(curr_usr["id"])
 
                 elif event == "leave":
                     if room_id in self.sessions:
@@ -707,6 +710,13 @@ class TabooBot(TaskBot):
         )
         self.confirmation_code(room_id, status='timeout')
         self.close_game(room_id)
+
+    def user_joined(self, room_id, user):
+        timer = self.sessions[room_id].left_room_timer.get(user)
+        if timer is not None:
+            self.sessions[room_id].left_room_timer[user].cancel()
+        else:
+            pass
 
     def user_did_not_rejoin(self, room_id):
         LOG.debug('Triggered user_did_not_rejoin')
