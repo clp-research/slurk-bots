@@ -104,12 +104,7 @@ class DrawingBot(TaskBot):
         self.sessions = SessionManager(Session)
         self.received_waiting_token = set()
         self.waiting_timer = None
-        self.left_room_timer = dict()
         self.data_collection = PLATFORM
-        self.interactions = {
-            "players": {},
-            "turns": []
-        }
         self.scores = {
             "turn scores": {},
             "episode scores": {},
@@ -134,10 +129,10 @@ class DrawingBot(TaskBot):
         self.confirmation_code(room_id, status='timeout')
         self.close_game(room_id)
 
-    def user_joined(self, user):
-        timer = self.left_room_timer.get(user)
+    def user_joined(self, room_id, user):
+        timer = self.sessions[room_id].left_room_timer.get(user)
         if timer is not None:
-            self.left_room_timer[user].cancel()
+            self.sessions[room_id].left_room_timer[user].cancel()
         else:
             pass
 
@@ -220,7 +215,7 @@ class DrawingBot(TaskBot):
 
         # remove user from new task_room
         self.remove_user_from_room(user_id, room["id"])
-        self.sessions[room_id].set_game_over(True)
+        # self.sessions[room_id].set_game_over(True)
         self.close_game(room_id)
 
     def on_task_room_creation(self, data):
@@ -367,7 +362,7 @@ class DrawingBot(TaskBot):
 
                     # cancel leave timers if any
                     LOG.debug("Cancel timer: user joined")
-                    self.user_joined(curr_usr["id"])
+                    self.user_joined(room_id, curr_usr["id"])
 
                 elif data["type"] == "leave":
                     if room_id in self.sessions:
@@ -382,7 +377,10 @@ class DrawingBot(TaskBot):
                                     "receiver_id": other_usr["id"],
                                 },
                             )
+
                             # cancel round timer and start left_user timer
+                            if self.sessions[room_id].timer:
+                                self.sessions[room_id].timer.cancel()
                             LOG.debug("Start timer: user left")
                             self.sessions[room_id].left_room_timer[curr_usr["id"]] = Timer(
                                 LEAVE_TIMER * 60, self.user_did_not_rejoin,
