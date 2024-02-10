@@ -13,14 +13,14 @@ import string
 
 nltk.download("stopwords", quiet=True)
 EN_STOPWORDS = stopwords.words("english")
-nltk.download("wordnet")
+# nltk.download("wordnet")
 nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
 
 from taboo.dataloader import Dataloader
 from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM, COLOR_MESSAGE, STANDARD_COLOR, \
-    STARTING_POINTS, TIMEOUT_TIMER, LEAVE_TIMER
+    STARTING_POINTS, TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER
 from templates import TaskBot
 
 
@@ -104,15 +104,17 @@ class TabooBot(TaskBot):
         needed arguments for the init event to send to the JS frontend
         """
         self.waiting_room = waiting_room
+        self.waiting_timer = None
 
     def on_task_room_creation(self, data):
         """This function is executed as soon as 2 users are paired and a new
         task took is created
         """
+        nltk.download("wordnet")
         room_id = data["room"]
 
         task_id = data["task"]
-        logging.debug(f"A new task room was created with id: {data['room']}")
+        logging.debug(f"A new room was created with id: {data['room']}")
         logging.debug(f"A new task room was created with task id: {data['task']}")
         logging.debug(f"This bot is looking for task id: {self.task_id}")
         if task_id is not None and task_id == self.task_id:
@@ -125,6 +127,11 @@ class TabooBot(TaskBot):
             self.sessions.create_session(room_id)
             LOG.debug("Create timeout timer for this session")
             self.start_timeout_timer(room_id)
+
+            # Cancel waiting timer if there is one
+            if self.waiting_timer:
+                LOG.debug('Cancel waiting timer')
+                self.waiting_timer.cancel()
 
             for usr in data["users"]:
                 self.sessions[room_id].players.append(
@@ -200,7 +207,31 @@ class TabooBot(TaskBot):
                 return
 
             if room_id == self.waiting_room:
-                pass
+                if self.waiting_timer is not None:
+                    LOG.debug("Waiting Timer stopped.")
+                    self.waiting_timer.cancel()
+                if data["type"] == "join":
+                    LOG.debug("Waiting Timer started.")
+                    self.waiting_timer = Timer(
+                        WAITING_PARTNER_TIMER * 60,
+                        self._no_partner,
+                        args=[room_id, data["user"]["id"]],
+                    )
+                    self.waiting_timer.start()
+                    sleep(10)
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": f"If nobody shows up within "
+                                       f"{WAITING_PARTNER_TIMER} minutes, I will give "
+                                       f"you a submission link, so that you "
+                                       f"can get paid for your waiting time."
+                            ,
+                            "room": room_id,
+                            "receiver_id": data['user']['id'],
+                            "html": True,
+                        },
+                    )
 
             # someone joined a task room
             elif room_id in self.sessions:
@@ -600,7 +631,10 @@ class TabooBot(TaskBot):
     def confirmation_code(self, room_id, status, user_id=None):
         """Generate token that will be sent to each player."""
         LOG.debug("Triggered confirmation_code")
-        points = self.sessions[room_id].points
+        if room_id in self.sessions:
+            points = self.sessions[room_id].points
+        else:
+            points = 0
         if user_id is not None:
             confirmation_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
             LOG.debug(f'confirmation token is {confirmation_token, room_id, status, user_id}')
@@ -685,18 +719,114 @@ class TabooBot(TaskBot):
         self.confirmation_code(room_id, status='user_left')
         self.close_game(room_id)
 
-    def close_game(self, room_id):
-        LOG.debug(f"Triggered close game for room {room_id}")
+    def _no_partner(self, room_id, user_id):
+        """Handle the situation that a participant waits in vain."""
+        LOG.debug('Triggered _no_partner')
+
+        # get layout_id
+        response = requests.get(
+            f"{self.uri}/tasks/{self.task_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        layout_id = response.json()["layout_id"]
+
+        # create a new task room for this user
+        room = requests.post(
+            f"{self.uri}/rooms",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"layout_id": layout_id},
+        )
+        room = room.json()
+
+        # remove user from waiting_room
+        self.remove_user_from_room(user_id, self.waiting_room)
+
+        # move user to new task room
+        response = requests.post(
+            f"{self.uri}/users/{user_id}/rooms/{room['id']}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not let user join room: {response.status_code}")
+            exit(4)
+
+        sleep(1)
+
+        completion_token = "".join(
+            random.choices(string.ascii_uppercase + string.digits, k=6)
+        )
 
         self.sio.emit(
             "text",
             {
-                "message": "The room is closing, see you next time 👋",
-                "room": room_id
-            }
+                "message": COLOR_MESSAGE.format(
+                    color=STANDARD_COLOR,
+                    message=(
+                        "Unfortunately we could not find a partner for you!<br>"
+                        "Please remember to "
+                        "save your token before you close this browser window. "
+                        f"Your token: **{completion_token}**<br>The room is closing, see you next time 👋"
+                    ),
+                ),
+                "receiver_id": user_id,
+                "room": room["id"],
+                "html": True,
+            },
         )
 
-        self.sessions[room_id].set_game_over(True)
+        self.log_event(
+            "confirmation_log",
+            {
+                "status_txt": "no_partner",
+                "token": completion_token,
+                "reward": 0,
+                "user_id": user_id,
+            },
+            room["id"],
+        )
+        LOG.debug(f'Confirmation token is {completion_token}')
+
+        # remove user from new task_room
+        self.remove_user_from_room(user_id, room["id"])
+        # self.sessions[room_id].set_game_over(True)
+        self.close_game(room_id)
+
+    def remove_user_from_room(self, user_id, room_id):
+        response = requests.get(
+            f"{self.uri}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+            response.raise_for_status()
+        etag = response.headers["ETag"]
+
+        try:
+            response = requests.delete(
+                f"{self.uri}/users/{user_id}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                LOG.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            LOG.debug("Removing user from task room was successful.")
+        except:
+            LOG.debug(f"User {user_id} not in room {room_id}")
+
+    def close_game(self, room_id):
+        LOG.debug(f"Triggered close game for room {room_id}")
+
+        if room_id in self.sessions:
+            self.sio.emit(
+                "text",
+                {
+                    "message": "The room is closing, see you next time 👋",
+                    "room": room_id
+                }
+            )
+            self.sessions[room_id].set_game_over(True)
         self.room_to_read_only(room_id)
 
         # remove any task room specific objects
