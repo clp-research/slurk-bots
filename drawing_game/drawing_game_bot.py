@@ -236,11 +236,7 @@ class DrawingBot(TaskBot):
             # create a new session for these users
             self.sessions.create_session(room_id)
             LOG.debug("Create timeout timer for this session")
-            timer = Timer(
-                TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-            )
-            timer.start()
-            self.sessions[room_id].timer = timer
+            self.start_timeout_timer(room_id)
 
             # Cancel waiting timer if there is one
             if self.waiting_timer:
@@ -416,11 +412,7 @@ class DrawingBot(TaskBot):
                 LOG.debug("Reset timeout timer after sending message")
                 if this_session.timer:
                     this_session.timer.cancel()
-                timer = Timer(
-                    TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-                )
-                timer.start()
-                self.sessions[room_id].timer = timer
+                self.start_timeout_timer(room_id)
 
         @self.sio.event
         def command(data):
@@ -446,11 +438,7 @@ class DrawingBot(TaskBot):
                 LOG.debug("Reset timeout timer after sending command")
                 if this_session.timer:
                     this_session.timer.cancel()
-                timer = Timer(
-                    TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-                )
-                timer.start()
-                self.sessions[room_id].timer = timer
+                self.start_timeout_timer(room_id)
 
             if isinstance(data["command"], str):
                 command = data['command'].lower()
@@ -1264,6 +1252,13 @@ class DrawingBot(TaskBot):
                 },
             )
             self.process_move(room_id, 1)
+
+    def start_timeout_timer(self, room_id):
+        timer = Timer(
+            TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
+        )
+        timer.start()
+        self.sessions[room_id].timer = timer
 
     def confirmation_code(self, room_id, status, user_id=None):
         """Generate token that will be sent to each player."""
