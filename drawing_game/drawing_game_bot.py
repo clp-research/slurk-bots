@@ -321,12 +321,7 @@ class DrawingBot(TaskBot):
             if room_id in self.sessions:
                 # read out task greeting
                 message = self.sessions[room_id].task_greeting
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": message, "room": room_id, "html": True,
-                    }
-                )
+                self.send_message_from_bot(room_id, message)
 
         @self.sio.event
         def status(data):
@@ -621,6 +616,33 @@ class DrawingBot(TaskBot):
                         },
                     )
 
+    def send_message_from_bot(self, room_id, message, user_id=None):
+        if user_id:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=message,
+                    ),
+                    "receiver_id": user_id,
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message=message,
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
         # identify the user that has not sent this event
@@ -631,14 +653,7 @@ class DrawingBot(TaskBot):
         # only one user has sent /ready repetitively
         if curr_usr["status"] in {"ready", "done"}:
             sleep(0.5)
-            self.sio.emit(
-                "text",
-                {
-                    "message": "You have already typed 'ready'.",
-                    "receiver_id": curr_usr["id"],
-                    "room": room_id,
-                },
-            )
+            self.send_message_from_bot(room_id, "You have already typed 'ready'.", curr_usr["id"])
             return
         curr_usr["status"] = "ready"
 
@@ -646,28 +661,11 @@ class DrawingBot(TaskBot):
         if other_usr["status"] == "joined":
             sleep(0.5)
             # give the user feedback that his command arrived
-            self.sio.emit(
-                "text",
-                {
-                    "message": "Now, waiting for your partner to type 'ready'.",
-                    "receiver_id": curr_usr["id"],
-                    "room": room_id,
-                },
-            )
-            self.sio.emit(
-                "text",
-                {
-                    "message": "Your partner is ready. Please, type 'ready'!",
-                    "room": room_id,
-                    "receiver_id": other_usr["id"],
-                },
-            )
+            self.send_message_from_bot(room_id, "Now, waiting for your partner to type 'ready'.", curr_usr["id"])
+            self.send_message_from_bot(room_id, "Your partner is ready. Please, type 'ready'!", other_usr["id"])
         else:
             # both users are ready and the game begins
-            self.sio.emit(
-                "text",
-                {"message": "Woo-Hoo! The game will begin now.", "room": room_id},
-            )
+            self.send_message_from_bot(room_id, "Woo-Hoo! The game will begin now.")
             sleep(1)
             self.sessions[room_id].game_round = 1
             LOG.debug(f"Game round {self.sessions[room_id].game_round}")
@@ -691,13 +689,7 @@ class DrawingBot(TaskBot):
         self.get_grid(room_id)
         self.update_rights(room_id, True, False)
         self.show_item(room_id)
-
-        self.sio.emit(
-            "text",
-            {"message": "Wait for the first instruction.",
-             "room": room_id,
-             "receiver_id": this_session.player_b["id"]}
-        )
+        self.send_message_from_bot(room_id, "Wait for the first instruction.", this_session.player_b["id"])
 
     def get_grid(self, room_id):
         grid_type = random.choice(['compact', 'random'])
@@ -803,16 +795,22 @@ class DrawingBot(TaskBot):
                 grid = html_f.read()
                 this_session.html_grid = grid
 
-            self.sio.emit(
-                "text",
-                {
-                    "message": f"This is the target grid: <br><br>{grid}<br><br>You have 25 turns "
-                               f"to describe it to the other player.<br><br>Give the first instruction.",
-                    "receiver_id": this_session.player_a["id"],
-                    "room": room_id,
-                    "html": True
-                },
+            self.send_message_from_bot(
+                room_id,
+                f"This is the target grid: <br><br>{grid}<br><br>You have 25 turns "
+                f"to describe it to the other player.<br><br>Give the first instruction.",
+                this_session.player_a["id"]
             )
+            # self.sio.emit(
+            #     "text",
+            #     {
+            #         "message": f"This is the target grid: <br><br>{grid}<br><br>You have 25 turns "
+            #                    f"to describe it to the other player.<br><br>Give the first instruction.",
+            #         "receiver_id": this_session.player_a["id"],
+            #         "room": room_id,
+            #         "html": True
+            #     },
+            # )
 
             # Display on display area
             response = requests.patch(
