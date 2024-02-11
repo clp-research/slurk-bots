@@ -122,10 +122,7 @@ class DrawingBot(TaskBot):
 
     def timeout_close_game(self, room_id):
         self.sessions[room_id].set_game_over(True)
-        self.sio.emit(
-            "text",
-            {"message": "Closing session because of inactivity", "room": room_id},
-        )
+        self.send_message_from_bot(room_id, "Closing session because of inactivity")
         self.confirmation_code(room_id, status='timeout')
         self.close_game(room_id)
 
@@ -138,10 +135,9 @@ class DrawingBot(TaskBot):
 
     def user_did_not_rejoin(self, room_id):
         self.sessions[room_id].set_game_over(True)
-        self.sio.emit(
-            "text",
-            {"message": "Your partner didn't rejoin, you will receive a token so you can get paid for your time",
-             "room": room_id},
+        self.send_message_from_bot(
+            room_id,
+            "Your partner didn't rejoin, you will receive a token so you can get paid for your time"
         )
         self.confirmation_code(room_id, status='user_left')
         self.close_game(room_id)
@@ -183,22 +179,13 @@ class DrawingBot(TaskBot):
             random.choices(string.ascii_uppercase + string.digits, k=6)
         )
 
-        self.sio.emit(
-            "text",
-            {
-                "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR,
-                    message=(
-                        "Unfortunately we could not find a partner for you!<br>"
-                        "Please remember to "
-                        "save your token before you close this browser window. "
-                        f"Your token: **{completion_token}**"
-                    ),
-                ),
-                "receiver_id": user_id,
-                "room": room["id"],
-                "html": True,
-            },
+        self.send_message_from_bot(
+            room_id,
+            "Unfortunately we could not find a partner for you!<br>"
+            "Please remember to "
+            "save your token before you close this browser window. "
+            f"Your token: **{completion_token}**",
+            user_id
         )
 
         self.log_event(
@@ -360,18 +347,13 @@ class DrawingBot(TaskBot):
                     )
                     self.waiting_timer.start()
                     sleep(10)
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"If nobody shows up within "
-                                       f"{WAITING_PARTNER_TIMER} minutes, I will give "
-                                       f"you a submission link, so that you "
-                                       f"can get paid for your waiting time."
-                            ,
-                            "room": room_id,
-                            "receiver_id": data['user']['id'],
-                            "html": True,
-                        },
+                    self.send_message_from_bot(
+                        room_id,
+                        f"If nobody shows up within "
+                        f"{WAITING_PARTNER_TIMER} minutes, I will give "
+                        f"you a submission link, so that you "
+                        f"can get paid for your waiting time.",
+                        data['user']['id']
                     )
 
             # someone joined a task room
@@ -383,13 +365,10 @@ class DrawingBot(TaskBot):
 
                 if data["type"] == "join":
                     # inform game partner about the rejoin event
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": f"{curr_usr['name']} has joined the game. ",
-                            "room": room_id,
-                            "receiver_id": other_usr["id"],
-                        },
+                    self.send_message_from_bot(
+                        room_id,
+                        f"{curr_usr['name']} has joined the game. ",
+                        other_usr["id"]
                     )
 
                     # cancel leave timers if any
@@ -400,14 +379,11 @@ class DrawingBot(TaskBot):
                     if room_id in self.sessions:
                         if not self.sessions[room_id].game_over:
                             # send a message to the user that was left alone
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": f"{curr_usr['name']} has left the game. "
-                                               "Please wait a bit, your partner may rejoin.",
-                                    "room": room_id,
-                                    "receiver_id": other_usr["id"],
-                                },
+                            self.send_message_from_bot(
+                                room_id,
+                                f"{curr_usr['name']} has left the game. "
+                                "Please wait a bit, your partner may rejoin.",
+                                other_usr["id"]
                             )
 
                             # cancel round timer and start left_user timer
@@ -484,15 +460,7 @@ class DrawingBot(TaskBot):
                     command = data["command"]["guess"]
                     if command.strip() == "":
                         self.log_event("invalid format", '', room_id)
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "**You need to provide a guess!**",
-                                "room": room_id,
-                                "receiver_id": user_id,
-                                "html": True,
-                            },
-                        )
+                        self.send_message_from_bot(room_id, "**You need to provide a guess!**", user_id)
                         return
                     else:
                         this_session.drawn_grid = command.strip()
@@ -501,36 +469,18 @@ class DrawingBot(TaskBot):
                         self.log_event("guess", {"content": this_session.drawn_grid, "from": data['user']['name'],
                                                  "to": "GM"}, room_id)
                         LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "You saved your current drawn grid successfully.",
-                                "room": room_id,
-                                "receiver_id": user_id
-                            },
-                        )
+                        self.send_message_from_bot(room_id, "You saved your current drawn grid successfully.", user_id)
 
                         if 0 < this_session.current_turn < 25:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": "What is your next instruction? <br>Type 'DONE' if you finished.",
-                                    "room": room_id,
-                                    "receiver_id": this_session.player_a["id"],
-                                    "html": True
-                                },
+                            self.send_message_from_bot(
+                                room_id,
+                                "What is your next instruction? <br>Type 'DONE' if you finished.",
+                                this_session.player_a["id"]
                             )
                             self.update_rights(room_id, True, False)
                             return
                         elif this_session.current_turn == 25:
-                            self.sio.emit(
-                                "text",
-                                {
-                                    "message": "You ran out of turns!",
-                                    "room": room_id,
-                                    "receiver_id": this_session.player_a["id"]
-                                },
-                            )
+                            self.send_message_from_bot(room_id, "You ran out of turns!", this_session.player_a["id"])
                             self._command_done(room_id, user_id, data['command'])
                             return
 
@@ -540,14 +490,7 @@ class DrawingBot(TaskBot):
                     self._command_ready(room_id, user_id)
                     return
                 else:
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "Sorry, but I do not understand this command.",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+                    self.send_message_from_bot(room_id, "Sorry, but I do not understand this command.", user_id)
                     return
 
             # player_a
@@ -591,14 +534,7 @@ class DrawingBot(TaskBot):
                     LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                     sleep(1)
                     if this_session.current_turn < 25:
-                        self.sio.emit(
-                            "text",
-                            {
-                                "message": "What is your next instruction?",
-                                "room": room_id,
-                                "receiver_id": this_session.player_a["id"],
-                            },
-                        )
+                        self.send_message_from_bot(room_id, "What is your next instruction?", this_session.player_a["id"])
                         self.update_rights(room_id, True, False)
                         sleep(1)
                         return
@@ -607,14 +543,7 @@ class DrawingBot(TaskBot):
                         self._command_done(room_id, user_id, command)
                 else:
                     self.log_event("invalid format", {"content": data['command']}, room_id)
-                    self.sio.emit(
-                        "text",
-                        {
-                            "message": "Sorry, but I do not understand this command. Try again.",
-                            "room": room_id,
-                            "receiver_id": user_id,
-                        },
-                    )
+                    self.send_message_from_bot(room_id, "Sorry, but I do not understand this command. Try again.", user_id)
 
     def send_message_from_bot(self, room_id, message, user_id=None):
         if user_id:
@@ -801,16 +730,6 @@ class DrawingBot(TaskBot):
                 f"to describe it to the other player.<br><br>Give the first instruction.",
                 this_session.player_a["id"]
             )
-            # self.sio.emit(
-            #     "text",
-            #     {
-            #         "message": f"This is the target grid: <br><br>{grid}<br><br>You have 25 turns "
-            #                    f"to describe it to the other player.<br><br>Give the first instruction.",
-            #         "receiver_id": this_session.player_a["id"],
-            #         "room": room_id,
-            #         "html": True
-            #     },
-            # )
 
             # Display on display area
             response = requests.patch(
@@ -1051,26 +970,7 @@ class DrawingBot(TaskBot):
 
         # Was this the last game round?
         if self.sessions[room_id].game_round >= 4:
-            # self.sio.emit(
-            #     "text",
-            #     {
-            #         "room": room_id,
-            #         "message": (
-            #             f"**That was the last round! Your final score is {this_session.points['score']}**"
-            #         ),
-            #         "html": True,
-            #     },
-            # )
-            self.sio.emit(
-                "text",
-                {
-                    "room": room_id,
-                    "message": (
-                        "The experiment is over 🎉 🎉 thank you very much for your time!"
-                    ),
-                    "html": True,
-                },
-            )
+            self.send_message_from_bot(room_id, "The experiment is over 🎉 🎉 thank you very much for your time!")
             self.confirmation_code(room_id, status='success')
             self.close_game(room_id)
             return
@@ -1081,19 +981,8 @@ class DrawingBot(TaskBot):
                 {"command": {"command": "drawing_game_init"}, "room": room_id,
                  "receiver_id": this_session.player_b["id"]}
             )
-            self.sio.emit(
-                "text",
-                {"message": f"You are starting round {this_session.game_round} out of 3",
-                 "room": room_id,
-                 }
-            )
-            self.sio.emit(
-                "text",
-                {"message": "Wait for a new instruction.",
-                 "room": room_id,
-                 "receiver_id": this_session.player_b["id"]}
-            )
-
+            self.send_message_from_bot(room_id, f"You are starting round {this_session.game_round} out of 3")
+            self.send_message_from_bot(room_id, "Wait for a new instruction.")
             this_session.current_turn = 1
 
             # Show new grid instance to player_a
@@ -1161,15 +1050,7 @@ class DrawingBot(TaskBot):
         LOG.debug(command)
         this_session = self.sessions[room_id]
 
-        self.sio.emit(
-            "text",
-            {
-                "message":
-                    "Let's check how well you did...",
-                "room": room_id,
-                "html": True,
-            },
-        )
+        self.send_message_from_bot(room_id, "Let's check how well you did...")
 
         # get the grid for this room and the grid drawn by player_b
         target_grid = this_session.target_grid
@@ -1186,15 +1067,7 @@ class DrawingBot(TaskBot):
         LOG.debug(f"DRAWN GRID is {this_session.drawn_grid}")
 
         if this_session.drawn_grid is None:
-            self.sio.emit(
-                "text",
-                {
-                    "message":
-                        f"**You didn't provide an answer. You lost this round**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
+            self.send_message_from_bot(room_id, "**You two didn't provide an answer. You lost this round**")
             self.process_move(room_id, 0)
             return
 
@@ -1202,32 +1075,16 @@ class DrawingBot(TaskBot):
             result = 'LOST'
             points = 0
 
-            self.sio.emit(
-                "text",
-                {
-                    "message":
-                        f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {self.sessions[room_id].points['score']}**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
+            self.send_message_from_bot(room_id, f"**YOU both {result}! For this round you get {points} points. "
+                        f"Your total score is: {self.sessions[room_id].points['score']}**")
             self.process_move(room_id, 0)
         else:
             self.log_event("correct guess", {"content": drawn_grid}, room_id)
             result = 'WON'
             points = 1
 
-            self.sio.emit(
-                "text",
-                {
-                    "message":
-                        f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {self.sessions[room_id].points['score']+points}**",
-                    "room": room_id,
-                    "html": True,
-                },
-            )
+            self.send_message_from_bot(room_id, f"**YOU both {result}! For this round you get {points} points. "
+                        f"Your total score is: {self.sessions[room_id].points['score']+points}**")
             self.process_move(room_id, 1)
 
     def start_timeout_timer(self, room_id):
@@ -1246,18 +1103,12 @@ class DrawingBot(TaskBot):
             LOG.debug(f'confirmation token is {confirmation_token, room_id, status, user_id}')
 
             # Or check in wordle how the user is given the link to prolific
-            self.sio.emit(
-                "text",
-                {
-                    "message": f"This is your token:  **{confirmation_token}** <br>"
-                               "Please remember to save it "
-                               "before you close this browser window. "
-                    ,
-                    "receiver_id": user_id,
-                    "room": room_id,
-                    "html": True
-                },
-            )
+            self.send_message_from_bot(
+                room_id,
+                f"This is your token:  **{confirmation_token}** <br>"
+                "Please remember to save it before you close this browser window. ",
+                user_id)
+
             # post confirmation token to logs
             self.log_event(
                 "confirmation_log",
@@ -1269,21 +1120,12 @@ class DrawingBot(TaskBot):
             completion_token = "".join(
                 random.choices(string.ascii_uppercase + string.digits, k=6)
             )
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR,
-                        message=(
-                            "The experiment is over, please remember to "
-                            "save your token before you close this browser window. "
-                            f"Your token: **{completion_token}**"
-                        ),
-                    ),
-                    "receiver_id": user["id"],
-                    "room": room_id,
-                    "html": True,
-                },
+            self.send_message_from_bot(
+                room_id,
+                "The experiment is over, please remember to "
+                "save your token before you close this browser window. "
+                f"Your token: **{completion_token}**",
+                user["id"]
             )
 
             self.log_event(
@@ -1309,13 +1151,10 @@ class DrawingBot(TaskBot):
             token = response.json().get("name", f"{room}–{receiver}")
 
         url = f"{PROLIFIC_URL}{token}"
-        self.sio.emit(
-            "text",
-            {"message": f"Please return to <a href='{url}'>{url}</a> to complete your submission.",
-             "room": room,
-             "html": True,
-             "receiver_id": receiver
-             }
+        self.send_message_from_bot(
+            room,
+            f"Please return to <a href='{url}'>{url}</a> to complete your submission.",
+            receiver
         )
 
     def remove_user_from_room(self, user_id, room_id):
@@ -1346,14 +1185,7 @@ class DrawingBot(TaskBot):
         """Erase any data structures no longer necessary."""
         LOG.debug(f"Triggered close game for room {room_id}")
 
-        self.sio.emit(
-            "text",
-            {
-                "message": "The room is closing, see you next time 👋",
-                "room": room_id
-            }
-        )
-
+        self.send_message_from_bot(room_id, "The room is closing, see you next time 👋")
         self.sessions[room_id].set_game_over(True)
         self.room_to_read_only(room_id)
         self.sessions.clear_session(room_id)
