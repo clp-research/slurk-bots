@@ -262,6 +262,47 @@ class DrawingBot(TaskBot):
                 response.raise_for_status()
             LOG.debug("Sending drawing game bot to new room was successful.")
 
+            this_session = self.sessions[room_id]
+
+            # Choose players A and B
+            self.sessions[room_id].pick_player_a()
+            self.sessions[room_id].pick_player_b()
+            for user in this_session.players:
+                if user["id"] == this_session.player_a["id"]:
+                    LOG.debug(f'{user["name"]} is player A.')
+                else:
+                    LOG.debug(f'{user["name"]} is player B.')
+
+            # Prepare interface
+            # Resize screen
+            self.move_divider(room_id, 30, 70)
+            self.sio.emit(
+                "message_command",
+                {"command": {"command": "drawing_game_init"}, "room": room_id,
+                 "receiver_id": this_session.player_b["id"]},
+            )
+            self.send_individualised_instructions(room_id)
+
+            # Display keyboard instructions for player_b
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/grid_title",
+                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b["id"]},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.request_feedback(response, "set typing instructions title")
+            keyboard_instructions = this_session.keyboard_instructions
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {
+                        "event": "send_keyboard_instructions",
+                        "message": f"{keyboard_instructions}",
+                    },
+                    "room": room_id,
+                    "receiver_id": this_session.player_b["id"],
+                }
+            )
+
     @staticmethod
     def request_feedback(response, action):
         if not response.ok:
@@ -638,15 +679,6 @@ class DrawingBot(TaskBot):
         this_session.current_turn = 1
         LOG.debug(f"Starting first turn out of 25.")
         self.log_event("round", {"number": this_session.game_round}, room_id)
-
-        # 2) Choose players A and B
-        self.sessions[room_id].pick_player_a()
-        self.sessions[room_id].pick_player_b()
-        for user in this_session.players:
-            if user["id"] == this_session.player_a["id"]:
-                LOG.debug(f'{user["name"]} is player A.')
-            else:
-                LOG.debug(f'{user["name"]} is player B.')
         self.log_event('players', {
             "GM": "DrawingBot",
             "Player_1": self.sessions[room_id].player_a["name"],
@@ -654,26 +686,8 @@ class DrawingBot(TaskBot):
                        room_id
                        )
 
-        # 3) Load grid
+        # 2) Load grid
         self.get_grid(room_id)
-
-        # 4) Prepare interface
-        # Resize screen
-        self.move_divider(room_id, 30, 70)
-        self.sio.emit(
-            "message_command",
-            {"command": {"command": "drawing_game_init"}, "room": room_id, "receiver_id": this_session.player_b["id"]},
-        )
-
-        # # Restart timer
-        # if this_session.timer:
-        #     this_session.timer.cancel()
-        # timer = Timer(
-        #     TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-        # )
-        # timer.start()
-        # this_session.timer.timer = timer
-        self.send_individualised_instructions(room_id)
         self.update_rights(room_id, True, False)
         self.show_item(room_id)
 
@@ -780,20 +794,6 @@ class DrawingBot(TaskBot):
             with open(Path(f"{ROOT}/data/{room_id}_grid.html")) as html_f:
                 grid = html_f.read()
                 this_session.html_grid = grid
-            # self.sessions[room_id].html_grid = grid
-            # self.sio.emit(
-            #     "message_command",
-            #     {
-            #         "command": {
-            #             "event": "send_html_grid",
-            #             "message": f"{grid}"
-            #         },
-            #         "room": room_id,
-            #         "receiver_id": this_session.player_b["id"],
-            #         "html": True
-            #     }
-            # )
-            #
 
             self.sio.emit(
                 "text",
@@ -813,7 +813,7 @@ class DrawingBot(TaskBot):
                 headers={"Authorization": f"Bearer {self.token}"},
             )
             self.request_feedback(response, "set grid title")
-            # grid = this_session.target_grid.replace('\n', '<br>')
+
             self.sio.emit(
                 "message_command",
                 {
@@ -823,26 +823,6 @@ class DrawingBot(TaskBot):
                     },
                     "room": room_id,
                     "receiver_id": this_session.player_a["id"],
-                }
-            )
-
-            # Display keyboard instructions for player_b
-            response = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/grid_title",
-                json={"text": "ATTENTION! How to type", "receiver_id": this_session.player_b["id"]},
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "set typing instructions title")
-            keyboard_instructions = this_session.keyboard_instructions
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "send_keyboard_instructions",
-                        "message": f"{keyboard_instructions}",
-                    },
-                    "room": room_id,
-                    "receiver_id": this_session.player_b["id"],
                 }
             )
 
