@@ -692,6 +692,13 @@ class DrawingBot(TaskBot):
         self.update_rights(room_id, True, False)
         self.show_item(room_id)
 
+        self.sio.emit(
+            "text",
+            {"message": "Wait for the first instruction.",
+             "room": room_id,
+             "receiver_id": this_session.player_b["id"]}
+        )
+
     def get_grid(self, room_id):
         grid_type = random.choice(['compact', 'random'])
         this_session = self.sessions[room_id]
@@ -1089,15 +1096,6 @@ class DrawingBot(TaskBot):
                  "receiver_id": this_session.player_b["id"]}
             )
 
-            # # restart round_timer #todo: simplify in function
-            # LOG.debug("Reset timeout timer")
-            # if this_session.timer:
-            #     this_session.timer.cancel()
-            # timer = Timer(
-            #     TIMEOUT_TIMER * 60, self.timeout_close_game, args=[room_id]
-            # )
-            # timer.start()
-            # this_session.timer.timer = timer
             this_session.current_turn = 1
 
             # Show new grid instance to player_a
