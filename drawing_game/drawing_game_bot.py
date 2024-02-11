@@ -519,9 +519,10 @@ class DrawingBot(TaskBot):
                             self.sio.emit(
                                 "text",
                                 {
-                                    "message": "What is your next instruction?",
+                                    "message": "What is your next instruction? <br>Type 'DONE' if you finished.",
                                     "room": room_id,
-                                    "receiver_id": this_session.player_a["id"]
+                                    "receiver_id": this_session.player_a["id"],
+                                    "html": True
                                 },
                             )
                             self.update_rights(room_id, True, False)
