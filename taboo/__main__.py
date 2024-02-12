@@ -151,30 +151,22 @@ class TabooBot(TaskBot):
                     LOG.debug(f'{user["name"]} is the explainer.')
                 else:
                     LOG.debug(f'{user["name"]} is the guesser.')
-
-            response_e = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={
-                    "text": EXPLAINER_PROMPT,
-                    "receiver_id": self.sessions[room_id].explainer,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response_e.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response_e.raise_for_status()
-
-            response_g = requests.patch(
-                f"{self.uri}/rooms/{room_id}/text/instr",
-                json={
-                    "text": GUESSER_PROMPT,
-                    "receiver_id": self.sessions[room_id].guesser,
-                },
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            if not response_g.ok:
-                LOG.error(f"Could not set task instruction: {response.status_code}")
-                response_g.raise_for_status()
+            self.send_individualised_instructions(room_id)
+            # use sleep so that people first read the instructions!
+            # sleep(2)
+        self.sio.emit(
+            "text",
+            {
+                "message": (
+                    "Are you ready? <br>"
+                    "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
+                    "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
+                ),
+                "room": room_id,
+                # "receiver_id": player["id"],
+                "html": True,
+            },
+        )
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -245,6 +237,7 @@ class TabooBot(TaskBot):
                     self.send_message_to_user(
                         f"{user['name']} has joined the game.", room_id
                     )
+                    sleep(0.5)
                     # cancel leave timers if any
                     LOG.debug("Cancel timer: user joined")
                     self.user_joined(room_id, curr_usr["id"])
@@ -295,6 +288,21 @@ class TabooBot(TaskBot):
             if user_id == self.user:
                 return
 
+            if isinstance(data["command"], dict):
+                # commands from interface
+                event = data["command"]["event"]
+                if event == "confirm_ready":
+                    if data["command"]["answer"] == "yes":
+                        self._command_ready(data["room"], data["user"]["id"])
+                        return
+                    elif data["command"]["answer"] == "no":
+                        self.send_message_to_user(
+                            "OK, read the instructions carefully and click on <yes> once you are ready.",
+                            data["room"],
+                            data["user"]["id"],
+                        )
+                        return
+
             if this_session.game_over:
                 LOG.debug("Game is over, do not reset timeout timer after sending command")
             else:
@@ -335,9 +343,7 @@ class TabooBot(TaskBot):
             #             #                           )
             #         return
             if this_session.explainer == user_id:
-
                 # EXPLAINER sent a message
-                # self.update_interactions(room_id, "clue", data['message'])
 
                 # means that new turn began
                 self.log_event("turn", dict(), room_id)
@@ -373,14 +379,13 @@ class TabooBot(TaskBot):
 
                 if explanation_errors:
                     message = explanation_errors[0]["message"]
-                    # self.update_interactions(room_id, "invalid clue", message)
                     self.log_event("invalid clue", {"content": message}, room_id)
                     # for player in this_session.players:
                     self.send_message_to_user(
-                            f"{message}",
-                            room_id,
-                        )
-
+                        f"{message}",
+                        room_id,
+                    )
+                    self.update_reward(room_id, 0)
                     self.load_next_game(room_id)
                 else:
                     self.set_message_privilege(self.sessions[room_id].guesser, True)
@@ -440,12 +445,13 @@ class TabooBot(TaskBot):
 
                         # for player in this_session.players:
                         self.send_message_to_user(
-                                f"GUESS {this_session.guesses}: "
-                                f"'{this_session.word_to_guess}' was correct! "
-                                f"You both win this round.",
-                                room_id,
-                                # player["id"],
-                            )
+                            f"GUESS {this_session.guesses}: "
+                            f"'{this_session.word_to_guess}' was correct! "
+                            f"You both win this round.",
+                            room_id,
+                            # player["id"],
+                        )
+                        self.update_reward(room_id, 1)
                         self.load_next_game(room_id)
 
                     else:
@@ -458,15 +464,17 @@ class TabooBot(TaskBot):
 
                             # if player["id"] == this_session.explainer:
                         self.send_message_to_user(
-                                    f"Please provide a new description",
-                                    room_id,
-                                    this_session.explainer,
-                                )
+                            f"Please provide a new description",
+                            room_id,
+                            this_session.explainer,
+                        )
                         self.set_message_privilege(
                             self.sessions[room_id].explainer, True
                         )
                         # assign writing rights to other user
-                        self.give_writing_rights(room_id, self.sessions[room_id].explainer )
+                        self.give_writing_rights(
+                            room_id, self.sessions[room_id].explainer
+                        )
                         self.set_message_privilege(
                             self.sessions[room_id].guesser, False
                         )
@@ -480,18 +488,21 @@ class TabooBot(TaskBot):
                         # self.update_interactions(room_id, "correct guess", data["message"].lower())
                         self.log_event("correct guess", {"content": data['command']}, room_id)
                         self.send_message_to_user(
-                                f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
-                                f"You both win this round.",
-                                room_id,
-                            )
+                            f"GUESS {this_session.guesses}: {this_session.word_to_guess} was correct! "
+                            f"You both win this round.",
+                            room_id,
+                        )
+                        self.update_reward(room_id, 1)
+
                     else:
                         # guess is false
                         # self.update_interactions(room_id, "max turns reached", str(3))
                         self.log_event("max turns reached", {"content": str(3)}, room_id)
                         self.send_message_to_user(
-                                f"3 guesses have been already used. You lost this round.",
-                                room_id,
-                            )
+                            f"3 guesses have been already used. You lost this round.",
+                            room_id,
+                        )
+                        self.update_reward(room_id, 0)
                     # start new round (because 3 guesses were used)
                     self.load_next_game(room_id)
 
@@ -548,7 +559,6 @@ class TabooBot(TaskBot):
             self.send_message_to_user(
                 "You have already typed 'ready'.", room_id, curr_usr["id"]
             )
-
             return
         curr_usr["status"] = "ready"
 
@@ -564,7 +574,6 @@ class TabooBot(TaskBot):
             )
 
     def start_round(self, room_id):
-
         if not self.sessions[room_id].words:
             self.sio.emit(
                 "text",
@@ -842,6 +851,40 @@ class TabooBot(TaskBot):
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
 
+    def update_reward(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        score += reward
+        score = round(score, 2)
+        self.sessions[room_id].points["score"] = max(0, score)
+        self.update_title_points(room_id, reward)
+
+    def update_title_points(self, room_id, reward):
+        score = self.sessions[room_id].points["score"]
+        correct = self.sessions[room_id].points["history"][0]["correct"]
+        wrong = self.sessions[room_id].points["history"][0]["wrong"]
+        if reward == 0:
+            wrong += 1
+        elif reward == 1:
+            correct += 1
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/title",
+            json={
+                "text": f"Score: {score} 🏆 | Correct: {correct} ✅ | Wrong: {wrong} ❌"
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        self.sessions[room_id].points["history"][0]["correct"] = correct
+        self.sessions[room_id].points["history"][0]["wrong"] = wrong
+
+        self.request_feedback(response, "setting point stand in title")
+
+    def close_room(self, room_id):
+        self.room_to_read_only(room_id)
+
+        # remove any task room specific objects
+        self.sessions.clear_session(room_id)
+
     def room_to_read_only(self, room_id):
         """Set room to read only."""
         response = requests.patch(
@@ -873,6 +916,50 @@ class TabooBot(TaskBot):
                 {"message": f"{message}", "room": room},
             )
         # sleep(1)
+
+    def send_individualised_instructions(self, room_id):
+        this_session = self.sessions[room_id]
+
+        # Send explainer_ instructions to explainer
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={
+                "text": "Explain the taboo word",
+                "receiver_id": this_session.explainer,
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction title: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={"text": f"{EXPLAINER_PROMPT}", "receiver_id": this_session.explainer},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction: {response.status_code}")
+            response.raise_for_status()
+
+        # Send guesser_instructions to guesser
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr_title",
+            json={"text": "Guess the taboo word", "receiver_id": this_session.guesser},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction title: {response.status_code}")
+            response.raise_for_status()
+
+        response = requests.patch(
+            f"{self.uri}/rooms/{room_id}/text/instr",
+            json={"text": f"{GUESSER_PROMPT}", "receiver_id": this_session.guesser},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not set task instruction: {response.status_code}")
+            response.raise_for_status()
 
     def set_message_privilege(self, user_id, value):
         """
@@ -937,13 +1024,8 @@ class TabooBot(TaskBot):
         )
 
 
-    # def update_interactions(self, room_id, type_, value_):
-    #     turn_info = {"action": {"type": type_, "content": value_}}
-    #     self.sessions[room_id].interactions["turns"][self.sessions[room_id].log_current_turn].append(turn_info)
-
-
 def check_guess(user_guess):
-     return len(user_guess.split()) == 1
+    return len(user_guess.split()) == 1
 
 
 def correct_guess(correct_answer, user_guess):
