@@ -167,6 +167,17 @@ class TabooBot(TaskBot):
                 "html": True,
             },
         )
+        # self.sio.emit(
+        #     "message_command",
+        #     {
+        #         "command": {
+        #             "event": "send_grid",
+        #             "message": f"<br><br>{this_session.html_grid}",
+        #         },
+        #         "room": room_id,
+        #         "receiver_id": this_session.player_a["id"],
+        #     }
+        # )
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -288,21 +299,6 @@ class TabooBot(TaskBot):
             if user_id == self.user:
                 return
 
-            if isinstance(data["command"], dict):
-                # commands from interface
-                event = data["command"]["event"]
-                if event == "confirm_ready":
-                    if data["command"]["answer"] == "yes":
-                        self._command_ready(data["room"], data["user"]["id"])
-                        return
-                    elif data["command"]["answer"] == "no":
-                        self.send_message_to_user(
-                            "OK, read the instructions carefully and click on <yes> once you are ready.",
-                            data["room"],
-                            data["user"]["id"],
-                        )
-                        return
-
             if this_session.game_over:
                 LOG.debug("Game is over, do not reset timeout timer after sending command")
             else:
@@ -311,6 +307,24 @@ class TabooBot(TaskBot):
                 if this_session.timer:
                     this_session.timer.cancel()
                 self.start_timeout_timer(room_id)
+
+            if isinstance(data["command"], dict):
+                # commands from interface
+                event = data["command"]["event"]
+                LOG.debug(f"The event is {event}")
+                LOG.debug(f"The command is is {data['command']}")
+                if event == "confirm_ready":
+                    answer = data["command"]["answer"]
+                    LOG.debug(f"{answer}")
+                    if data["command"]["answer"] == "yes":
+                        self._command_ready(data["room"], data["user"]["id"])
+                    elif data["command"]["answer"] == "no":
+                        self.send_message_to_user(
+                            "OK, read the instructions carefully and click on <yes> once you are ready.",
+                            data["room"],
+                            data["user"]["id"],
+                        )
+                return
 
             if data["command"].startswith("ready"):
                 self._command_ready(room_id, user_id)
@@ -545,6 +559,7 @@ class TabooBot(TaskBot):
                 if this_session.timer:
                     this_session.timer.cancel()
                 self.start_timeout_timer(room_id)
+
 
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
