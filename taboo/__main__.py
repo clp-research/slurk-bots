@@ -621,6 +621,10 @@ class TabooBot(TaskBot):
         self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
             "target_word"
         ]
+        self.log_event('target word', {'content': self.sessions[room_id].word_to_guess}, room_id)
+        self.log_event('difficulty level', {'content': self.sessions[room_id].words[0][
+            "level"]}, room_id)
+        LOG.debug(f"The target word is {self.sessions[room_id].word_to_guess} with level {self.sessions[room_id].words[0]['level']}")
         taboo_words = ", ".join(self.sessions[room_id].words[0]["related_word"])
         self.sessions[room_id].guesses = 0
 

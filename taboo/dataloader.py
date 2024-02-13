@@ -14,7 +14,10 @@ class Dataloader(list):
         words_per_level = self._n // 3
         word_instances = self._read_board_file()
         for level in word_instances.keys():
-             self.extend(random.sample(list(word_instances[level]), words_per_level))
+            random_words = random.sample(list(word_instances[level]), words_per_level)
+            for word in random_words:
+                word['level'] = level
+            self.extend(random_words)
         return
 
     def _read_board_file(self):
@@ -27,10 +30,3 @@ class Dataloader(list):
         """sample random boards for a room"""
         self._sample_boards()
         random.shuffle(self)
-
-
-# if __name__ == "__main__":
-#     from pathlib import Path
-#     d = Dataloader(Path("data/level_words.json"), n=6)
-#     print(d[0]['related_word'])
-    # random.choice(list(d.keys()))
