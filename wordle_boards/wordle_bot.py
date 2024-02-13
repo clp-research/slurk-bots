@@ -560,7 +560,7 @@ class WordleBot2 (TaskBot):
         self.log_event("GUESS", {"content": guess}, room_id)
         self.sessions[room_id].round_guesses_history.append(guess)
         colors = check_guess(guess, self.sessions[room_id])
-        self.log_event("LETTER_FEEDBACK", {"content": f"{guess} {colors}"}, room_id)
+        self.log_event("LETTER_FEEDBACK", {"content": f"{(guess, colors)}"}, room_id)
         self.sio.emit(
             "message_command",
             {
