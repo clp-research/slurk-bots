@@ -611,7 +611,7 @@ class TabooBot(TaskBot):
         # try to log the round number
         self.log_event("round", {"number": round_n}, room_id)
 
-        self.send_message_to_user(f"Let's start round {round_n}", room_id)
+        self.send_message_to_user(f"Let's start round {round_n} of 6", room_id)
         self.send_message_to_user(
             "Wait a bit for the first hint about the word you need to guess",
             room_id,
