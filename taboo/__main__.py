@@ -74,8 +74,11 @@ class SessionManager(defaultdict):
 
     def clear_session(self, room_id):
         if room_id in self:
-            self[room_id].close()
+            self[room_id].timer.cancel()
+            for timer in self[room_id].left_room_timer.values():
+                timer.cancel()
             self.pop(room_id)
+
 
 
 class TabooBot(TaskBot):
@@ -862,7 +865,6 @@ class TabooBot(TaskBot):
             )
             self.sessions[room_id].set_game_over(True)
         self.room_to_read_only(room_id)
-
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
 
