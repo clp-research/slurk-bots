@@ -560,7 +560,7 @@ class WordleBot2 (TaskBot):
         self.log_event("GUESS", {"content": guess}, room_id)
         self.sessions[room_id].round_guesses_history.append(guess)
         colors = check_guess(guess, self.sessions[room_id])
-        self.log_event("LETTER_FEEDBACK", {"content": f"{(guess, colors)}"}, room_id)
+        self.log_event("LETTER_FEEDBACK", {"content": f"{guess} {colors}"}, room_id)
         self.sio.emit(
             "message_command",
             {
@@ -704,10 +704,12 @@ class WordleBot2 (TaskBot):
 
             self.sessions[room_id].word_letters = decompose(self.sessions[room_id].word_to_guess)
 
-            self.log_event("TARGET_WORD", {"content": self.sessions[room_id].word_to_guess,
-                                           "word_level" : self.sessions[room_id].words[0]["level"]},
+            self.log_event("TARGET_WORD", {"content": self.sessions[room_id].word_to_guess},
                                             room_id)
-            # log clue here as well?
+
+            self.log_event("WORD_FREQUENCY", {"content": self.sessions[room_id].words[0]["level"]},
+                                            room_id)
+
 
 
             self.send_message_to_user(STANDARD_COLOR,
