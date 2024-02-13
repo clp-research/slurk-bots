@@ -109,6 +109,8 @@ class Session:
 
         self.button_number = 0
 
+        self.word_letters = {}
+
     def close(self):
         self.timer.cancel_all_timers()
 
@@ -156,7 +158,7 @@ class WordleBot2 (TaskBot):
             for usr in data["users"]:
                 self.received_waiting_token.discard(usr["id"])
 
-            self.log_event("bot_version", {"version": self.version}, room_id)
+            self.log_event("bot_version", {"content": self.version}, room_id)
 
             # create image items for this room
             LOG.debug("Create data for the new task room...")
@@ -209,15 +211,11 @@ class WordleBot2 (TaskBot):
             critic_index = 1 - guesser_index
             session.players[critic_index]["role"] = "critic"
             session.critic = session.players[critic_index]["id"]
-            # self.log_event("player_critic", session.players[critic_index], room_id)
-            # need to think
             self.log_event("player", session.players[critic_index], room_id)
 
 
         session.players[guesser_index]["role"] = "guesser"
         session.guesser = session.players[guesser_index]["id"]
-        # self.log_event("player_guesser", session.players[guesser_index], room_id)
-        # need to think
         self.log_event("player", session.players[guesser_index], room_id)
 
     def register_callbacks(self):
@@ -392,7 +390,7 @@ class WordleBot2 (TaskBot):
                 if isinstance(data["command"], dict):
                     if "guess" in data["command"]:
                         if data["command"]["guess"].strip() == "":
-                            self.log_event("EMPTY_GUESS", {}, room_id)
+                            self.log_event("EMPTY_GUESS", {"content": ""}, room_id)
                             self.send_message_to_user(WARNING_COLOR, "**You need to provide a guess!**",
                                                       room_id,
                                                       user_id,
@@ -488,9 +486,28 @@ class WordleBot2 (TaskBot):
             )
             return
 
+        if not guess.isalpha():
+            self.log_event("INVALID_WORD", {"content": guess}, room_id)
+            self.send_message_to_user(WARNING_COLOR,
+                        "**Unfortunately this is not a word. "
+                        "Make sure that there aren't any typos**",
+                                      room_id,
+                                      user_id,
+                                      )
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"command": "unsubmit"},
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+            return
+
+
         # make sure it's a good guess
         if guess not in VALID_WORDS:
-            self.log_event("INVALID_WORD", {"content": guess},  room_id)
+            self.log_event("NOT_VALID_ENGLISH_WORD", {"content": guess},  room_id)
             self.send_message_to_user(WARNING_COLOR,
                         "**Unfortunately this word is not valid. "
                         "Make sure that there aren't any typos**",
@@ -542,13 +559,16 @@ class WordleBot2 (TaskBot):
         # self.log_event("turn", dict(), room_id)
         self.log_event("GUESS", {"content": guess}, room_id)
         self.sessions[room_id].round_guesses_history.append(guess)
+        colors = check_guess(guess, self.sessions[room_id])
+        self.log_event("LETTER_FEEDBACK", {"content": f"{(guess, colors)}"}, room_id)
         self.sio.emit(
             "message_command",
             {
                 "command": {
                     "command": "wordle_guess",
                     "guess": guess,
-                    "correct_word": word,
+                    # "correct_word": word,
+                    "colors": colors,
                 },
                 "room": room_id,
             },
@@ -681,6 +701,8 @@ class WordleBot2 (TaskBot):
 
             self.sessions[room_id].word_to_guess = self.sessions[room_id].words[0][
                 "target_word"].lower()
+
+            self.sessions[room_id].word_letters = decompose(self.sessions[room_id].word_to_guess)
 
             self.log_event("TARGET_WORD", {"content": self.sessions[room_id].word_to_guess,
                                            "word_level" : self.sessions[room_id].words[0]["level"]},
@@ -1089,3 +1111,28 @@ class WordleBot2 (TaskBot):
 
 def check_ready(player):
     return player["status"] == "ready"
+
+
+def check_guess(guess, session):
+    feedback = []
+    if session.word_to_guess == guess:
+        return ["green"] * 5
+    for i in range(len(guess)):
+        if guess[i] == session.word_to_guess[i]:
+            feedback.append("green")
+        else:
+            if guess[i] in session.word_letters:
+                feedback.append("yellow")
+            else:
+                feedback.append("grey")
+    return feedback
+
+
+def decompose(word):
+    letters = {}
+    for i in range (len(word)):
+        if word[i] in letters:
+            letters[word[i]].append(i)
+        else:
+            letters[word[i]] = [i]
+    return letters

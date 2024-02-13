@@ -58,41 +58,8 @@ function deleteLetter() {
 }
 
 
-function checkGuess(guessString, rightWordString) {
+function checkGuess(guessString, colors) {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
-    let rightGuess = Array.from(rightWordString)
-
-    let colors = ["", "", "", "", ""];
-    let remaining = Array.from(rightWordString)
-
-    // first check for green letters
-    for (let i = 0; i < 5; i++) {
-        let guessLetter = guessString.charAt(i);
-        let solutionLetter = rightGuess[i];
-        if (guessLetter === solutionLetter) {
-            colors[i] = "green";
-            remaining[i] = " ";
-        }
-    }
-
-    // check for yellows and greys
-    for (let i = 0; i < 5; i++) {
-        let guessLetter = guessString.charAt(i);
-
-        if (remaining.includes(guessLetter) === true) {
-            if (colors[i] === "") {
-                colors[i] = "yellow";
-
-                // remove this letter from remaining
-                to_remove_index = remaining.indexOf(guessLetter)
-                remaining.splice(to_remove_index, 1)
-            }
-        } else {
-            if (colors[i] === "") {
-                colors[i] = "grey";
-            }
-        }
-    }
 
     for (let i = 0; i < 5; i++) {
         let box = row.children[i]
@@ -222,7 +189,7 @@ $(document).ready(() => {
                 }
 
             } else if (data.command.command === "wordle_guess") {
-                checkGuess(data.command.guess, data.command.correct_word);
+                checkGuess(data.command.guess, data.command.colors);
                 submitted = false;
             } else if (data.command.command === "unsubmit") {
                 // happens when players submit different guesses
