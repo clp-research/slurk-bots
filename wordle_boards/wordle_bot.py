@@ -431,18 +431,17 @@ class WordleBot2 (TaskBot):
                                                       )
                             self.log_event("CRITIC_AGREEMENT", {"content": False}, room_id)
 
+                        self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
+                        self.give_writing_rights(room_id, self.sessions[room_id].critic)
+
+                        self.sessions[room_id].turn = self.sessions[room_id].critic
+
                         self.send_message_to_user(STANDARD_COLOR, f"Ok! Please, provide your critic"
                         f"<script> document.getElementById('Button{self.sessions[room_id].button_number}').disabled = true;</script>"
                         f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 1}').disabled = true;</script>",
                                                   room_id, self.sessions[room_id].critic)
 
                         self.sessions[room_id].button_number += 2
-
-
-                        # self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
-                        # self.give_writing_rights(room_id, self.sessions[room_id].critic)
-                        #
-                        # self.sessions[room_id].turn = self.sessions[room_id].critic
 
 
                 # bot has no user defined commands
@@ -531,11 +530,6 @@ class WordleBot2 (TaskBot):
             self.send_message_to_user(STANDARD_COLOR, f"Your proposal <b> {guess.upper()} </b> was submitted.", room_id,
                                       self.sessions[room_id].guesser)
             self.send_message_to_user(STANDARD_COLOR, f"Now let's wait for the critic!", room_id, self.sessions[room_id].guesser)
-
-            self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
-            self.give_writing_rights(room_id, self.sessions[room_id].critic)
-
-            self.sessions[room_id].turn = self.sessions[room_id].critic
 
             self.log_event("PROPOSAL", {"content": guess},  room_id)
 
