@@ -13,9 +13,9 @@ from time import sleep
 import requests
 import socketio
 
-from .config import TASK_GREETING, COMPACT_GRID_INSTANCES, RANDOM_GRID_INSTANCES, \
+from .config import TASK_GREETING, \
     INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
-    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, PROLIFIC_URL, COLOR_MESSAGE, STANDARD_COLOR
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, PROLIFIC_URL, COLOR_MESSAGE, STANDARD_COLOR, INSTANCES
 
 from .gridmanager import GridManager
 from templates import TaskBot
@@ -32,8 +32,8 @@ class Session:
         self.player_a_instructions = INSTRUCTIONS_A
         self.player_b_instructions = INSTRUCTIONS_B
         self.keyboard_instructions = KEYBOARD_INSTRUCTIONS
-        self.all_compact_grids = GridManager(COMPACT_GRID_INSTANCES)
-        self.all_random_grids = GridManager(RANDOM_GRID_INSTANCES)
+        self.all_compact_grids = GridManager(INSTANCES, "compact_grids")
+        self.all_random_grids = GridManager(INSTANCES, "random_grids")
         self.grid_type = None
         self.target_grid = None  # Looks like this  X ▢ ▢ ▢ ▢\n▢ X ▢ ▢ ▢\n▢ ▢ X ▢ ▢\n▢ ▢ ▢ X ▢\n▢ ▢ ▢ ▢ X
         self.html_grid = None
