@@ -11,6 +11,7 @@ TASK_TITLE = "Describe the grid to your partner and see how what they draw match
 
 COMPACT_GRID_INSTANCES = Path(f"{ROOT}/data/compact_grids/")
 RANDOM_GRID_INSTANCES = Path(f"{ROOT}/data/random_grids/")
+INSTANCES = Path(f"{ROOT}/data/instances.json")
 
 # base html messages with common colors
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
