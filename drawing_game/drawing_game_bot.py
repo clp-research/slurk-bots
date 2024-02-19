@@ -496,7 +496,6 @@ class DrawingBot(TaskBot):
             # player_a
             if this_session.player_a["id"] == user_id:
                 # means that new turn began
-                # self.log_event("turn", [], room_id)
                 for user in this_session.players:
                     if user["id"] != user_id:
                         self.sio.emit(
@@ -512,7 +511,8 @@ class DrawingBot(TaskBot):
                 this_session.current_turn += 1
                 self.log_event('turn', dict(), room_id)
                 # log event
-                self.log_event("clue", {"content": data['command'], "from": data['user']['name'],
+                self.log_event("clue", {"content": data['command'],
+                                        "from": f"{data['user']['name']} impersonated as {this_session.player_a['name']}",
                                         "to": this_session.player_b['name']}, room_id)
                 self.update_rights(room_id, False, True)
                 self.make_chat_area_unresponsive(room_id, this_session.player_b['id'])
@@ -528,13 +528,14 @@ class DrawingBot(TaskBot):
                 # In case the grid is returned as string on the chat area
                 if '▢' in command:
                     self.log_event("guess", {"content": data['command'], "from": data['user']['name'],
-                                             "to": this_session.player_a['name']}, room_id)
+                                             "to": 'GM'}, room_id)
                     drawn_grid = self.reformat_drawn_grid(command)
                     this_session.drawn_grid = drawn_grid
                     LOG.debug(f"The drawn grid is {this_session.drawn_grid}")
                     sleep(1)
                     if this_session.current_turn < 25:
-                        self.send_message_from_bot(room_id, "What is your next instruction?", this_session.player_a["id"])
+                        self.send_message_from_bot(room_id, "What is your next instruction?",
+                                                   this_session.player_a["id"])
                         self.update_rights(room_id, True, False)
                         sleep(1)
                         return
@@ -543,7 +544,8 @@ class DrawingBot(TaskBot):
                         self._command_done(room_id, user_id, command)
                 else:
                     self.log_event("invalid format", {"content": data['command']}, room_id)
-                    self.send_message_from_bot(room_id, "Sorry, but I do not understand this command. Try again.", user_id)
+                    self.send_message_from_bot(room_id, "Sorry, but I do not understand this command. Try again.",
+                                               user_id)
 
     def send_message_from_bot(self, room_id, message, user_id=None):
         if user_id:
@@ -1076,7 +1078,7 @@ class DrawingBot(TaskBot):
             points = 0
 
             self.send_message_from_bot(room_id, f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {self.sessions[room_id].points['score']}**")
+                                                f"Your total score is: {self.sessions[room_id].points['score']}**")
             self.process_move(room_id, 0)
         else:
             self.log_event("correct guess", {"content": drawn_grid}, room_id)
@@ -1084,7 +1086,7 @@ class DrawingBot(TaskBot):
             points = 1
 
             self.send_message_from_bot(room_id, f"**YOU both {result}! For this round you get {points} points. "
-                        f"Your total score is: {self.sessions[room_id].points['score']+points}**")
+                                                f"Your total score is: {self.sessions[room_id].points['score'] + points}**")
             self.process_move(room_id, 1)
 
     def start_timeout_timer(self, room_id):
