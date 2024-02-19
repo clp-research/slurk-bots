@@ -13,7 +13,8 @@ import logging
 from reference.config import EXPLAINER_HTML, GUESSER_HTML, \
     EMPTY_GRID, GRIDS, GRIDS_PER_ROOM, TASK_GREETING, \
     COLOR_MESSAGE, STANDARD_COLOR, WARNING_COLOR, \
-    TIMEOUT_TIMER, LEAVE_TIMER
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_ROOM_TIMER,\
+    INPUT_FIELD_UNRESP_GUESSER, INPUT_FIELD_UNRESP_EXPLAINER
 
 from reference.dataloader import Dataloader
 from reference.grid import GridManager
@@ -21,11 +22,49 @@ from reference.grid import GridManager
 TARGET_GRID_NAMES = {"1": "first", "2": "second", "3": "third"}
 LOG = logging.getLogger(__name__)
 
+# class RoomTimer:
+#     def __init__(self, function, room_id):
+#         self.function = function
+#         self.room_id = room_id
+#         self.start_timer()
+#         self.left_room = dict()
+#
+#     def start_timer(self):
+#         self.timer = Timer(
+#             TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
+#         )
+#         self.timer.start()
+#
+#     def reset(self):
+#         self.timer.cancel()
+#         self.start_timer()
+#         logging.info("reset timer")
+#
+#     def cancel(self):
+#         self.timer.cancel()
+#
+#     def cancel_all_timers(self):
+#         self.timer.cancel()
+#         for timer in self.left_room.values():
+#             timer.cancel()
+#
+#     def user_joined(self, user):
+#         timer = self.left_room.get(user)
+#         if timer is not None:
+#             self.left_room[user].cancel()
+#
+#     def user_left(self, user):
+#         self.left_room[user] = Timer(
+#             LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
+#         )
+#         self.left_room[user].start()
+
 class RoomTimer:
     def __init__(self, function, room_id):
         self.function = function
         self.room_id = room_id
         self.start_timer()
+        self.typing_timer = None
         self.left_room = dict()
 
     def start_timer(self):
@@ -44,6 +83,7 @@ class RoomTimer:
 
     def cancel_all_timers(self):
         self.timer.cancel()
+        self.typing_timer.cancel()
         for timer in self.left_room.values():
             timer.cancel()
 
@@ -87,6 +127,9 @@ class Session:
                 self.guesser = player["id"]
 
 class SessionManager(dict):
+
+    waiting_room_timers = dict()
+
     def create_session(self, room_id):
         self[room_id] = Session()
 
@@ -142,6 +185,12 @@ class ReferenceBot(TaskBot):
                 self.sessions[room_id].players.append(
                     {**usr, "msg_n": 0, "status": "joined"}
                 )
+
+                # cancel waiting-room-timers
+                if usr["id"] in self.sessions.waiting_room_timers:
+                    logging.debug(f"Cancelling waiting room timer for user {usr['id']}")
+                    self.sessions.waiting_room_timers[usr["id"]].cancel()
+                    self.sessions.waiting_room_timers.pop(usr["id"])
 
             # join the newly created room
             response = requests.post(
@@ -232,7 +281,17 @@ class ReferenceBot(TaskBot):
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if event == "join":
-                    logging.debug("Waiting Timer restarted.")
+                    if user["id"] not in self.sessions.waiting_room_timers:
+                        # start no_partner timer
+                        timer = Timer(
+                            WAITING_ROOM_TIMER * 60,
+                            self.timeout_waiting_room,
+                            args=[user],
+                        )
+                        timer.start()
+                        logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
+                        self.sessions.waiting_room_timers[user["id"]] = timer
+                return
 
             elif room_id in self.sessions:
 
@@ -247,8 +306,16 @@ class ReferenceBot(TaskBot):
                         f"{user['name']} has joined the game.", room_id, other_usr["id"]
                     )
 
-                    # cancel leave timers if any
+                    # user joined
                     self.sessions[room_id].timer.user_joined(curr_usr["id"])
+
+                    # cancel timer
+                    logging.debug(
+                        f"Cancelling Timer: left room for user {curr_usr['name']}"
+                    )
+                    timer = this_session.timer.left_room.get(curr_usr["id"])
+                    if timer is not None:
+                        timer.cancel()
 
                     # Change to role check like in recolage?
                     if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
@@ -263,7 +330,10 @@ class ReferenceBot(TaskBot):
                             f"{user['name']} has left the game. "
                             f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
 
-                        # start a timer
+                        # start timer since user left the room
+                        logging.debug(
+                            f"Starting Timer: left room for user {curr_usr['name']}"
+                        )
                         self.sessions[room_id].timer.user_left(curr_usr["id"])
 
 
@@ -544,6 +614,76 @@ class ReferenceBot(TaskBot):
                 },
             )
 
+    def timeout_waiting_room(self, user):
+        # get layout_id
+        response = requests.get(
+            f"{self.uri}/tasks/{self.task_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        layout_id = response.json()["layout_id"]
+
+        # create a new task room for this user
+        room = requests.post(
+            f"{self.uri}/rooms",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"layout_id": layout_id},
+        )
+        room = room.json()
+
+        # remove user from waiting_room
+        self.remove_user_from_room(user["id"], self.waiting_room)
+
+        # move user to new task room
+        response = requests.post(
+            f"{self.uri}/users/{user['id']}/rooms/{room['id']}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            LOG.error(f"Could not let user join room: {response.status_code}")
+            exit(4)
+
+        sleep(2)
+
+        # requests.patch(
+        #     f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
+        #     json={
+        #         "attribute": "src",
+        #         "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg",
+        #     },
+        #     headers={"Authorization": f"Bearer {self.token}"},
+        # )
+
+
+        self.send_message_to_user(STANDARD_COLOR, "Unfortunately we were not able to find a partner for you, "
+                                                  "you will now get a token.", room["id"], user["id"])
+
+        self.confirmation_code(room["id"], "timeout_waiting_room", user["id"])
+        # self.confirmation_code(room["id"], "timeout_waiting_room")
+        self.remove_user_from_room(user["id"], room["id"])
+
+    def remove_user_from_room(self, user_id, room_id):
+        response = requests.get(
+            f"{self.uri}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+        if not response.ok:
+            logging.error(f"Could not get user: {response.status_code}")
+            response.raise_for_status()
+        etag = response.headers["ETag"]
+
+        try:
+            response = requests.delete(
+                f"{self.uri}/users/{user_id}/rooms/{room_id}",
+                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+            )
+            if not response.ok:
+                logging.error(
+                    f"Could not remove user from task room: {response.status_code}"
+                )
+                response.raise_for_status()
+            logging.debug("Removing user from task room was successful.")
+        except:
+            logging.debug(f"User {user_id} not in room {room_id}")
 
     def move_divider(self, room_id, chat_area=50, task_area=50):
         """move the central divider and resize chat and task area
@@ -612,14 +752,18 @@ class ReferenceBot(TaskBot):
     def terminate_experiment(self, room_id):
         self.send_message_to_user(STANDARD_COLOR, "The experiment is over 🎉 🎉 thank you very much for your time!",
                                   room_id)
-        self.confirmation_code(room_id, "success")
+        for player in self.sessions[room_id].players:
+            self.confirmation_code(room_id, "success", player["id"])
+        # self.confirmation_code(room_id, "success")
         self.close_game(room_id)
 
     def timeout_close_game(self, room_id, status):
 
         self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
                                   room_id)
-        self.confirmation_code(room_id, status)
+        for player in self.sessions[room_id].players:
+            self.confirmation_code(room_id, status, player["id"])
+        # self.confirmation_code(room_id, status)
         self.close_game(room_id)
 
     def close_game(self, room_id):
@@ -658,35 +802,24 @@ class ReferenceBot(TaskBot):
 
         self.request_feedback(response, "setting point stand in title")
 
-    def confirmation_code(self, room_id, status):
+    def confirmation_code(self, room_id, status, user_id):
         """Generate AMT token that will be sent to each player."""
-        for player in self.sessions[room_id].players:
-            amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        # no points in my code
-        # points = self.sessions[room_id].points
-        # post AMT token to logs
-            self.log_event(
-                "confirmation_log",
-                {"status_txt": status, "amt_token": amt_token, "receiver":  player["id"], "points": self.sessions[room_id].points},
-                room_id,
-            )
+        amt_token = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        if room_id in self.sessions:
+            points = self.sessions[room_id].points
+        else:
+            points = 0
+            logging.debug(f"Room not in self sessions {points}")
+        self.log_event(
+            "confirmation_log",
+            {"status_txt": status, "amt_token": amt_token, "receiver": user_id,
+             "points": points},
+            room_id,
+        )
 
-            self.sio.emit(
-                "text",
-                {
-                    "message": COLOR_MESSAGE.format(
-                        color="#800080",
-                        message=(
-                            "Please remember to "
-                            "save your token before you close this browser window. "
-                            f"Your token: {amt_token}"
-                        ),
-                    ),
-                    "room": room_id,
-                    "html": True,
-                    "receiver_id": player["id"],
-                },
-            )
+        self.send_message_to_user(STANDARD_COLOR, "Please remember to "
+                        "save your token before you close this browser window. "
+                        f"Your token: **{amt_token}**", room_id, user_id)
 
     def set_message_privilege(self, room_id, user_id, value):
         """
@@ -722,11 +855,15 @@ class ReferenceBot(TaskBot):
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
+        message = INPUT_FIELD_UNRESP_GUESSER
+        if user_id == self.sessions[room_id].explainer:
+            message = INPUT_FIELD_UNRESP_EXPLAINER
+
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={
                 "attribute": "placeholder",
-                "value": "Wait for a message from your partner",
+                "value": f"{message}",
                 "receiver_id": user_id,
             },
             headers={"Authorization": f"Bearer {self.token}"},
