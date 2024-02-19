@@ -46,7 +46,6 @@ class Session:
         self.left_room_timer = dict()
         self._game_over = False
 
-    # log next turn?
     @property
     def game_over(self):
         return self._game_over
@@ -65,9 +64,6 @@ class Session:
                 self.guesser = player["id"]
 
 
-#     game over
-
-
 class SessionManager(defaultdict):
     def create_session(self, room_id):
         self[room_id] = Session()
@@ -78,7 +74,6 @@ class SessionManager(defaultdict):
             for timer in self[room_id].left_room_timer.values():
                 timer.cancel()
             self.pop(room_id)
-
 
 
 class TabooBot(TaskBot):
@@ -170,17 +165,6 @@ class TabooBot(TaskBot):
                 "html": True,
             },
         )
-        # self.sio.emit(
-        #     "message_command",
-        #     {
-        #         "command": {
-        #             "event": "send_grid",
-        #             "message": f"<br><br>{this_session.html_grid}",
-        #         },
-        #         "room": room_id,
-        #         "receiver_id": this_session.player_a["id"],
-        #     }
-        # )
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -332,33 +316,7 @@ class TabooBot(TaskBot):
             if data["command"].startswith("ready"):
                 self._command_ready(room_id, user_id)
                 return
-            # elif isinstance(data["command"], dict):
-            #     if command["event"] == "confirm_ready":
-            #         if command["answer"] == "yes":
-            #             self.sio.emit(
-            #                 "text",
-            #                 {
-            #                     "message": "You typed 'YES",
-            #                     "room": room_id,
-            #                     "receiver_id": user_id,
-            #                 },
-            #             )
-            #             # self._command_ready(room_id, user_id)
-            #         elif data["command"]["answer"] == "no":
-            #             self.sio.emit(
-            #                 "text",
-            #                 {
-            #                     "message": "You typed 'NO'",
-            #                     "room": room_id,
-            #                     "receiver_id": user_id,
-            #                 },
-            #             )
-            #             # self.send_message_to_user(STANDARD_COLOR,
-            #             #                           "OK, read the instructions carefully and click on <yes> once you are ready.",
-            #             #                           room_id,
-            #             #                           user_id,
-            #             #                           )
-            #         return
+
             if this_session.explainer == user_id:
                 # EXPLAINER sent a message
 
@@ -367,7 +325,6 @@ class TabooBot(TaskBot):
                 # log event
                 self.log_event("clue", {"content": data['command']}, room_id)
 
-                #todo: 258-269 I added extra bc message not displayed
                 for user in this_session.players:
                     if user["id"] != user_id:
                         self.sio.emit(
