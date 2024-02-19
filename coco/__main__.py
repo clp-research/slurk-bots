@@ -240,7 +240,9 @@ class CoCoBot(TaskBot):
                             args=[data["user"]],
                         )
                         timer.start()
-                        logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
+                        logging.debug(
+                            f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}"
+                        )
                         self.sessions.waiting_room_timers[user_id] = timer
 
                 return
@@ -855,11 +857,17 @@ class CoCoBot(TaskBot):
                         curr_usr, other_usr = other_usr, curr_usr
 
                     # ask other user if the episode is really over
+                    next_episode_warning_message = "<br>The Working Board must match the Target Board exactly (color matters!) to receive a bonus paymet.<br><br>Are you sure you are finished with this episode? <br><br>"
+                    next_episode_warning_message = COLOR_MESSAGE.format(
+                        message=next_episode_warning_message,
+                        color=WARNING_COLOR,
+                    )
                     self.sio.emit(
                         "text",
                         {
                             "message": (
-                                "Do you confirm that this episode is over? <br>"
+                                # "Do you confirm that this episode is over? <br>"
+                                f"{next_episode_warning_message}"
                                 "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
                                 "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
                             ),
