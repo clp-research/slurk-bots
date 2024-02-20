@@ -22,43 +22,6 @@ from reference.grid import GridManager
 TARGET_GRID_NAMES = {"1": "first", "2": "second", "3": "third"}
 LOG = logging.getLogger(__name__)
 
-# class RoomTimer:
-#     def __init__(self, function, room_id):
-#         self.function = function
-#         self.room_id = room_id
-#         self.start_timer()
-#         self.left_room = dict()
-#
-#     def start_timer(self):
-#         self.timer = Timer(
-#             TIMEOUT_TIMER * 60, self.function, args=[self.room_id, "timeout"]
-#         )
-#         self.timer.start()
-#
-#     def reset(self):
-#         self.timer.cancel()
-#         self.start_timer()
-#         logging.info("reset timer")
-#
-#     def cancel(self):
-#         self.timer.cancel()
-#
-#     def cancel_all_timers(self):
-#         self.timer.cancel()
-#         for timer in self.left_room.values():
-#             timer.cancel()
-#
-#     def user_joined(self, user):
-#         timer = self.left_room.get(user)
-#         if timer is not None:
-#             self.left_room[user].cancel()
-#
-#     def user_left(self, user):
-#         self.left_room[user] = Timer(
-#             LEAVE_TIMER * 60, self.function, args=[self.room_id, "user_left"]
-#         )
-#         self.left_room[user].start()
-
 class RoomTimer:
     def __init__(self, function, room_id):
         self.function = function
@@ -119,12 +82,6 @@ class Session:
     def close(self):
         self.timer.cancel_all_timers()
 
-    def assign_roles(self):
-        # assuming there are only 2 players
-        self.explainer = random.choice(self.players)["id"]
-        for player in self.players:
-            if player["id"] != self.explainer:
-                self.guesser = player["id"]
 
 class SessionManager(dict):
 
@@ -167,8 +124,6 @@ class ReferenceBot(TaskBot):
         logging.debug(f"A new task room was created with task id: {data['task']}")
         logging.debug(f"This bot is looking for task id: {self.task_id}")
 
-        # self.log_event("bot_version_log", {"version": self.version}, room_id)
-
         if task_id is not None and task_id == self.task_id:
             # modify layout
             for usr in data["users"]:
@@ -199,14 +154,7 @@ class ReferenceBot(TaskBot):
             )
 
         # 2) Choose an explainer/guesser
-            self.sessions[room_id].assign_roles()
-            for user in data["users"]:
-                if user["id"] == self.sessions[room_id].explainer:
-                    self.log_event("user_data", {"id": user["id"], "name": user["name"], "role": "explainer"}, room_id)
-                    LOG.debug(f'{user["name"]} is the explainer.')
-                else:
-                    LOG.debug(f'{user["name"]} is the guesser.')
-                    self.log_event("user_data", {"id": user["id"], "name": user["name"], "role": "guesser"}, room_id)
+            self.assign_roles(room_id)
 
             # send_instructions
             for player in self.sessions[room_id].players:
@@ -238,6 +186,21 @@ class ReferenceBot(TaskBot):
                     " Once you click on 'yes' you will see the grids. <br> <br>"
                     "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
                     "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>", room_id)
+
+    def assign_roles(self, room_id):
+        # assuming there are 2 players
+        session = self.sessions[room_id]
+
+        guesser_index = random.randint(0, len(session.players) - 1)
+        explainer_index = 1 - guesser_index
+        session.players[explainer_index]["role"] = "explainer"
+        session.explainer = session.players[explainer_index]["id"]
+        self.log_event("player", session.players[explainer_index], room_id)
+
+
+        session.players[guesser_index]["role"] = "guesser"
+        session.guesser = session.players[guesser_index]["id"]
+        self.log_event("player", session.players[guesser_index], room_id)
 
     @staticmethod
     def message_callback(success, error_msg="Unknown Error"):
@@ -819,7 +782,7 @@ class ReferenceBot(TaskBot):
 
         self.send_message_to_user(STANDARD_COLOR, "Please remember to "
                         "save your token before you close this browser window. "
-                        f"Your token: **{amt_token}**", room_id, user_id)
+                        f"Your token: {amt_token}", room_id, user_id)
 
     def set_message_privilege(self, room_id, user_id, value):
         """

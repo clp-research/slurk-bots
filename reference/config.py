@@ -39,7 +39,8 @@ with open(Path(f"{ROOT}/data/task_greeting.txt"), "r", encoding="utf-8") as f:
 
 TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 3  # minutes if a user is alone in a room
-WAITING_ROOM_TIMER = 1 # minutes if a user is waiting for the other player
+WAITING_ROOM_TIMER = 5 # minutes if a user is waiting for the other player
+
 
 INPUT_FIELD_UNRESP_GUESSER = "You can't send messages, you can only get them"
 INPUT_FIELD_UNRESP_EXPLAINER = "Wait for your partner's choice"
