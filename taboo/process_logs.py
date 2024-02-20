@@ -15,7 +15,7 @@ def select_logs(file_in):
             if log["event"] in {
                 "round", "turn", "clue", "guess", "invalid format",
                 "invalid clue", "correct guess", "max turns reached",
-                "target word", "difficulty level"
+                "target word", "difficulty level", "players"
             }:
                 text_messages.append(log)
     with open('text_messages.json', 'w', encoding ='utf8') as json_file:

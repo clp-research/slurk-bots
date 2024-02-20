@@ -146,9 +146,16 @@ class TabooBot(TaskBot):
             self.sessions[room_id].pick_explainer()
             for user in data["users"]:
                 if user["id"] == self.sessions[room_id].explainer:
-                    LOG.debug(f'{user["name"]} is the explainer.')
+                    explainer_name = user["name"]
+                    LOG.debug(f'{explainer_name} is the explainer.')
                 else:
-                    LOG.debug(f'{user["name"]} is the guesser.')
+                    guesser_name = user["name"]
+                    LOG.debug(f'{guesser_name} is the guesser.')
+            self.log_event('players', {
+                "GM": "TabooBot",
+                "Explainer": f"user_id {self.sessions[room_id].explainer}, name {explainer_name}",
+                "Guesser": f"user_id {self.sessions[room_id].guesser}, name {guesser_name}"},
+                           room_id)
             self.send_individualised_instructions(room_id)
             # use sleep so that people first read the instructions!
             # sleep(2)
@@ -335,7 +342,13 @@ class TabooBot(TaskBot):
                 # means that new turn began
                 self.log_event("turn", dict(), room_id)
                 # log event
-                self.log_event("clue", {"content": data['command']}, room_id)
+                # self.log_event("clue", {"content": data['command']}, room_id)
+                for user in this_session.players:
+                    if user["id"] == user_id:
+                        explainer_name = user['name']  # Since explainer and guesser ar user_ids, get name for logging
+                self.log_event("clue", {"content": data['command'],
+                                        "from": f"GM impersonated as {explainer_name}, the explainer",
+                                        "to": this_session.guesser}, room_id)
 
                 for user in this_session.players:
                     if user["id"] != user_id:
@@ -382,6 +395,12 @@ class TabooBot(TaskBot):
                 # GUESSER sent the command
                 # self.update_interactions(room_id, "guess", data['message'])
                 self.log_event("guess", {"content": data['command']}, room_id)
+                for user in this_session.players:
+                    if user["id"] == user_id:
+                        guesser_name = user['name']  # Since explainer and guesser ar user_ids, get name for logging
+                self.log_event("clue", {"content": data['command'],
+                                        "from": f"GM impersonated as {guesser_name}, the guesser",
+                                        "to": this_session.guesser}, room_id)
 
                 for user in this_session.players:
                     if user["id"] != user_id:
