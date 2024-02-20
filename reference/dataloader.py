@@ -46,4 +46,3 @@ def preprocess(grid):
 #     from pathlib import Path
 #     d = Dataloader(Path("data/instances.json"), n=4)
 #     print(d[0][-1][1])
-

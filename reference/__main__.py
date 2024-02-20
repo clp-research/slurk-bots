@@ -318,8 +318,8 @@ class ReferenceBot(TaskBot):
             if this_session.explainer == user_id:
                 # EXPLAINER sent the command
 
-                # means that new turn began
-                self.log_event("turn", dict(), room_id)
+                # OLD: means that new turn began
+                # self.log_event("turn", dict(), room_id)
 
                 self.log_event("clue", {"content": data['message']}, room_id)
 
@@ -518,9 +518,13 @@ class ReferenceBot(TaskBot):
         # try to log the round number
         self.log_event("round", {"number": round_n}, room_id)
 
+        # in this game 1 round consists of only 1 turn!
+        self.log_event("turn", dict(), room_id)
+
         self.send_message_to_user(STANDARD_COLOR, f"Let's start round {round_n}, the grids are updated!.", room_id)
         grid_instance = self.sessions[room_id].grids[0]
-        self.log_event("grid difficulty", {"grid difficulty": f"{grid_instance[-1][1]}"}, room_id)
+        self.log_event("grid difficulty", {"content": f"{grid_instance[-1][1]}"}, room_id)
+        self.log_event("target grid", {"content": f"{grid_instance[-2][1]}"}, room_id)
         self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
         self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
         self.send_message_to_user(STANDARD_COLOR, "Generate the description for the given target.",
