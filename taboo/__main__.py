@@ -188,6 +188,18 @@ class TabooBot(TaskBot):
         @self.sio.event
         def status(data):
             """Triggered when a user enters or leaves a room."""
+            LOG.debug(f"Triggered status: {data['user']} did {data['type']} the room {data['room']}")
+            # check whether the user is eligible to join this task
+            task = requests.get(
+                f"{self.uri}/users/{data['user']['id']}/task",
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            if not task.ok:
+                LOG.error(f"Could not set task instruction title: {task.status_code}")
+                task.raise_for_status()
+            if not task.json() or task.json()["id"] != int(self.task_id):
+                return
+            
             room_id = data["room"]
             event = data["type"]
             user = data["user"]
