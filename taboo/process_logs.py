@@ -12,7 +12,11 @@ def select_logs(file_in):
         json_list = list(f)
     for json_str in json_list:
             log = json.loads(json_str)
-            if log["event"] in {"round", "turn", "clue", "guess", "invalid format", "invalid clue", "correct guess", "max turns reached"}:
+            if log["event"] in {
+                "round", "turn", "clue", "guess", "invalid format",
+                "invalid clue", "correct guess", "max turns reached",
+                "target word", "difficulty level"
+            }:
                 text_messages.append(log)
     with open('text_messages.json', 'w', encoding ='utf8') as json_file:
         json.dump(text_messages, json_file, indent=4, ensure_ascii = False)

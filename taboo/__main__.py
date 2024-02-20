@@ -199,7 +199,7 @@ class TabooBot(TaskBot):
                 task.raise_for_status()
             if not task.json() or task.json()["id"] != int(self.task_id):
                 return
-            
+
             room_id = data["room"]
             event = data["type"]
             user = data["user"]
