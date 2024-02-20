@@ -27,7 +27,6 @@ class RoomTimer:
         self.function = function
         self.room_id = room_id
         self.start_timer()
-        self.typing_timer = None
         self.left_room = dict()
 
     def start_timer(self):
@@ -46,7 +45,6 @@ class RoomTimer:
 
     def cancel_all_timers(self):
         self.timer.cancel()
-        self.typing_timer.cancel()
         for timer in self.left_room.values():
             timer.cancel()
 
