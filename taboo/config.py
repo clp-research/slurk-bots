@@ -9,7 +9,7 @@ with open(os.path.join(ROOT, "taboo", "data", "intitial_explainer_prompt.txt"), 
 with open(os.path.join(ROOT, "taboo", "data", "initial_guesser_prompt.txt"), "r") as my_f:
     GUESSER_PROMPT = my_f.read()
 
-LEVEL_WORDS = f"{ROOT}/taboo/data/level_words.json"
+LEVEL_WORDS = f"{ROOT}/taboo/data/instances.json"
 WORDS_PER_ROOM = 6  # -1 to load entire dataset
 STARTING_POINTS = 0
 

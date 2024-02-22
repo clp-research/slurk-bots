@@ -8,6 +8,7 @@ import random
 import os
 
 import nltk
+from nltk import SnowballStemmer
 from nltk.corpus import stopwords
 import string
 
@@ -16,6 +17,7 @@ EN_STOPWORDS = stopwords.words("english")
 # nltk.download("wordnet")
 nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
+EN_STEMMER = SnowballStemmer("english")
 
 
 from taboo.dataloader import Dataloader
@@ -393,12 +395,10 @@ class TabooBot(TaskBot):
 
             else:
                 # GUESSER sent the command
-                # self.update_interactions(room_id, "guess", data['message'])
-                self.log_event("guess", {"content": data['command']}, room_id)
                 for user in this_session.players:
                     if user["id"] == user_id:
                         guesser_name = user['name']  # Since explainer and guesser ar user_ids, get name for logging
-                self.log_event("clue", {"content": data['command'],
+                self.log_event("guess", {"content": data['command'],
                                         "from": f"GM impersonated as {guesser_name}, the guesser",
                                         "to": this_session.guesser}, room_id)
 
@@ -1038,7 +1038,10 @@ def check_guess(user_guess):
 
 
 def correct_guess(correct_answer, user_guess):
-    return correct_answer in user_guess
+    user_guess = user_guess.strip()
+    user_guess = user_guess.lower()
+    user_guess = remove_punctuation(user_guess)
+    return correct_answer == user_guess
 
 
 def remove_punctuation(text: str) -> str:
@@ -1046,51 +1049,77 @@ def remove_punctuation(text: str) -> str:
     return text
 
 
-def check_clue(utterance: str, target_word: str, related_words):
-    utterance = utterance.lower()
-    utterance = remove_punctuation(utterance)
-    # simply contain checks
-    if target_word in utterance:
-        return [
-            {
-                "message": f"Target word '{target_word}' was used in the clue. You both lose this round.",
-                "type": 0,
-            }
-        ]
-    for related_word in related_words:
-        if related_word in utterance:
-            return [
-                {
-                    "message": f"Related word '{related_word}' was used in the clue, You both lose this round",
-                    "type": 1,
-                }
-            ]
-
-    # lemma checks
-    utterance = utterance.split(" ")
-    filtered_clue = [word for word in utterance if word not in EN_STOPWORDS]
-    target_lemma = EN_LEMMATIZER.lemmatize(target_word)
-    related_lemmas = [
-        EN_LEMMATIZER.lemmatize(related_word) for related_word in related_words
-    ]
+def check_clue(clue: str, target_word: str, related_words):
+    stemmer = EN_STEMMER
+    clue = clue.replace("CLUE:", "")
+    clue = clue.lower()
+    clue = remove_punctuation(clue)
+    clue = clue.split(" ")
+    clue_words = [clue_word for clue_word in clue if clue_word not in EN_STOPWORDS]
+    clue_word_stems = [stemmer.stem(clue_word) for clue_word in clue_words]
     errors = []
-    for clue_word in filtered_clue:
-        clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
-        if clue_lemma == target_lemma:
-            return [
-                {
-                    "message": f"Target word '{target_word}' is morphological similar to clue word '{clue_word}'",
-                    "type": 0,
-                }
-            ]
-        if clue_lemma in related_lemmas:
-            return [
-                {
-                    "message": f"Related word is morphological similar to clue word '{clue_word}'",
-                    "type": 1,
-                }
-            ]
+    target_word_stem = stemmer.stem(target_word)
+    related_word_stems = [stemmer.stem(related_word) for related_word in related_words]
+
+    for clue_word, clue_word_stem in zip(clue_words, clue_word_stems):
+        if target_word_stem == clue_word_stem:
+            errors.append({
+                "message": f"Target word '{target_word}' (stem={target_word_stem}) "
+                           f"is similar to clue word '{clue_word}' (stem={clue_word_stem})",
+                "type": 0
+            })
+        for related_word, related_word_stem in zip(related_words, related_word_stems):
+            if related_word_stem == clue_word_stem:
+                errors.append({
+                    "message": f"Related word '{related_word}' (stem={related_word_stem}) "
+                               f"is similar to clue word '{clue_word}' (stem={clue_word_stem})",
+                    "type": 1
+                })
     return errors
+    # utterance = utterance.lower()
+    # utterance = remove_punctuation(utterance)
+    # # simply contain checks
+    # if target_word in utterance:
+    #     return [
+    #         {
+    #             "message": f"Target word '{target_word}' was used in the clue. You both lose this round.",
+    #             "type": 0,
+    #         }
+    #     ]
+    # for related_word in related_words:
+    #     if related_word in utterance:
+    #         return [
+    #             {
+    #                 "message": f"Related word '{related_word}' was used in the clue, You both lose this round",
+    #                 "type": 1,
+    #             }
+    #         ]
+    #
+    # # lemma checks
+    # utterance = utterance.split(" ")
+    # filtered_clue = [word for word in utterance if word not in EN_STOPWORDS]
+    # target_lemma = EN_LEMMATIZER.lemmatize(target_word)
+    # related_lemmas = [
+    #     EN_LEMMATIZER.lemmatize(related_word) for related_word in related_words
+    # ]
+    # errors = []
+    # for clue_word in filtered_clue:
+    #     clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
+    #     if clue_lemma == target_lemma:
+    #         return [
+    #             {
+    #                 "message": f"Target word '{target_word}' is morphological similar to clue word '{clue_word}'",
+    #                 "type": 0,
+    #             }
+    #         ]
+    #     if clue_lemma in related_lemmas:
+    #         return [
+    #             {
+    #                 "message": f"Related word is morphological similar to clue word '{clue_word}'",
+    #                 "type": 1,
+    #             }
+    #         ]
+    # return errors
 
 
 if __name__ == "__main__":

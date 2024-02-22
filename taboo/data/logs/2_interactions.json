@@ -1,0 +1,96 @@
+[
+    {
+        "players": {
+            "Explainer": "user_id 4, name user_1",
+            "GM": "TabooBot",
+            "Guesser": "user_id 3, name user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-20T11:18:22",
+                    "action": {
+                        "type": "target word",
+                        "content": "plaza"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-20T11:18:27",
+                    "action": {
+                        "type": "clue",
+                        "content": "asdasd"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-20T11:18:50",
+                    "action": {
+                        "type": "guess",
+                        "content": "plaza"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-20T11:18:50",
+                    "action": {
+                        "type": "clue",
+                        "content": "plaza"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-20T11:18:51",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "plaza"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 4, name user_1",
+            "GM": "TabooBot",
+            "Guesser": "user_id 3, name user_0"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-02-20T11:18:51",
+                    "action": {
+                        "type": "target word",
+                        "content": "autograph"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-20T11:19:08",
+                    "action": {
+                        "type": "clue",
+                        "content": "author"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-02-20T11:19:08",
+                    "action": {
+                        "type": "invalid clue",
+                        "content": "Related word 'author' was used in the clue, You both lose this round"
+                    }
+                }
+            ]
+        ]
+    }
+]
