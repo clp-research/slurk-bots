@@ -2,6 +2,7 @@
 # Sandra Sánchez Páez
 # Bachelorarbeit Computerlinguistik 2024
 # University of Potsdam
+
 import logging
 import random
 import string
@@ -13,9 +14,10 @@ from time import sleep
 import requests
 import socketio
 
-from .config import TASK_GREETING, \
-    INSTRUCTIONS_A, INSTRUCTIONS_B, KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
-    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, PROLIFIC_URL, COLOR_MESSAGE, STANDARD_COLOR, INSTANCES
+from .config import TASK_GREETING, INSTRUCTIONS_A, INSTRUCTIONS_B, \
+    KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM,\
+    COLOR_MESSAGE, STANDARD_COLOR, INSTANCES
 
 from .gridmanager import GridManager
 from templates import TaskBot
@@ -512,7 +514,7 @@ class DrawingBot(TaskBot):
                 self.log_event('turn', dict(), room_id)
                 # log event
                 self.log_event("clue", {"content": data['command'],
-                                        "from": f"{data['user']['name']} impersonated as {this_session.player_a['name']}",
+                                        "from": f"GM impersonated as {this_session.player_a['name']}",
                                         "to": this_session.player_b['name']}, room_id)
                 self.update_rights(room_id, False, True)
                 self.make_chat_area_unresponsive(room_id, this_session.player_b['id'])
@@ -611,8 +613,8 @@ class DrawingBot(TaskBot):
         self.log_event("round", {"number": this_session.game_round}, room_id)
         self.log_event('players', {
             "GM": "DrawingBot",
-            "Player_1": self.sessions[room_id].player_a["name"],
-            "Player_2": self.sessions[room_id].player_b["name"]},
+            "Player_A": self.sessions[room_id].player_a["name"],
+            "Player_B": self.sessions[room_id].player_b["name"]},
                        room_id
                        )
 
@@ -997,55 +999,11 @@ class DrawingBot(TaskBot):
                 usr["msg_n"] = 0
 
     @staticmethod
-    def transform_string_in_grid(string):
-        """
-        Reformats string returned from player B into a displayable grid
-        to be emitted as message (html=true)
-        Example:
-            formatted_grid = self.transform_string_in_grid(this_session.drawn_grid)
-            self.sio.emit(
-                "text",
-                {
-                    "message": f"**CURRENT DRAWN GRID**:<br>{formatted_grid}",
-                    "room": room_id,
-                    "receiver_id": this_session.player_a,
-                    "html": True,
-                },
-            )
-        """
-        rows = 5
-        cols = 5
-
-        # Split the input string into individual characters
-        characters = [char for char in string if char != ' ']
-
-        # Initialize an empty grid
-        grid = [['▢' for _ in range(cols)] for _ in range(rows)]
-
-        # Fill the grid with characters
-        for i in range(rows):
-            for j in range(cols):
-                if characters:
-                    grid[i][j] = characters.pop(0)
-
-        # Convert the grid to a string representation
-        grid_string = '<br>'.join([' '.join(row) for row in grid])
-
-        return grid_string
-
-    def reformat_drawn_grid(self, grid):
+    def reformat_drawn_grid(grid):
         """Reformat grid so the image is clear"""
         grid = grid.lower()
         grid = grid.replace('\n', ' ')
         return grid
-
-    def _hide_game_board(self, room_id, user_id):
-        response = requests.post(
-            f"{self.uri}/rooms/{room_id}/class/game-board",
-            json={"class": "dis-area", "receiver_id": user_id},
-            headers={"Authorization": f"Bearer {self.token}"},
-        )
-        self.request_feedback(response, "hide game board")
 
     def _command_done(self, room_id, user_id, command):
         """Must be sent to end a game round."""
@@ -1141,24 +1099,6 @@ class DrawingBot(TaskBot):
                 room_id,
             )
 
-    def _show_prolific_link(self, room, receiver, token=None):
-
-        if token is None:
-            # use the username
-            response = requests.get(
-                f"{self.uri}/users/{receiver}",
-                headers={"Authorization": f"Bearer {self.token}"},
-            )
-            self.request_feedback(response, "get user")
-            token = response.json().get("name", f"{room}–{receiver}")
-
-        url = f"{PROLIFIC_URL}{token}"
-        self.send_message_from_bot(
-            room,
-            f"Please return to <a href='{url}'>{url}</a> to complete your submission.",
-            receiver
-        )
-
     def remove_user_from_room(self, user_id, room_id):
         response = requests.get(
             f"{self.uri}/users/{user_id}",
@@ -1235,31 +1175,4 @@ class DrawingBot(TaskBot):
                     response.raise_for_status()
                 logging.debug("Removing user from task room was successful.")
 
-# class ImageGame:
-#
-#     def __init__(self, game_instance: Dict, player_backends: List[str]):
-#         self.game_id = game_instance['game_id']
-#         self.player_1_prompt_header = game_instance['player_1_prompt_header']
-#         self.player_2_prompt_header = game_instance['player_2_prompt_header']
-#         self.player_1_question = game_instance['player_1_question']
-#         self.target_grid = game_instance['target_grid']
-#         self.player_backends = player_backends
-#         self.grid_dimension = game_instance['grid_dimension']
-#         self.number_of_letters = game_instance['number_of_letters']
-#         self.fill_row = game_instance['fill_row']
-#         self.fill_column = game_instance['fill_column']
-#
-#
-#         self.instruction_follower = InstructionFollower(player_backends[1])
-#         self.instruction_giver = InstructionGiver(player_backends[0])
-#
-#         self.given_instruction = Instruction()
-#         self.given_instruction.add_user_message(
-#             self.player_1_prompt_header + '\n' + self.target_grid + '\n' + self.player_1_question + '\n')
-#
-#         self.next_turn_message = ''
-#         self.followed_instruction = Instruction()
-#
-#         self.current_turn = 0
-#         self.max_turns = self.grid_dimension * self.grid_dimension
-#         self.terminate = False
+

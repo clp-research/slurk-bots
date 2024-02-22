@@ -19,7 +19,7 @@ STARTING_POINTS = 0
 
 TIMEOUT_TIMER = 5  # 5 minutes of inactivity before the room is closed automatically
 LEAVE_TIMER = 3  # 3 minutes if a user is alone in a room
-WAITING_PARTNER_TIMER = 1  # 10 minutes a user waits for a partner
+WAITING_PARTNER_TIMER = 10  # 10 minutes a user waits for a partner
 
 N = 1
 
@@ -30,7 +30,6 @@ SEED = None
 SHUFFLE = True
 
 PLATFORM = 'Prolific'
-PROLIFIC_URL = "https://app.prolific.co/submissions/complete?cc="
 
 with open(Path(f"{ROOT}/data/instr_player_A.html")) as html_f:
     INSTRUCTIONS_A = html_f.read()
