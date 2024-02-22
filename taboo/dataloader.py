@@ -12,13 +12,16 @@ class Dataloader(list):
         # for this data we can just take 2 random words in each level, right?
         self.clear()
         words_per_level = self._n // 3
-        word_instances = self._read_board_file()
-        for level in word_instances.keys():
-            random_words = random.sample(list(word_instances[level]), words_per_level)
-            for word in random_words:
-                word['level'] = level
-            self.extend(random_words)
-        return
+        levels_data = self._read_board_file()
+        for level_data in levels_data["experiments"]:
+            level_name = level_data["name"]
+            game_instances = level_data["game_instances"]
+            random_games = random.sample(game_instances, min(len(game_instances), words_per_level))
+            for game in random_games:
+                target_word = game["target_word"]
+                related_words = game["related_word"]
+                self.append({"target_word": target_word, "related_word": related_words, "level": level_name})
+        return self
 
     def _read_board_file(self):
         """read boards and divide by level"""

@@ -34,6 +34,7 @@ class Session:
     def __init__(self):
         self.players = list()
         self.words = Dataloader(LEVEL_WORDS, WORDS_PER_ROOM)
+        LOG.debug(f"The words are {self.words}")
         self.word_to_guess = None
         self.guesses = 0
         self.explainer = None
