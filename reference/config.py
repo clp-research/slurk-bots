@@ -26,9 +26,11 @@ with open(Path(f"{ROOT}/data/guesser_instr.html")) as html_guesser:
 with open(Path(f"{ROOT}/data/empty_grid.html")) as html_guesser:
     EMPTY_GRID = html_guesser.read()
 
-GRIDS = Path(f"{ROOT}/data/instances.json")
+# GRIDS = Path(f"{ROOT}/data/instances.json")
+GRIDS = Path(f"{ROOT}/data/instances_unique.json")
 
-GRIDS_PER_ROOM = 4  # -1 to load entire dataset
+# GRIDS_PER_ROOM = 4  # -1 to load entire dataset
+GRIDS_PER_ROOM = 6  # -1 to load entire dataset
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
 STANDARD_COLOR = "Purple"

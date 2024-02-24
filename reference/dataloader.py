@@ -11,7 +11,7 @@ class Dataloader(list):
     def _sample_grids(self):
         # for this data we can just take 3 random grids in each level, right?
         self.clear()
-        grids_per_level = self._n // 2
+        grids_per_level = self._n // 6
         grids_instances = self._read_grids_file()
         for dif_level in grids_instances["experiments"]:
             level_grids = random.sample(dif_level['game_instances'], grids_per_level)
@@ -42,7 +42,10 @@ def preprocess(grid):
 
 
 
+
 # if __name__ == "__main__":
 #     from pathlib import Path
-#     d = Dataloader(Path("data/instances.json"), n=4)
-#     print(d[0][-1][1])
+#     d = Dataloader(Path("data/instances_unique.json"), n=6)
+#     print(len(d))
+    # print(d[0])
+    # print(d[0][-1][1])
