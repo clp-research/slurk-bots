@@ -2,8 +2,8 @@
 <p>
     Let us play a game. You are given three grids
     where each of them is 5 by 5 in size. Grids
-    have empty cells marked with "▢" and filled
-    cells marked with "X".
+    have empty cells and cells filled
+    with "X".
     <br />
     <br />
     Your goal is to generate
@@ -34,9 +34,6 @@
 </p>
 <br />
 <br />
-Target grid:
-<p>
-<br />
 
 <style type="text/css">
 .tg  {border-collapse:collapse;border-spacing:0;}
@@ -46,128 +43,8 @@ Target grid:
   font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
 .tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
 .tg .tg-0lax{text-align:center;vertical-align:middle}
-</style>
-<table class="tg">
-<tbody>
-  <tr>
-    <td class="tg-0pky"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-  </tr>
-  <tr>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-  </tr>
-  <tr>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-  </tr>
-  <tr>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-  </tr>
-  <tr>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-  </tr>
-</tbody>
-</table>
+.tg {margin: 0 30px;}
 
-</p>
-
-<br />
-<br />
-Second grid:
-<p>
-<br />
-
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
-.tg .tg-0lax{text-align:center;vertical-align:middle}
-</style>
-<table class="tg">
-<tbody>
-  <tr>
-    <td class="tg-0pky"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-  </tr>
-  <tr>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-  </tr>
-  <tr>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> </td>
-    <td class="tg-0lax"> </td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-    <td class="tg-0lax"> X </td>
-  </tr>
-</tbody>
-</table>
-</p>
-<br />
-<br />
-Third grid:
-<p>
-<br />
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-0pky{border-color:inherit;text-align:middle;vertical-align:middle}
-.tg .tg-0lax{text-align:middle;vertical-align:center}
-<!--table {-->
-<!--  table-layout: fixed ;-->
-<!--  width: 30px ;-->
-<!--}-->
-<!--td {-->
-<!--  width: 30px ;-->
-<!--}-->
-<!--td {-->
-<!--  height: 20px;-->
-<!--  overflow: hidden;-->
-<!--}-->
 table {
   table-layout: fixed ;
   width: 30px ;
@@ -177,8 +54,103 @@ td {
   height: 30px;
   overflow: hidden;
 }
+.table-container {
+  display: flex;
+}
+caption {
+  caption-side: top;
+  margin-bottom: 5px;
+    }
 </style>
+
+
+<div class="table-container">
 <table class="tg">
+  <caption>Target grid</caption>
+<tbody>
+  <tr>
+    <td class="tg-0pky"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+  </tr>
+</tbody>
+</table>
+
+
+<table class="tg">
+    <caption>Grid 2</caption>
+<tbody>
+  <tr>
+    <td class="tg-0pky"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> </td>
+    <td class="tg-0lax"> </td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+    <td class="tg-0lax"> X </td>
+  </tr>
+</tbody>
+</table>
+
+
+<table class="tg">
+    <caption>Grid 3</caption>
   <tbody>
   <tr>
     <td class="tg-0pky"> X </td>
@@ -217,7 +189,8 @@ td {
   </tr>
 </tbody>
 </table>
-</p>
+</div>
+
 
 <p>
 <br />

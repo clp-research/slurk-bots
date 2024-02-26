@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
 
-
-<body>
 <p>
     Let us play a game. You are given three grids
     where each of them is 5 by 5 in size. Grids
-    have empty cells marked with "▢" and filled
-    cells marked with "X". One of the grids is the
+    have empty cells and cells filled
+    with "X". One of the grids is the
     target grid, you will have to guess which one!
     <br />
     <br />
@@ -37,10 +29,8 @@
 
 <br />
 <br />
-First grid:
 
-</p>
-  <br />
+
 <style type="text/css">
 .tg  {border-collapse:collapse;border-spacing:0;}
 .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
@@ -49,6 +39,8 @@ First grid:
   font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
 .tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
 .tg .tg-0lax{text-align:center;vertical-align:middle}
+.tg {margin: 0 30px;}
+
 table {
   table-layout: fixed ;
   width: 30px ;
@@ -58,10 +50,18 @@ td {
   height: 30px;
   overflow: hidden;
 }
+.table-container {
+  display: flex;
+}
+caption {
+  caption-side: top;
+  margin-bottom: 5px;
+    }
 </style>
 
-
+<div class="table-container">
 <table class="tg">
+  <caption>Grid 1</caption>
 <tbody>
   <tr>
     <td class="tg-0pky"> X </td>
@@ -101,34 +101,9 @@ td {
 </tbody>
 </table>
 
-</p>
-<br />
-<br />
 
-
-
-Second grid:
-<p>
-    <br />
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
-.tg .tg-0lax{text-align:center;vertical-align:middle}
-table {
-  table-layout: fixed ;
-  width: 30px ;
-}
-td {
-  width: 30px ;
-  height: 30px;
-  overflow: hidden;
-}
-</style>
 <table class="tg">
+  <caption>Grid 2</caption>
 <tbody>
   <tr>
     <td class="tg-0pky"> X </td>
@@ -167,36 +142,10 @@ td {
   </tr>
 </tbody>
 </table>
-</p>
-<br />
-<br />
 
 
-
-Third grid:
-<p>
-    <br />
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-0pky{border-color:inherit;text-align:center ;vertical-align:middle}
-.tg .tg-0lax{text-align:center;vertical-align:middle}
-table {
-  table-layout: fixed ;
-  width: 30px ;
-}
-td {
-  width: 30px ;
-}
-td {
-  height: 20px;
-  overflow: hidden;
-}
-</style>
 <table class="tg">
+  <caption>Grid 3</caption>
 <tbody>
   <tr>
     <td class="tg-0pky"> X </td>
@@ -235,7 +184,7 @@ td {
   </tr>
 </tbody>
 </table>
-</p>
+</div>
 
 <p>
   <br />
@@ -244,14 +193,10 @@ td {
   <br />
   Question: Which grid does the description refer
   to?
-</p>
 
-<p>
 <br />
 <br />
   Answer:
   <b> 2. </b>
 
 </p>
-</body>
-</html>
