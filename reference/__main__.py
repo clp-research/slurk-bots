@@ -578,6 +578,7 @@ class ReferenceBot(TaskBot):
                     "html": True,
                 },
             )
+        sleep(1)
 
     def timeout_waiting_room(self, user):
         # get layout_id

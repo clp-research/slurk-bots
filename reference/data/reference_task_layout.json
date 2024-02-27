@@ -40,7 +40,7 @@
         {
           "layout-type": "div",
           "class": "card_grids",
-          "style": "padding: 30px; display: flex",
+          "style": "padding: 10px; display: flex",
           "layout-content": [
             {
               "layout-type": "div",
@@ -55,13 +55,13 @@
                 {
                   "layout-type": "div",
                   "id": "grid1_title",
-                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "style": "max-width: 50%; height: auto; object-fit: contain; font-weight: bold;",
                   "layout-content": "Grid 1"
                 },
                 {
                   "layout-type": "div",
                   "id": "grid1",
-                  "style": "padding: 30px; margin: 5px;",
+                  "style": "padding: 10px; margin: 10px;",
                   "layout-content": ""
                 }]},
                 {
@@ -74,36 +74,42 @@
                 {
                   "layout-type": "div",
                   "id": "grid2_title",
-                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "style": "max-width: 50%; height: auto; object-fit: contain; font-weight: bold;",
                   "layout-content": "Grid 2"
                 },
                 {
                   "layout-type": "div",
                   "id": "grid2",
-                  "style": "padding: 30px; margin: 5px;",
+                  "style": "padding: 10px; margin: 10px;",
                   "layout-content": ""
                 }]},
                 {
                  "layout-type": "div",
-                  "id": "grid2_container",
+                  "id": "grid3_container",
                   "style": "display: flex; flex-direction: column; align-items: center;",
                   "layout-content": [
                 {
                   "layout-type": "div",
                   "id": "grid3_title",
-                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "style": "max-width: 50%; height: auto; object-fit: contain; font-weight: bold;",
                   "layout-content": "Grid 3"
                 },
                 {
                   "layout-type": "div",
                   "id": "grid3",
-                  "style": "padding: 30px; margin: 5px;",
+                  "style": "padding: 10px; margin: 10px;",
                   "layout-content": ""
                 }]}
               ]
             }
           ]
-        }
+        },
+        {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": []}
+
+
   ],
   "css": {
     ".dis-area": {
@@ -113,7 +119,7 @@
       "position": "relative",
       "display": "flex",
       "flex-direction": "column",
-      "margin": "0px 10px",
+      "margin": "0px 5px",
       "padding": "50px"
     },
 
@@ -125,11 +131,6 @@
     "time:before": {
       "content": "''"
     },
-    "#image-area": {
-      "margin": "0 auto",
-      "align-items": "center",
-      "justify-content": "center"
-    },
     ".card": {
     "position": "relative",
     "display": "flex",
@@ -140,7 +141,7 @@
     "border": "1px solid rgba(0,0,0,.125)",
     "border-radius": ".25rem",
     "height": "100%",
-    "margin": "0px 10px",
+    "margin": "0px 5px",
     "padding": "30px"
     },
 
@@ -148,14 +149,12 @@
       "position": "relative",
       "display": "flex",
       "flex-direction": "column",
-      "min-width": "0",
       "background-color": "#fff",
       "background-clip": "border-box",
-      "border": "1px solid rgba(0,0,0,.125)",
-      "border-radius": ".25rem",
-      "height": "100%",
-      "margin": "0px 15px",
-      "padding": "40px"
+      "border": "none",
+      "overflow": "auto",
+      "width": "90%",
+      "margin": "0px 5px"
     },
 
     ".collapsible": {
@@ -182,7 +181,6 @@
             "border-radius": "5px",
             "border": "none",
             "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
-            "margin-top": "10px",
             "outline": 0,
             "background": "#00305E",
             "width": "100%",
