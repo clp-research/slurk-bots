@@ -19,12 +19,10 @@ nltk.download("stopwords", quiet=True)
 EN_LEMMATIZER = nltk.stem.WordNetLemmatizer()
 EN_STEMMER = SnowballStemmer("english")
 
-
 from taboo.dataloader import Dataloader
 from taboo.config import EXPLAINER_PROMPT, GUESSER_PROMPT, LEVEL_WORDS, WORDS_PER_ROOM, COLOR_MESSAGE, STANDARD_COLOR, \
     STARTING_POINTS, TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER
 from templates import TaskBot
-
 
 LOG = logging.getLogger(__name__)
 
@@ -285,7 +283,6 @@ class TabooBot(TaskBot):
                             )
                             self.sessions[room_id].left_room_timer[curr_usr["id"]].start()
 
-
                     # # remove this user from current session
                     # this_session.players = list(
                     #     filter(
@@ -387,6 +384,7 @@ class TabooBot(TaskBot):
                         f"{message}",
                         room_id,
                     )
+                    sleep(0.5)
                     self.update_reward(room_id, 0)
                     self.load_next_game(room_id)
                 else:
@@ -400,8 +398,8 @@ class TabooBot(TaskBot):
                     if user["id"] == user_id:
                         guesser_name = user['name']  # Since explainer and guesser ar user_ids, get name for logging
                 self.log_event("guess", {"content": data['command'],
-                                        "from": f"GM impersonated as {guesser_name}, the guesser",
-                                        "to": this_session.guesser}, room_id)
+                                         "from": f"GM impersonated as {guesser_name}, the guesser",
+                                         "to": this_session.guesser}, room_id)
 
                 for user in this_session.players:
                     if user["id"] != user_id:
@@ -432,11 +430,12 @@ class TabooBot(TaskBot):
 
                     # for player in this_session.players:
                     self.send_message_to_user(
-                            f"INVALID GUESS: '{data['command'].lower()}' contains more than one word."
-                            f"You both lose this round.",
-                            room_id,
-                            # player["id"],
-                        )
+                        f"INVALID GUESS: '{data['command'].lower()}' contains more than one word."
+                        f"You both lose this round.",
+                        room_id,
+                        # player["id"],
+                    )
+                    sleep(0.5)
                     self.load_next_game(room_id)
                     return
 
@@ -457,18 +456,20 @@ class TabooBot(TaskBot):
                             room_id,
                             # player["id"],
                         )
+                        sleep(0.5)
                         self.update_reward(room_id, 1)
                         self.load_next_game(room_id)
 
                     else:
                         # guess is false
                         self.send_message_to_user(
-                                f"GUESS {this_session.guesses} '{data['command']}' was false",
-                                room_id,
-                                # player["id"],
-                            )
+                            f"GUESS {this_session.guesses} '{data['command']}' was false",
+                            room_id,
+                            # player["id"],
+                        )
 
-                            # if player["id"] == this_session.explainer:
+                        # if player["id"] == this_session.explainer:
+                        sleep(0.5)
                         self.send_message_to_user(
                             f"Please provide a new description",
                             room_id,
@@ -498,6 +499,7 @@ class TabooBot(TaskBot):
                             f"You both win this round.",
                             room_id,
                         )
+                        sleep(0.5)
                         self.update_reward(room_id, 1)
 
                     else:
@@ -508,6 +510,7 @@ class TabooBot(TaskBot):
                             f"3 guesses have been already used. You lost this round.",
                             room_id,
                         )
+                        sleep(0.5)
                         self.update_reward(room_id, 0)
                     # start new round (because 3 guesses were used)
                     self.load_next_game(room_id)
@@ -552,7 +555,6 @@ class TabooBot(TaskBot):
                     this_session.timer.cancel()
                 self.start_timeout_timer(room_id)
 
-
     def _command_ready(self, room_id, user_id):
         """Must be sent to begin a conversation."""
         # identify the user that has not sent this event
@@ -572,6 +574,7 @@ class TabooBot(TaskBot):
         # both
         if other_usr["status"] == "ready":
             self.send_message_to_user("Woo-Hoo! The game will begin now.", room_id)
+            sleep(1)
             self.start_round(room_id)
         else:
             self.send_message_to_user(
@@ -601,6 +604,7 @@ class TabooBot(TaskBot):
         self.log_event("round", {"number": round_n}, room_id)
 
         self.send_message_to_user(f"Let's start round {round_n} of 6", room_id)
+        sleep(1)
         self.send_message_to_user(
             "Wait a bit for the first hint about the word you need to guess",
             room_id,
@@ -613,7 +617,8 @@ class TabooBot(TaskBot):
         self.log_event('target word', {'content': self.sessions[room_id].word_to_guess}, room_id)
         self.log_event('difficulty level', {'content': self.sessions[room_id].words[0][
             "level"]}, room_id)
-        LOG.debug(f"The target word is {self.sessions[room_id].word_to_guess} with level {self.sessions[room_id].words[0]['level']}")
+        LOG.debug(
+            f"The target word is {self.sessions[room_id].word_to_guess} with level {self.sessions[room_id].words[0]['level']}")
         taboo_words = ", ".join(self.sessions[room_id].words[0]["related_word"])
         self.sessions[room_id].guesses = 0
 
@@ -1065,62 +1070,20 @@ def check_clue(clue: str, target_word: str, related_words):
     for clue_word, clue_word_stem in zip(clue_words, clue_word_stems):
         if target_word_stem == clue_word_stem:
             errors.append({
-                "message": f"Target word '{target_word}' (stem={target_word_stem}) "
-                           f"is similar to clue word '{clue_word}' (stem={clue_word_stem})",
+                "message": f"The target word '{target_word}' (stem={target_word_stem})"
+                           f" is similar to the word '{clue_word}' (stem={clue_word_stem})"
+                           " and it was used in the clue. You both lose :(",
                 "type": 0
             })
         for related_word, related_word_stem in zip(related_words, related_word_stems):
             if related_word_stem == clue_word_stem:
                 errors.append({
-                    "message": f"Related word '{related_word}' (stem={related_word_stem}) "
-                               f"is similar to clue word '{clue_word}' (stem={clue_word_stem})",
+                    "message": f"The related word '{related_word}' (stem={related_word_stem})  "
+                               f"is similar to the word '{clue_word}' (stem={clue_word_stem})"
+                               " and it was used in the clue. You both lose :(",
                     "type": 1
                 })
     return errors
-    # utterance = utterance.lower()
-    # utterance = remove_punctuation(utterance)
-    # # simply contain checks
-    # if target_word in utterance:
-    #     return [
-    #         {
-    #             "message": f"Target word '{target_word}' was used in the clue. You both lose this round.",
-    #             "type": 0,
-    #         }
-    #     ]
-    # for related_word in related_words:
-    #     if related_word in utterance:
-    #         return [
-    #             {
-    #                 "message": f"Related word '{related_word}' was used in the clue, You both lose this round",
-    #                 "type": 1,
-    #             }
-    #         ]
-    #
-    # # lemma checks
-    # utterance = utterance.split(" ")
-    # filtered_clue = [word for word in utterance if word not in EN_STOPWORDS]
-    # target_lemma = EN_LEMMATIZER.lemmatize(target_word)
-    # related_lemmas = [
-    #     EN_LEMMATIZER.lemmatize(related_word) for related_word in related_words
-    # ]
-    # errors = []
-    # for clue_word in filtered_clue:
-    #     clue_lemma = EN_LEMMATIZER.lemmatize(clue_word)
-    #     if clue_lemma == target_lemma:
-    #         return [
-    #             {
-    #                 "message": f"Target word '{target_word}' is morphological similar to clue word '{clue_word}'",
-    #                 "type": 0,
-    #             }
-    #         ]
-    #     if clue_lemma in related_lemmas:
-    #         return [
-    #             {
-    #                 "message": f"Related word is morphological similar to clue word '{clue_word}'",
-    #                 "type": 1,
-    #             }
-    #         ]
-    # return errors
 
 
 if __name__ == "__main__":
