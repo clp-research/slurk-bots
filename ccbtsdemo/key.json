@@ -1,0 +1,9 @@
+{
+    "openai": {
+        "organization": "org-a3W78c628ell5lfpDbTdh8sp",
+        "api_key": "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"
+    },
+    "huggingface": {
+        "api_token": "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"
+    }
+}
