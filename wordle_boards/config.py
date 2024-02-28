@@ -70,7 +70,7 @@ with open(Path(f"{ROOT}/data/task_greeting.txt")) as f:
 
 
 # WORDLE_WORDS = Path(f"{ROOT}/data/wordle_words.json")
-WORDLE_WORDS = Path(f"{ROOT}/data/instances_wordle_kranti.json")
+WORDLE_WORDS = Path(f"{ROOT}/data/instances.json")
 
 WORDS_HIGH_N, WORDS_MED_N = 1, 2  # -1 to load entire dataset
 
