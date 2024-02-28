@@ -280,8 +280,12 @@ class ReferenceBot(TaskBot):
 
                     # Change to role check like in recolage?
                     if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
-                        LOG.debug("RESTART ROUND")
-                        self.reload_state(room_id, curr_usr["id"])
+                        if curr_usr["status"] != "ready" or other_usr["status"] != "ready":
+                            LOG.debug("RELOAD ONLY INSTR")
+                            self.send_instr(room_id, curr_usr["id"])
+                        else:
+                            LOG.debug("RESTART ROUND")
+                            self.reload_state(room_id, curr_usr["id"])
 
 
                 elif event == "leave":
