@@ -1035,7 +1035,8 @@ class DrawingBot(TaskBot):
             result = 'LOST'
             points = 0
 
-            self.send_message_from_bot(room_id, f"**YOU both {result}! For this round you get {points} points. "
+            self.send_message_from_bot(room_id, f"**The target grid and the drawn grid are different. YOU both {result}! :("
+                                                f" For this round you get {points} points. "
                                                 f"Your total score is: {self.sessions[room_id].points['score']}**")
             self.process_move(room_id, 0)
         else:
@@ -1043,7 +1044,8 @@ class DrawingBot(TaskBot):
             result = 'WON'
             points = 1
 
-            self.send_message_from_bot(room_id, f"**YOU both {result}! For this round you get {points} points. "
+            self.send_message_from_bot(room_id, f"**The target grid and the drawn grid are the identical. YOU both {result}! :)"
+                                                f" For this round you get {points} points. "
                                                 f"Your total score is: {self.sessions[room_id].points['score'] + points}**")
             self.process_move(room_id, 1)
 
