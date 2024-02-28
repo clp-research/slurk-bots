@@ -69,9 +69,10 @@ with open(Path(f"{ROOT}/data/task_greeting.txt")) as f:
     TASK_GREETING = f.read().split("\n\n\n")
 
 
-WORDLE_WORDS = Path(f"{ROOT}/data/wordle_words.json")
+# WORDLE_WORDS = Path(f"{ROOT}/data/wordle_words.json")
+WORDLE_WORDS = Path(f"{ROOT}/data/instances_wordle_kranti.json")
 
-WORDS_PER_ROOM = 3  # -1 to load entire dataset
+WORDS_HIGH_N, WORDS_MED_N = 1, 2  # -1 to load entire dataset
 
 with open(Path(f"{ROOT}/data/guesser_instr.html")) as html_f:
     GUESSER_HTML = html_f.read()

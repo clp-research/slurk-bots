@@ -28,7 +28,7 @@ from .config import (
     TIME_WAITING_ROOM,
     VALID_WORDS,
     WORDLE_WORDS,
-    WORDS_PER_ROOM,
+    WORDS_HIGH_N, WORDS_MED_N,
 
     GUESSER_HTML,
     CRITIC_HTML,
@@ -41,6 +41,7 @@ from .config import (
 
 )
 
+WORDS_PER_ROOM = WORDS_HIGH_N + WORDS_MED_N
 
 LOG = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class RoomTimer:
 
 class Session:
     def __init__(self):
-        self.words = Dataloader(WORDLE_WORDS, WORDS_PER_ROOM)
+        self.words = Dataloader(WORDLE_WORDS, WORDS_HIGH_N, WORDS_MED_N)
         self.word_to_guess = None
         self.players = list()
 
@@ -361,6 +362,13 @@ class WordleBot2 (TaskBot):
 
             if user_id == self.sessions[room_id].critic:
                 self.log_event("CRITIC_RATIONALE", {"content": data['message']}, room_id)
+
+                # instruct the guesser what to do further
+                self.send_message_to_user(STANDARD_COLOR, "You must now either re-submit the guess in the original form"
+                                                          " or change it. To submit the guess press ENTER button on the board again.",
+                                          room_id, self.sessions[room_id].guesser)
+
+
                 self.sessions[room_id].turn = self.sessions[room_id].guesser
                 self.sessions[room_id].proposal_submitted = False
                 self.sessions[room_id].critic_provided = True
@@ -420,13 +428,13 @@ class WordleBot2 (TaskBot):
                         return
                     elif data["command"]["event"] == "critic_feedback":
                         if data["command"]["answer"] == "agree":
-                            self.send_message_to_user(STANDARD_COLOR, "Critic agrees with the proposed guess, wait for his rationale.",
+                            self.send_message_to_user(STANDARD_COLOR, "Critic agrees with the proposed guess, wait for their rationale.",
                                                       room_id, self.sessions[room_id].guesser
                                                       )
                             self.log_event("CRITIC_AGREEMENT", {"content": True}, room_id)
 
                         elif data["command"]["answer"] == "disagree":
-                            self.send_message_to_user(STANDARD_COLOR, "Critic doesn't agree with the proposed guess, wait for his rationale.",
+                            self.send_message_to_user(STANDARD_COLOR, "Critic doesn't agree with the proposed guess, wait for their rationale.",
                                                       room_id, self.sessions[room_id].guesser
                                                       )
                             self.log_event("CRITIC_AGREEMENT", {"content": False}, room_id)
@@ -701,7 +709,7 @@ class WordleBot2 (TaskBot):
             self.log_event("TARGET_WORD", {"content": self.sessions[room_id].word_to_guess},
                                             room_id)
 
-            self.log_event("WORD_FREQUENCY", {"content": self.sessions[room_id].words[0]["level"]},
+            self.log_event("WORD_FREQUENCY", {"content": self.sessions[room_id].words[0]['target_word_difficulty']},
                                             room_id)
 
 
@@ -710,7 +718,8 @@ class WordleBot2 (TaskBot):
                                       f"Let's start round {round_n}",
                                       room_id)
 
-            self.send_message_to_user(STANDARD_COLOR, f"{self.sessions[room_id].word_to_guess}", room_id, self.sessions[room_id].guesser)
+            # print target word for testing
+            # self.send_message_to_user(STANDARD_COLOR, f"{self.sessions[room_id].word_to_guess}", room_id, self.sessions[room_id].guesser)
             if self.version == "clue" or self.version == "critic":
                 self.send_message_to_user(STANDARD_COLOR, f"CLUE: <b> {self.sessions[room_id].words[0]['target_word_clue'].lower()} </b>",
                                           room_id)
