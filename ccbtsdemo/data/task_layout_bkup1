@@ -1,0 +1,62 @@
+{
+  "title": "CoCoBots - DEMO",
+  "html": [
+    {
+        "layout-type": "div",
+        "class": "card",
+        "layout-content": [
+          {
+              "layout-type": "div",
+              "id": "image-area",
+              "layout-content": [
+                  {
+                    "layout-type": "image",
+                    "id": "base-world-state",
+                    "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
+                    "width": 500,
+                    "height": 400
+                  }
+              ]
+          },
+          {
+            "layout-type": "div",
+            "id": "image-area",
+            "layout-content": [
+                {
+                  "layout-type": "image",
+                  "id": "current-world-state",
+                  "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
+                  "width": 500,
+                  "height": 400
+                }
+            ]
+          },          
+          {
+            "layout-type": "div",
+            "id": "instructions",
+            "style": "margin: 15px;",
+            "layout-content": "<a style='color:Blue;'>Your task is to instruct the bot to recreate the arrangement on the left side by giving step=by-step instructions.</a><br><br>Available shapes:<br><a style='color:Purple;'>Washer, Nut, Screw, Horizontal Bridge, Vertical Bridge</a><br><br>Available colors:<br><a style='color:Purple;'>Red, Gree, Blue, Yellow</a><br><br>Example instructions:<br>place a red washer in the 4th row 3rd column<br><br>remove the last placed nut<br><br>Commands to clear the grid:<br><a style='color:Purple;'>/clear, /reset, /restart</a>"
+          }
+        ]
+      }        
+  ],
+  "css": {
+    "header, footer": {
+      "background": "#115E91"
+    },
+    "#image-area": {
+      "align-content": "left",
+      "margin": "50px 20px 15px"
+    }
+  },  
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": "markdown-history",
+    "plain": [
+      "view"
+    ]
+  },
+  "show_latency": false
+}
