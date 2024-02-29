@@ -7,7 +7,7 @@ import requests
 from templates import TaskBot
 
 from .getllmresponse import PromptLLM
-from .preparedata import get_target_image, get_empty_world_state
+from .preparedata import Dataloader
 from .execresponse import execute_response
 from .base64encode import encode_image_to_base64
 
@@ -48,6 +48,7 @@ class CCBTSDemoBot(TaskBot):
         self.model_response = {}
         self.rows = 8
         self.cols = 8
+        self.dataloader = Dataloader()
 
     def on_task_room_creation(self, data):
         logging.debug(f"Task room created, data = {data}")
@@ -186,7 +187,7 @@ class CCBTSDemoBot(TaskBot):
     def load_target_image(self, room_id, user_id):
         """Load the target image."""
         logging.debug(f"Inside load_target_image, room_id = {room_id}, user_id = {user_id}")
-        base64_string = get_target_image()
+        base64_string = self.dataloader.get_target_image()
         self.sio.emit(
             "message_command",
             {
@@ -200,7 +201,7 @@ class CCBTSDemoBot(TaskBot):
         logging.debug(f"Inside setworldstate, room_id = {room_id}, user_id = {user_id}")
         #save_filename = resetboardstate(self.rows, self.cols)
         #base64_string = encode_image_to_base64(save_filename)#get_empty_world_state()
-        base64_string = get_empty_world_state()
+        base64_string = self.dataloader.get_empty_world_state()
 
         self.sio.emit(
             "message_command",
@@ -210,10 +211,8 @@ class CCBTSDemoBot(TaskBot):
                 "receiver_id": user_id,
             },
         )
-
-    def reset(self, room_id, user_id):
-        """Reset the board and the state of the bot."""
-        logging.debug(f"Received reset for the room {room_id}, user {user_id}")
+    
+    def _cleanup(self, room_id, user_id):
         self.n_turns = 0
         self.instructions = {}
         self.model_response = {}
@@ -223,13 +222,27 @@ class CCBTSDemoBot(TaskBot):
             timer.reset()
 
         self.setworldstate(room_id, user_id)
+
+
+    def handlereset(self, room_id, user_id, command="reset"):
+        """Handle reset command."""
+        logging.debug(f"Received {command} for the room {room_id}, user {user_id}")
+
+        self._cleanup(room_id, user_id)
+
+        if command in ["clear", "reset"]:
+            message = "Resets the world state"
+        elif command == "restart":
+            message = "Resets the target board"
+            self.load_target_image(room_id, user_id)
+
         self.sio.emit(
             "text",
             {
                 "room": room_id,
                 # "message": message
                 "message": COLOR_MESSAGE.format(
-                    color=STANDARD_COLOR, message="Resets the world state"
+                    color=STANDARD_COLOR, message=message
                 ),
                 "html": True,
             },
@@ -262,9 +275,10 @@ class CCBTSDemoBot(TaskBot):
             pllm = PromptLLM()
             pllm.get_prompt(message, prompt)
             logging.debug(f"Prompt: {prompt}")
-            generated_response = pllm.generate(
-                "codellama/CodeLlama-34b-Instruct-hf", prompt
-            )
+            #model_to_test = "codellama/CodeLlama-34b-Instruct-hf"
+            model_to_test = "fsc-codellama-34b-instruct"#"fsc-openchat-3.5-0106"
+
+            generated_response = pllm.generate(model_to_test, prompt)
             logging.debug(f"Generated Response: {generated_response}")
             self.model_response[self.n_turns + 1] = generated_response
             logging.debug(
@@ -347,10 +361,10 @@ class CCBTSDemoBot(TaskBot):
             # commands from the user
             if data["command"] in ["clear", "reset"]:
                 # clear the board, resets state and other variables
-                self.reset(room_id, user_id)
-            elif data["command"] == "reset":
+                self.handlereset(room_id, user_id, "reset")
+            elif data["command"] == "restart":
                 # re-fetch the target board
-                pass
+                self.handlereset(room_id, user_id, "restart")
             else:
                 logging.debug(f"Unknown command: {data['command']}")
                 self.sio.emit(
