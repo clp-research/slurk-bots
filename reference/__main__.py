@@ -728,13 +728,12 @@ class ReferenceBot(TaskBot):
         self.close_game(room_id)
 
     def timeout_close_game(self, room_id, status):
-
-        self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
+        if room_id in self.sessions:
+            self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
                                   room_id)
-        for player in self.sessions[room_id].players:
-            self.confirmation_code(room_id, status, player["id"])
-        # self.confirmation_code(room_id, status)
-        self.close_game(room_id)
+            for player in self.sessions[room_id].players:
+                self.confirmation_code(room_id, status, player["id"])
+            self.close_game(room_id)
 
     def close_game(self, room_id):
         self.send_message_to_user(STANDARD_COLOR, "The room is closing, see you next time 👋",
