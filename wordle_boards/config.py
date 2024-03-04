@@ -27,9 +27,7 @@ PLATFORM = "Prolific"
 # All below *TIME_* variables are in minutes.
 # They indicate how long a situation has to persist for something to happen.
 
-# TIME_LEFT = 5  # how many minutes a user can stay in a room before closing it
-TIME_WAITING_ROOM = 3  # how many minutes a user can wait for a partner
-# TIME_ROUND = 20  # how many minutes users can play on a single image
+TIME_WAITING_ROOM = 5  # how many minutes a user can wait for a partner
 
 
 TIMEOUT_TIMER = 5  # minutes of inactivity before the room is closed automatically

@@ -38,5 +38,5 @@ class Dataloader(list):
 # if __name__ == "__main__":
 #     from pathlib import Path
 #     # d = Dataloader(Path("data/wordle_words.json"), n=3)
-#     d = Dataloader(Path("data/instances_wordle_kranti.json"), 1, 2)
+#     d = Dataloader(Path("data/instances.json"), 1, 2)
 #     print(d)
