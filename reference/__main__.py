@@ -628,32 +628,47 @@ class ReferenceBot(TaskBot):
                                                   "you will now get a token.", room["id"], user["id"])
 
         self.confirmation_code(room["id"], "timeout_waiting_room", user["id"])
-        # self.confirmation_code(room["id"], "timeout_waiting_room")
         self.remove_user_from_room(user["id"], room["id"])
 
     def remove_user_from_room(self, user_id, room_id):
+        # response = requests.get(
+        #     f"{self.uri}/users/{user_id}",
+        #     headers={"Authorization": f"Bearer {self.token}"},
+        # )
+        # if not response.ok:
+        #     logging.error(f"Could not get user: {response.status_code}")
+        #     response.raise_for_status()
+        # etag = response.headers["ETag"]
+        #
+        # try:
+        #     response = requests.delete(
+        #         f"{self.uri}/users/{user_id}/rooms/{room_id}",
+        #         headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+        #     )
+        #     if not response.ok:
+        #         logging.error(
+        #             f"Could not remove user from task room: {response.status_code}"
+        #         )
+        #         response.raise_for_status()
+        #     logging.debug("Removing user from task room was successful.")
+        # except:
+        #     logging.debug(f"User {user_id} not in room {room_id}")
+
+
+
         response = requests.get(
             f"{self.uri}/users/{user_id}",
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(f"Could not get user: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "getting user")
         etag = response.headers["ETag"]
 
-        try:
-            response = requests.delete(
-                f"{self.uri}/users/{user_id}/rooms/{room_id}",
-                headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-            )
-            if not response.ok:
-                logging.error(
-                    f"Could not remove user from task room: {response.status_code}"
-                )
-                response.raise_for_status()
-            logging.debug("Removing user from task room was successful.")
-        except:
-            logging.debug(f"User {user_id} not in room {room_id}")
+        response = requests.delete(
+            f"{self.uri}/users/{user_id}/rooms/{room_id}",
+            headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+        )
+        self.request_feedback(response, "removing user from task toom")
+        logging.debug("Removing user from task room was successful.")
 
     def move_divider(self, room_id, chat_area=50, task_area=50):
         """move the central divider and resize chat and task area
@@ -684,47 +699,37 @@ class ReferenceBot(TaskBot):
             json={"attribute": "readonly", "value": "True"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "setting room to read_only")
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/attribute/id/text",
             json={"attribute": "placeholder", "value": "This room is read-only"},
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        if not response.ok:
-            logging.error(f"Could not set room to read_only: {response.status_code}")
-            response.raise_for_status()
+        self.request_feedback(response, "setting room title to read_only")
 
         # remove user from room
         if room_id in self.sessions:
             for usr in self.sessions[room_id].players:
-                response = requests.get(
-                    f"{self.uri}/users/{usr['id']}",
-                    headers={"Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(f"Could not get user: {response.status_code}")
-                    response.raise_for_status()
-                etag = response.headers["ETag"]
-
-                response = requests.delete(
-                    f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                    headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-                )
-                if not response.ok:
-                    logging.error(
-                        f"Could not remove user from task room: {response.status_code}"
-                    )
-                    response.raise_for_status()
-                logging.debug("Removing user from task room was successful.")
+                self.remove_user_from_room(usr["id"], room_id)
+                # response = requests.get(
+                #     f"{self.uri}/users/{usr['id']}",
+                #     headers={"Authorization": f"Bearer {self.token}"},
+                # )
+                # self.request_feedback(response, "getting user")
+                # etag = response.headers["ETag"]
+                #
+                # response = requests.delete(
+                #     f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
+                #     headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
+                # )
+                # self.request_feedback(response, "removing user from task toom")
+                # logging.debug("Removing user from task room was successful.")
 
     def terminate_experiment(self, room_id):
         self.send_message_to_user(STANDARD_COLOR, "The experiment is over 🎉 🎉 thank you very much for your time!",
                                   room_id)
         for player in self.sessions[room_id].players:
             self.confirmation_code(room_id, "success", player["id"])
-        # self.confirmation_code(room_id, "success")
         self.close_game(room_id)
 
     def timeout_close_game(self, room_id, status):
