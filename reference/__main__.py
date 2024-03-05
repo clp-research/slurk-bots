@@ -668,7 +668,7 @@ class ReferenceBot(TaskBot):
             headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "removing user from task toom")
-        logging.debug("Removing user from task room was successful.")
+        # logging.debug("Removing user from task room was successful.")
 
     def move_divider(self, room_id, chat_area=50, task_area=50):
         """move the central divider and resize chat and task area
