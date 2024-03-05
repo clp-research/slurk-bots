@@ -315,7 +315,7 @@ class ReferenceBot(TaskBot):
 
             if room_id not in self.sessions or user_id == self.user:
                 return
-
+            LOG.debug(f"Received a message from {data['user']['name']}.")
             this_session = self.sessions[room_id]
             this_session.timer.reset()
 
@@ -741,6 +741,7 @@ class ReferenceBot(TaskBot):
             self.close_game(room_id)
 
     def close_game(self, room_id):
+
         self.send_message_to_user(STANDARD_COLOR, "The room is closing, see you next time 👋",
                                   room_id)
         self.sessions[room_id].game_over = True
