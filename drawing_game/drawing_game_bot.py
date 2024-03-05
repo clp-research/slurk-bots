@@ -30,7 +30,7 @@ class Session:
         self.players = list()
         self.player_a = None  # Instruction giver
         self.player_b = None  # Instruction follower
-        self.task_greeting = TASK_GREETING.read_text()
+        self.task_greeting = TASK_GREETING
         self.player_a_instructions = INSTRUCTIONS_A
         self.player_b_instructions = INSTRUCTIONS_B
         self.keyboard_instructions = KEYBOARD_INSTRUCTIONS
@@ -309,7 +309,7 @@ class DrawingBot(TaskBot):
 
             if room_id in self.sessions:
                 # read out task greeting
-                message = self.sessions[room_id].task_greeting
+                message = self.sessions[room_id].task_greeting.read_text()
                 self.send_message_from_bot(room_id, message)
 
         @self.sio.event
