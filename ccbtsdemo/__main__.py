@@ -65,6 +65,8 @@ class CCBTSDemoBot(TaskBot):
             self.modify_layout(room_id)
             sleep(0.5)
 
+            self._cleanup(room_id, None)
+
             # set the empty grid as the world state
             for usr in data["users"]:
                 logging.debug(
@@ -80,6 +82,7 @@ class CCBTSDemoBot(TaskBot):
 
     def close_room(self, room_id):
         logging.debug(f"Closing room {room_id}") 
+        self._cleanup(room_id, None)
         self.room_to_read_only(room_id)
         self.timers_per_room.pop(room_id)
 
@@ -213,15 +216,19 @@ class CCBTSDemoBot(TaskBot):
         )
     
     def _cleanup(self, room_id, user_id):
+        logging.debug(f"Doing _cleanup for the room {room_id}, user {user_id}")
         self.n_turns = 0
         self.instructions = {}
         self.model_response = {}
 
-        timer = self.timers_per_room.get(room_id)
-        if timer is not None:
-            timer.reset()
+        if user_id is not None:
+            #TODO: Check where should this be placed
+            timer = self.timers_per_room.get(room_id)
+            if timer is not None:
+                timer.reset()
 
-        self.setworldstate(room_id, user_id)
+
+            self.setworldstate(room_id, user_id)
 
 
     def handlereset(self, room_id, user_id, command="reset"):
