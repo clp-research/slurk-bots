@@ -144,7 +144,7 @@ class ReferenceBot(TaskBot):
                 self.sessions[room_id].players.append(
                     {**usr, "msg_n": 0, "status": "joined"}
                 )
-
+            for usr in data["users"]:
                 # cancel waiting-room-timers
                 if usr["id"] in self.sessions.waiting_room_timers:
                     logging.debug(f"Cancelling waiting room timer for user {usr['id']}")
@@ -198,6 +198,21 @@ class ReferenceBot(TaskBot):
             #     "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
             #     room_id,
             # )
+
+    def assign_roles(self, room_id):
+        # assuming there are 2 players
+        session = self.sessions[room_id]
+
+        guesser_index = random.randint(0, len(session.players) - 1)
+        explainer_index = 1 - guesser_index
+        session.players[explainer_index]["role"] = "explainer"
+        session.explainer = session.players[explainer_index]["id"]
+        self.log_event("player", session.players[explainer_index], room_id)
+
+        session.players[guesser_index]["role"] = "guesser"
+        session.guesser = session.players[guesser_index]["id"]
+        self.log_event("player", session.players[guesser_index], room_id)
+
     def register_callbacks(self):
         @self.sio.event
         def joined_room(data):
@@ -223,22 +238,6 @@ class ReferenceBot(TaskBot):
                     "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
                     room_id,
                 )
-
-    def assign_roles(self, room_id):
-        # assuming there are 2 players
-        session = self.sessions[room_id]
-
-        guesser_index = random.randint(0, len(session.players) - 1)
-        explainer_index = 1 - guesser_index
-        session.players[explainer_index]["role"] = "explainer"
-        session.explainer = session.players[explainer_index]["id"]
-        self.log_event("player", session.players[explainer_index], room_id)
-
-        session.players[guesser_index]["role"] = "guesser"
-        session.guesser = session.players[guesser_index]["id"]
-        self.log_event("player", session.players[guesser_index], room_id)
-
-    def register_callbacks(self):
         @self.sio.event
         def status(data):
             """Triggered when a user enters or leaves a room."""
