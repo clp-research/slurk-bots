@@ -108,7 +108,6 @@ class ReferenceBot(TaskBot):
         needed arguments for the init event to send to the JS frontend
         """
         self.waiting_room = waiting_room
-        # self.version = version
 
 
     def on_task_room_creation(self, data):
