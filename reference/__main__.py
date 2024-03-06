@@ -743,8 +743,9 @@ class ReferenceBot(TaskBot):
         )
         self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
-        # open processes for other threads
-        self.sessions[room_id].lock.release()
+        # open processes for other threads if there was a lock
+        if self.sessions[room_id].lock.locked:
+            self.sessions[room_id].lock.release()
 
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
