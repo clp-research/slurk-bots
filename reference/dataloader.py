@@ -39,13 +39,3 @@ def preprocess(grid):
         return grid
     preprocessed_grid = grid.split("\n")
     return [row.split(" ") for row in preprocessed_grid]
-
-
-
-
-# if __name__ == "__main__":
-#     from pathlib import Path
-#     d = Dataloader(Path("data/instances_unique.json"), n=6)
-#     print(len(d))
-    # print(d[0])
-    # print(d[0][-1][1])
