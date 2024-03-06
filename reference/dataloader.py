@@ -9,7 +9,7 @@ class Dataloader(list):
         self.get_grids()
 
     def _sample_grids(self):
-        # for this data we can just take 3 random grids in each level, right?
+        # if self. n = 6, take 1 grid in each category
         self.clear()
         grids_per_level = self._n // 6
         grids_instances = self._read_grids_file()
