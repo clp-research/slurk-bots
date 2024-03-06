@@ -159,6 +159,7 @@ class ReferenceBot(TaskBot):
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
                 headers={"Authorization": f"Bearer {self.token}"},
             )
+            self.request_feedback(response, "letting task bot join room")
 
             # 2) Choose an explainer/guesser
             self.assign_roles(room_id)
@@ -178,25 +179,50 @@ class ReferenceBot(TaskBot):
             # # assign writing rights to other user
             # self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
-            for line in TASK_GREETING:
-                self.sio.emit(
-                    "text",
-                    {
-                        "message": COLOR_MESSAGE.format(color="#800080", message=line),
-                        "room": room_id,
-                        "html": True,
-                    },
-                )
-            sleep(2)
+            # for line in TASK_GREETING:
+            #     self.sio.emit(
+            #         "text",
+            #         {
+            #             "message": COLOR_MESSAGE.format(color="#800080", message=line),
+            #             "room": room_id,
+            #             "html": True,
+            #         },
+            #     )
+            # sleep(2)
+            #
+            # self.send_message_to_user(
+            #     STANDARD_COLOR,
+            #     "Are you ready?"
+            #     " Once you click on 'yes' you will see the grids. <br> <br>"
+            #     "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
+            #     "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
+            #     room_id,
+            # )
+    def register_callbacks(self):
+        @self.sio.event
+        def joined_room(data):
+            """Triggered once after the bot joins a room."""
+            room_id = data["room"]
+            if room_id in self.sessions:
+                for line in TASK_GREETING:
+                    self.sio.emit(
+                        "text",
+                        {
+                            "message": COLOR_MESSAGE.format(color="#800080", message=line),
+                            "room": room_id,
+                            "html": True,
+                        },
+                    )
+                sleep(1)
 
-            self.send_message_to_user(
-                STANDARD_COLOR,
-                "Are you ready?"
-                " Once you click on 'yes' you will see the grids. <br> <br>"
-                "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
-                "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
-                room_id,
-            )
+                self.send_message_to_user(
+                    STANDARD_COLOR,
+                    "Are you ready?"
+                    " Once you click on 'yes' you will see the grids. <br> <br>"
+                    "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
+                    "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
+                    room_id,
+                )
 
     def assign_roles(self, room_id):
         # assuming there are 2 players
