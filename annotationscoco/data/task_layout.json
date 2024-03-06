@@ -25,7 +25,7 @@
                 {
                   "layout-type": "text",
                   "id": "task_details",
-                  "layout-content": "<a style='color:Blue;'>Your task is to prepare instructions to replicate the arrangement of shapes on the board above.<br>The colors and locations of each shape matter.</a><br><br>Example Instructions<br>1. place a red washer in the first row, third column<br>2. place a blue nut on top of it<br>3. place a green screw in the bottom corner<br>4. stack red horizontal bridge with two yellow washers in the 4th row, 1st column<br><br><a style='color:Blue;'>Please follow the legend below for the names of the shapes.</a>"
+                  "layout-content": "<a style='color:Blue;'>Your task is to prepare instructions to replicate the arrangement of shapes on the board above.<br>The colors and locations of each shape matter.</a><br><br>Example Instructions<br>1. place a red washer in the first row, third column<br>2. place a blue nut on top of it<br>3. put a green screw in the bottom corner<br>4. stack red horizontal bridge with two yellow washers in the 4th row, 1st column<br><br><a style='color:Blue;'>Please follow the legend below for the names of the shapes.</a>"
                 }                
               ]
           },
@@ -56,7 +56,7 @@
                     "layout-type": "button",
                     "class": "button",
                     "role": "button",
-                    "id": "button-submit" ,
+                    "id": "button-submit",
                     "layout-content": "Submit",
                     "style": "background-color: #3361ff;color:#ffffff"
                   }

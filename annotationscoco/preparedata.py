@@ -1,6 +1,7 @@
 import logging
 import random
 import base64
+import json
 #from .base64encode import encode_image_to_base64
 
 from pathlib import Path
@@ -15,7 +16,21 @@ RELATED_FOLDER_PATH = Path(
 class Dataloader:
     def __init__(self):
         self.images = self.load_images()
-        self.used_images = []
+        #self.used_images = []
+        self.image_view_status = self.load_image_viewing_status()
+
+    def load_image_viewing_status(self):
+        try:
+            with open(f"{ROOT}/data/sequences/image_viewing_status.json", "r") as file:
+                image_view = json.load(file)
+                return image_view
+        except FileNotFoundError:
+            return {}
+
+    def save_image_viewing_status(self):
+        logging.debug(f"Saving image viewing status to {ROOT}/data/sequences/image_viewing_status.json")
+        with open(f"{ROOT}/data/sequences/image_viewing_status.json", "w") as file:
+            json.dump(self.image_view_status, file)
 
     def encode_image_to_base64(self, image):
         try:
@@ -37,18 +52,23 @@ class Dataloader:
 
     def get_target_image(self):
         #Reset used images if all images have been used
-        if len(self.used_images) == len(self.images):
+        if len(self.image_view_status) == len(self.images):
             logging.debug("All images have been used, resetting used images list.")
             #self.used_images = []
             return "empty_world_state.png", None
 
         random_image = None
         #To ensure we dont get the same image again
-        while random_image not in self.used_images:
+        #Also check the file has not been used before
+        while random_image is None or random_image in self.image_view_status:
             random_image = random.choice(list(self.images.keys()))
             logging.debug(f"Random image file: {random_image}")
-            self.used_images.append(random_image)
-            return random_image, self.images[random_image]
+            if random_image not in self.image_view_status:
+                self.image_view_status[random_image] = True
+                return random_image, self.images[random_image]
+            else:
+                logging.debug(f"Image {random_image} has already been used, trying again.")
+
 
     def get_empty_world_state(self):
         logging.debug(f"Loading empty world state from {ROOT}/data/base_images/empty_world_state.png")

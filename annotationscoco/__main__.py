@@ -40,6 +40,7 @@ class AnnotationsCoCo(TaskBot):
     def __init__(self, token, user, task, host, port):
         logging.debug(f"CCBTS Annotations: __init__, task = {task}, user = {user}")
         super().__init__(token, user, task, host, port)
+        self.num_images = 0
         self.dataloader = Dataloader()    
 
     def on_task_room_creation(self, data):
@@ -92,16 +93,19 @@ class AnnotationsCoCo(TaskBot):
             headers={"Authorization": f"Bearer {self.token}"},
         )
         if not response.ok:
-            logging.error(f"Could not get user: {response.status_code}")        
+            logging.error(f"Could not get user: {response.status_code}")   
+
+        return response     
 
     def close_room(self, room_id):
+        self.dataloader.save_image_viewing_status()
         self.room_to_read_only(room_id)
         self.timers_per_room.pop(room_id)
 
     def room_to_read_only(self, room_id):
         """Set room to read only."""
         # set room to read-only
-        self.disable_chat_area(room_id)
+        response = self.disable_chat_area(room_id)
 
         users = response.json()
         for user in users:
@@ -163,7 +167,40 @@ class AnnotationsCoCo(TaskBot):
     def load_target_image(self, room_id, user_id):
         """Load the target image."""
         logging.debug(f"Inside load_target_image, room_id = {room_id}, user_id = {user_id}")
+        self.num_images += 1
+
+        if self.num_images >= 11:
+            #User has annotated 10 images, close the room
+            logging.debug("User has annotated 10 images, close the room")
+
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"event": "close_after_10_images", "message": ""},
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR,
+                        message="You have done 10 images, please take a break and get back to me later. Room is closing now",
+                    ),
+                    "receiver_id": user_id,
+                    "html": True,
+                },
+                callback=self.message_callback,
+            ) 
+
+            self.close_room(room_id)
+            return
+
         target_image_name, base64_string = self.dataloader.get_target_image()
+
 
         if not base64_string:
             logging.error("No target images available for loading")
