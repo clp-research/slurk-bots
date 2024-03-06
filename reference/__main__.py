@@ -3,24 +3,34 @@ import os
 import string
 import random
 from time import sleep
-from threading import Timer
-
+from threading import Timer, Lock
 import requests
+
 from templates import TaskBot
 
-import logging
-
-from reference.config import EXPLAINER_HTML, GUESSER_HTML, \
-    EMPTY_GRID, GRIDS, GRIDS_PER_ROOM, TASK_GREETING, \
-    COLOR_MESSAGE, STANDARD_COLOR, WARNING_COLOR, \
-    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_ROOM_TIMER,\
-    INPUT_FIELD_UNRESP_GUESSER, INPUT_FIELD_UNRESP_EXPLAINER
-
+from reference.config import (
+    EXPLAINER_HTML,
+    GUESSER_HTML,
+    EMPTY_GRID,
+    GRIDS,
+    GRIDS_PER_ROOM,
+    TASK_GREETING,
+    COLOR_MESSAGE,
+    STANDARD_COLOR,
+    WARNING_COLOR,
+    TIMEOUT_TIMER,
+    LEAVE_TIMER,
+    WAITING_ROOM_TIMER,
+    INPUT_FIELD_UNRESP_GUESSER,
+    INPUT_FIELD_UNRESP_EXPLAINER,
+)
 from reference.dataloader import Dataloader
 from reference.grid import GridManager
 
+
 TARGET_GRID_NAMES = {"1": "first", "2": "second", "3": "third"}
 LOG = logging.getLogger(__name__)
+
 
 class RoomTimer:
     def __init__(self, function, room_id):
@@ -76,13 +86,14 @@ class Session:
         self.timer = None
 
         self.button_number = 0
+        # to make sure parallel processes of closing game do not interfere
+        self.lock = Lock()
 
     def close(self):
         self.timer.cancel_all_timers()
 
 
 class SessionManager(dict):
-
     waiting_room_timers = dict()
 
     def create_session(self, room_id):
@@ -93,13 +104,12 @@ class SessionManager(dict):
             self[room_id].close()
             self.pop(room_id)
 
-class ReferenceBot(TaskBot):
 
+class ReferenceBot(TaskBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.received_waiting_token = set()
         self.sessions = SessionManager()
-        self.register_callbacks()
 
     def post_init(self, waiting_room):
         """
@@ -108,7 +118,6 @@ class ReferenceBot(TaskBot):
         needed arguments for the init event to send to the JS frontend
         """
         self.waiting_room = waiting_room
-
 
     def on_task_room_creation(self, data):
         """This function is executed as soon as 2 users are paired and a new
@@ -130,8 +139,6 @@ class ReferenceBot(TaskBot):
             self.move_divider(room_id, 20, 80)
 
             self.sessions.create_session(room_id)
-            timer = RoomTimer(self.timeout_close_game, room_id)
-            self.sessions[room_id].timer = timer
 
             for usr in data["users"]:
                 self.sessions[room_id].players.append(
@@ -144,13 +151,16 @@ class ReferenceBot(TaskBot):
                     self.sessions.waiting_room_timers[usr["id"]].cancel()
                     self.sessions.waiting_room_timers.pop(usr["id"])
 
+            timer = RoomTimer(self.timeout_close_game, room_id)
+            self.sessions[room_id].timer = timer
+
             # join the newly created room
             response = requests.post(
                 f"{self.uri}/users/{self.user}/rooms/{room_id}",
                 headers={"Authorization": f"Bearer {self.token}"},
             )
 
-        # 2) Choose an explainer/guesser
+            # 2) Choose an explainer/guesser
             self.assign_roles(room_id)
 
             # send_instructions
@@ -158,7 +168,9 @@ class ReferenceBot(TaskBot):
                 self.send_instr(room_id, player["id"])
 
             self.set_message_privilege(room_id, self.sessions[room_id].explainer, False)
-            self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
+            self.make_input_field_unresponsive(
+                room_id, self.sessions[room_id].explainer
+            )
 
             self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
             self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
@@ -170,19 +182,21 @@ class ReferenceBot(TaskBot):
                 self.sio.emit(
                     "text",
                     {
-                        "message": COLOR_MESSAGE.format(
-                            color= "#800080", message=line
-                        ),
+                        "message": COLOR_MESSAGE.format(color="#800080", message=line),
                         "room": room_id,
                         "html": True,
                     },
                 )
             sleep(2)
 
-            self.send_message_to_user(STANDARD_COLOR, "Are you ready?"
-                    " Once you click on 'yes' you will see the grids. <br> <br>"
-                    "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
-                    "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>", room_id)
+            self.send_message_to_user(
+                STANDARD_COLOR,
+                "Are you ready?"
+                " Once you click on 'yes' you will see the grids. <br> <br>"
+                "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
+                "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
+                room_id,
+            )
 
     def assign_roles(self, room_id):
         # assuming there are 2 players
@@ -194,26 +208,11 @@ class ReferenceBot(TaskBot):
         session.explainer = session.players[explainer_index]["id"]
         self.log_event("player", session.players[explainer_index], room_id)
 
-
         session.players[guesser_index]["role"] = "guesser"
         session.guesser = session.players[guesser_index]["id"]
         self.log_event("player", session.players[guesser_index], room_id)
 
-    @staticmethod
-    def message_callback(success, error_msg="Unknown Error"):
-        if not success:
-            LOG.error(f"Could not send message: {error_msg}")
-            exit(1)
-        LOG.debug("Sent message successfully.")
-
     def register_callbacks(self):
-        @self.sio.event
-        def user_message(data):
-            LOG.debug("Received a user_message.")
-            LOG.debug(data)
-            # it sends to itself, user id = null, receiver if = null
-            self.sio.emit("text", {"message": data["message"], "room": data["room"]})
-
         @self.sio.event
         def status(data):
             """Triggered when a user enters or leaves a room."""
@@ -234,10 +233,6 @@ class ReferenceBot(TaskBot):
             if not task.json() or task.json()["id"] != int(self.task_id):
                 return
 
-            # # don't do this for the bot itself
-            # if user["id"] == self.user:
-            #     return
-
             # someone joined waiting room
             if room_id == self.waiting_room:
                 if event == "join":
@@ -249,12 +244,13 @@ class ReferenceBot(TaskBot):
                             args=[user],
                         )
                         timer.start()
-                        logging.debug(f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}")
+                        logging.debug(
+                            f"Started a waiting room/no partner timer: {WAITING_ROOM_TIMER}"
+                        )
                         self.sessions.waiting_room_timers[user["id"]] = timer
                 return
 
             elif room_id in self.sessions:
-
                 this_session = self.sessions[room_id]
                 curr_usr, other_usr = this_session.players
                 if curr_usr["id"] != data["user"]["id"]:
@@ -262,8 +258,11 @@ class ReferenceBot(TaskBot):
                 # someone joined a task room
                 if event == "join":
                     # inform everyone about the join event
-                    self.send_message_to_user(STANDARD_COLOR,
-                        f"{user['name']} has joined the game.", room_id, other_usr["id"]
+                    self.send_message_to_user(
+                        STANDARD_COLOR,
+                        f"{user['name']} has joined the game.",
+                        room_id,
+                        other_usr["id"],
                     )
 
                     # user joined
@@ -271,44 +270,46 @@ class ReferenceBot(TaskBot):
 
                     # cancel timer
                     logging.debug(
-                        f"Cancelling Timer: left room for user {curr_usr['name']}"
+                        f"Cancelling Timer: left room for user {curr_usr['id']}"
                     )
                     timer = this_session.timer.left_room.get(curr_usr["id"])
                     if timer is not None:
                         timer.cancel()
 
-                    # Change to role check like in recolage?
-                    if self.sessions[room_id].guesser is not None and self.sessions[room_id].explainer is not None:
-                        if curr_usr["status"] != "ready" or other_usr["status"] != "ready":
+                    # reload game after user reconnected
+                    if (
+                        self.sessions[room_id].guesser is not None
+                        and self.sessions[room_id].explainer is not None
+                    ):
+                        if (
+                            curr_usr["status"] != "ready"
+                            or other_usr["status"] != "ready"
+                        ):
                             LOG.debug("RELOAD ONLY INSTR")
                             self.send_instr(room_id, curr_usr["id"])
                         else:
                             LOG.debug("RESTART ROUND")
                             self.reload_state(room_id, curr_usr["id"])
 
-
                 elif event == "leave":
-                    # self.send_message_to_user(f"{user['name']} has left the game.", room_id)
                     if self.sessions[room_id].game_over is False:
-                        self.send_message_to_user(STANDARD_COLOR,
+                        self.send_message_to_user(
+                            STANDARD_COLOR,
                             f"{user['name']} has left the game. "
-                            f"Please wait a bit, your partner may rejoin.", room_id, other_usr["id"])
+                            f"Please wait a bit, your partner may rejoin.",
+                            room_id,
+                            other_usr["id"],
+                        )
 
                         # start timer since user left the room
                         logging.debug(
-                            f"Starting Timer: left room for user {curr_usr['name']}"
+                            f"Starting Timer: left room for user {curr_usr['id']}"
                         )
                         self.sessions[room_id].timer.user_left(curr_usr["id"])
-
-
-
 
         @self.sio.event
         def text_message(data):
             """Parse user messages."""
-            # LOG.debug(
-            #     f"Received a message from {data['user']['name']}: {data['message']}"
-            # )
             room_id = data["room"]
             user_id = data["user"]["id"]
 
@@ -320,26 +321,28 @@ class ReferenceBot(TaskBot):
 
             if this_session.explainer == user_id:
                 # EXPLAINER sent the command
+                self.log_event("clue", {"content": data["message"]}, room_id)
 
-                # OLD: means that new turn began
-                # self.log_event("turn", dict(), room_id)
-
-                self.log_event("clue", {"content": data['message']}, room_id)
-
-                self.set_message_privilege(room_id, self.sessions[room_id].explainer, False)
-                self.make_input_field_unresponsive(room_id, self.sessions[room_id].explainer)
+                self.set_message_privilege(
+                    room_id, self.sessions[room_id].explainer, False
+                )
+                self.make_input_field_unresponsive(
+                    room_id, self.sessions[room_id].explainer
+                )
                 # self.set_message_privilege(room_id,self.sessions[room_id].guesser, True)
                 # # assign writing rights to other user
                 # self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
                 LOG.debug(f"Button{this_session.button_number}")
-                self.send_message_to_user(STANDARD_COLOR,  f" Click on the number of the grid the description above matches. <br> <br>"
-                                                          f"<button class='message_button' id='Button{this_session.button_number}' onclick=\"choose_grid('1')\">1</button> "
-                                                          f"<button class='message_button' id='Button{this_session.button_number + 1}' onclick=\"choose_grid('2')\">2</button>"
-                                                          f"<button class='message_button' id='Button{this_session.button_number + 2}' onclick=\"choose_grid('3')\">3</button>",
-                room_id, this_session.guesser)
-
-
+                self.send_message_to_user(
+                    STANDARD_COLOR,
+                    f" Click on the number of the grid the description above matches. <br> <br>"
+                    f"<button class='message_button' id='Button{this_session.button_number}' onclick=\"choose_grid('1')\">1</button> "
+                    f"<button class='message_button' id='Button{this_session.button_number + 1}' onclick=\"choose_grid('2')\">2</button>"
+                    f"<button class='message_button' id='Button{this_session.button_number + 2}' onclick=\"choose_grid('3')\">3</button>",
+                    room_id,
+                    this_session.guesser,
+                )
 
         @self.sio.event
         def command(data):
@@ -347,11 +350,8 @@ class ReferenceBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            # do not process commands from itself
-            if user_id == self.user:
-                return
-
-            if room_id not in self.sessions:
+            # do not process commands from itself/make sure session exists
+            if room_id not in self.sessions or user_id == self.user:
                 return
 
             logging.debug(
@@ -367,7 +367,8 @@ class ReferenceBot(TaskBot):
                     if data["command"]["answer"] == "yes":
                         self._command_ready(room_id, user_id)
                     elif data["command"]["answer"] == "no":
-                        self.send_message_to_user(STANDARD_COLOR,
+                        self.send_message_to_user(
+                            STANDARD_COLOR,
                             "OK, read the instructions carefully and click on <yes> once you are ready.",
                             room_id,
                             user_id,
@@ -376,40 +377,41 @@ class ReferenceBot(TaskBot):
                 elif event == "choose_grid":
                     LOG.debug(f"{self.sessions[room_id].button_number}")
                     LOG.debug(f"Button{self.sessions[room_id].button_number}")
-                    self.send_message_to_user(STANDARD_COLOR,
-                                              f"Guess was submitted. You can not change it."
-                                              f"<script> document.getElementById('Button{self.sessions[room_id].button_number}').disabled = true;</script>"
-                                              f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 1}').disabled = true;</script>"
-                                              f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 2}').disabled = true;</script>",
-                                              room_id,
-                                              self.sessions[room_id].guesser)
+                    self.send_message_to_user(
+                        STANDARD_COLOR,
+                        f"Guess was submitted. You can not change it."
+                        f"<script> document.getElementById('Button{self.sessions[room_id].button_number}').disabled = true;</script>"
+                        f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 1}').disabled = true;</script>"
+                        f"<script> document.getElementById('Button{self.sessions[room_id].button_number + 2}').disabled = true;</script>",
+                        room_id,
+                        self.sessions[room_id].guesser,
+                    )
                     guess = data["command"]["answer"]
                     LOG.debug(f"GUESS was {guess}")
 
                     self.log_event("guess", {"content": guess}, room_id)
 
-                    guess_correct = correct_guess(guess, self.sessions[room_id].grids[0][6][1])
+                    guess_correct = correct_guess(
+                        guess, self.sessions[room_id].grids[0][6][1]
+                    )
                     if guess_correct:
-                        self.send_message_to_user(STANDARD_COLOR,
-                                                      f"GUESS was correct ✅!"
-                                                      f"You both win this round.",
-                                                      room_id,
-                                                      )
+                        self.send_message_to_user(
+                            STANDARD_COLOR,
+                            f"GUESS was correct ✅!" f"You both win this round.",
+                            room_id,
+                        )
                         self.update_reward(room_id, 1)
                         self.log_event("correct guess", {"content": guess}, room_id)
                     else:
-                        self.send_message_to_user(WARNING_COLOR,
-                                                      f"GUESS was false ❌."
-                                                      f"You both lose this round.",
-
-                                                      room_id,
-                                                      )
+                        self.send_message_to_user(
+                            WARNING_COLOR,
+                            f"GUESS was false ❌." f"You both lose this round.",
+                            room_id,
+                        )
                         self.update_reward(room_id, 0)
                         self.log_event("false guess", {"content": guess}, room_id)
 
-
                     self.load_next_game(room_id)
-
 
     def _command_ready(self, room_id, user):
         """Must be sent to begin a conversation."""
@@ -417,12 +419,14 @@ class ReferenceBot(TaskBot):
         curr_usr, other_usr = self.sessions[room_id].players
         if curr_usr["id"] != user:
             curr_usr, other_usr = other_usr, curr_usr
-
         # only one user has sent /ready repetitively
         if curr_usr["status"] in {"ready", "done"}:
             sleep(0.5)
-            self.send_message_to_user(STANDARD_COLOR,
-                "You have already  clicked 'ready'.", room_id, curr_usr["id"]
+            self.send_message_to_user(
+                STANDARD_COLOR,
+                "You have already  clicked 'ready'.",
+                room_id,
+                curr_usr["id"],
             )
 
             return
@@ -430,10 +434,13 @@ class ReferenceBot(TaskBot):
 
         # both
         if other_usr["status"] == "ready":
-            self.send_message_to_user(STANDARD_COLOR, "Woo-Hoo! The game will begin now.", room_id)
+            self.send_message_to_user(
+                STANDARD_COLOR, "Woo-Hoo! The game will begin now.", room_id
+            )
             self.start_round(room_id)
         else:
-            self.send_message_to_user(STANDARD_COLOR,
+            self.send_message_to_user(
+                STANDARD_COLOR,
                 "Now, waiting for your partner to click 'ready'.",
                 room_id,
                 curr_usr["id"],
@@ -441,18 +448,14 @@ class ReferenceBot(TaskBot):
 
     def send_instr(self, room_id, user_id):
         if user_id == self.sessions[room_id].explainer:
-            # LOG.debug("instruction to explainer sent")
             message = f"{EXPLAINER_HTML}"
             self.sio.emit(
                 "message_command",
                 {
-                    "command": {
-                        "event": "mark_target_grid",
-                        "message": "Target grid"
-                    },
+                    "command": {"event": "mark_target_grid", "message": "Target grid"},
                     "room": room_id,
                     "receiver_id": user_id,
-                }
+                },
             )
 
         else:
@@ -461,29 +464,22 @@ class ReferenceBot(TaskBot):
         self.sio.emit(
             "message_command",
             {
-                "command": {
-                    "event": "send_instr",
-                    "message": message
-                },
+                "command": {"event": "send_instr", "message": message},
                 "room": room_id,
                 "receiver_id": user_id,
-            }
+            },
         )
         self.sio.emit(
             "message_command",
             {
-                "command": {
-                    "event": "show_grid",
-                    "message": f"{EMPTY_GRID}"
-                },
+                "command": {"event": "show_grid", "message": f"{EMPTY_GRID}"},
                 "room": room_id,
                 "receiver_id": user_id,
-            }
+            },
         )
         sleep(1)
 
     def load_next_game(self, room_id):
-
         # reset timer here?
         self.sessions[room_id].timer.reset()
 
@@ -499,14 +495,16 @@ class ReferenceBot(TaskBot):
             self.terminate_experiment(room_id)
             return
 
-        LOG.debug(f'Reload state for {user}')
+        LOG.debug(f"Reload state for {user}")
         self.send_instr(room_id, user)
         if self.sessions[room_id].turn == user:
             self.set_message_privilege(room_id, user, True)
             self.give_writing_rights(room_id, user)
         grid_instance = self.sessions[room_id].grids[0]
         if user == self.sessions[room_id].explainer:
-            self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
+            self.show_items(
+                room_id, grid_instance[:3], self.sessions[room_id].explainer
+            )
         else:
             self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
 
@@ -518,22 +516,32 @@ class ReferenceBot(TaskBot):
         round_n = (GRIDS_PER_ROOM - len(self.sessions[room_id].grids)) + 1
         self.sessions[room_id].button_number = round_n * 3
 
-        # try to log the round number
         self.log_event("round", {"number": round_n}, room_id)
-
         # in this game 1 round consists of only 1 turn!
         self.log_event("turn", dict(), room_id)
 
-        self.send_message_to_user(STANDARD_COLOR, f"Let's start round {round_n}, the grids are updated!.", room_id)
+        self.send_message_to_user(
+            STANDARD_COLOR,
+            f"Let's start round {round_n}, the grids are updated!.",
+            room_id,
+        )
         grid_instance = self.sessions[room_id].grids[0]
         self.log_event("grid type", {"content": f"{grid_instance[-1][1]}"}, room_id)
         self.log_event("target grid", {"content": f"{grid_instance[-2][1]}"}, room_id)
         self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
         self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
-        self.send_message_to_user(STANDARD_COLOR, "Generate the description for the given target.",
-                                  room_id, self.sessions[room_id].explainer)
-        self.send_message_to_user(STANDARD_COLOR, "Wait for the description from the explainer.",
-                                  room_id, self.sessions[room_id].guesser)
+        self.send_message_to_user(
+            STANDARD_COLOR,
+            "Generate the description for the given target.",
+            room_id,
+            self.sessions[room_id].explainer,
+        )
+        self.send_message_to_user(
+            STANDARD_COLOR,
+            "Wait for the description from the explainer.",
+            room_id,
+            self.sessions[room_id].guesser,
+        )
 
         # update writing_rights
         self.set_message_privilege(room_id, self.sessions[room_id].explainer, True)
@@ -541,20 +549,20 @@ class ReferenceBot(TaskBot):
         self.give_writing_rights(room_id, self.sessions[room_id].explainer)
         self.set_message_privilege(room_id, self.sessions[room_id].guesser, False)
         self.make_input_field_unresponsive(room_id, self.sessions[room_id].guesser)
+        self.sessions[room_id].timer.reset()
 
     def show_items(self, room_id, grid_instance, user_id):
         for i in range(len(grid_instance)):
-            updated_grid = self.sessions[room_id].grid_manager.update_grid(grid_instance[i][1])
+            updated_grid = self.sessions[room_id].grid_manager.update_grid(
+                grid_instance[i][1]
+            )
             self.sio.emit(
                 "message_command",
                 {
-                    "command": {
-                        "event": f"update_grid{i+1}",
-                        "message": updated_grid
-                    },
+                    "command": {"event": f"update_grid{i+1}", "message": updated_grid},
                     "room": room_id,
                     "receiver_id": user_id,
-                }
+                },
             )
 
     def send_message_to_user(self, color, message, room, receiver=None):
@@ -563,10 +571,11 @@ class ReferenceBot(TaskBot):
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
-                    message = (message), color = color,
+                        message=(message),
+                        color=color,
                     ),
                     "room": room,
-                    "receiver_id":receiver,
+                    "receiver_id": receiver,
                     "html": True,
                 },
             )
@@ -575,7 +584,8 @@ class ReferenceBot(TaskBot):
                 "text",
                 {
                     "message": COLOR_MESSAGE.format(
-                    message = (message), color = color,
+                        message=(message),
+                        color=color,
                     ),
                     "room": room,
                     "html": True,
@@ -613,48 +623,17 @@ class ReferenceBot(TaskBot):
 
         sleep(2)
 
-        # requests.patch(
-        #     f"{self.uri}/rooms/{room['id']}/attribute/id/current-image",
-        #     json={
-        #         "attribute": "src",
-        #         "value": "https://expdata.ling.uni-potsdam.de/cocobot/sad_robot.jpg",
-        #     },
-        #     headers={"Authorization": f"Bearer {self.token}"},
-        # )
-
-
-        self.send_message_to_user(STANDARD_COLOR, "Unfortunately we were not able to find a partner for you, "
-                                                  "you will now get a token.", room["id"], user["id"])
-
+        self.send_message_to_user(
+            STANDARD_COLOR,
+            "Unfortunately we were not able to find a partner for you, "
+            "you will now get a token.",
+            room["id"],
+            user["id"],
+        )
         self.confirmation_code(room["id"], "timeout_waiting_room", user["id"])
         self.remove_user_from_room(user["id"], room["id"])
 
     def remove_user_from_room(self, user_id, room_id):
-        # response = requests.get(
-        #     f"{self.uri}/users/{user_id}",
-        #     headers={"Authorization": f"Bearer {self.token}"},
-        # )
-        # if not response.ok:
-        #     logging.error(f"Could not get user: {response.status_code}")
-        #     response.raise_for_status()
-        # etag = response.headers["ETag"]
-        #
-        # try:
-        #     response = requests.delete(
-        #         f"{self.uri}/users/{user_id}/rooms/{room_id}",
-        #         headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-        #     )
-        #     if not response.ok:
-        #         logging.error(
-        #             f"Could not remove user from task room: {response.status_code}"
-        #         )
-        #         response.raise_for_status()
-        #     logging.debug("Removing user from task room was successful.")
-        # except:
-        #     logging.debug(f"User {user_id} not in room {room_id}")
-
-
-
         response = requests.get(
             f"{self.uri}/users/{user_id}",
             headers={"Authorization": f"Bearer {self.token}"},
@@ -667,7 +646,6 @@ class ReferenceBot(TaskBot):
             headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
         )
         self.request_feedback(response, "removing user from task toom")
-        # logging.debug("Removing user from task room was successful.")
 
     def move_divider(self, room_id, chat_area=50, task_area=50):
         """move the central divider and resize chat and task area
@@ -710,41 +688,39 @@ class ReferenceBot(TaskBot):
         if room_id in self.sessions:
             for usr in self.sessions[room_id].players:
                 self.remove_user_from_room(usr["id"], room_id)
-                # response = requests.get(
-                #     f"{self.uri}/users/{usr['id']}",
-                #     headers={"Authorization": f"Bearer {self.token}"},
-                # )
-                # self.request_feedback(response, "getting user")
-                # etag = response.headers["ETag"]
-                #
-                # response = requests.delete(
-                #     f"{self.uri}/users/{usr['id']}/rooms/{room_id}",
-                #     headers={"If-Match": etag, "Authorization": f"Bearer {self.token}"},
-                # )
-                # self.request_feedback(response, "removing user from task toom")
-                # logging.debug("Removing user from task room was successful.")
 
     def terminate_experiment(self, room_id):
-        self.send_message_to_user(STANDARD_COLOR, "The experiment is over 🎉 🎉 thank you very much for your time!",
-                                  room_id)
+        self.send_message_to_user(
+            STANDARD_COLOR,
+            "The experiment is over 🎉 🎉 thank you very much for your time!",
+            room_id,
+        )
         for player in self.sessions[room_id].players:
             self.confirmation_code(room_id, "success", player["id"])
         self.close_game(room_id)
 
     def timeout_close_game(self, room_id, status):
+        # lock processes for other threads
+        self.sessions[room_id].lock.acquire()
+        logging.debug(f"timeout_close")
         if room_id in self.sessions:
-            self.send_message_to_user(STANDARD_COLOR, "The room is closing because of inactivity",
-                                  room_id)
+            self.send_message_to_user(
+                STANDARD_COLOR, "The room is closing because of inactivity", room_id
+            )
             for player in self.sessions[room_id].players:
                 self.confirmation_code(room_id, status, player["id"])
             self.close_game(room_id)
 
     def close_game(self, room_id):
-
-        self.send_message_to_user(STANDARD_COLOR, "The room is closing, see you next time 👋",
-                                  room_id)
+        logging.debug(f"close_game")
+        self.send_message_to_user(
+            STANDARD_COLOR, "The room is closing, see you next time 👋", room_id
+        )
         self.sessions[room_id].game_over = True
         self.room_to_read_only(room_id)
+        # open processes for other threads
+        self.sessions[room_id].lock.release()
+
         # remove any task room specific objects
         self.sessions.clear_session(room_id)
 
@@ -763,7 +739,6 @@ class ReferenceBot(TaskBot):
             wrong += 1
         elif reward == 1:
             correct += 1
-
         response = requests.patch(
             f"{self.uri}/rooms/{room_id}/text/title",
             json={
@@ -773,7 +748,6 @@ class ReferenceBot(TaskBot):
         )
         self.sessions[room_id].points["history"][0]["correct"] = correct
         self.sessions[room_id].points["history"][0]["wrong"] = wrong
-
         self.request_feedback(response, "setting point stand in title")
 
     def confirmation_code(self, room_id, status, user_id):
@@ -786,14 +760,22 @@ class ReferenceBot(TaskBot):
             logging.debug(f"Room not in self sessions {points}")
         self.log_event(
             "confirmation_log",
-            {"status_txt": status, "amt_token": amt_token, "receiver": user_id,
-             "points": points},
+            {
+                "status_txt": status,
+                "amt_token": amt_token,
+                "receiver": user_id,
+                "points": points,
+            },
             room_id,
         )
-
-        self.send_message_to_user(STANDARD_COLOR, "Please remember to "
-                        "save your token before you close this browser window. "
-                        f"Your token: {amt_token}", room_id, user_id)
+        self.send_message_to_user(
+            STANDARD_COLOR,
+            "Please remember to "
+            "save your token before you close this browser window. "
+            f"Your token: {amt_token}",
+            room_id,
+            user_id,
+        )
 
     def set_message_privilege(self, room_id, user_id, value):
         """
@@ -868,16 +850,12 @@ def correct_guess(guess, answer):
     return answer == TARGET_GRID_NAMES[guess]
 
 
-
-
-
 if __name__ == "__main__":
     # set up logging configuration
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:%(message)s")
 
     # create commandline parser
     parser = ReferenceBot.create_argparser()
-
 
     if "WAITING_ROOM" in os.environ:
         waiting_room = {"default": os.environ["WAITING_ROOM"]}
