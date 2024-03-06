@@ -48,6 +48,8 @@ class AnnotationsCoCo(TaskBot):
         room_id = data["room"]
         task_id = data["task"]        
 
+        self.num_images = 0
+
         if task_id is not None and task_id == self.task_id:
             self.disable_chat_area(room_id)
             self.timers_per_room[room_id] = RoomTimer(self.close_room, room_id)
