@@ -179,26 +179,6 @@ class ReferenceBot(TaskBot):
             # # assign writing rights to other user
             # self.give_writing_rights(room_id, self.sessions[room_id].guesser)
 
-            # for line in TASK_GREETING:
-            #     self.sio.emit(
-            #         "text",
-            #         {
-            #             "message": COLOR_MESSAGE.format(color="#800080", message=line),
-            #             "room": room_id,
-            #             "html": True,
-            #         },
-            #     )
-            # sleep(2)
-            #
-            # self.send_message_to_user(
-            #     STANDARD_COLOR,
-            #     "Are you ready?"
-            #     " Once you click on 'yes' you will see the grids. <br> <br>"
-            #     "<button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> "
-            #     "<button class='message_button' onclick=\"confirm_ready('no')\">NO</button>",
-            #     room_id,
-            # )
-
     def assign_roles(self, room_id):
         # assuming there are 2 players
         session = self.sessions[room_id]
