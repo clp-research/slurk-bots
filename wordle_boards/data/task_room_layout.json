@@ -244,6 +244,16 @@
           ]
         }
       ]
+    },
+    {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": []
+    },
+        {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": []
     }
   ],
   "css": {
