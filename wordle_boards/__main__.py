@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "--waiting_room",
         type=int,
         help="room where users await their partner",
-        **waiting_room
+        **waiting_room,
     )
 
     host = {"default": os.environ.get("SLURK_HOST", "http://localhost")}
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # create bot instance
-    wordle_bot = WordleBot2(args.token, args.user,args.task_id, args.host, args.port)
+    wordle_bot = WordleBot2(args.token, args.user, args.task_id, args.host, args.port)
     # wordle_bot.waiting_room = args.waiting_room
     wordle_bot.post_init(args.waiting_room, args.bot_version)
 

@@ -58,7 +58,7 @@ function deleteLetter() {
 }
 
 
-function checkGuess(guessString, colors) {
+function showGuess(guessString, colors) {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
 
     for (let i = 0; i < 5; i++) {
@@ -189,7 +189,7 @@ $(document).ready(() => {
                 }
 
             } else if (data.command.command === "wordle_guess") {
-                checkGuess(data.command.guess, data.command.colors);
+                showGuess(data.command.guess, data.command.colors);
                 submitted = false;
             } else if (data.command.command === "unsubmit") {
                 // happens when players submit different guesses
