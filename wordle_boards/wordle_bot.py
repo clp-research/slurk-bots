@@ -329,9 +329,8 @@ class WordleBot2(TaskBot):
             user_id = data["user"]["id"]
 
             # filter irrelevant messages
-            if room_id not in self.sessions or user_id == self.user:
+            if room_id not in self.sessions or str(user_id) == self.user:
                 return
-
             self.sessions[room_id].timer.reset()
 
             if user_id == self.sessions[room_id].critic:
@@ -593,13 +592,14 @@ class WordleBot2(TaskBot):
             self.set_message_privilege(room_id, self.sessions[room_id].critic, True)
 
         if word != guess:
-            sleep(2)
-            self.send_message_to_user(
+            if self.version == "critic" and remaining_guesses > 1:
+                sleep(2)
+                self.send_message_to_user(
                 STANDARD_COLOR,
                 "Take a new guess!",
                 room_id,
                 self.sessions[room_id].guesser,
-            )
+                )
 
             self.log_event("FALSE_GUESS", {"content": guess}, room_id)
 
