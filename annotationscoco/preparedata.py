@@ -17,7 +17,7 @@ class Dataloader:
     def __init__(self):
         self.images = self.load_images()
         #self.used_images = []
-        self.image_view_status = self.load_image_viewing_status()
+        self.image_view_status = {}#self.load_image_viewing_status()
 
     def load_image_viewing_status(self):
         try:
@@ -54,6 +54,7 @@ class Dataloader:
 
     def get_target_image(self):
         #Reset used images if all images have been used
+        self.image_view_status = self.load_image_viewing_status()
         if len(self.image_view_status) == len(self.images):
             logging.debug("All images have been used, resetting used images list.")
             #self.used_images = []

@@ -322,6 +322,7 @@ class AnnotationsCoCo(TaskBot):
                     )
                     #load a new board
                     logging.debug("Read the instructions, load a new board, clear the text area")
+                    self.dataloader.save_image_viewing_status()
                     self.load_target_image(room_id, user_id)
 
                     #clear the text area
