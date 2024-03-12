@@ -65,8 +65,9 @@ class AnnotationsCoCo(TaskBot):
                 logging.debug(
                     f"Loading input grid during task creation room_id: {room_id} user_id: {usr['id']}"
                 )
-                self.load_target_image(room_id, usr["id"])
+
                 self.showwelcomemessage(room_id, usr["id"])
+                self.load_target_image(room_id, usr["id"])
 
 
     def disable_chat_area(self, room_id):

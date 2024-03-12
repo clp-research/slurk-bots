@@ -23,7 +23,7 @@ class Dataloader:
         try:
             with open(f"{ROOT}/data/sequences/image_viewing_status.json", "r") as file:
                 image_view = json.load(file)
-                logging.debug("Current image viewing status: ", image_view)
+                logging.debug(f"Current image viewing status: {image_view}")
                 return image_view
         except FileNotFoundError:
             logging.debug("image_viewing_status.json is not available, returning empty list")
