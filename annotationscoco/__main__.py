@@ -33,7 +33,6 @@ class RoomTimer:
     def cancel(self):
         self.timer.cancel()
 
-
 class AnnotationsCoCo(TaskBot):
     timers_per_room = dict()
 
@@ -41,7 +40,7 @@ class AnnotationsCoCo(TaskBot):
         logging.debug(f"CCBTS Annotations: __init__, task = {task}, user = {user}")
         super().__init__(token, user, task, host, port)
         self.num_images = 0
-        self.dataloader = Dataloader()    
+     
 
     def on_task_room_creation(self, data):
         logging.debug(f"Task room created, data = {data}")        
@@ -49,6 +48,7 @@ class AnnotationsCoCo(TaskBot):
         task_id = data["task"]        
 
         self.num_images = 0
+        self.dataloader = Dataloader()         
 
         if task_id is not None and task_id == self.task_id:
             self.disable_chat_area(room_id)
