@@ -318,7 +318,7 @@ class ReferenceBot(TaskBot):
             room_id = data["room"]
             user_id = data["user"]["id"]
 
-            if room_id not in self.sessions or user_id == self.user:
+            if room_id not in self.sessions or str(user_id) == self.user:
                 return
             LOG.debug(f"Received a message from {data['user']['name']}.")
             this_session = self.sessions[room_id]
@@ -356,7 +356,7 @@ class ReferenceBot(TaskBot):
             user_id = data["user"]["id"]
 
             # do not process commands from itself/make sure session exists
-            if room_id not in self.sessions or user_id == self.user:
+            if room_id not in self.sessions or str(user_id) == self.user:
                 return
 
             logging.debug(
@@ -527,7 +527,7 @@ class ReferenceBot(TaskBot):
 
         self.send_message_to_user(
             STANDARD_COLOR,
-            f"Let's start round {round_n}, the grids are updated!.",
+            f"Let's start round {round_n}, the grids are updated!",
             room_id,
         )
         grid_instance = self.sessions[room_id].grids[0]
