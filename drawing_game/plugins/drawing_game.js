@@ -221,6 +221,29 @@ $(document).ready(() => {
                 case "send_grid_title":
                     $("#grid-title").html(data.command.message)
                     break;
+                case "send_survey_title":
+                    $("#grid-title").html(data.command.message)
+                    break;
+                case "survey":
+                    $("#current-grid").html(data.command.survey)
+
+                    stop()
+
+                    $(`#survey_button`).click(() => {
+                        if (validateForm()) {
+                            answers = get_answers();
+                            socket.emit("message_command",
+                                {
+                                    command: {
+                                        event: "submit_survey",
+                                        answers: answers
+                                    },
+                                    room: self_room
+                                }
+                            )
+                        }
+                    })
+                    break;
             }
         }
     });

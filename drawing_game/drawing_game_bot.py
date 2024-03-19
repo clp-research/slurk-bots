@@ -16,8 +16,8 @@ import socketio
 
 from .config import TASK_GREETING, INSTRUCTIONS_A, INSTRUCTIONS_B, \
     KEYBOARD_INSTRUCTIONS, ROOT, STARTING_POINTS, \
-    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM,\
-    COLOR_MESSAGE, STANDARD_COLOR, INSTANCES
+    TIMEOUT_TIMER, LEAVE_TIMER, WAITING_PARTNER_TIMER, PLATFORM, \
+    COLOR_MESSAGE, STANDARD_COLOR, INSTANCES, SURVEY
 
 from .gridmanager import GridManager
 from templates import TaskBot
@@ -50,6 +50,7 @@ class Session:
                 {"correct": 0, "wrong": 0, "warnings": 0}
             ]
         }
+        self.can_close_room = False
         self._game_over = False
 
     @property
@@ -182,7 +183,7 @@ class DrawingBot(TaskBot):
         )
 
         self.send_message_from_bot(
-            room_id,
+            room["id"],
             "Unfortunately we could not find a partner for you!<br>"
             "Please remember to "
             "save your token before you close this browser window. "
@@ -486,6 +487,33 @@ class DrawingBot(TaskBot):
                             self._command_done(room_id, user_id, data['command'])
                             return
 
+                elif "submit_survey" in data["command"]["event"]:
+                    # if this_session.submited_survey[user_id] is True:
+                    #     self.sio.emit(
+                    #         "text",
+                    #         {
+                    #             "message": COLOR_MESSAGE.format(
+                    #                 message="You already submitted an answer!",
+                    #                 color=WARNING_COLOR,
+                    #             ),
+                    #             "room": room_id,
+                    #             "receiver_id": user_id,
+                    #             "html": True,
+                    #         },
+                    #     )
+                    #     return
+
+                    survey_data = data["command"]["answers"]
+                    survey_data["user_id"] = user_id
+                    LOG.debug(f"The survey data is: {survey_data}")
+
+                    # this_session.submited_survey[user_id] = True
+
+                    self.log_event("survey_result", survey_data, room_id)
+                    self.terminate_experiment(room_id, user_id)
+
+                    return
+
             # If the game hasn't actually started, check for ready_command
             if this_session.current_turn == 0:
                 if "ready" in command:
@@ -549,7 +577,7 @@ class DrawingBot(TaskBot):
                     self.send_message_from_bot(room_id, "Sorry, but I do not understand this command. Try again.",
                                                user_id)
 
-    def send_message_from_bot(self, room_id, message, user_id=None):
+    def send_message_from_bot(self, room_id, message, user_id=None, color=None):
         if user_id:
             self.sio.emit(
                 "text",
@@ -569,6 +597,18 @@ class DrawingBot(TaskBot):
                 {
                     "message": COLOR_MESSAGE.format(
                         color=STANDARD_COLOR,
+                        message=message,
+                    ),
+                    "room": room_id,
+                    "html": True,
+                },
+            )
+        if color:
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(
+                        color=color,
                         message=message,
                     ),
                     "room": room_id,
@@ -969,16 +1009,32 @@ class DrawingBot(TaskBot):
         elif this_session.grid_type == 'random':
             this_session.all_random_grids.remove_grid(this_session.target_grid)
 
-        # Get new grid
-        self.get_grid(room_id)
-
         # Was this the last game round?
         if self.sessions[room_id].game_round >= 4:
-            self.send_message_from_bot(room_id, "The experiment is over 🎉 🎉 thank you very much for your time!")
-            self.confirmation_code(room_id, status='success')
-            self.close_game(room_id)
+            # Display survey on display area
+            response = requests.patch(
+                f"{self.uri}/rooms/{room_id}/text/grid_title",
+                json={"text": "Complete the survey"},
+                headers={"Authorization": f"Bearer {self.token}"},
+            )
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"event": "survey", "survey": SURVEY},
+                    "room": room_id,
+                },
+            )
+
+            self.send_message_from_bot(
+                room_id,
+                "Almost finished! fill out the survey to the right and click on submit to complete the experiment",
+                color='Red'
+            )
             return
+
         elif 0 < self.sessions[room_id].game_round < 4:
+            # Get new grid
+            self.get_grid(room_id)
             # Reset and send keyboard to only player_b
             self.sio.emit(
                 "message_command",
@@ -1055,6 +1111,19 @@ class DrawingBot(TaskBot):
         )
         timer.start()
         self.sessions[room_id].timer = timer
+
+    def terminate_experiment(self, room_id, user_id):
+        # self.room_to_read_only(
+        #     room_id)
+        self.send_message_from_bot(room_id, "The experiment is over 🎉 🎉 thank you very much for your time!", user_id)
+        self.confirmation_code(room_id, status='success', user_id=user_id)
+        # self.close_game(room_id)
+        # if possible close game for everyone
+        if self.sessions[room_id].can_close_room:
+            self.close_game(room_id)
+            return
+
+        self.sessions[room_id].can_close_room = True
 
     def confirmation_code(self, room_id, status, user_id=None):
         """Generate token that will be sent to each player."""

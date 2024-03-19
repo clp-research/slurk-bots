@@ -1,0 +1,38 @@
+<form id="surveyForm" onkeydown="return event.key != 'Enter';">
+    <fieldset style="padding: 10px">
+        <legend>1. Rate your playing experience:</legend>
+        <div class="horizontal-group">
+            <label><input type="radio" name="playing_experience" value="1"> 1 - Poor</label>
+            <label><input type="radio" name="playing_experience" value="2"> 2 - Average</label>
+            <label><input type="radio" name="playing_experience" value="3"> 3 - Excellent</label>
+        </div>
+        <span class="error-message" style="color: #FF0000" id="errorExperience"></span>
+    </fieldset>
+
+    <fieldset style="padding: 10px">
+        <legend>2. Did you encounter any problems?</legend>
+        <div class="vertical-group">
+            <label style="display: block; margin-bottom: 5px"><input type="radio" name="player_rating" value="1"> 1 - No problems</label>
+            <label style="display: block; margin-bottom: 5px"><input type="radio" name="player_rating" value="2"> 2 - My partner left or was inactive</label>
+            <label style="display: block; margin-bottom: 5px"><input type="radio" name="player_rating" value="3"> 3 - I did not understand the task</label>
+            <label style="display: block; margin-bottom: 5px"><input type="radio" name="player_rating" value="4"> 4 - My partner did not understand the task</label>
+            <label style="display: block; margin-bottom: 5px"><input type="radio" name="player_rating" value="5"> 5 - There were technical problems with the platform</label>
+            <label style="display: block; margin-bottom: 5px"><input type="radio" name="player_rating" value="6"> 6 - Other</label>                
+        </div>
+        <input type="text" name="player_rating_other" style="width: 100%;" placeholder="Please specify"> <!-- Additional input for 'Other' option -->
+        <span class="error-message" style="color: #FF0000" id="errorPartner"></span>
+    </fieldset>
+
+    <fieldset style="padding: 10px">
+        <legend>3. What is your best guess, was your partner</legend>
+        <div class="horizontal-group">
+            <label><input type="radio" name="played_with" value="robot"> Robot</label>
+            <label><input type="radio" name="played_with" value="human"> Human</label>
+        </div>
+        <span class="error-message" style="color: #FF0000" id="errorPlayWith"></span>
+    </fieldset>
+
+    <p style="margin-top: 2em; margin-bottom: 2em; color: #FF0000; text-align: center;">Remember to copy your token from the chat window on the left once you have completed the survey</p>
+</form>
+
+<button class="button" role="button" id="survey_button">Submit</button>

@@ -10,6 +10,7 @@ TASK_GREETING = Path(f"{ROOT}/data/task_greeting.txt")
 TASK_TITLE = "Describe the grid to your partner and see how what they draw matches."
 
 INSTANCES = Path(f"{ROOT}/data/instances.json")
+SURVEY = Path(f"{ROOT}/data/survey.html").read_text()
 
 # base html messages with common colors
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
