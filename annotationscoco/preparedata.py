@@ -92,7 +92,7 @@ class Dataloader:
         if len(self.image_view_status) == len(self.images):
             logging.debug("All images have been used, resetting used images list.")
             #self.used_images = []
-            return "empty_world_state.png", None
+            return "empty_world_state.png", None, None
 
         random_image = None
         #To ensure we dont get the same image again
