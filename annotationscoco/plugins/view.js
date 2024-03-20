@@ -25,14 +25,33 @@ $(document).ready(function () {
                     break;
                 case "set_target_image":
                     console.log("setting target image")
-                    base64_encoded_string = data.command.message
+                    message = data.command.message
+                    base64_encoded_string = message["target_board"]
                     $("#target-board-image").attr("src", "data:image/png;base64," + base64_encoded_string)
+
+                    legend_encoded_string = message["legend_image"]
+                    if (legend_encoded_string != null) {
+                        console.log("legend is available, setting")
+                        $("#target-board-legend").show()
+                        $("#target-board-legend").attr("src", "data:image/png;base64," + legend_encoded_string)
+                        console.log("setting legend caption")
+                        $("#target-legend-caption").show()
+                    } else {
+                        console.log("legend is not available, clearing")
+                        $("#target-board-legend").hide()
+                        $("#target-legend-caption").hide()
+                    }
+                        
+
                     break;
                 case "close_after_10_images":
                     console.log("closing after 10 images")
                     $("#instruction").val("")
                     $("#target-board-image").attr("src", "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif")
                     $("#button-submit").disabled = true
+                    $("#target-board-caption").hide()
+                    $("#target-board-legend").hide()
+                    $("#target-legend-caption").hide()                    
                     break;
             }
         }
