@@ -1,0 +1,31 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "another-swamp",
+            "Player_B": "braised-barrage"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:53:05.699349",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 E \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 E\n\u25a2 E \u25a2 E \u25a2\n\u25a2 \u25a2 \u25a2 E E\nE \u25a2 E \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:55:46.767417",
+                    "action": {
+                        "type": "clue",
+                        "content": "put letter E in the first row, second column, another one in the second row, last column, then another two in the third row, second column and fourth column, the the last one is in the first row of the last column and another one in the last row, third column "
+                    }
+                }
+            ]
+        ]
+    }
+]

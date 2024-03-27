@@ -1,0 +1,339 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "investor-player",
+            "Player_B": "humble-molality"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:08:31.633466",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:10:10.619496",
+                    "action": {
+                        "type": "clue",
+                        "content": "Put T in first row third column"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:10:30.355337",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 T \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:08:31.633466",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:12:06.705972",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:12:07.692318",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "investor-player",
+            "Player_B": "humble-molality"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:12:07.635324",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nG G G G G\n\u25a2 G \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 G \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 G \u25a2\nG G G G G\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:13:23.150888",
+                    "action": {
+                        "type": "clue",
+                        "content": "Fill the second row with G"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:13:42.538172",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nG G G G G\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:12:07.635324",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nG G G G G\n\u25a2 G \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 G \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 G \u25a2\nG G G G G\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:15:08.609358",
+                    "action": {
+                        "type": "clue",
+                        "content": "Fill the the third row with G"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:15:20.222075",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nG G G G G\nG G G G G\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:12:07.635324",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nG G G G G\n\u25a2 G \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 G \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 G \u25a2\nG G G G G\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:15:38.292868",
+                    "action": {
+                        "type": "clue",
+                        "content": "Fill the fourth row with G"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:15:53.756920",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nG G G G G\nG G G G G\nG G G G G\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:12:07.635324",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nG G G G G\n\u25a2 G \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 G \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 G \u25a2\nG G G G G\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:15:58.252006",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:15:59.225121",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "investor-player",
+            "Player_B": "humble-molality"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:15:59.168056",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 N \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:16:43.979231",
+                    "action": {
+                        "type": "clue",
+                        "content": "Fill the first row with N"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:17:00.873444",
+                    "action": {
+                        "type": "guess",
+                        "content": "N N N N N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:15:59.168056",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 N \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:17:44.737549",
+                    "action": {
+                        "type": "clue",
+                        "content": "Put N in the third row first column"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:17:56.151311",
+                    "action": {
+                        "type": "guess",
+                        "content": "N N N N N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:15:59.168056",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 N \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:18:28.804889",
+                    "action": {
+                        "type": "clue",
+                        "content": "Put N in the fourth row firts column"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:18:44.954042",
+                    "action": {
+                        "type": "guess",
+                        "content": "N N N N N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:15:59.168056",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 N \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:19:25.842786",
+                    "action": {
+                        "type": "clue",
+                        "content": "Put N in the last row fourth and fifth column"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:19:34.688279",
+                    "action": {
+                        "type": "guess",
+                        "content": "N N N N N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T08:15:59.168056",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 N \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T08:19:45.955892",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                }
+            ]
+        ]
+    }
+]

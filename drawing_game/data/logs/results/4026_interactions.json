@@ -1,0 +1,107 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "archaic-gymnast",
+            "Player_B": "inclusive-ginger"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T09:54:09.206624",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 H \u25a2 H\n\u25a2 \u25a2 \u25a2 \u25a2 H\n\u25a2 \u25a2 \u25a2 H \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T09:54:16.172738",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T09:54:17.164467",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "archaic-gymnast",
+            "Player_B": "inclusive-ginger"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T09:54:17.107560",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nA A \u25a2 A \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 A\nA \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T09:54:20.652606",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T09:54:21.626280",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "archaic-gymnast",
+            "Player_B": "inclusive-ginger"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T09:54:21.570380",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nX \u25a2 \u25a2 \u25a2 X\nX X X X X\nX X X X X\nX X X X X\nX \u25a2 \u25a2 \u25a2 X\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T09:54:24.983077",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                }
+            ]
+        ]
+    }
+]

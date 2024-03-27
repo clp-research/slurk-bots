@@ -1,0 +1,136 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "brutal-clutter",
+            "Player_B": "devout-crumble"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:43:40.091558",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:44:16.284654",
+                    "action": {
+                        "type": "clue",
+                        "content": "fill in the grind with a Q"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:44:32.020850",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:43:40.091558",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:44:48.678864",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:44:49.655434",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "brutal-clutter",
+            "Player_B": "devout-crumble"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:44:49.598912",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 X \u25a2 \u25a2\nX \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 X X\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 X \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:45:51.645103",
+                    "action": {
+                        "type": "clue",
+                        "content": "it is a 5x5 grind put an x in the first box"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:46:20.588835",
+                    "action": {
+                        "type": "guess",
+                        "content": "X \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:44:49.598912",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 X \u25a2 \u25a2\nX \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 X X\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 X \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:46:26.054996",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:46:27.040118",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    }
+]

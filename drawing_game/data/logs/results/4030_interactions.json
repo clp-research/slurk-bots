@@ -1,0 +1,375 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "zingy-booster",
+            "Player_B": "connected-henry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:47:34.337364",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:48:23.444724",
+                    "action": {
+                        "type": "clue",
+                        "content": "put one p in the last cell of the first row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:48:48.868930",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:49:22.266578",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:47:34.337364",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:49:49.681914",
+                    "action": {
+                        "type": "clue",
+                        "content": "put one p in the first and last cell of the third row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:50:10.934131",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:50:13.601848",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:47:34.337364",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:51:06.593493",
+                    "action": {
+                        "type": "clue",
+                        "content": "in the fourth row put p in cell 4 which is the second cell from the right"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:51:39.119138",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:47:34.337364",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:52:07.552229",
+                    "action": {
+                        "type": "clue",
+                        "content": "in the last row put p in the second cell from the left"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:52:27.877574",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:47:34.337364",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:52:32.009693",
+                    "action": {
+                        "type": "clue",
+                        "content": "Done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:52:32.803663",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nP \u25a2 \u25a2 \u25a2 P\n\u25a2 \u25a2 \u25a2 P \u25a2\n\u25a2 P \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:52:33.035905",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "zingy-booster",
+            "Player_B": "connected-henry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:52:32.979828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:53:29.095758",
+                    "action": {
+                        "type": "clue",
+                        "content": "Put C in each cell of the second row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:53:48.593531",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:52:32.979828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:54:29.369805",
+                    "action": {
+                        "type": "clue",
+                        "content": "put C in all the cells in row 3, 4 and 5"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:55:18.374414",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\nC C C C C\nC C C C C"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:52:32.979828",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:55:41.529109",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:55:42.504482",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "zingy-booster",
+            "Player_B": "connected-henry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:55:42.447288",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:57:14.573150",
+                    "action": {
+                        "type": "clue",
+                        "content": "put Q in the fourth cell of row one. It's the second cell from the right."
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:57:40.921653",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:55:42.447288",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:59:16.550672",
+                    "action": {
+                        "type": "clue",
+                        "content": "Put Q in cell three, four and five in the last row which is row five. "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:59:53.386999",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:55:42.447288",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:00:01.150117",
+                    "action": {
+                        "type": "clue",
+                        "content": "Done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:00:01.946632",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "\u25a2 \u25a2 \u25a2 Q \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 Q Q Q"
+                    }
+                }
+            ]
+        ]
+    }
+]
