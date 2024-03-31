@@ -85,6 +85,7 @@ def compute_scores(episode_interactions: Dict) -> None:
         # in case the turn doesn't include at least 3 messages, it means the game has been aborted
         if len(turn) < 3:
             aborted = True
+            f1 = None
             break
 
         # Player 2 message
@@ -114,12 +115,12 @@ def compute_scores(episode_interactions: Dict) -> None:
         number_of_turns += 1
 
         # Player 1 - message length
-        expression_length = len(player_1_message.replace('Instruction:', '').strip())
+        expression_length = len(player_1_message.strip())
         print(t_index, 'Generated Expression Length', expression_length)
         expression_length_sum += expression_length
 
         # Player 1 - number of tokens in the generated expression
-        number_of_tokens = len(player_1_message.replace('Instruction:', '').strip().split(' '))
+        number_of_tokens = len(player_1_message.strip().split(' '))
         print(t_index, 'Generated Expression Number of Tokens', number_of_tokens)
         expression_number_of_tokens += number_of_tokens
 
@@ -211,6 +212,8 @@ def compute_scores(episode_interactions: Dict) -> None:
     else:
         request_success_ratio = round(episode_parsed_request_count / float(episode_request_count), 4)
         print(METRIC_REQUEST_SUCCESS, request_success_ratio)
+
+    return f1
 
 
 def evaluate(target, generated):
