@@ -102,7 +102,8 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
 
 def write_to_csv(filename, instruction):
     # Define the CSV file name
-    csv_file = 'instructions_human.csv'
+    csv_file = os.path.join(ROOT, 'instructions_human.csv')
+    # csv_file = 'instructions_human.csv'
     # Check if the CSV file exists
     file_exists = os.path.isfile(csv_file)
     # Open the CSV file in append mode
@@ -293,7 +294,6 @@ plt.show()
 
 # Generate plot to display average performance (quality score) of all agents for Drawing Game
 
-import matplotlib.pyplot as plt
 
 # Define model names and their corresponding abbreviations
 models = {
@@ -373,7 +373,7 @@ plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=Tru
 plt.xlim(right=110)
 
 plt.tight_layout()  # Adjust layout to prevent clipping of labels
-plt.savefig('drawing_quality_scores_plot.png')
+plt.savefig(os.path.join(ROOT, 'drawing_quality_scores_plot.png'))
 plt.show()
 
 
