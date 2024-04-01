@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import matplotlib.pyplot as plt
 
 from drawing_game.data.compute_scores import compute_scores
 
@@ -247,4 +248,132 @@ print("14 total instructions without 'done' for random, /6 = 2.33 instructions p
 # 4050: [],
 # 4028: [],
 # 4031: [0]]
+
+
+
+# Scores per room
+scores_per_room = {
+    '4026': [0, 0, 0],
+    '4027': [0, 0],
+    '4028': [],
+    '4029': [None],
+    '4030': [100.0, 100.0, 100.0],
+    '4031': [None],
+    '4032': [24.0, 57.0, 75.0],
+    '4050': [],
+    '4051': [0, 21.0, 71.0]
+}
+
+# Plotting the scatter chart
+plt.figure(figsize=(12, 6))
+colors = ['blue', 'green', 'red', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'lime']
+markers = ['o', 's', '^', '*', 'D']  # Define markers for different types of scores
+
+for idx, (room, room_scores) in enumerate(scores_per_room.items(), start=1):
+    for round_num, score in enumerate(room_scores, start=1):
+        if score is not None:
+            plt.scatter(room, score, color=colors[idx-1], marker=markers[round_num-1], label=f"Round {round_num}, Room {room}")
+        else:
+            plt.scatter(room, 0, color='black', marker='x', label=f"Round {round_num}, Room {room} (None)")
+
+# Setting labels and title
+plt.xlabel('Room')
+plt.ylabel('Score')
+plt.title('Human Performance per Round and Room')
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+# Move legend outside the plot
+plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
+
+# Show plot
+plt.tight_layout()
+plt.show()
+
+
+# Generate plot to display average performance (quality score) of all agents for Drawing Game
+
+import matplotlib.pyplot as plt
+
+# Define model names and their corresponding abbreviations
+models = {
+    "CodeLlama-34b--CodeLlama-34b": "CL",
+    "SUS-Chat-34B--SUS-Chat-34B": "SUS",
+    "WizardLM-13b-v1.2--WizardLM-13b-v1.2": "WL",
+    "Yi-34B-Chat-t0.0--Yi-34B-Chat-t0.0": "Yi",
+    "claude-2.1--claude-2.1": "C2.1",
+    "claude-3-haiku--claude-3-haiku": "C3H",
+    "claude-3-opus--claude-3-opus": "C3O",
+    "claude-3-sonnet--claude-3-sonnet": "C3S",
+    "gemma-7b--gemma-7b": "G7",
+    "gpt-3.5-turbo--gpt-3.5-turbo": "G3.5",
+    "gpt-4-0125--gpt-4-0125": "G4.1",
+    "gpt-4-0613--gpt-4-0613": "G4.2",
+    "gpt-4-1106--gpt-4-1106": "G4.3",
+    "mistral-large--mistral-large": "ML",
+    "mistral-medium--mistral-medium": "MM",
+    "openchat-3.5-0106--openchat-3.5-0106": "OC1",
+    "openchat-3.5-1210--openchat-3.5-1210": "OC2",
+    "openchat_3.5--openchat_3.5": "OC3",
+    "sheep-duck-llama-2--sheep-duck-llama-2": "SDL",
+    "vicuna-13b-v1.5--vicuna-13b-v1.5": "V13",
+    "Human-Human": "HUM"
+}
+
+# Quality scores for each model
+quality_scores = {
+    "CodeLlama-34b-Instruct-hf-t0.0--CodeLlama-34b-Instruct-hf-t0.0": 'n/a',
+    "SUS-Chat-34B-t0.0--SUS-Chat-34B-t0.0": 29.0,
+    "WizardLM-13b-v1.2-t0.0--WizardLM-13b-v1.2-t0.0": 'n/a',
+    "Yi-34B-Chat-t0.0--Yi-34B-Chat-t0.0": 9.07,
+    "claude-2.1-t0.0--claude-2.1-t0.0": 'n/a',
+    "claude-3-haiku-20240307-t0.0--claude-3-haiku-20240307-t0.0": 'n/a',
+    "claude-3-opus-20240229-t0.0--claude-3-opus-20240229-t0.0": 'n/a',
+    "claude-3-sonnet-20240229-t0.0--claude-3-sonnet-20240229-t0.0": 'n/a',
+    "gemma-7b-it-t0.0--gemma-7b-it-t0.0": 'n/a',
+    "gpt-3.5-turbo-0125-t0.0--gpt-3.5-turbo-0125-t0.0": 64.18,
+    "gpt-4-0125-preview-t0.0--gpt-4-0125-preview-t0.0": 99.6,
+    "gpt-4-0613-t0.0--gpt-4-0613-t0.0": 98.19,
+    "gpt-4-1106-preview-t0.0--gpt-4-1106-preview-t0.0": 94.34,
+    "mistral-large-2402-t0.0--mistral-large-2402-t0.0": 'n/a',
+    "mistral-medium-2312-t0.0--mistral-medium-2312-t0.0": 'n/a',
+    "openchat-3.5-0106-t0.0--openchat-3.5-0106-t0.0": 0.86,
+    "openchat-3.5-1210-t0.0--openchat-3.5-1210-t0.0": 3.17,
+    "openchat_3.5-t0.0--openchat_3.5-t0.0": 8.31,
+    "sheep-duck-llama-2-13b-t0.0--sheep-duck-llama-2-13b-t0.0": 'n/a',
+    "vicuna-13b-v1.5-t0.0--vicuna-13b-v1.5-t0.0": 'n/a',
+    "Human-Human": 39.14
+}
+
+# Define colors for each model
+colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'purple', 'gray', 'lightcyan', 'lightgoldenrodyellow', 'black']
+
+# Plotting the scatter plot
+plt.figure(figsize=(10, 10))
+for model, score, color in zip(models.keys(), quality_scores.values(), colors):
+    if score != 'n/a':
+        plt.scatter(score, model, color=color, s=100)
+        plt.text(score + 1.5, model, models[model], fontsize=8, ha='left', va='center', color='black')
+    else:
+        plt.scatter(score, model, color='black', marker='x', s=100)
+
+plt.axvline(x=39.14, color='r', linestyle='--')  # Human average line
+plt.xlabel('Quality Score')
+plt.ylabel('Model')
+# plt.title('Quality Scores Achieved by Different Agents')
+plt.gca().invert_yaxis()  # Invert y-axis to have the highest score at the top
+
+# Set ticks for x-axis with interval of 10 and show them
+plt.xticks(range(0, 109, 10), [str(x) for x in range(0, 109, 10)], fontsize=8)
+
+# Remove ticklines
+plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True)
+
+# Add padding to the right side of the plot
+plt.xlim(right=110)
+
+plt.tight_layout()  # Adjust layout to prevent clipping of labels
+plt.savefig('drawing_quality_scores_plot.png')
+plt.show()
+
 
