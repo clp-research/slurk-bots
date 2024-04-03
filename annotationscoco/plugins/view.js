@@ -30,12 +30,14 @@ $(document).ready(function () {
                     $("#target-board-image").attr("src", "data:image/png;base64," + base64_encoded_string)
 
                     legend_encoded_string = message["legend_image"]
+                    legend_caption = message["legend_caption"]
                     if (legend_encoded_string != null) {
                         console.log("legend is available, setting")
                         $("#target-board-legend").show()
                         $("#target-board-legend").attr("src", "data:image/png;base64," + legend_encoded_string)
                         console.log("setting legend caption")
                         $("#target-legend-caption").show()
+                        $("#target-legend-caption").text(message["legend_caption"])
                     } else {
                         console.log("legend is not available, clearing")
                         $("#target-board-legend").hide()

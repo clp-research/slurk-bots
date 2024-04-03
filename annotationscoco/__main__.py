@@ -202,7 +202,7 @@ class AnnotationsCoCo(TaskBot):
             self.close_room(room_id)
             return
 
-        target_image_name, base64_string, legendimage_base64 = self.dataloader.get_target_image()
+        target_image_name, base64_string, legendimage_base64, object_name = self.dataloader.get_target_image()
 
 
         if not base64_string:
@@ -228,7 +228,7 @@ class AnnotationsCoCo(TaskBot):
         self.sio.emit(
             "message_command",
             {
-                "command": {"event": "set_target_image", "message": {"target_board": base64_string, "legend_image": legendimage_base64}},
+                "command": {"event": "set_target_image", "message": {"target_board": base64_string, "legend_image": legendimage_base64, "legend_caption": object_name}},
                 "room": room_id,
                 "receiver_id": user_id,
             },

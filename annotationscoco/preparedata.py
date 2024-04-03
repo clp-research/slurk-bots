@@ -23,6 +23,7 @@ class Dataloader:
         self.legend_images = self.load_legend_images()
         self.image_view_status = {}#self.load_image_viewing_status()
         self.legend_info = self.get_legend_map()
+        self.object_names = self.get_object_names()
 
     def extract_number(self, file_path):
         # Extract the numerical part of the filename
@@ -48,6 +49,16 @@ class Dataloader:
                 return legend_info
         except FileNotFoundError:
             logging.debug("board_legend_info.json is not available, returning empty dict")
+            return {}
+
+    def get_object_names(self):
+        try:
+            with open(f"{ROOT}/data/sequences/legends/object_names.json", "r") as file:
+                legend_info = json.load(file)
+                logging.debug(f"Loaded object names: {len(legend_info)}")
+                return legend_info
+        except FileNotFoundError:
+            logging.debug("object_names.json is not available, returning empty dict")
             return {}
 
 
@@ -92,7 +103,7 @@ class Dataloader:
         if len(self.image_view_status) == len(self.images):
             logging.debug("All images have been used, resetting used images list.")
             #self.used_images = []
-            return "empty_world_state.png", None, None
+            return "empty_world_state.png", None, None, None
 
         random_image = None
         #To ensure we dont get the same image again
@@ -105,9 +116,14 @@ class Dataloader:
                 self.image_view_status[random_image] = True
                 legend_name = self.legend_info.get(random_image, None)
                 legend_image = None
+                object_name = None
                 if legend_name is not None:
                     legend_image = self.legend_images[legend_name]
-                return random_image, self.images[random_image], legend_image
+                    object_name = self.object_names.get(legend_name, None)
+                    if object_name is not None:
+                        object_name = f"Object name: {object_name}"
+                logging.debug(f"Image {random_image}, Object_name: {object_name} has not been used before, returning.")
+                return random_image, self.images[random_image], legend_image, object_name
             else:
                 logging.debug(f"Image {random_image} has already been used, trying again.")
 
