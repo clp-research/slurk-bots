@@ -1,0 +1,936 @@
+[
+    {
+        "data": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "date_created": "2024-03-20T10:21:56.030822",
+        "date_modified": null,
+        "event": "players",
+        "id": 4843513,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T10:22:17.265473",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843524,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "designation"
+        },
+        "date_created": "2024-03-20T10:22:18.330413",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843527,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T10:22:18.391249",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843528,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:22:46.575214",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843535,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "When you reach somewhere",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:22:46.632735",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843536,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "arrive",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:22:55.902951",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843543,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:23:18.224856",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843560,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The end place, after travelling",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:23:18.281542",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843561,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "destination",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:23:26.615240",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843568,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:23:58.462462",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843602,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Sorry, my bad, but close to that",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:23:58.519077",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843603,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "destined",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:24:12.796247",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843618,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T10:24:13.311293",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4843624,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T10:24:13.928812",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843627,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "induce"
+        },
+        "date_created": "2024-03-20T10:24:14.994667",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843630,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T10:24:15.052763",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843631,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:24:37.620808",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843642,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "When a baby has to be brought out early",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:24:37.677907",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843643,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "induced",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:24:57.983451",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843650,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:25:11.391935",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843667,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Singular to that",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:25:11.448602",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843668,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "induce",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:25:17.742647",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843675,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "induce"
+        },
+        "date_created": "2024-03-20T10:25:18.247154",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843681,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T10:25:18.862876",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843684,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "seize"
+        },
+        "date_created": "2024-03-20T10:25:19.928677",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843687,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T10:25:19.987810",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843688,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:25:59.549367",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843699,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "When you gain control and take",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:25:59.607004",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843700,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "power",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:26:47.539947",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843707,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:27:46.685654",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843748,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "You want it, so take it",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:27:46.743045",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843749,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "steal",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:28:14.968245",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843764,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:28:43.088818",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843781,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Back to, taking control",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:28:43.145581",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843782,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "thieve",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:29:19.663892",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843789,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T10:29:20.176739",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4843795,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T10:29:20.793503",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843798,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "plaza"
+        },
+        "date_created": "2024-03-20T10:29:21.858726",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843801,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T10:29:21.916550",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843802,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:30:07.219771",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843813,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "A large area in a city, lots in Italy",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:30:07.276715",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843814,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "suburb",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:31:07.496751",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843846,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:31:38.993338",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843887,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "A shaped area, maybe lined with trees, restaurants etc, very pretty",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:31:39.050029",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843888,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "square",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:31:57.493978",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843895,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:32:50.417118",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843952,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "In a built up area, lively in the evening",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:32:50.473528",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843953,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "old town",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:33:51.478242",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843982,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "old town"
+        },
+        "date_created": "2024-03-20T10:33:51.987364",
+        "date_modified": null,
+        "event": "invalid format",
+        "id": 4843988,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-20T10:33:52.546996",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843990,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "provide"
+        },
+        "date_created": "2024-03-20T10:33:53.610964",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843993,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T10:33:53.669149",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843994,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:34:42.573988",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844001,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "If you aid someone, replenish, help them",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:34:42.634808",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4844002,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "care",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:34:57.850170",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4844009,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:35:35.495272",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844026,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Issue them aid ",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:35:35.552470",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4844027,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "assist",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:36:14.993311",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4844034,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:36:48.380917",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844051,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Hand over, distribute, supply",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:36:48.437939",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4844052,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The related word 'supply' (stem=suppli)  is similar to the word 'supply' (stem=suppli) and it was used in the clue. You both lose :("
+        },
+        "date_created": "2024-03-20T10:36:48.719311",
+        "date_modified": null,
+        "event": "invalid clue",
+        "id": 4844056,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-20T10:36:49.335367",
+        "date_modified": null,
+        "event": "round",
+        "id": 4844059,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "resume"
+        },
+        "date_created": "2024-03-20T10:36:50.401064",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4844062,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T10:36:50.458629",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4844063,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:37:08.623323",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844070,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Carry on",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:37:08.680873",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4844071,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "continue",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:37:19.115680",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4844078,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:37:32.790765",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844095,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Begin again",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:37:32.847511",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4844096,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "persevere",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:37:55.545940",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4844103,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:38:32.656757",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844120,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The game goes ahead again, for example",
+            "from": "GM impersonated as huge-patio, the explainer",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:38:32.715003",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4844121,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "restart",
+            "from": "GM impersonated as plain-pastry, the guesser",
+            "to": 5420
+        },
+        "date_created": "2024-03-20T10:39:04.028935",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4844128,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T10:39:04.548936",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4844134,
+        "receiver_id": null,
+        "room_id": 4059,
+        "user_id": null
+    }
+]

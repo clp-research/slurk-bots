@@ -1,4 +1,14 @@
-from taboo.metrics import (
+# from taboo.metrics import (
+#     METRIC_ABORTED,
+#     METRIC_SUCCESS,
+#     METRIC_LOSE,
+#     METRIC_REQUEST_COUNT,
+#     METRIC_REQUEST_COUNT_VIOLATED,
+#     METRIC_REQUEST_COUNT_PARSED,
+#     METRIC_REQUEST_SUCCESS,
+#     BENCH_SCORE,
+# )
+from metrics import (
     METRIC_ABORTED,
     METRIC_SUCCESS,
     METRIC_LOSE,
@@ -10,7 +20,10 @@ from taboo.metrics import (
 )
 def compute_scores(episode_interactions) -> None:
     """ Episode level scores"""
+    main_score = None
     turn_scores = []
+    average_utterance_length = 0
+    average_token_length = 0
     prev_guess = None
     prev_guess_counter = 0
     prev_clue = None
@@ -22,7 +35,7 @@ def compute_scores(episode_interactions) -> None:
 
         for event in turn:
             action = event["action"]
-            if action["type"] == "invalid format":
+            if action["type"] == "invalid format":  # or invalid clue?
                 invalid_response = True
             if action["type"] == "guess":
                 turn_score["guess"] = action["content"]
@@ -64,6 +77,7 @@ def compute_scores(episode_interactions) -> None:
     # # b.c. the game ends only successfully, when there is a correct guess
 
     # Common metrics
+    #todo: aborted if inactive or left?
     if invalid_response:  # whether a violation of the game rules happened (response not parsable)
         print(METRIC_ABORTED, 1)
         print(METRIC_SUCCESS, 0)
@@ -74,13 +88,33 @@ def compute_scores(episode_interactions) -> None:
         # self.log_episode_score(BENCH_SCORE, np.nan)  # metric not applicable
     else:
         print(METRIC_ABORTED, 0)
+        clues_turn_round = [turn["clue"] for turn in turn_scores]
+        words_round = [turn.split() for turn in clues_turn_round]
+        unique_words_round = set([word for sublist in words_round for word in sublist])
+        print("Unique words:", unique_words_round)
+
+        utterance_length_count = [len(clue) for clue in clues_turn_round]
+        # flattened_scores = [score for instance_scores in all_files_scores for score in instance_scores if instance_scores]
+        average_utterance_length = sum(utterance_length_count) / len(utterance_length_count)
+        print("Average utterance length count:", average_utterance_length)
+        token_number_count = [len(clue.split()) for clue in clues_turn_round]
+        average_token_length = sum(token_number_count) / len(token_number_count)
+        print("Average token length count:", average_token_length)
         if guesser_won:
             print(METRIC_SUCCESS, 1)
             print(METRIC_LOSE, 0)
-            print(BENCH_SCORE, 100 / len(turn_scores))  # how early the guesser found the word
+            main_score = 100 / len(turn_scores)
+            print(BENCH_SCORE, main_score)  # how early the guesser found the word
+        elif len(turn) < 3:
+            print(METRIC_SUCCESS, 0)
+            print(METRIC_LOSE, 1)
+            main_score = None
+            print(BENCH_SCORE, None)
+
         else:
             print(METRIC_SUCCESS, 0)
             print(METRIC_LOSE, 1)
+            main_score = 0
             print(BENCH_SCORE, 0)  # word not found
 
     # # Game-specific metrics
@@ -90,4 +124,5 @@ def compute_scores(episode_interactions) -> None:
     print('Repetition-Describer', prev_clue_counter)
     # this might require a side-loop between describer and GM (game should not continue with Guesser)
     # self.log_episode_score('Rule-following', ...)
+    return main_score, average_utterance_length, average_token_length
 

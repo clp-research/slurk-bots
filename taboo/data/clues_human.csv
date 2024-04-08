@@ -1,0 +1,781 @@
+Filename,Clue,Target Word
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume
+4052_interactions.json,You would store things in here in the kitchen ,cabinet
+4052_interactions.json,"Where would you store your plates, cups, or bowls in the kitchen? 
+",cabinet
+4052_interactions.json,Different name for that. Beginning with the same letter ,cabinet
+4052_interactions.json,"This is a hard one, another word for group of things beginning with A",array
+4052_interactions.json,Another way of saying you live alone. I love i*********,independently
+4052_interactions.json,A word begging with S. If you had a lighter and lit the flame Ono wood it would S*** the wood,sear
+4052_interactions.json,The world can always be used to do with pain. I had a s**r in my chest,sear
+4054_interactions.json,time,anymore
+4054_interactions.json,any longer,anymore
+4054_interactions.json,opposite of less,anymore
+4054_interactions.json,burn or scortch,sear
+4054_interactions.json,a range of,array
+4054_interactions.json,line-up,array
+4054_interactions.json,a formation of,array
+4054_interactions.json,opposite of unsure,obvious
+4054_interactions.json,self evident,obvious
+4054_interactions.json,to grab,seize
+4054_interactions.json,to give,provide
+4055_interactions.json,okay,designation
+4055_interactions.json,when you rub something,stimulate
+4055_interactions.json,"no, when you touch your skin to allow a better blood flow, ",stimulate
+4055_interactions.json,"no, the other word lol, like you are activating energy or something ",stimulate
+4055_interactions.json,Glass window is ??,clear
+4055_interactions.json,when you play a stokvel you do what ?,contributor
+4055_interactions.json,"No, the money that you invest you call it what? but that money as a person ",contributor
+4055_interactions.json,What do you do to your retirement fund ?,contributor
+4055_interactions.json,zero is equal to what ?,none
+4055_interactions.json,the other word,none
+4055_interactions.json,its a four letter word ,none
+4055_interactions.json,"If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",embroidery
+4056_interactions.json,instalments paid 4 times a year are...,quarterly
+4056_interactions.json,"interest you pay is based on a percentage, this is the interest ...",rate
+4056_interactions.json,"another term for ""I promise you"" - I ... you",assure
+4056_interactions.json,on the right track - starts with first letter of the alphabet,assure
+4056_interactions.json,"I promise you confidently, you should feel certain in what I'm saying. I ... you",assure
+4056_interactions.json,Term for when you wish you didn't do something,regret
+4056_interactions.json,"if I am accountable for something, it is my ....",responsibility
+4056_interactions.json,"when cooking a steak, you first ... it in a pan to seal the juices in",sear
+4057_interactions.json,it is a word meaning to go around,bypass
+4057_interactions.json,it means to either go over or around an obstacle,bypass
+4057_interactions.json,"in medicine, it is a term used when going around a blocked artery or vein",bypass
+4057_interactions.json,"this is a word that means a person who takes on challenges or battles, you would say they are a real....",fighter
+4057_interactions.json,"similar to that but another word, it means when someone doesnyt give up",fighter
+4057_interactions.json,this is word that in a medical context refers to when a heart is replaced,transplant
+4057_interactions.json,"this is a word that neans when something is very clear to people, could not be any clearer even to a child",obvious
+4057_interactions.json,this is the word that reflects what you have once you have a child,responsibility
+4057_interactions.json,it means like a debt or the care you now have to take because you are..,responsibility
+4058_interactions.json,to start again,resume
+4058_interactions.json,very similar - to begin again,resume
+4058_interactions.json,it is also a word used to describe a CV,resume
+4058_interactions.json,to add on/extend to - usually related to time,anymore
+4058_interactions.json,ok maybe not related to time - think to make longer - usually associated with a negative,anymore
+4058_interactions.json,to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional,anymore
+4058_interactions.json,the feeling that you failed and if you had the chance you would redo it,regret
+4058_interactions.json,it's a more melancholic version,regret
+4058_interactions.json,you don't want to live life with these,regret
+4058_interactions.json,align something/ or countries associated with East Asia,orient
+4058_interactions.json,countries associated with East Asia - also the name of an express train,orient
+4058_interactions.json,to surgically replace an organ in the body,transplant
+4058_interactions.json,another name for you job in the long term,career
+4059_interactions.json,When you reach somewhere,designation
+4059_interactions.json,"The end place, after travelling",designation
+4059_interactions.json,"Sorry, my bad, but close to that",designation
+4059_interactions.json,When a baby has to be brought out early,induce
+4059_interactions.json,Singular to that,induce
+4059_interactions.json,When you gain control and take,seize
+4059_interactions.json,"You want it, so take it",seize
+4059_interactions.json,"Back to, taking control",seize
+4059_interactions.json,"A large area in a city, lots in Italy",plaza
+4059_interactions.json,"A shaped area, maybe lined with trees, restaurants etc, very pretty",plaza
+4059_interactions.json,"In a built up area, lively in the evening",plaza
+4059_interactions.json,"If you aid someone, replenish, help them",provide
+4059_interactions.json,Issue them aid ,provide
+4059_interactions.json,"Hand over, distribute, supply",provide
+4059_interactions.json,Carry on,resume
+4059_interactions.json,Begin again,resume
+4059_interactions.json,"The game goes ahead again, for example",resume

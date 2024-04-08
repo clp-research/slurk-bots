@@ -1,0 +1,608 @@
+[
+    {
+        "data": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "date_created": "2024-03-20T09:08:31.788531",
+        "date_modified": null,
+        "event": "players",
+        "id": 4841944,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T09:08:42.198873",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841964,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "quarterly"
+        },
+        "date_created": "2024-03-20T09:08:43.265450",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4841967,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:08:43.322907",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4841968,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:09:10.572795",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842026,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "instalments paid 4 times a year are...",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:09:10.645132",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842028,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "quarterly",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:09:19.488402",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842060,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "quarterly"
+        },
+        "date_created": "2024-03-20T09:09:20.044058",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842068,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T09:09:20.660670",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842071,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "rate"
+        },
+        "date_created": "2024-03-20T09:09:21.728172",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842074,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:09:21.786370",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842075,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:09:52.356984",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842117,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "interest you pay is based on a percentage, this is the interest ...",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:09:52.415269",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842118,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "rate",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:10:00.877715",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842142,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "rate"
+        },
+        "date_created": "2024-03-20T09:10:01.399446",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842148,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T09:10:02.016524",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842151,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "assure"
+        },
+        "date_created": "2024-03-20T09:10:03.083291",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842154,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:10:03.142067",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842155,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:11:10.624392",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842262,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "another term for \"I promise you\" - I ... you",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:11:10.680842",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842263,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "swear",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:11:19.504380",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842278,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:12:11.611789",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842366,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "on the right track - starts with first letter of the alphabet",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:12:11.669934",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842367,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "accept",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:12:59.016504",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842382,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:15:09.300463",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842585,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "I promise you confidently, you should feel certain in what I'm saying. I ... you",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:15:09.358014",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842586,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "assure",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:15:14.317200",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842593,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "assure"
+        },
+        "date_created": "2024-03-20T09:15:14.830955",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842599,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T09:15:15.448538",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842602,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "regret"
+        },
+        "date_created": "2024-03-20T09:15:16.513117",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842605,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:15:16.570666",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842606,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:15:35.497709",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842633,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Term for when you wish you didn't do something",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:15:35.554616",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842634,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "regret",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:15:41.906764",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842641,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "regret"
+        },
+        "date_created": "2024-03-20T09:15:42.427793",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842647,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-20T09:15:43.045360",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842650,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "responsibility"
+        },
+        "date_created": "2024-03-20T09:15:44.111004",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842653,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:15:44.167834",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842654,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:16:00.868969",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842701,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "if I am accountable for something, it is my ....",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:16:00.926697",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842702,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "responsibility",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:16:11.234939",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842709,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "responsibility"
+        },
+        "date_created": "2024-03-20T09:16:11.743500",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842715,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-20T09:16:12.361025",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842718,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "sear"
+        },
+        "date_created": "2024-03-20T09:16:13.425796",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842721,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:16:13.483421",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842722,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:16:44.243131",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842749,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "when cooking a steak, you first ... it in a pan to seal the juices in",
+            "from": "GM impersonated as sugary-hockey, the explainer",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:16:44.300290",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842750,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "sear",
+            "from": "GM impersonated as fried-halftone, the guesser",
+            "to": 5414
+        },
+        "date_created": "2024-03-20T09:16:50.984928",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842768,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "sear"
+        },
+        "date_created": "2024-03-20T09:16:51.550620",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842777,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": null
+    }
+]
