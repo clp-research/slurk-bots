@@ -9,6 +9,41 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 directory = os.path.join(ROOT, "logs", "results")
 
+# The played grids are 16: ['▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢', '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢', '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n', '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q', '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢', '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢', '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢', '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n', '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q', '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢', '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n', '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢', '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n', '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n', '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n', '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N']
+unique = [
+    '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
+    '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n',
+    '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q',
+    '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢',
+    '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢',
+    '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n',
+    '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢',
+    '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢',
+    '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N',
+    '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢',
+    '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n',
+    '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
+    '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n'
+]
+# 6 random and 7 compact
+random = [
+    '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
+    '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢',
+    '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q',
+    '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢',
+    '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢',
+    '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N',
+    '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢',
+    '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢',
+]
+compact = [
+    '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n',
+    '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n',
+    '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n',
+    '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n',
+    '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
+]
+
 
 # SELECT LOGS
 def select_logs(file_in):
@@ -100,7 +135,7 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
     return all_rounds_scores
 
 
-def write_to_csv(filename, instruction):
+def write_to_csv(filename, instruction, grid_type):
     # Define the CSV file name
     csv_file = os.path.join(ROOT, 'instructions_human.csv')
     # csv_file = 'instructions_human.csv'
@@ -112,9 +147,9 @@ def write_to_csv(filename, instruction):
         writer = csv.writer(file)
         # Write header if file is created newly
         if not file_exists:
-            writer.writerow(['Filename', 'Instruction'])
+            writer.writerow(['Filename', 'Instruction', 'Grid Type'])
         # Write instruction to CSV
-        writer.writerow([filename, instruction])
+        writer.writerow([filename, instruction, grid_type])
 
 
 def process_interactions(directory_path):
@@ -146,6 +181,12 @@ def get_played_grids_and_instructions(directory):
     all_interactions = [file for file in os.listdir(directory) if 'interactions' in file]
     all_sorted_interactions = sorted(all_interactions, key=lambda x: int(x.split('_')[0]))
     played_target_grids = []
+    # Keep track of found target grids across dictionaries within each file
+    found_target_grids = set()
+    counter_compact_instr = 0
+    counter_random_instr = 0
+    counter_compact_grids = 0
+    counter_random_grids = 0
 
     for file_name in all_sorted_interactions:
         file_path = os.path.join(directory,
@@ -158,29 +199,48 @@ def get_played_grids_and_instructions(directory):
 
         # Iterate over each item in the JSON data
         for item in data:
-            # Keep track of found target grids across dictionaries within each file
-            found_target_grids = set()
 
             # Iterate over each turn in the current item
             for turn in item['turns']:
+                target_grid = ''
+                grid_type = ''
+                clue = ''
                 # Iterate over each action in the current turn
                 for action in turn:
                     # Check if the action is of type 'target grid'
                     if 'action' in action and action['action']['type'] == 'target grid':
                         target_grid = action['action']['content']
+                        if target_grid in compact:
+                            grid_type = 'compact'
+                        elif target_grid in random:
+                            grid_type = 'random'
+                        else:
+                            grid_type = 'Not found'
+                        print(f"Found {grid_type} target grid:\n", target_grid)
 
                         # Check if this target grid is not already found across dictionaries within the same file
                         if target_grid not in found_target_grids:
-                            print("Found target grid:", target_grid)
                             found_target_grids.add(target_grid)
-                            played_target_grids.append(target_grid)
+                            if grid_type == 'compact':
+                                counter_compact_grids += 1
+                            elif grid_type == 'random':
+                                counter_random_grids += 1
 
                     if 'action' in action and action['action']['type'] == 'clue':
                         clue = action['action']['content']
-                        print('INSTRUCTION:', clue)
-                        write_to_csv(file_name, clue)
+                        # print('INSTRUCTION:', clue)
+                if clue.lower() != 'done':
+                    if grid_type == 'compact':
+                        counter_compact_instr += 1
+                    elif grid_type == 'random':
+                        counter_random_instr += 1
+                write_to_csv(file_name, clue, grid_type)
 
-    return played_target_grids
+            played_target_grids.append(target_grid)
+            # print(counter_compact_grids)
+            # print(counter_random_grids)
+
+    return played_target_grids, counter_compact_instr, counter_random_instr, counter_compact_grids, counter_random_grids
 
 
 # print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
@@ -189,55 +249,19 @@ def get_played_grids_and_instructions(directory):
 all_sorted_room_files, all_scores, all_scores_dict = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
 average_score = calculate_average_score(all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
-all_played_grids = get_played_grids_and_instructions(directory)
+all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(directory)
 unique_grids = set(all_played_grids)
 
-print(f"The played grids are {len(all_played_grids)}:", all_played_grids)
-print(f"The unique grids are {len(unique_grids)}:", unique_grids)
+print(f"The played grids are {len(all_played_grids)}")  # 16
+print(f"The unique grids are {len(unique_grids)}")  # 13
 
-# The played grids are 16: ['▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢', '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢', '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n', '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q', '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢', '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢', '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢', '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n', '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q', '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢', '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n', '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢', '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n', '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n', '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n', '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N']
-unique = [
-    '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
-    '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n',
-    '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q',
-    '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢',
-    '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢',
-    '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n',
-    '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢',
-    '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢',
-    '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N',
-    '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢',
-    '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n',
-    '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
-    '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n'
-]
+print("Number of compact grid instructions:", compact_grid_instr_count)  # 19
+print("Number of random grid instructions:", random_grid_instr_count)  # 15
 
-# 6 random and 7 compact
-random = [
-    '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
-    '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢',
-    '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q',
-    '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢',
-    '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢',
-    '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N'
-]
+# To compute this we don't care if we have full turns or not, we count all given instructions except 'done'
+print("Instructions per compact grid on average:", compact_grid_instr_count/compact_num)  # 3.8
+print("Instructions per random grid on average:", random_grid_instr_count/random_num)  # 1.875
 
-compact = [
-    '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢',
-    '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n',
-    '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢',
-    '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n',
-    '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n',
-    '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n',
-    '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
-]
-
-
-print('28 total instructions for compact, /7 = 4 instructions per grid on average')
-print('20 total instructions for random, /6 = 3.33 instructions per grid on average')
-
-print("20 total instructions without 'done'for compact, /7 = 2.85 instructions per grid on average")
-print("14 total instructions without 'done' for random, /6 = 2.33 instructions per grid on average")
 
 # All the scores are:
 # 4026: [[0, 0, 0],
@@ -289,7 +313,8 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
 
 # Show plot
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(ROOT, 'drawing_performance_room_.png'))
+# plt.show()
 
 
 # Generate plot to display average performance (quality score) of all agents for Drawing Game
@@ -346,10 +371,10 @@ quality_scores = {
 }
 
 # Define colors for each model
-colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'purple', 'gray', 'lightcyan', 'lightgoldenrodyellow', 'black']
+colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'blueviolet', 'gray', 'lime', 'olive', 'black']
 
 # Plotting the scatter plot
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(12, 10))
 for model, score, color in zip(models.keys(), quality_scores.values(), colors):
     if score != 'n/a':
         plt.scatter(score, model, color=color, s=100)
@@ -374,6 +399,6 @@ plt.xlim(right=110)
 
 plt.tight_layout()  # Adjust layout to prevent clipping of labels
 plt.savefig(os.path.join(ROOT, 'drawing_quality_scores_plot.png'))
-plt.show()
+# plt.show()
 
 
