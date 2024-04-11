@@ -190,7 +190,7 @@ def process_interactions(directory_path):
 
 def calculate_average_score(scores_list):
     average_score = sum(scores_list) / len(scores_list)
-    print("Average score:", average_score)
+    print("Average score:", round(average_score, 2))
     return average_score
 
 
@@ -275,11 +275,13 @@ def flatten_list(lst):
 
 all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
-print("All flipped count:", all_flipped_count)
+print("Total flipped cell count:", round(all_flipped_count, 2))
+print("Average flipped count per turn", round(all_flipped_count/instructions_count, 2))
 all_expression_length = sum(flatten_list(all_expression_length))
-print("All expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
-print("Average expression length:", round(all_expression_length/instructions_count, 2))
-print("All token length:", all_token_length)
+print("Total expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
+print("Average expression length per instruction:", round(all_expression_length/instructions_count, 2)) # Includes 'done'
+print("Total tokens used:", all_token_length)
+print("Average number of tokens per instruction:", round(all_token_length/instructions_count, 2)) # Includes 'done'
 average_score = calculate_average_score(all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
 all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(directory)
 unique_grids = set(all_played_grids)
