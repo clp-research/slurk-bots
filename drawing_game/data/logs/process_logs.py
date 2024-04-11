@@ -121,18 +121,27 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
         json.dump(all_rounds, outfile, indent=4)
 
     all_rounds_scores = []
+    all_flipped_count_sum = 0
+    all_expression_length_sum = []
+    all_expression_token_number = 0
+    all_instructions_count = 0
+
     # COMPUTE SCORES
     for index, round in enumerate(all_rounds):
         print(f"These are the scores for round {index + 1} out of {len(all_rounds)}")
         print('')
-        round_f1_scores = compute_scores(round)
+        round_f1_scores, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_turns = compute_scores(round)
         all_rounds_scores.append(round_f1_scores)
+        all_flipped_count_sum += flipped_count_sum
+        all_expression_length_sum.append(expression_length_sum)
+        all_expression_token_number += expression_number_of_tokens
+        all_instructions_count += number_turns
         print("__________")
         print('')
 
     print(f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'")
     print('The main scores for this game are:', all_rounds_scores)
-    return all_rounds_scores
+    return all_rounds_scores, all_flipped_count_sum, all_expression_length_sum, all_expression_token_number, all_instructions_count
 
 
 def write_to_csv(filename, instruction, grid_type):
@@ -156,11 +165,19 @@ def process_interactions(directory_path):
     all_files = [file for file in os.listdir(directory_path) if file.endswith('.jsonl')]
     sorted_file_names = sorted(all_files, key=lambda x: int(x.split('.')[0]))
     all_scores = []
+    all_flipped_count = 0
+    all_expression_length = []
+    all_token_length = 0
+    all_instructions_count = 0
     scores_dict = {}
     for file in sorted_file_names:
         messages_file = select_logs(os.path.join(ROOT, "logs", "results", file))
-        room_scores = build_interactions_and_return_scores_per_room(messages_file)
+        room_scores, flipped_count, expression_length, token_number_length, instructions_count = build_interactions_and_return_scores_per_room(messages_file)
         all_scores.append(room_scores)
+        all_flipped_count += flipped_count
+        all_expression_length.append(expression_length)
+        all_token_length += token_number_length
+        all_instructions_count += instructions_count
         scores_dict[file.split('.')[0]] = room_scores
 
     print('The scores for all rooms are:', all_scores)
@@ -168,7 +185,7 @@ def process_interactions(directory_path):
     flattened_scores = [score for instance_scores in all_scores for score in instance_scores if instance_scores]
     # Filter out None values from flattened scores (unfisnished rounds)
     filtered_scores = [score for score in flattened_scores if score is not None]
-    return sorted_file_names, filtered_scores, scores_dict
+    return sorted_file_names, filtered_scores, scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count
 
 
 def calculate_average_score(scores_list):
@@ -216,7 +233,7 @@ def get_played_grids_and_instructions(directory):
                             grid_type = 'random'
                         else:
                             grid_type = 'Not found'
-                        print(f"Found {grid_type} target grid:\n", target_grid)
+                        # print(f"Found {grid_type} target grid:\n", target_grid)
 
                         # Check if this target grid is not already found across dictionaries within the same file
                         if target_grid not in found_target_grids:
@@ -243,11 +260,26 @@ def get_played_grids_and_instructions(directory):
     return played_target_grids, counter_compact_instr, counter_random_instr, counter_compact_grids, counter_random_grids
 
 
+def flatten_list(lst):
+    flattened = []
+    for item in lst:
+        if isinstance(item, list):
+            flattened.extend(flatten_list(item))
+        else:
+            flattened.append(item)
+    return flattened
+
+
 # print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
 # build_interactions_file("4026_text_messages.json")
 
-all_sorted_room_files, all_scores, all_scores_dict = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
+all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
+print("All flipped count:", all_flipped_count)
+all_expression_length = sum(flatten_list(all_expression_length))
+print("All expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
+print("Average expression length:", round(all_expression_length/instructions_count, 2))
+print("All token length:", all_token_length)
 average_score = calculate_average_score(all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
 all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(directory)
 unique_grids = set(all_played_grids)

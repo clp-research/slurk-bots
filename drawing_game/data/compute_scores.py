@@ -50,6 +50,7 @@ def compute_scores(episode_interactions: Dict):
 
         # Player 1 message
         player_1_message = turn[1]['action']['content']
+        print(player_1_message)
 
         # Player generates "DONE"
         match = re.match(terminate_pattern, player_1_message)
@@ -213,7 +214,7 @@ def compute_scores(episode_interactions: Dict):
         request_success_ratio = round(episode_parsed_request_count / float(episode_request_count), 4)
         print(METRIC_REQUEST_SUCCESS, request_success_ratio)
 
-    return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens
+    return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_of_turns
 
 
 def evaluate(target, generated):
