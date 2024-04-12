@@ -121,7 +121,7 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
         json.dump(all_rounds, outfile, indent=4)
 
     all_rounds_scores = []
-    all_flipped_count_sum = 0
+    all_flipped_count_averages = []
     all_expression_length_sum = []
     # full_expressions_count = 0
     all_expression_token_number = 0
@@ -132,9 +132,9 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
     for index, round in enumerate(all_rounds):
         print(f"These are the scores for round {index + 1} out of {len(all_rounds)}")
         print('')
-        round_f1_scores, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_turns, round_words = compute_scores(round)
+        round_f1_scores, flipped_count_average, expression_length_sum, expression_number_of_tokens, number_turns, round_words = compute_scores(round)
         all_rounds_scores.append(round_f1_scores)
-        all_flipped_count_sum += flipped_count_sum
+        all_flipped_count_averages.append(flipped_count_average)
         all_expression_length_sum.append(expression_length_sum)
         all_expression_token_number += expression_number_of_tokens
         all_instructions_count += number_turns
@@ -146,7 +146,7 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
 
     print(f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'")
     # print('The main scores for this game are:', all_rounds_scores)
-    return all_rounds_scores, all_flipped_count_sum, all_expression_length_sum, all_expression_token_number, all_instructions_count, room_words
+    return all_rounds_scores, all_flipped_count_averages, all_expression_length_sum, all_expression_token_number, all_instructions_count, room_words
 
 
 def write_to_csv(filename, instruction, grid_type):
@@ -170,7 +170,7 @@ def process_interactions(directory_path):
     all_files = [file for file in os.listdir(directory_path) if file.endswith('.jsonl')]
     sorted_file_names = sorted(all_files, key=lambda x: int(x.split('.')[0]))
     all_scores = []
-    all_flipped_count = 0
+    all_flipped_count = []
     all_expression_length = []
     all_token_length = 0
     all_instructions_count = 0
@@ -181,7 +181,7 @@ def process_interactions(directory_path):
         messages_file = select_logs(os.path.join(ROOT, "logs", "results", file))
         room_scores, flipped_count, expression_length, token_number_length, instructions_count, room_words = build_interactions_and_return_scores_per_room(messages_file)
         all_scores.append(room_scores)
-        all_flipped_count += flipped_count
+        all_flipped_count.append(flipped_count)
         all_expression_length.append(expression_length)
         all_token_length += token_number_length
         all_instructions_count += instructions_count
@@ -297,8 +297,15 @@ def calculate_lexical_diversity(unique_words, all_words):
 all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
 print("Total number of turns /instructions:", instructions_count)
-print("Total flipped cell count:", round(all_flipped_count, 2))
-print("Average flipped count per turn", round(all_flipped_count/instructions_count, 2))
+print("All flipped count averages per round:", all_flipped_count)
+flattened_flipped = flatten_list(all_flipped_count)
+only_played_flipped = [value for value in flattened_flipped if value is not None]
+print(only_played_flipped)
+total_flipped_cell_count = round(sum(only_played_flipped), 2)
+print("Total flipped cell count:", total_flipped_cell_count)
+print("Average changed cells per turn in all played rounds", round(total_flipped_cell_count/len(only_played_flipped), 2))
+not_lost_flipped = [value for value in only_played_flipped if value != 0]
+print("Average changed cells per turn in all played rounds that were not lost 100%", round(total_flipped_cell_count/len(not_lost_flipped), 2))
 print(all_expression_length)
 flattened_expr_lngt = flatten_list(all_expression_length)
 print(flattened_expr_lngt)

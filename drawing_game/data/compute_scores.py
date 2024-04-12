@@ -91,6 +91,7 @@ def compute_scores(episode_interactions: Dict):
         if len(turn) < 3:
             aborted = True
             f1 = None
+            flipped_count_sum = None
             break
 
         # Player 2 message
