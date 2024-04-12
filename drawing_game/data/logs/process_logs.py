@@ -123,7 +123,7 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
     all_rounds_scores = []
     all_flipped_count_sum = 0
     all_expression_length_sum = []
-    full_expressions_count = 0
+    # full_expressions_count = 0
     all_expression_token_number = 0
     all_instructions_count = 0
     room_words = []
@@ -132,21 +132,21 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
     for index, round in enumerate(all_rounds):
         print(f"These are the scores for round {index + 1} out of {len(all_rounds)}")
         print('')
-        round_f1_scores, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_turns, round_words, full_expr_count = compute_scores(round)
+        round_f1_scores, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_turns, round_words = compute_scores(round)
         all_rounds_scores.append(round_f1_scores)
         all_flipped_count_sum += flipped_count_sum
         all_expression_length_sum.append(expression_length_sum)
         all_expression_token_number += expression_number_of_tokens
         all_instructions_count += number_turns
         room_words.append(round_words)
-        full_expressions_count += full_expr_count
+        # full_expressions_count += full_expr_count
 
         print("__________")
         print('')
 
     print(f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'")
     # print('The main scores for this game are:', all_rounds_scores)
-    return all_rounds_scores, all_flipped_count_sum, all_expression_length_sum, all_expression_token_number, all_instructions_count, room_words, full_expressions_count
+    return all_rounds_scores, all_flipped_count_sum, all_expression_length_sum, all_expression_token_number, all_instructions_count, room_words
 
 
 def write_to_csv(filename, instruction, grid_type):
@@ -175,18 +175,18 @@ def process_interactions(directory_path):
     all_token_length = 0
     all_instructions_count = 0
     all_words = []
-    full_expresions_count = 0
+    # full_expresions_count = 0
     scores_dict = {}
     for file in sorted_file_names:
         messages_file = select_logs(os.path.join(ROOT, "logs", "results", file))
-        room_scores, flipped_count, expression_length, token_number_length, instructions_count, room_words, full_exp_count = build_interactions_and_return_scores_per_room(messages_file)
+        room_scores, flipped_count, expression_length, token_number_length, instructions_count, room_words = build_interactions_and_return_scores_per_room(messages_file)
         all_scores.append(room_scores)
         all_flipped_count += flipped_count
         all_expression_length.append(expression_length)
         all_token_length += token_number_length
         all_instructions_count += instructions_count
         all_words.append(room_words)
-        full_expresions_count += full_exp_count
+        # full_expresions_count += full_exp_count
         scores_dict[file.split('.')[0]] = room_scores
 
     print('The scores for all rooms are:', all_scores)
@@ -194,7 +194,7 @@ def process_interactions(directory_path):
     flattened_scores = [score for instance_scores in all_scores for score in instance_scores if instance_scores]
     # Filter out None values from flattened scores (unfisnished rounds)
     filtered_scores = [score for score in flattened_scores if score is not None]
-    return sorted_file_names, filtered_scores, scores_dict, all_flipped_count, all_expression_length, all_token_length, all_instructions_count, all_words, full_expresions_count
+    return sorted_file_names, filtered_scores, scores_dict, all_flipped_count, all_expression_length, all_token_length, all_instructions_count, all_words
 
 
 def calculate_average_score(scores_list):
@@ -287,7 +287,7 @@ def remove_punctuation(word):
 # print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
 # build_interactions_file("4026_text_messages.json")
 
-all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words, full_expressions_count = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
+all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
 print("Total number of turns /instructions:", instructions_count)
 print("Total flipped cell count:", round(all_flipped_count, 2))
@@ -299,7 +299,7 @@ all_expression_length = sum(flatten_list(all_expression_length))
 non_zero_values = [value for value in flattened_expr_lngt if value != 0]  # Exclude zeros (no expression average) to calculate final average
 print(non_zero_values)
 print("Total averaged expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
-print("Full expression count:", full_expressions_count)
+# print("Full expression count:", full_expressions_count)
 print("Average expression length per instruction:", round(all_expression_length/len(non_zero_values), 2)) # Includes 'done'
 print("Total averaged tokens used:", all_token_length)
 print("Average number of tokens per instruction:", round(all_token_length/instructions_count, 2)) # Includes 'done'

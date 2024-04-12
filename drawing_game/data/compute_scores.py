@@ -20,7 +20,7 @@ def compute_scores(episode_interactions: Dict):
     previous_turn_grid = '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢'
     flipped_count_sum = 0
     expression_length_sum = 0
-    full_expression_count = 0
+    # full_expression_count = 0
     expression_number_of_tokens = 0
     all_round_tokens = []
     target_grid = ''
@@ -123,7 +123,7 @@ def compute_scores(episode_interactions: Dict):
         expression_length = len(player_1_message.strip())
         print(t_index, 'Generated Expression Length', expression_length)
         expression_length_sum += expression_length
-        full_expression_count += 1
+        # full_expression_count += 1
 
         # Player 1 - number of tokens in the generated expression
         number_of_tokens = len(player_1_message.strip().split(' '))
@@ -221,7 +221,7 @@ def compute_scores(episode_interactions: Dict):
         request_success_ratio = round(episode_parsed_request_count / float(episode_request_count), 4)
         print(METRIC_REQUEST_SUCCESS, request_success_ratio)
 
-    return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_of_turns, all_round_tokens, full_expression_count
+    return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_of_turns, all_round_tokens
 
 
 def evaluate(target, generated):
