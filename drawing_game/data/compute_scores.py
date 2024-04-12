@@ -147,12 +147,12 @@ def compute_scores(episode_interactions: Dict):
         print(t_index, 'Changed Cell Count', flipped_count)
 
         # request count, parsed & violated request counts
-        print(t_index, METRIC_REQUEST_COUNT,
-                            turn_request_count)
-        print(t_index, METRIC_REQUEST_COUNT_PARSED,
-                            turn_parsed_request_count)
-        print(t_index, METRIC_REQUEST_COUNT_VIOLATED,
-                            turn_violated_request_count)
+        # print(t_index, METRIC_REQUEST_COUNT,
+        #                     turn_request_count)
+        # print(t_index, METRIC_REQUEST_COUNT_PARSED,
+        #                     turn_parsed_request_count)
+        # print(t_index, METRIC_REQUEST_COUNT_VIOLATED,
+        #                     turn_violated_request_count)
 
     # Episode level logging
     if aborted:
@@ -198,7 +198,7 @@ def compute_scores(episode_interactions: Dict):
         expression_number_of_tokens = round(expression_number_of_tokens / float(number_of_turns), 4)
         print('Average Generated Expression Number of Tokens', expression_number_of_tokens)
 
-        print('All words in the round:', all_round_tokens)
+        # print('All words in the round:', all_round_tokens)
 
         # the last turn scores are also the scores for the episode
         print(METRIC_SUCCESS, 1 if f1 >= 99 else 0)
@@ -209,17 +209,18 @@ def compute_scores(episode_interactions: Dict):
         # aborted ratio
         print(METRIC_ABORTED, 0)
 
-    # request count, parsed & violated request counts
-    print(METRIC_REQUEST_COUNT, episode_request_count)
-    print(METRIC_REQUEST_COUNT_VIOLATED, episode_violated_request_count)
-    print(METRIC_REQUEST_COUNT_PARSED, episode_parsed_request_count)
+    # request count, parsed & violated request counts NOT RELEVANT TO US!
+    # print(METRIC_REQUEST_COUNT, episode_request_count)
+    # print(METRIC_REQUEST_COUNT_VIOLATED, episode_violated_request_count)
+    # print(METRIC_REQUEST_COUNT_PARSED, episode_parsed_request_count)
 
     # request success ratio
     if episode_request_count == 0:
-        print(METRIC_REQUEST_SUCCESS, 0)
+        pass
+        # print(METRIC_REQUEST_SUCCESS, 0)
     else:
         request_success_ratio = round(episode_parsed_request_count / float(episode_request_count), 4)
-        print(METRIC_REQUEST_SUCCESS, request_success_ratio)
+        # print(METRIC_REQUEST_SUCCESS, request_success_ratio)
 
     return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_of_turns, all_round_tokens
 

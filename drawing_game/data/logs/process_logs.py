@@ -284,6 +284,13 @@ def remove_punctuation(word):
     return clean_word
 
 
+def calculate_lexical_diversity(unique_words, all_words):
+    number_unique_words = len(unique_words)
+    number_all_words = len(all_words)
+    lexical_diversity = round(number_unique_words / number_all_words, 2)
+    return lexical_diversity
+
+
 # print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
 # build_interactions_file("4026_text_messages.json")
 
@@ -305,11 +312,14 @@ print("Total averaged tokens used:", all_token_length)
 print("Average number of tokens per instruction:", round(all_token_length/instructions_count, 2)) # Includes 'done'
 # print(all_words)
 flattened_words = sorted(flatten_list(all_words))
-# print(flattened_words)
+filtered_flattened_words = [remove_punctuation(word) for word in flattened_words]
+all_words = [word for word in filtered_flattened_words if word]
+# print(all_words)
+print(f"There are {len(all_words)} words in total.")
 unique_words = sorted(list(set(flattened_words)))
 # print(unique_words)
-unique_words = [remove_punctuation(word) for word in unique_words]
-unique_words = [word for word in unique_words if word]
+unique_words = [remove_punctuation(word) for word in unique_words]  # Why do I need to do this again?
+unique_words = [word for word in unique_words if word]  # And this?
 unique_words = sorted(list(set(unique_words)))
 print(f"There are {len(unique_words)} unique words:", unique_words)  # 83
 # ['1', '2', '2,3,4,and', '3', '4', '4\n3rd', '4th', '5', '5x5', 'a', 'after',
@@ -320,6 +330,7 @@ print(f"There are {len(unique_words)} unique words:", unique_words)  # 83
 # 'number', 'of', 'on', 'one', 'p', 'put', 'q', 'repeat', 'right', 'row', 'rows',
 # 'same', 'second', 'skip', 'skipping', 'square', 'squares', 't', 'the', 'then', 'third',
 # 'three', 'ts', 'two', 'type', 'typing', 'until', 'up', 'which', 'with', 'x', 'z']
+print("Lexical diversity score:", calculate_lexical_diversity(unique_words, all_words))
 average_score = calculate_average_score(all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
 all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(directory)
 unique_grids = set(all_played_grids)
