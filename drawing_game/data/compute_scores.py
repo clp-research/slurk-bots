@@ -20,7 +20,9 @@ def compute_scores(episode_interactions: Dict):
     previous_turn_grid = '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢'
     flipped_count_sum = 0
     expression_length_sum = 0
+    full_expression_count = 0
     expression_number_of_tokens = 0
+    all_round_tokens = []
     target_grid = ''
     current_turn_grid = ''
 
@@ -51,6 +53,8 @@ def compute_scores(episode_interactions: Dict):
         # Player 1 message
         player_1_message = turn[1]['action']['content']
         print(player_1_message)
+        all_tokens = player_1_message.lower().strip().split(' ')
+        all_round_tokens.append(all_tokens)
 
         # Player generates "DONE"
         match = re.match(terminate_pattern, player_1_message)
@@ -119,6 +123,7 @@ def compute_scores(episode_interactions: Dict):
         expression_length = len(player_1_message.strip())
         print(t_index, 'Generated Expression Length', expression_length)
         expression_length_sum += expression_length
+        full_expression_count += 1
 
         # Player 1 - number of tokens in the generated expression
         number_of_tokens = len(player_1_message.strip().split(' '))
@@ -193,6 +198,8 @@ def compute_scores(episode_interactions: Dict):
         expression_number_of_tokens = round(expression_number_of_tokens / float(number_of_turns), 4)
         print('Average Generated Expression Number of Tokens', expression_number_of_tokens)
 
+        print('All words in the round:', all_round_tokens)
+
         # the last turn scores are also the scores for the episode
         print(METRIC_SUCCESS, 1 if f1 >= 99 else 0)
 
@@ -214,7 +221,7 @@ def compute_scores(episode_interactions: Dict):
         request_success_ratio = round(episode_parsed_request_count / float(episode_request_count), 4)
         print(METRIC_REQUEST_SUCCESS, request_success_ratio)
 
-    return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_of_turns
+    return f1, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_of_turns, all_round_tokens, full_expression_count
 
 
 def evaluate(target, generated):

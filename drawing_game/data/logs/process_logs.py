@@ -123,25 +123,30 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
     all_rounds_scores = []
     all_flipped_count_sum = 0
     all_expression_length_sum = []
+    full_expressions_count = 0
     all_expression_token_number = 0
     all_instructions_count = 0
+    room_words = []
 
     # COMPUTE SCORES
     for index, round in enumerate(all_rounds):
         print(f"These are the scores for round {index + 1} out of {len(all_rounds)}")
         print('')
-        round_f1_scores, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_turns = compute_scores(round)
+        round_f1_scores, flipped_count_sum, expression_length_sum, expression_number_of_tokens, number_turns, round_words, full_expr_count = compute_scores(round)
         all_rounds_scores.append(round_f1_scores)
         all_flipped_count_sum += flipped_count_sum
         all_expression_length_sum.append(expression_length_sum)
         all_expression_token_number += expression_number_of_tokens
         all_instructions_count += number_turns
+        room_words.append(round_words)
+        full_expressions_count += full_expr_count
+
         print("__________")
         print('')
 
     print(f"Interactions of '{messages_jsonfile}' saved in '{output_jsonfile}'")
-    print('The main scores for this game are:', all_rounds_scores)
-    return all_rounds_scores, all_flipped_count_sum, all_expression_length_sum, all_expression_token_number, all_instructions_count
+    # print('The main scores for this game are:', all_rounds_scores)
+    return all_rounds_scores, all_flipped_count_sum, all_expression_length_sum, all_expression_token_number, all_instructions_count, room_words, full_expressions_count
 
 
 def write_to_csv(filename, instruction, grid_type):
@@ -169,15 +174,19 @@ def process_interactions(directory_path):
     all_expression_length = []
     all_token_length = 0
     all_instructions_count = 0
+    all_words = []
+    full_expresions_count = 0
     scores_dict = {}
     for file in sorted_file_names:
         messages_file = select_logs(os.path.join(ROOT, "logs", "results", file))
-        room_scores, flipped_count, expression_length, token_number_length, instructions_count = build_interactions_and_return_scores_per_room(messages_file)
+        room_scores, flipped_count, expression_length, token_number_length, instructions_count, room_words, full_exp_count = build_interactions_and_return_scores_per_room(messages_file)
         all_scores.append(room_scores)
         all_flipped_count += flipped_count
         all_expression_length.append(expression_length)
         all_token_length += token_number_length
         all_instructions_count += instructions_count
+        all_words.append(room_words)
+        full_expresions_count += full_exp_count
         scores_dict[file.split('.')[0]] = room_scores
 
     print('The scores for all rooms are:', all_scores)
@@ -185,7 +194,7 @@ def process_interactions(directory_path):
     flattened_scores = [score for instance_scores in all_scores for score in instance_scores if instance_scores]
     # Filter out None values from flattened scores (unfisnished rounds)
     filtered_scores = [score for score in flattened_scores if score is not None]
-    return sorted_file_names, filtered_scores, scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count
+    return sorted_file_names, filtered_scores, scores_dict, all_flipped_count, all_expression_length, all_token_length, all_instructions_count, all_words, full_expresions_count
 
 
 def calculate_average_score(scores_list):
@@ -208,7 +217,7 @@ def get_played_grids_and_instructions(directory):
     for file_name in all_sorted_interactions:
         file_path = os.path.join(directory,
                                  file_name)
-        print("Reading file:", file_name)
+        # print("Reading file:", file_name)
 
         # Read the file
         with open(file_path, 'r') as f:
@@ -246,11 +255,11 @@ def get_played_grids_and_instructions(directory):
                     if 'action' in action and action['action']['type'] == 'clue':
                         clue = action['action']['content']
                         # print('INSTRUCTION:', clue)
-                if clue.lower() != 'done':
-                    if grid_type == 'compact':
-                        counter_compact_instr += 1
-                    elif grid_type == 'random':
-                        counter_random_instr += 1
+                # if clue.lower() != 'done':
+                if grid_type == 'compact':
+                    counter_compact_instr += 1
+                elif grid_type == 'random':
+                    counter_random_instr += 1
                 write_to_csv(file_name, clue, grid_type)
 
             played_target_grids.append(target_grid)
@@ -270,18 +279,47 @@ def flatten_list(lst):
     return flattened
 
 
+def remove_punctuation(word):
+    clean_word = word.strip('.').strip('?').strip(',').strip('"').strip('/').strip('-')
+    return clean_word
+
+
 # print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
 # build_interactions_file("4026_text_messages.json")
 
-all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
+all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words, full_expressions_count = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
+print("Total number of turns /instructions:", instructions_count)
 print("Total flipped cell count:", round(all_flipped_count, 2))
 print("Average flipped count per turn", round(all_flipped_count/instructions_count, 2))
+print(all_expression_length)
+flattened_expr_lngt = flatten_list(all_expression_length)
+print(flattened_expr_lngt)
 all_expression_length = sum(flatten_list(all_expression_length))
-print("Total expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
-print("Average expression length per instruction:", round(all_expression_length/instructions_count, 2)) # Includes 'done'
-print("Total tokens used:", all_token_length)
+non_zero_values = [value for value in flattened_expr_lngt if value != 0]  # Exclude zeros (no expression average) to calculate final average
+print(non_zero_values)
+print("Total averaged expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
+print("Full expression count:", full_expressions_count)
+print("Average expression length per instruction:", round(all_expression_length/len(non_zero_values), 2)) # Includes 'done'
+print("Total averaged tokens used:", all_token_length)
 print("Average number of tokens per instruction:", round(all_token_length/instructions_count, 2)) # Includes 'done'
+# print(all_words)
+flattened_words = sorted(flatten_list(all_words))
+# print(flattened_words)
+unique_words = sorted(list(set(flattened_words)))
+# print(unique_words)
+unique_words = [remove_punctuation(word) for word in unique_words]
+unique_words = [word for word in unique_words if word]
+unique_words = sorted(list(set(unique_words)))
+print(f"There are {len(unique_words)} unique words:", unique_words)  # 83
+# ['1', '2', '2,3,4,and', '3', '4', '4\n3rd', '4th', '5', '5x5', 'a', 'after',
+# 'again', 'all', 'an', 'and', 'another', 'box', 'c', 'cell', 'cells', 'column',
+# 'do', 'done', 'e', 'each', 'exerpt', 'fifth', 'fill', 'first', 'firts', 'five',
+# 'four', 'fourth', 'from', 'g', 'grid', 'grid\n4th', 'grids', 'grind', 'h', 'in',
+# 'instruction', 'is', 'it', "it's", 'last', 'left', 'letter', 'middle', 'n', 'ns',
+# 'number', 'of', 'on', 'one', 'p', 'put', 'q', 'repeat', 'right', 'row', 'rows',
+# 'same', 'second', 'skip', 'skipping', 'square', 'squares', 't', 'the', 'then', 'third',
+# 'three', 'ts', 'two', 'type', 'typing', 'until', 'up', 'which', 'with', 'x', 'z']
 average_score = calculate_average_score(all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
 all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(directory)
 unique_grids = set(all_played_grids)
@@ -289,12 +327,12 @@ unique_grids = set(all_played_grids)
 print(f"The played grids are {len(all_played_grids)}")  # 16
 print(f"The unique grids are {len(unique_grids)}")  # 13
 
-print("Number of compact grid instructions:", compact_grid_instr_count)  # 19
-print("Number of random grid instructions:", random_grid_instr_count)  # 15
+print("Number of compact grid instructions:", compact_grid_instr_count)  # 19, 25 with 'done'
+print("Number of random grid instructions:", random_grid_instr_count)  # 15, 23 with 'done'
 
 # To compute this we don't care if we have full turns or not, we count all given instructions except 'done'
-print("Instructions per compact grid on average:", compact_grid_instr_count/compact_num)  # 3.8
-print("Instructions per random grid on average:", random_grid_instr_count/random_num)  # 1.875
+print("Instructions per compact grid on average:", compact_grid_instr_count/compact_num)  # 3.8, 5.0 with done
+print("Instructions per random grid on average:", random_grid_instr_count/random_num)  # 1.875, 2.875 with done
 
 
 # All the scores are:
