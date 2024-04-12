@@ -315,8 +315,9 @@ print(non_zero_values)
 print("Total averaged expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
 # print("Full expression count:", full_expressions_count)
 print("Average expression length per instruction:", round(all_expression_length/len(non_zero_values), 2)) # Includes 'done'
-print("Total averaged tokens used:", all_token_length)
-print("Average number of tokens per instruction:", round(all_token_length/instructions_count, 2)) # Includes 'done'
+print("Total averaged tokens used:", round(all_token_length, 2))
+print("Average number of tokens per turn:", round(all_token_length/len(only_played_flipped), 2)) # Includes 'done'
+print("Average number of tokens per turn in not 100% lost rounds:", round(all_token_length/len(not_lost_flipped), 2)) # Includes 'done'
 # print(all_words)
 flattened_words = sorted(flatten_list(all_words))
 filtered_flattened_words = [remove_punctuation(word) for word in flattened_words]
