@@ -2,6 +2,7 @@ import csv
 import json
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 from drawing_game.data.compute_scores import compute_scores
 
@@ -25,7 +26,7 @@ unique = [
     '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
     '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n'
 ]
-# 6 random and 7 compact
+# 8 random and 5 compact
 random = [
     '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
     '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢',
@@ -296,7 +297,7 @@ def calculate_lexical_diversity(unique_words, all_words):
 
 all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
-print("Total number of turns /instructions:", instructions_count)
+print("Total number of turns /instructions including aborted games:", instructions_count)
 print("All flipped count averages per round:", all_flipped_count)
 flattened_flipped = flatten_list(all_flipped_count)
 only_played_flipped = [value for value in flattened_flipped if value is not None]
@@ -351,7 +352,7 @@ print("Number of random grid instructions:", random_grid_instr_count)  # 15, 23 
 
 # To compute this we don't care if we have full turns or not, we count all given instructions except 'done'
 print("Instructions per compact grid on average:", compact_grid_instr_count/compact_num)  # 3.8, 5.0 with done
-print("Instructions per random grid on average:", random_grid_instr_count/random_num)  # 1.875, 2.875 with done
+print("Instructions per random grid on average:", round(random_grid_instr_count/random_num, 2)) # 1.875, 2.875 with done
 
 
 # All the scores are:
@@ -366,7 +367,7 @@ print("Instructions per random grid on average:", random_grid_instr_count/random
 # 4031: [0]]
 
 
-
+# PLOT 1: ALL HUMAN ROUNDS
 # Scores per room
 scores_per_room = {
     '4026': [0, 0, 0],
@@ -405,11 +406,56 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
 # Show plot
 plt.tight_layout()
 plt.savefig(os.path.join(ROOT, 'drawing_performance_room_.png'))
-# plt.show()
+plt.show()
 
+# PLOT 2: ALL HUMAN SCORERS AVERAGED
+
+# Calculate average scores per room
+averaged_scores_per_room = {}
+for room, room_scores in scores_per_room.items():
+    valid_scores = [score for score in room_scores if score is not None]  # Exclude None values
+    if valid_scores:
+        averaged_score = np.mean(valid_scores)
+        averaged_scores_per_room[room] = averaged_score
+    else:
+        averaged_scores_per_room[room] = None  # Assign None if no valid scores
+
+print(averaged_scores_per_room)
+
+# Plotting the scatter chart
+plt.figure(figsize=(12, 6))
+colors = ['blue', 'green', 'red', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'lime']
+markers = ['o', 's', '^', '*', 'D']  # Define markers for different types of scores
+
+for idx, (room, room_scores) in enumerate(scores_per_room.items(), start=1):
+    averaged_score = averaged_scores_per_room.get(room)  # Get averaged score for the room
+    if room_scores:  # Check if scores list is not empty
+        if averaged_score is not None:  # Check if averaged score is not None
+            plt.scatter(room, averaged_score, color=colors[idx-1], marker='o', label=f"Room {room} (Avg)")
+        else:
+            plt.scatter(room, 0, color='black', marker='x', label=f"Room {room} (None)")
+    else:
+        plt.scatter(room, 0, color='black', marker='', label=f"Room {room} (Empty)")
+
+# Setting labels and title
+plt.xlabel('Room')
+plt.ylabel('Average Score')
+plt.title('Average Human Performance per Room')
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+# Move legend outside the plot
+plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
+
+# Show plot
+plt.tight_layout()
+plt.savefig(os.path.join(ROOT, 'average_performance_room.png'))
+plt.savefig('average_performance_room.png')
+plt.show()
+
+# PLOT 3: ALL MODELS SCORES (NO HUMANS)
 
 # Generate plot to display average performance (quality score) of all agents for Drawing Game
-
 
 # Define model names and their corresponding abbreviations
 models = {
@@ -462,7 +508,9 @@ quality_scores = {
 }
 
 # Define colors for each model
-colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'blueviolet', 'gray', 'lime', 'olive', 'black']
+# colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'blueviolet', 'gray', 'lime', 'olive', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black']
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#ff6f61', '#9e9ac8', '#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3', '#ff0000', '#000000', '#00ff00', '#0000ff', '#ffff00']
+
 
 # Plotting the scatter plot
 plt.figure(figsize=(12, 10))
@@ -493,3 +541,99 @@ plt.savefig(os.path.join(ROOT, 'drawing_quality_scores_plot.png'))
 # plt.show()
 
 
+# PLOT 4: MODELS' AND HUMANS' SCORES
+
+# Define model names and their corresponding abbreviations
+models = {
+    "CodeLlama-34b--CodeLlama-34b": "CL",
+    "SUS-Chat-34B--SUS-Chat-34B": "SUS",
+    "WizardLM-13b-v1.2--WizardLM-13b-v1.2": "WL",
+    "Yi-34B-Chat-t0.0--Yi-34B-Chat-t0.0": "Yi",
+    "claude-2.1--claude-2.1": "C2.1",
+    "claude-3-haiku--claude-3-haiku": "C3H",
+    "claude-3-opus--claude-3-opus": "C3O",
+    "claude-3-sonnet--claude-3-sonnet": "C3S",
+    "gemma-7b--gemma-7b": "G7",
+    "gpt-3.5-turbo--gpt-3.5-turbo": "G3.5",
+    "gpt-4-0125--gpt-4-0125": "G4.1",
+    "gpt-4-0613--gpt-4-0613": "G4.2",
+    "gpt-4-1106--gpt-4-1106": "G4.3",
+    "mistral-large--mistral-large": "ML",
+    "mistral-medium--mistral-medium": "MM",
+    "openchat-3.5-0106--openchat-3.5-0106": "OC1",
+    "openchat-3.5-1210--openchat-3.5-1210": "OC2",
+    "openchat_3.5--openchat_3.5": "OC3",
+    "sheep-duck-llama-2--sheep-duck-llama-2": "SDL",
+    "vicuna-13b-v1.5--vicuna-13b-v1.5": "V13",
+    "Human-Human Room 4026": "4026",
+    "Human-Human Room 4027": "4027",
+    "Human-Human Room 4028": "4028",
+    "Human-Human Room 4029": "4029",
+    "Human-Human Room 4030": "4030",
+    "Human-Human Room 4031": "4031",
+    "Human-Human Room 4032": "4032",
+    "Human-Human Room 4050": "4050",
+    "Human-Human Room 4051": "4051",
+}
+
+# Quality scores for each model
+quality_scores = {
+    "CodeLlama-34b-Instruct-hf-t0.0--CodeLlama-34b-Instruct-hf-t0.0": 'n/a',
+    "SUS-Chat-34B-t0.0--SUS-Chat-34B-t0.0": 29.0,
+    "WizardLM-13b-v1.2-t0.0--WizardLM-13b-v1.2-t0.0": 'n/a',
+    "Yi-34B-Chat-t0.0--Yi-34B-Chat-t0.0": 9.07,
+    "claude-2.1-t0.0--claude-2.1-t0.0": 'n/a',
+    "claude-3-haiku-20240307-t0.0--claude-3-haiku-20240307-t0.0": 'n/a',
+    "claude-3-opus-20240229-t0.0--claude-3-opus-20240229-t0.0": 'n/a',
+    "claude-3-sonnet-20240229-t0.0--claude-3-sonnet-20240229-t0.0": 'n/a',
+    "gemma-7b-it-t0.0--gemma-7b-it-t0.0": 'n/a',
+    "gpt-3.5-turbo-0125-t0.0--gpt-3.5-turbo-0125-t0.0": 64.18,
+    "gpt-4-0125-preview-t0.0--gpt-4-0125-preview-t0.0": 99.6,
+    "gpt-4-0613-t0.0--gpt-4-0613-t0.0": 98.19,
+    "gpt-4-1106-preview-t0.0--gpt-4-1106-preview-t0.0": 94.34,
+    "mistral-large-2402-t0.0--mistral-large-2402-t0.0": 'n/a',
+    "mistral-medium-2312-t0.0--mistral-medium-2312-t0.0": 'n/a',
+    "openchat-3.5-0106-t0.0--openchat-3.5-0106-t0.0": 0.86,
+    "openchat-3.5-1210-t0.0--openchat-3.5-1210-t0.0": 3.17,
+    "openchat_3.5-t0.0--openchat_3.5-t0.0": 8.31,
+    "sheep-duck-llama-2-13b-t0.0--sheep-duck-llama-2-13b-t0.0": 'n/a',
+    "vicuna-13b-v1.5-t0.0--vicuna-13b-v1.5-t0.0": 'n/a',
+    'Human-Human Room 4026': 0.0,
+    'Human-Human Room 4027': 0.0,
+    'Human-Human Room 4028': None,
+    'Human-Human Room 4029': 'n/a',
+    'Human-Human Room 4030': 100.0,
+    'Human-Human Room 4031': 'n/a',
+    'Human-Human Room 4032': 52.0,
+    'Human-Human Room 4050': None,
+    'Human-Human Room 4051': 30.666666666666668
+}
+
+# Plotting the scatter plot
+plt.figure(figsize=(12, 10))
+for model, score, color in zip(models.keys(), quality_scores.values(), colors):
+    if score != 'n/a':
+        plt.scatter(score, model, color=color, s=100)
+        if score is not None:
+            plt.text(score + 1.5, model, models[model], fontsize=8, ha='left', va='center', color='black')
+    else:
+        plt.scatter(score, model, color='black', marker='x', s=100)
+
+# plt.axhline(y='4026', color='black', linestyle='--', linewidth=1)  # Add horizontal dotted line
+plt.xlabel('Quality Score')
+plt.ylabel('Player Pair')
+# plt.title('Quality Scores Achieved by Different Agents')
+plt.gca().invert_yaxis()  # Invert y-axis to have the highest room number at the top
+
+# Set ticks for x-axis with interval of 10 and show them
+plt.xticks(range(0, 105, 10), [str(x) for x in range(0, 105, 10)], fontsize=8)
+
+# Remove ticklines
+plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True)
+
+# Add padding to the right side of the plot
+plt.xlim(right=110)
+
+plt.tight_layout()  # Adjust layout to prevent clipping of labels
+plt.savefig(os.path.join(ROOT, 'combined_scores_drawing_plot.png'))
+plt.show()
