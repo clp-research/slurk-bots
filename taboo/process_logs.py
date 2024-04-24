@@ -1,6 +1,8 @@
 import json
+import string
 import os
 import csv
+import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
 
@@ -9,6 +11,7 @@ from compute_scores import compute_scores
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 directory = os.path.join(ROOT, "taboo", "data", "logs", "results", "first_round")
+WINNING_CLUES = os.path.join(ROOT, 'taboo', 'data', 'winning_clues.csv')
 
 
 # SELECT LOGS
@@ -85,6 +88,8 @@ def build_interactions_file(messages_jsonfile):
     all_rounds_scores = []
     all_rounds_utterance_lengths = []
     all_rounds_token_lengths = []
+    all_rounds_words = []
+    all_rounds_winning_clues = []
 
     for index, round in enumerate(all_rounds):
         print(f"These are the scores for round {index + 1} out of {len(all_rounds)}")
@@ -92,10 +97,13 @@ def build_interactions_file(messages_jsonfile):
         # for t_index, turn in enumerate(round["turns"]):
             # print(t_index, turn)
         # print(round)
-        round_score, average_utt_length, average_token_length = compute_scores(round)
+        round_score, average_utt_length, average_token_length, unique_words_round, winning_clues = compute_scores(round)
         all_rounds_scores.append(round_score)
         all_rounds_utterance_lengths.append(average_utt_length)
         all_rounds_token_lengths.append(average_token_length)
+        all_rounds_words.append(unique_words_round)
+        all_rounds_winning_clues.append(winning_clues)
+        # print(all_rounds_words)
         print("__________")
         print('')
 
@@ -103,7 +111,7 @@ def build_interactions_file(messages_jsonfile):
     print('The main scores for this game are:', all_rounds_scores)
     average_utterance_length = sum(all_rounds_utterance_lengths)/len(all_rounds_utterance_lengths)
     average_token_length = sum(all_rounds_token_lengths)/len(all_rounds_token_lengths)
-    return all_rounds_scores, average_utterance_length, average_token_length
+    return all_rounds_scores, average_utterance_length, average_token_length, all_rounds_words, all_rounds_winning_clues
 
 
 def write_to_csv(filename, clue, target_word):
@@ -129,26 +137,38 @@ def process_interactions(directory_path):
     all_files_scores = []
     all_files_utterance_length = []
     all_files_token_length = []
+    all_files_words = []
+    all_files_winning_clues = {}
     scores_dict = {}
 
     for file in sorted_file_names:
         messages_file = select_logs(os.path.join(ROOT, "taboo", "data", "logs", "results", "first_round", file))
-        room_scores, room_utterance_length, room_token_length = build_interactions_file(messages_file)
+        room_scores, room_utterance_length, room_token_length, room_words, room_winning_clues = build_interactions_file(messages_file)
+        # print(room_words)
         all_files_scores.append(room_scores)
         all_files_utterance_length.append(room_utterance_length)
         all_files_token_length.append(room_token_length)
+        all_files_words.append(room_words)
         scores_dict[file.split('.')[0]] = room_scores
+        all_files_winning_clues[file.split('.')[0]] = room_winning_clues
 
     print('The scores for all rooms are:', all_files_scores)
     # Flatten the list of lists
     flattened_scores = [score for instance_scores in all_files_scores for score in instance_scores if instance_scores]
     # Filter out None values from flattened scores
     filtered_scores = [score for score in flattened_scores if score is not None]
-    return sorted_file_names, filtered_scores, scores_dict, all_files_utterance_length, all_files_token_length
+    return sorted_file_names, filtered_scores, scores_dict, all_files_utterance_length, all_files_token_length, all_files_words, all_files_winning_clues
 
 
 def calculate_average_score(scores_list):
-    average_score = sum(scores_list) / len(scores_list)  # Average score: 36.66666666666667
+    flattened_list = []
+    [flattened_list.append(sublist) for sublist in scores_list]
+    valid_scores_list = [score for score in flattened_list if score is not None]
+    # print(valid_scores_list)
+    winning_scores= [score for score in valid_scores_list if score > 0]
+    print(winning_scores)
+    print(f"{len(winning_scores)} out of {len(valid_scores_list)} played games were won, {round(len(winning_scores)/len(valid_scores_list), 2)}%")
+    average_score = round(sum(valid_scores_list) / len(valid_scores_list), 2)  # Average score: 36.67
     print("Average score:", average_score)
     return average_score
 
@@ -195,16 +215,78 @@ def get_played_words_and_clues(directory):
     return played_target_words
 
 
+def flatten_list(lst):
+    flattened = []
+    for item in lst:
+        if isinstance(item, list):
+            flattened.extend(flatten_list(item))
+        else:
+            flattened.append(item)
+    return flattened
+
+
+def calculate_lexical_diversity(unique_words, all_words):
+    number_unique_words = len(unique_words)
+    number_all_words = len(all_words)
+    lexical_diversity = round(number_unique_words / number_all_words, 2)
+    return lexical_diversity
+
+
+def print_winning_clues_from_dict(csv_file, clues_dict):
+    all_clues_sum = 0
+    utterance_length_sum = 0
+    token_number_sum = 0
+    csv_file = WINNING_CLUES
+    file_exists = os.path.isfile(csv_file)
+    
+    with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
+        # Create a CSV writer object
+        writer = csv.writer(file)
+        # Write header if file is created newly
+        if not file_exists:
+            writer.writerow(['Room', 'Winning Clue'])
+            
+        for room in clues_dict:
+            if flatten_list(winning_clues_dict[room]):
+                print(room + ':')
+                for clue in flatten_list(winning_clues_dict[room]):
+                    print(clue)
+                    all_clues_sum += 1
+                    utterance_length_sum += len(clue.strip())
+                    token_number_sum += len(clue.strip().split())
+                    # Write instruction to CSV
+                    writer.writerow([room, clue])
+
+    print("Average winning clue length:", utterance_length_sum/all_clues_sum)
+    print("Average token number in winning clue:", token_number_sum/all_clues_sum)
+    return utterance_length_sum, token_number_sum, all_clues_sum
+
 
 # print(select_logs(os.path.join(ROOT, "taboo", "data", "logs", "2.jsonl")))
 # build_interactions_file("2.jsonl_text_messages.json", os.path.join(ROOT, "taboo", "data", "logs", "2_interactions.json"))
 
-all_sorted_room_files, all_scores, all_scores_dict, all_utterances_lengths, all_tokens_lengths = process_interactions(directory)  # The scores for all rooms are: [[33.333333333333336, 0, 0, 0], [0, 0, 0, 0, 0, 0], [None, 33.333333333333336, 100.0, 0, 0, None], [100.0, 100.0, 33.333333333333336, 100.0, 100.0, 100.0], [0, 50.0, 100.0, 100.0, None], [33.333333333333336, 0, 0, 50.0, 100.0, 100.0], [0, 50.0, 0, None, 0, 0]]print("The scores per room are:", all_scores_dict)
-average_score = calculate_average_score(all_scores)  # 36.66666666666667
-average_utterance_length = sum(all_utterances_lengths)/len(all_utterances_lengths)
-print("Average utterance length:", average_utterance_length)
-average_token_length = sum(all_tokens_lengths)/len(all_tokens_lengths)
-print("Average token length:", average_token_length)
+all_sorted_room_files, all_scores, all_scores_dict, all_utterances_lengths, all_tokens_lengths, all_words, winning_clues_dict = process_interactions(directory)  # The scores for all rooms are: [[33.333333333333336, 0, 0, 0], [0, 0, 0, 0, 0, 0], [None, 33.333333333333336, 100.0, 0, 0, None], [100.0, 100.0, 33.333333333333336, 100.0, 100.0, 100.0], [0, 50.0, 100.0, 100.0, None], [33.333333333333336, 0, 0, 50.0, 100.0, 100.0], [0, 50.0, 0, None, 0, 0]]print("The scores per room are:", all_scores_dict)
+print(all_scores_dict)
+expression_length_count, token_number_count, all_clues_counter = print_winning_clues_from_dict(WINNING_CLUES, winning_clues_dict)
+
+average_score = calculate_average_score(all_scores)  # 36.67
+print("All scores:", len(all_scores))
+number_episodes_played = len(all_scores)
+print("Number of episodes played:", number_episodes_played )  # 35
+average_utterance_length = round(sum(all_utterances_lengths)/len(all_utterances_lengths), 2)
+print("Average clue length:", average_utterance_length)  # 47.09
+average_token_length = round(sum(all_tokens_lengths)/len(all_tokens_lengths), 2)
+print("Average number of tokens in clue:", average_token_length)  # 9.52
+all_words = list(flatten_list(all_words))
+print("Number of all words used:", len(all_words))  # 490
+all_unique_words = list(set(flatten_list(all_words)))
+print("Number of unique words used:", len(all_unique_words))  # 262
+# print("All unique words used:", sorted([word for word in all_unique_words if word]))
+lexical_diversity = round(calculate_lexical_diversity(all_unique_words, all_words), 2)
+print("Lexical diversity score:", lexical_diversity)  # 0.53
+
+
+## TO PRINT CLUES AND TARGET WORDS
 all_played_words = get_played_words_and_clues(directory)
 unique_words = set(all_played_words)
 
@@ -233,6 +315,8 @@ all_words = ['cabinet', 'array', 'independently', 'sear',
 words_and_levels = {'high': ['responsibility', 'rate', 'resume', 'clear', 'provide', 'array', 'none', 'career'],
                     'medium': ['assure', 'induce', 'stimulate', 'fighter', 'obvious', 'contributor', 'quarterly', 'cabinet', 'orient',  'anymore'],
                    'low': ['transplant', 'sear', 'embroidery', 'independently', 'plaza', 'bypass', 'designation', 'seize', 'regret']}
+
+# PLOT 1: ALL HUMAN ROUNDS
 
 scores_per_room = {
     '4052': [33.33, 0, 0, 0],
@@ -274,10 +358,56 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
 # Show plot
 plt.tight_layout()
 plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'taboo_performance_room_.png'))
+# plt.show()
+
+# PLOT 2: ALL HUMAN SCORERS AVERAGED
+
+# Calculate average scores per room
+averaged_scores_per_room = {}
+for room, room_scores in scores_per_room.items():
+    valid_scores = [score for score in room_scores if score is not None]  # Exclude None values
+    if valid_scores:
+        averaged_score = round(np.mean(valid_scores), 2)
+        averaged_scores_per_room[room] = averaged_score
+    else:
+        averaged_scores_per_room[room] = None  # Assign None if no valid scores
+
+print('Averaged scores per room:', averaged_scores_per_room)
+
+# Plotting the scatter chart
+plt.figure(figsize=(12, 6))
+colors = ['blue', 'green', 'red', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'lime']
+markers = ['o', 's', '^', '*', 'D']  # Define markers for different types of scores
+
+for idx, (room, room_scores) in enumerate(scores_per_room.items(), start=1):
+    averaged_score = averaged_scores_per_room.get(room)  # Get averaged score for the room
+    if room_scores:  # Check if scores list is not empty
+        if averaged_score is not None:  # Check if averaged score is not None
+            plt.scatter(room, averaged_score, color=colors[idx-1], marker='o', label=f"Room {room} (Avg)")
+        else:
+            plt.scatter(room, 0, color='black', marker='x', label=f"Room {room} (None)")
+    else:
+        plt.scatter(room, 0, color='black', marker='', label=f"Room {room} (Empty)")
+
+# Setting labels and title
+plt.xlabel('Room')
+plt.ylabel('Average Score')
+plt.title('Average Human Performance per Room')
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+# Move legend outside the plot
+plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
+
+# Show plot
+plt.tight_layout()
+plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'taboo_average_performance_room.png'))
 plt.show()
 
-# Generate plot to display average performance (quality score) of all agents for Taboo
 
+# PLOT 3: ALL MODELS SCORES (NO HUMANS)
+
+# Generate plot to display average performance (quality score) of all agents for Taboo
 
 # Define model names and their corresponding abbreviations
 models = {
@@ -330,17 +460,23 @@ quality_scores = {
 }
 
 # Define colors for each model
-colors = [
-    'lightblue', 'lightgreen', 'yellow', 'red', 'purple',
-    'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange',
-    'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen',
-    'blueviolet', 'gray', 'lime', 'olive', 'black'
-]
+# colors = [
+#     'lightblue', 'lightgreen', 'yellow', 'red', 'purple',
+#     'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange',
+#     'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen',
+#     'blueviolet', 'gray', 'lime', 'olive', 'black'
+# ]
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#ff6f61', '#9e9ac8', '#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3', '#ff0000', '#000000', '#00ff00', '#0000ff', '#ffff00']
+
 
 # Plotting the scatter plot
 plt.figure(figsize=(12, 10))  # Adjusted figure size for better visibility
+
+scores_list = []
+
 for model, score, color in zip(models.keys(), quality_scores.values(), colors):
     if score != 'n/a':
+        scores_list.append(score)
         plt.scatter(score, model, color=color, s=100)
         plt.text(score + 1.5, model, models[model], fontsize=8, ha='left', va='center', color='black')  # Adjusted y-position for text labels
     else:
@@ -371,4 +507,102 @@ plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=Tru
 
 plt.tight_layout()  # Adjust layout to prevent clipping of labels
 plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'taboo_all_quality_scores.png'))
+# plt.show()
+
+print('Models scores list', scores_list)
+models_average_score = calculate_average_score(scores_list)
+
+
+# PLOT 4: MODELS' AND HUMANS' SCORES
+
+# Define model names and their corresponding abbreviations
+models = {
+    "CodeLlama-34b--CodeLlama-34b": "CL",
+    "SUS-Chat-34B--SUS-Chat-34B": "SUS",
+    "WizardLM-13b-v1.2--WizardLM-13b-v1.2": "WL",
+    "Yi-34B-Chat-t0.0--Yi-34B-Chat-t0.0": "Yi",
+    "claude-2.1--claude-2.1": "C2.1",
+    "claude-3-haiku--claude-3-haiku": "C3H",
+    "claude-3-opus--claude-3-opus": "C3O",
+    "claude-3-sonnet--claude-3-sonnet": "C3S",
+    "gemma-7b--gemma-7b": "G7",
+    "gpt-3.5-turbo--gpt-3.5-turbo": "G3.5",
+    "gpt-4-0125--gpt-4-0125": "G4.1",
+    "gpt-4-0613--gpt-4-0613": "G4.2",
+    "gpt-4-1106--gpt-4-1106": "G4.3",
+    "mistral-large--mistral-large": "ML",
+    "mistral-medium--mistral-medium": "MM",
+    "openchat-3.5-0106--openchat-3.5-0106": "OC1",
+    "openchat-3.5-1210--openchat-3.5-1210": "OC2",
+    "openchat_3.5--openchat_3.5": "OC3",
+    "sheep-duck-llama-2--sheep-duck-llama-2": "SDL",
+    "vicuna-13b-v1.5--vicuna-13b-v1.5": "V13",
+    "Human-Human Room 4052": "4052",
+    "Human-Human Room 4054": "4054",
+    "Human-Human Room 4055": "4055",
+    "Human-Human Room 4056": "4056",
+    "Human-Human Room 4057": "4057",
+    "Human-Human Room 4058": "4058",
+    "Human-Human Room 4059": "4059"
+}
+
+# Quality scores for each model
+quality_scores = {
+    "CodeLlama-34b-Instruct-hf-t0.0--CodeLlama-34b-Instruct-hf-t0.0": 35.37,
+    "SUS-Chat-34B-t0.0--SUS-Chat-34B-t0.0": 69.23,
+    "WizardLM-13b-v1.2-t0.0--WizardLM-13b-v1.2-t0.0": 64.29,
+    "Yi-34B-Chat-t0.0--Yi-34B-Chat-t0.0": 41.46,
+    "claude-2.1-t0.0--claude-2.1-t0.0": 0.0,
+    "claude-3-haiku-20240307-t0.0--claude-3-haiku-20240307-t0.0": 0.0,
+    "claude-3-opus-20240229-t0.0--claude-3-opus-20240229-t0.0": 0.0,
+    "claude-3-sonnet-20240229-t0.0--claude-3-sonnet-20240229-t0.0": 0.0,
+    "gemma-7b-it-t0.0--gemma-7b-it-t0.0": 'n/a',
+    "gpt-3.5-turbo-0125-t0.0--gpt-3.5-turbo-0125-t0.0": 73.17,
+    "gpt-4-0125-preview-t0.0--gpt-4-0125-preview-t0.0": 93.33,
+    "gpt-4-0613-t0.0--gpt-4-0613-t0.0": 79.81,
+    "gpt-4-1106-preview-t0.0--gpt-4-1106-preview-t0.0": 83.94,
+    "mistral-large-2402-t0.0--mistral-large-2402-t0.0": 88.89,
+    "mistral-medium-2312-t0.0--mistral-medium-2312-t0.0": 88.89,
+    "openchat-3.5-0106-t0.0--openchat-3.5-0106-t0.0": 64.1,
+    "openchat-3.5-1210-t0.0--openchat-3.5-1210-t0.0": 66.67,
+    "openchat_3.5-t0.0--openchat_3.5-t0.0": 72.97,
+    "sheep-duck-llama-2-13b-t0.0--sheep-duck-llama-2-13b-t0.0": 7.84,
+    "vicuna-13b-v1.5-t0.0--vicuna-13b-v1.5-t0.0": 60.71,
+    "4052": 8.33,
+    "4054": 0.0,
+    "4055": 33.33,
+    "4056": 88.89,
+    "4057": 62.5,
+    "4058": 47.22,
+    "4059": 10.0
+}
+
+# Plotting the scatter plot
+plt.figure(figsize=(12, 10))
+for model, score, color in zip(models.keys(), quality_scores.values(), colors):
+    if score != 'n/a':
+        plt.scatter(score, model, color=color, s=100)
+        if score is not None:
+            plt.text(score + 1.5, model, models[model], fontsize=8, ha='left', va='center', color='black')
+    else:
+        plt.scatter(score, model, color='black', marker='x', s=100)
+
+# plt.axhline(y='4026', color='black', linestyle='--', linewidth=1)  # Add horizontal dotted line
+plt.xlabel('Quality Score')
+plt.ylabel('Player Pair')
+# plt.title('Quality Scores Achieved by Different Agents')
+plt.gca().invert_yaxis()  # Invert y-axis to have the highest room number at the top
+
+# Set ticks for x-axis with interval of 10 and show them
+plt.xticks(range(0, 105, 10), [str(x) for x in range(0, 105, 10)], fontsize=8)
+
+# Remove ticklines
+plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True)
+
+# Add padding to the right side of the plot
+plt.xlim(right=110)
+plt.ylim(top=-1)  # Add paddint on the top
+
+plt.tight_layout()  # Adjust layout to prevent clipping of labels
+plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'combined_scores_taboo_plot.png'))
 plt.show()
