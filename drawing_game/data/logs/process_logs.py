@@ -406,7 +406,7 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
 # Show plot
 plt.tight_layout()
 plt.savefig(os.path.join(ROOT, 'drawing_performance_room_.png'))
-plt.show()
+# plt.show()
 
 # PLOT 2: ALL HUMAN SCORERS AVERAGED
 
@@ -415,12 +415,12 @@ averaged_scores_per_room = {}
 for room, room_scores in scores_per_room.items():
     valid_scores = [score for score in room_scores if score is not None]  # Exclude None values
     if valid_scores:
-        averaged_score = np.mean(valid_scores)
+        averaged_score = round(np.mean(valid_scores), 2)
         averaged_scores_per_room[room] = averaged_score
     else:
         averaged_scores_per_room[room] = None  # Assign None if no valid scores
 
-print(averaged_scores_per_room)
+print("Averaged scores per room:", averaged_scores_per_room)
 
 # Plotting the scatter chart
 plt.figure(figsize=(12, 6))
@@ -450,8 +450,8 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
 # Show plot
 plt.tight_layout()
 plt.savefig(os.path.join(ROOT, 'average_performance_room.png'))
-plt.savefig('average_performance_room.png')
-plt.show()
+
+# plt.show()
 
 # PLOT 3: ALL MODELS SCORES (NO HUMANS)
 
@@ -514,8 +514,12 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e3
 
 # Plotting the scatter plot
 plt.figure(figsize=(12, 10))
+
+scores_list = []
+
 for model, score, color in zip(models.keys(), quality_scores.values(), colors):
     if score != 'n/a':
+        scores_list.append(score)
         plt.scatter(score, model, color=color, s=100)
         plt.text(score + 1.5, model, models[model], fontsize=8, ha='left', va='center', color='black')
     else:
@@ -539,6 +543,9 @@ plt.xlim(right=110)
 plt.tight_layout()  # Adjust layout to prevent clipping of labels
 plt.savefig(os.path.join(ROOT, 'drawing_quality_scores_plot.png'))
 # plt.show()
+
+print('Models quality scores list:', scores_list)
+models_average_score = calculate_average_score(scores_list)
 
 
 # PLOT 4: MODELS' AND HUMANS' SCORES
