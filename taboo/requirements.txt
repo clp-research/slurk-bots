@@ -1,5 +1,6 @@
 python-engineio == 4.2.0
 python-socketio == 5.3.0
 python-socketio[client]
+nltk == 3.8.1
 Requests
 nltk== 3.8.1

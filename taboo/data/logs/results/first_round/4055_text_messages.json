@@ -1,0 +1,734 @@
+[
+    {
+        "data": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "date_created": "2024-03-20T09:08:04.503151",
+        "date_modified": null,
+        "event": "players",
+        "id": 4841885,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T09:08:25.456723",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841915,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "designation"
+        },
+        "date_created": "2024-03-20T09:08:26.524583",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4841920,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:08:26.582772",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4841921,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:08:37.523512",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841953,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "okay",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:08:37.581464",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841954,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "What's next?",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:09:23.877960",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842086,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "What's next?"
+        },
+        "date_created": "2024-03-20T09:09:24.396616",
+        "date_modified": null,
+        "event": "invalid format",
+        "id": 4842093,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T09:09:24.956100",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842096,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "stimulate"
+        },
+        "date_created": "2024-03-20T09:09:26.020718",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842099,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:09:26.078707",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842100,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:09:44.304272",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842107,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "when you rub something",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:09:44.361962",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842108,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "stroke",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:09:54.074106",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842125,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:10:48.400054",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842237,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "no, when you touch your skin to allow a better blood flow, ",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:10:48.458637",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842238,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "massage",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:10:55.902879",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842245,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:12:46.997559",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842374,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "no, the other word lol, like you are activating energy or something ",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:12:47.054600",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842375,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "stimulate",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:13:08.807157",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842407,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "stimulate"
+        },
+        "date_created": "2024-03-20T09:13:09.313549",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842413,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T09:13:14.932448",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842416,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "clear"
+        },
+        "date_created": "2024-03-20T09:13:16.027243",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842422,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:13:16.112769",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842423,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:13:37.377450",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842448,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Glass window is ??",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:13:37.434557",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842449,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "clear",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:13:44.493661",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842464,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "clear"
+        },
+        "date_created": "2024-03-20T09:13:45.002176",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4842470,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T09:13:45.618924",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842473,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "contributor"
+        },
+        "date_created": "2024-03-20T09:13:46.682261",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842476,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:13:46.739690",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842477,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:14:18.437791",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842520,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "when you play a stokvel you do what ?",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:14:18.495223",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842521,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "save",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:14:42.357584",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842545,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:15:18.248466",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842618,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "No, the money that you invest you call it what? but that money as a person ",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:15:18.339246",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842620,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "interest",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:15:49.794364",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842665,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:16:38.903392",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842733,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "What do you do to your retirement fund ?",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:16:38.961066",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842734,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "invest",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:16:55.323351",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842801,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T09:16:55.835751",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4842807,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-20T09:16:56.450817",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842810,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "none"
+        },
+        "date_created": "2024-03-20T09:16:57.517441",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842813,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:16:57.575078",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842814,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:17:32.063320",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842825,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "zero is equal to what ?",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:17:32.120600",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842826,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "nothing",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:17:38.863951",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842836,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:17:49.358082",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842855,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "the other word",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:17:49.415044",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842856,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "nought",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:18:07.017435",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842874,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:18:34.046534",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842897,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "its a four letter word ",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:18:34.103597",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842898,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "nada",
+            "from": "GM impersonated as direct-quadtree, the guesser",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:18:54.659217",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842921,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T09:18:55.167249",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4842927,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-20T09:18:55.784825",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842930,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "embroidery"
+        },
+        "date_created": "2024-03-20T09:18:56.853394",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842933,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:18:56.911174",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842934,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:20:42.895516",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843002,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process",
+            "from": "GM impersonated as animato-depot, the explainer",
+            "to": 5410
+        },
+        "date_created": "2024-03-20T09:20:42.955053",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843003,
+        "receiver_id": null,
+        "room_id": 4055,
+        "user_id": null
+    }
+]
