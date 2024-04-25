@@ -15,6 +15,76 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "fried-halftone has joined the game."
+        },
+        "date_created": "2024-03-20T09:08:31.904935",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841946,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "sugary-hockey has joined the game."
+        },
+        "date_created": "2024-03-20T09:08:32.075844",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841949,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "Are you ready? <br><button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> <button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
+        },
+        "date_created": "2024-03-20T09:08:32.112037",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841951,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Now, waiting for your partner to type 'ready'."
+        },
+        "date_created": "2024-03-20T09:08:39.208112",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841961,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Woo-Hoo! The game will begin now."
+        },
+        "date_created": "2024-03-20T09:08:41.149538",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841963,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "number": 1
         },
         "date_created": "2024-03-20T09:08:42.198873",
@@ -24,6 +94,34 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 1 of 6"
+        },
+        "date_created": "2024-03-20T09:08:42.210983",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841965,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:08:43.213242",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841966,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -48,6 +146,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'quarterly'. You cannot use the following words: monthly, weekly, daily"
+        },
+        "date_created": "2024-03-20T09:08:43.334699",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4841969,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -75,6 +187,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "instalments paid 4 times a year are..."
+        },
+        "date_created": "2024-03-20T09:09:10.655806",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842029,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "quarterly",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -86,6 +212,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "quarterly"
+        },
+        "date_created": "2024-03-20T09:09:19.500795",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842061,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -101,6 +241,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'quarterly' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:09:20.054237",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842069,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "number": 2
         },
         "date_created": "2024-03-20T09:09:20.660670",
@@ -110,6 +264,34 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 2 of 6"
+        },
+        "date_created": "2024-03-20T09:09:20.670925",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842072,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:09:21.674062",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842073,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -134,6 +316,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'rate'. You cannot use the following words: quality, estimate, ratio"
+        },
+        "date_created": "2024-03-20T09:09:21.798952",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842076,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -161,6 +357,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "interest you pay is based on a percentage, this is the interest ..."
+        },
+        "date_created": "2024-03-20T09:09:52.426880",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842119,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "rate",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -172,6 +382,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "rate"
+        },
+        "date_created": "2024-03-20T09:10:00.889823",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842143,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -187,6 +411,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'rate' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:10:01.412499",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842149,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "number": 3
         },
         "date_created": "2024-03-20T09:10:02.016524",
@@ -196,6 +434,34 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 3 of 6"
+        },
+        "date_created": "2024-03-20T09:10:02.026918",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842152,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:10:03.028782",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842153,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -220,6 +486,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'assure'. You cannot use the following words: comfort, ensure, guarantee"
+        },
+        "date_created": "2024-03-20T09:10:03.154377",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842156,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -247,6 +527,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "another term for \"I promise you\" - I ... you"
+        },
+        "date_created": "2024-03-20T09:11:10.691396",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842264,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "swear",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -258,6 +552,48 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "swear"
+        },
+        "date_created": "2024-03-20T09:11:19.516218",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842279,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'swear' was false"
+        },
+        "date_created": "2024-03-20T09:11:19.967063",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842284,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T09:11:20.468437",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842285,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -285,6 +621,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "on the right track - starts with first letter of the alphabet"
+        },
+        "date_created": "2024-03-20T09:12:11.682403",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842368,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "accept",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -296,6 +646,48 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "accept"
+        },
+        "date_created": "2024-03-20T09:12:59.028921",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842383,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2 'accept' was false"
+        },
+        "date_created": "2024-03-20T09:12:59.481320",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842388,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T09:12:59.983295",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842389,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -323,6 +715,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "I promise you confidently, you should feel certain in what I'm saying. I ... you"
+        },
+        "date_created": "2024-03-20T09:15:09.369539",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842587,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "assure",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -334,6 +740,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "assure"
+        },
+        "date_created": "2024-03-20T09:15:14.329252",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842594,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -349,6 +769,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 3: assure was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:15:14.841923",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842600,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "number": 4
         },
         "date_created": "2024-03-20T09:15:15.448538",
@@ -358,6 +792,34 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 4 of 6"
+        },
+        "date_created": "2024-03-20T09:15:15.459524",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842603,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:15:16.461938",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842604,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -382,6 +844,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'regret'. You cannot use the following words: lament, repent, remorse"
+        },
+        "date_created": "2024-03-20T09:15:16.582220",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842607,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -409,6 +885,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Term for when you wish you didn't do something"
+        },
+        "date_created": "2024-03-20T09:15:35.565650",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842635,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "regret",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -420,6 +910,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "regret"
+        },
+        "date_created": "2024-03-20T09:15:41.918648",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842642,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -435,6 +939,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'regret' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:15:42.439195",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842648,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "number": 5
         },
         "date_created": "2024-03-20T09:15:43.045360",
@@ -444,6 +962,34 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 5 of 6"
+        },
+        "date_created": "2024-03-20T09:15:43.056821",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842651,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:15:44.059461",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842652,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -468,6 +1014,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'responsibility'. You cannot use the following words: blame, obligation, reliability"
+        },
+        "date_created": "2024-03-20T09:15:44.178279",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842655,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -495,6 +1055,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "if I am accountable for something, it is my ...."
+        },
+        "date_created": "2024-03-20T09:16:00.937286",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842703,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "responsibility",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -506,6 +1080,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "responsibility"
+        },
+        "date_created": "2024-03-20T09:16:11.245823",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842710,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -521,6 +1109,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'responsibility' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:16:11.753536",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842716,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "number": 6
         },
         "date_created": "2024-03-20T09:16:12.361025",
@@ -530,6 +1132,34 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 6 of 6"
+        },
+        "date_created": "2024-03-20T09:16:12.371647",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842719,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:16:13.374876",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842720,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {
@@ -554,6 +1184,20 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'sear'. You cannot use the following words: char, dry, burn"
+        },
+        "date_created": "2024-03-20T09:16:13.495298",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842723,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
     },
     {
         "data": {},
@@ -581,6 +1225,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "when cooking a steak, you first ... it in a pan to seal the juices in"
+        },
+        "date_created": "2024-03-20T09:16:44.311806",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842751,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "sear",
             "from": "GM impersonated as fried-halftone, the guesser",
             "to": 5414
@@ -595,6 +1253,20 @@
     },
     {
         "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "sear"
+        },
+        "date_created": "2024-03-20T09:16:50.995804",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842769,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
             "content": "sear"
         },
         "date_created": "2024-03-20T09:16:51.550620",
@@ -604,5 +1276,75 @@
         "receiver_id": null,
         "room_id": 4056,
         "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'sear' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:16:51.560992",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842778,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "The experiment is over 🎉 🎉 thank you very much for your time!"
+        },
+        "date_created": "2024-03-20T09:16:52.121586",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842780,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **XN4ZES**</a>"
+        },
+        "date_created": "2024-03-20T09:16:52.139464",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842781,
+        "receiver_id": 5413,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **S3NJIH**</a>"
+        },
+        "date_created": "2024-03-20T09:16:52.189654",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842783,
+        "receiver_id": 5414,
+        "room_id": 4056,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "The room is closing, see you next time 👋"
+        },
+        "date_created": "2024-03-20T09:16:52.255366",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842785,
+        "receiver_id": null,
+        "room_id": 4056,
+        "user_id": 5379
     }
 ]

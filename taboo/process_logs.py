@@ -24,8 +24,14 @@ def select_logs(file_in):
         if log["event"] in {
             "round", "turn", "clue", "guess", "invalid format",
             "invalid clue", "correct guess", "max turns reached",
-            "target word", "difficulty level", "players"
+            "target word", "difficulty level", "players", "text_message"
         }:
+            if log["event"] == 'text_message':
+                print('From GM', log['data']['message'])
+            if log["event"] == 'clue':
+                print(log['data']['from'], log['data']['content'])
+            if log["event"] == 'guess':
+                print(log['data']['from'], log['data']['content'])
             text_messages.append(log)
 
     file_in = file_in.split('.')[0]
@@ -203,13 +209,13 @@ def get_played_words_and_clues(directory):
 
                         # Check if this target word is not already found across dictionaries within the same file
                         if target_word not in found_target_words:
-                            print("Found target word:", target_word)
+                            # print("Found target word:", target_word)
                             found_target_words.add(target_word)
                             played_target_words.append(target_word)
 
                     if 'action' in action and action['action']['type'] == 'clue':
                         clue = action['action']['content']
-                        print('CLUE:', clue)
+                        # print('CLUE:', clue)
                         write_to_csv(file_name, clue, target_word)
 
     return played_target_words
@@ -267,7 +273,7 @@ def print_winning_clues_from_dict(csv_file, clues_dict):
 
 all_sorted_room_files, all_scores, all_scores_dict, all_utterances_lengths, all_tokens_lengths, all_words, winning_clues_dict = process_interactions(directory)  # The scores for all rooms are: [[33.333333333333336, 0, 0, 0], [0, 0, 0, 0, 0, 0], [None, 33.333333333333336, 100.0, 0, 0, None], [100.0, 100.0, 33.333333333333336, 100.0, 100.0, 100.0], [0, 50.0, 100.0, 100.0, None], [33.333333333333336, 0, 0, 50.0, 100.0, 100.0], [0, 50.0, 0, None, 0, 0]]print("The scores per room are:", all_scores_dict)
 print(all_scores_dict)
-expression_length_count, token_number_count, all_clues_counter = print_winning_clues_from_dict(WINNING_CLUES, winning_clues_dict)
+# expression_length_count, token_number_count, all_clues_counter = print_winning_clues_from_dict(WINNING_CLUES, winning_clues_dict)
 
 average_score = calculate_average_score(all_scores)  # 36.67
 print("All scores:", len(all_scores))
@@ -402,7 +408,7 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Legend")
 # Show plot
 plt.tight_layout()
 plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'taboo_average_performance_room.png'))
-plt.show()
+# plt.show()
 
 
 # PLOT 3: ALL MODELS SCORES (NO HUMANS)
@@ -509,7 +515,8 @@ plt.tight_layout()  # Adjust layout to prevent clipping of labels
 plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'taboo_all_quality_scores.png'))
 # plt.show()
 
-print('Models scores list', scores_list)
+# print('Models scores list', scores_list)
+print('Models score')
 models_average_score = calculate_average_score(scores_list)
 
 
@@ -605,4 +612,4 @@ plt.ylim(top=-1)  # Add paddint on the top
 
 plt.tight_layout()  # Adjust layout to prevent clipping of labels
 plt.savefig(os.path.join(ROOT, 'taboo', 'data', 'combined_scores_taboo_plot.png'))
-plt.show()
+# plt.show()
