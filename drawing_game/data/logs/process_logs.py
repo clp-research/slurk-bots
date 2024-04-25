@@ -10,7 +10,23 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 directory = os.path.join(ROOT, "logs", "results")
 
-# The played grids are 16: ['▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢', '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢', '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n', '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q', '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢', '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢', '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢', '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n', '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q', '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢', '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n', '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢', '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n', '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n', '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n', '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N']
+# The played grids are 16: ['▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
+# '▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nA A ▢ A ▢\n▢ ▢ ▢ ▢ A\nA ▢ ▢ ▢ ▢',
+# '\nX ▢ ▢ ▢ X\nX X X X X\nX X X X X\nX X X X X\nX ▢ ▢ ▢ X\n',
+# '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q',
+# '▢ ▢ X ▢ ▢\nX ▢ ▢ ▢ ▢\n▢ ▢ ▢ X X\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ X ▢',
+# '▢ ▢ ▢ ▢ ▢\nZ Z Z ▢ Z\nZ ▢ Z ▢ Z\nZ ▢ ▢ ▢ ▢\nZ ▢ ▢ ▢ ▢',
+# '▢ ▢ ▢ ▢ P\n▢ ▢ ▢ ▢ ▢\nP ▢ ▢ ▢ P\n▢ ▢ ▢ P ▢\n▢ P ▢ ▢ ▢',
+# '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n',
+# '▢ ▢ ▢ Q ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ Q Q Q',
+# '▢ E ▢ ▢ ▢\n▢ ▢ ▢ ▢ E\n▢ E ▢ E ▢\n▢ ▢ ▢ E E\nE ▢ E ▢ ▢',
+# '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n',
+# '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
+# '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n',
+# '\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n',
+# '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
+# '▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N']
+
 unique = [
     '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
     '\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n',
@@ -26,6 +42,7 @@ unique = [
     '\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n',
     '\n▢ ▢ ▢ ▢ ▢\nC C C C C\nC C C C C\nC C C C C\nC C C C C\n'
 ]
+
 # 8 random and 5 compact
 random = [
     '▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢',
@@ -133,14 +150,14 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
     for index, round in enumerate(all_rounds):
         print(f"These are the scores for round {index + 1} out of {len(all_rounds)}")
         print('')
-        round_f1_scores, flipped_count_average, expression_length_sum, expression_number_of_tokens, number_turns, round_words = compute_scores(round)
+        round_f1_scores, flipped_count_average, expression_length_sum, expression_number_of_tokens, number_turns, round_words = compute_scores(
+            round)
         all_rounds_scores.append(round_f1_scores)
         all_flipped_count_averages.append(flipped_count_average)
         all_expression_length_sum.append(expression_length_sum)
         all_expression_token_number += expression_number_of_tokens
         all_instructions_count += number_turns
         room_words.append(round_words)
-        # full_expressions_count += full_expr_count
 
         print("__________")
         print('')
@@ -176,18 +193,18 @@ def process_interactions(directory_path):
     all_token_length = 0
     all_instructions_count = 0
     all_words = []
-    # full_expresions_count = 0
+
     scores_dict = {}
     for file in sorted_file_names:
         messages_file = select_logs(os.path.join(ROOT, "logs", "results", file))
-        room_scores, flipped_count, expression_length, token_number_length, instructions_count, room_words = build_interactions_and_return_scores_per_room(messages_file)
+        room_scores, flipped_count, expression_length, token_number_length, instructions_count, room_words = build_interactions_and_return_scores_per_room(
+            messages_file)
         all_scores.append(room_scores)
         all_flipped_count.append(flipped_count)
         all_expression_length.append(expression_length)
         all_token_length += token_number_length
         all_instructions_count += instructions_count
         all_words.append(room_words)
-        # full_expresions_count += full_exp_count
         scores_dict[file.split('.')[0]] = room_scores
 
     print('The scores for all rooms are:', all_scores)
@@ -264,8 +281,6 @@ def get_played_grids_and_instructions(directory):
                 write_to_csv(file_name, clue, grid_type)
 
             played_target_grids.append(target_grid)
-            # print(counter_compact_grids)
-            # print(counter_random_grids)
 
     return played_target_grids, counter_compact_instr, counter_random_instr, counter_compact_grids, counter_random_grids
 
@@ -295,7 +310,8 @@ def calculate_lexical_diversity(unique_words, all_words):
 # print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
 # build_interactions_file("4026_text_messages.json")
 
-all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words = process_interactions(directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
+all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words = process_interactions(
+    directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
 print("Total number of turns /instructions including aborted games:", instructions_count)
 print("All flipped count averages per round:", all_flipped_count)
@@ -304,21 +320,26 @@ only_played_flipped = [value for value in flattened_flipped if value is not None
 print(only_played_flipped)
 total_flipped_cell_count = round(sum(only_played_flipped), 2)
 print("Total flipped cell count:", total_flipped_cell_count)
-print("Average changed cells per turn in all played rounds", round(total_flipped_cell_count/len(only_played_flipped), 2))
+print("Average changed cells per turn in all played rounds",
+      round(total_flipped_cell_count / len(only_played_flipped), 2))
 not_lost_flipped = [value for value in only_played_flipped if value != 0]
-print("Average changed cells per turn in all played rounds that were not lost 100%", round(total_flipped_cell_count/len(not_lost_flipped), 2))
+print("Average changed cells per turn in all played rounds that were not lost 100%",
+      round(total_flipped_cell_count / len(not_lost_flipped), 2))
 print(all_expression_length)
 flattened_expr_lngt = flatten_list(all_expression_length)
 print(flattened_expr_lngt)
 all_expression_length = sum(flatten_list(all_expression_length))
-non_zero_values = [value for value in flattened_expr_lngt if value != 0]  # Exclude zeros (no expression average) to calculate final average
+non_zero_values = [value for value in flattened_expr_lngt if
+                   value != 0]  # Exclude zeros (no expression average) to calculate final average
 print(non_zero_values)
 print("Total averaged expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
 # print("Full expression count:", full_expressions_count)
-print("Average expression length per instruction:", round(all_expression_length/len(non_zero_values), 2)) # Includes 'done'
+print("Average expression length per instruction:",
+      round(all_expression_length / len(non_zero_values), 2))  # Includes 'done'
 print("Total averaged tokens used:", round(all_token_length, 2))
-print("Average number of tokens per turn:", round(all_token_length/len(only_played_flipped), 2)) # Includes 'done'
-print("Average number of tokens per turn in not 100% lost rounds:", round(all_token_length/len(not_lost_flipped), 2)) # Includes 'done'
+print("Average number of tokens per turn:", round(all_token_length / len(only_played_flipped), 2))  # Includes 'done'
+print("Average number of tokens per turn in not 100% lost rounds:",
+      round(all_token_length / len(not_lost_flipped), 2))  # Includes 'done'
 # print(all_words)
 flattened_words = sorted(flatten_list(all_words))
 filtered_flattened_words = [remove_punctuation(word) for word in flattened_words]
@@ -340,8 +361,10 @@ print(f"There are {len(unique_words)} unique words:", unique_words)  # 83
 # 'same', 'second', 'skip', 'skipping', 'square', 'squares', 't', 'the', 'then', 'third',
 # 'three', 'ts', 'two', 'type', 'typing', 'until', 'up', 'which', 'with', 'x', 'z']
 print("Lexical diversity score:", calculate_lexical_diversity(unique_words, all_words))
-average_score = calculate_average_score(all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
-all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(directory)
+average_score = calculate_average_score(
+    all_scores)  # 34.25 with unfinished games, 39.142857142857146 only completed games
+all_played_grids, compact_grid_instr_count, random_grid_instr_count, compact_num, random_num = get_played_grids_and_instructions(
+    directory)
 unique_grids = set(all_played_grids)
 
 print(f"The played grids are {len(all_played_grids)}")  # 16
@@ -351,21 +374,9 @@ print("Number of compact grid instructions:", compact_grid_instr_count)  # 19, 2
 print("Number of random grid instructions:", random_grid_instr_count)  # 15, 23 with 'done'
 
 # To compute this we don't care if we have full turns or not, we count all given instructions except 'done'
-print("Instructions per compact grid on average:", compact_grid_instr_count/compact_num)  # 3.8, 5.0 with done
-print("Instructions per random grid on average:", round(random_grid_instr_count/random_num, 2)) # 1.875, 2.875 with done
-
-
-# All the scores are:
-# 4026: [[0, 0, 0],
-# 4027: [0, 0],
-# 4032: [24.0, 57.0, 75.0],
-# 4029: [0],
-# 4051: [0, 21.0, 71.0],
-# 4030: [100.0, 100.0, 100.0],
-# 4050: [],
-# 4028: [],
-# 4031: [0]]
-
+print("Instructions per compact grid on average:", compact_grid_instr_count / compact_num)  # 3.8, 5.0 with done
+print("Instructions per random grid on average:",
+      round(random_grid_instr_count / random_num, 2))  # 1.875, 2.875 with done
 
 # PLOT 1: ALL HUMAN ROUNDS
 # Scores per room
@@ -389,7 +400,8 @@ markers = ['o', 's', '^', '*', 'D']  # Define markers for different types of sco
 for idx, (room, room_scores) in enumerate(scores_per_room.items(), start=1):
     for round_num, score in enumerate(room_scores, start=1):
         if score is not None:
-            plt.scatter(room, score, color=colors[idx-1], marker=markers[round_num-1], label=f"Round {round_num}, Room {room}")
+            plt.scatter(room, score, color=colors[idx - 1], marker=markers[round_num - 1],
+                        label=f"Round {round_num}, Room {room}")
         else:
             plt.scatter(room, 0, color='black', marker='x', label=f"Round {round_num}, Room {room} (None)")
 
@@ -431,7 +443,7 @@ for idx, (room, room_scores) in enumerate(scores_per_room.items(), start=1):
     averaged_score = averaged_scores_per_room.get(room)  # Get averaged score for the room
     if room_scores:  # Check if scores list is not empty
         if averaged_score is not None:  # Check if averaged score is not None
-            plt.scatter(room, averaged_score, color=colors[idx-1], marker='o', label=f"Room {room} (Avg)")
+            plt.scatter(room, averaged_score, color=colors[idx - 1], marker='o', label=f"Room {room} (Avg)")
         else:
             plt.scatter(room, 0, color='black', marker='x', label=f"Room {room} (None)")
     else:
@@ -509,8 +521,9 @@ quality_scores = {
 
 # Define colors for each model
 # colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'blueviolet', 'gray', 'lime', 'olive', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black']
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#ff6f61', '#9e9ac8', '#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3', '#ff0000', '#000000', '#00ff00', '#0000ff', '#ffff00']
-
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+          '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#ff6f61', '#9e9ac8', '#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3',
+          '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3', '#ff0000', '#000000', '#00ff00', '#0000ff', '#ffff00']
 
 # Plotting the scatter plot
 plt.figure(figsize=(12, 10))
@@ -546,7 +559,6 @@ plt.savefig(os.path.join(ROOT, 'drawing_quality_scores_plot.png'))
 
 print('Models quality scores list:', scores_list)
 models_average_score = calculate_average_score(scores_list)
-
 
 # PLOT 4: MODELS' AND HUMANS' SCORES
 
@@ -626,7 +638,6 @@ for model, score, color in zip(models.keys(), quality_scores.values(), colors):
     else:
         plt.scatter(score, model, color='black', marker='x', s=100)
 
-# plt.axhline(y='4026', color='black', linestyle='--', linewidth=1)  # Add horizontal dotted line
 plt.xlabel('Quality Score')
 plt.ylabel('Player Pair')
 # plt.title('Quality Scores Achieved by Different Agents')
