@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Slurk - Portal</title>
+</head>
+
+<body>
+
+<div class="ui padded container">
+    <div class="ui padded container">
+        <div class="ui segment" style="margin: 10px">
+            <h1 style="color: #00305E; text-align: center;">
+                Welcome to Taboo!
+            </h1>
+
+            <p style="font-size: large;">
+                Please read the following information carefully before accepting the HIT.
+                Clicking the button on the landing page will take you to a waiting room. Once another player arrives, you will both be moved to the task room where you can begin the task.
+                
+            </p>
+        </div>
+    </div>
+
+
+    <div class="ui segment" style="margin: 10px;">
+        <h2 style="color: #00305E; text-align: center;">Overview</h2>
+        <hr>
+        <span class="ui text" style="font-size: large; line-height: 1.5em">
+            <ul>
+                <li><b>One player describes to another a target word they need to guess</b> by providing instructions in English in a chat window.</li>
+                <li>The describer cannot use either the target word or certain related words in the description. The other player must use those hints by <b>making ONE-WORD guesses</b> typing on the chat area and <b>returning</b> them on every turn.</li>
+                <li>Each session includes <b>6 target words</b> (~20 minutes) with different difficulty levels (word more or less common words).</li>
+                <li>Participants who play -not necessarily win- all 6 rounds successfully <b>following the rules</b> will receive a <b>payment</b>.</li>
+                <hr>
+                <li>Participants who remain idle or disconnect for more than 5 minutes, causing the session to end, and participants who fail to understand the task after practice <b>will not be allowed to participate in further sessions</b>.</li>
+                <li><b>A session will be shut down</b> after the maximum allotted time, 5 minutes of idleness from one player, or 10 minutes in the waiting room (in the event that no partner is found).</li>
+            </ul>
+            <hr>
+            <p style="text-align: center;">
+                <strong> ⚠️ NOTE: </strong> after completing the sixth word (or end of time-out if partner does not show or finish the task), you will get a unique <strong>Prolific confirmation token</strong>. <u>Remember to copy it and paste it into Prolific in order to get your rewards.</u> Only by doing so you will get paid. ⚠️
+                <br>
+
+                ⚠️ Please disable any JavaScript blocking extension on your browser ⚠️
+            </p>
+            <hr>
+        </span>
+
+        <span class="ui text" style="font-size: large; line-height: 1.5em">
+                
+            <img src="{{ url_for('static', filename='images/coco/COCOBOTS_Assembly_Instructions_3.jpg') }}" style="width: 100%;">
+            <hr>
+        
+            <img src="{{ url_for('static', filename='images/coco/COCOBOTS_Assembly_Instructions_4.jpg') }}" style="width: 100%;">
+            <hr>
+        </span>
+    </div>
+
+        <div class="ui segment" style="margin: 10px">
+            <input id="generate" type="submit" class="ui fluid blue button" value="START" style="padding: 10px;">
+
+            <div class="ui segment" >
+                <span class="ui grey text">By entering into the chatroom you confirm your permission for your data to be logged and
+                    used for research purposes. The data that is logged is stored on a server at the University of Potsdam.
+                    Any experiment-relevant information, such as what you type in the chat is logged with timestamp information.
+                    No information that can identify you personally is logged. Please refrain from entering
+                    personal details, as well as experiment-irrelevant information in the chat and respect other users. 
+                    Please be aware that you will be paired with another anonymous participant -- as we are looking for dialogues-- 
+                    and we have no control over what they might do. Please behave courteously, and demand this from your partner as well.
+                    Responsable party:
+                    <a href="https://www.uni-potsdam.de/de/ling/index">
+                        Department of Linguistics University of Potsdam
+                    </a></span>
+            </div>
+        </div>
+</div>
+
+
+<!-- You MUST include jQuery before Fomantic -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+
+<script>
+    var server_url = "{{ server_url }}";
+    var bot =  {{ bot | tojson }};
+    $("#generate").click(function(){
+        follow_link(bot)
+    })
+</script>
+
+</body>
+</html>
