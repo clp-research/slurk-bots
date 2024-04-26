@@ -494,7 +494,7 @@ models = {
     "Human-Human": "HUM"
 }
 
-# Quality scores for each model
+# Quality scores for each model taken from clembench-runs
 quality_scores = {
     "CodeLlama-34b-Instruct-hf-t0.0--CodeLlama-34b-Instruct-hf-t0.0": 'n/a',
     "SUS-Chat-34B-t0.0--SUS-Chat-34B-t0.0": 29.0,
@@ -520,7 +520,11 @@ quality_scores = {
 }
 
 # Define colors for each model
-# colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink', 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue', 'lightseagreen', 'blueviolet', 'gray', 'lime', 'olive', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black']
+# colors = ['lightblue', 'lightgreen', 'yellow', 'red', 'purple', 'lightcoral', 'pink',
+# 'gray', 'cyan', 'magenta', 'orange', 'blue', 'green', 'brown', 'lightskyblue',
+# 'lightseagreen', 'blueviolet', 'gray', 'lime', 'olive', 'black', 'black',
+# 'black', 'black', 'black', 'black', 'black', 'black', 'black']
+
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
           '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#ff6f61', '#9e9ac8', '#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3',
           '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3', '#ff0000', '#000000', '#00ff00', '#0000ff', '#ffff00']
