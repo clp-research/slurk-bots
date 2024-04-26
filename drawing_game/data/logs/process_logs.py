@@ -132,7 +132,8 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
 
             elif log["event"] == "round":
                 all_rounds.append(round_data)  # Append round_data to all_rounds
-    all_rounds = [_round for _round in all_rounds if _round['turns']]  # Save only rounds with turns (=actually played)
+    # Save only rounds with turns (=actually played)
+    all_rounds = [_round for _round in all_rounds if _round['turns']]
     output_jsonfile = messages_jsonfile.split('_t')[0] + '_interactions.json'
     output_jsonfile = os.path.join(ROOT, "logs", "results", output_jsonfile)
     with open(output_jsonfile, "w") as outfile:
@@ -170,7 +171,6 @@ def build_interactions_and_return_scores_per_room(messages_jsonfile):
 def write_to_csv(filename, instruction, grid_type):
     # Define the CSV file name
     csv_file = os.path.join(ROOT, 'instructions_human.csv')
-    # csv_file = 'instructions_human.csv'
     # Check if the CSV file exists
     file_exists = os.path.isfile(csv_file)
     # Open the CSV file in append mode
@@ -273,7 +273,6 @@ def get_played_grids_and_instructions(directory):
                     if 'action' in action and action['action']['type'] == 'clue':
                         clue = action['action']['content']
                         # print('INSTRUCTION:', clue)
-                # if clue.lower() != 'done':
                 if grid_type == 'compact':
                     counter_compact_instr += 1
                 elif grid_type == 'random':
@@ -307,11 +306,19 @@ def calculate_lexical_diversity(unique_words, all_words):
     return lexical_diversity
 
 
-# print(select_logs(os.path.join(ROOT, "logs", "results", "4026.jsonl")))
-# build_interactions_file("4026_text_messages.json")
+(
+    all_sorted_room_files,
+    all_scores,
+    all_scores_dict,
+    all_flipped_count,
+    all_expression_length,
+    all_token_length,
+    instructions_count,
+    all_words
+) = process_interactions(directory)
 
-all_sorted_room_files, all_scores, all_scores_dict, all_flipped_count, all_expression_length, all_token_length, instructions_count, all_words = process_interactions(
-    directory)  # All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0], [100.0, 100.0, 100.0], [], [], [0]]
+# All the scores are: [[0, 0, 0], [0, 0], [24.0, 57.0, 75.0], [0], [0, 21.0, 71.0],
+# [100.0, 100.0, 100.0], [], [], [0]]
 print("The scores per room are:", all_scores_dict)
 print("Total number of turns /instructions including aborted games:", instructions_count)
 print("All flipped count averages per round:", all_flipped_count)
@@ -329,11 +336,10 @@ print(all_expression_length)
 flattened_expr_lngt = flatten_list(all_expression_length)
 print(flattened_expr_lngt)
 all_expression_length = sum(flatten_list(all_expression_length))
-non_zero_values = [value for value in flattened_expr_lngt if
-                   value != 0]  # Exclude zeros (no expression average) to calculate final average
+# Exclude zeros (no expression average) to calculate final average
+non_zero_values = [value for value in flattened_expr_lngt if value != 0]
 print(non_zero_values)
-print("Total averaged expression length:", all_expression_length)  ## 372.7166  (344,5 calculado a mano)
-# print("Full expression count:", full_expressions_count)
+print("Total averaged expression length:", all_expression_length)  # 372.7166
 print("Average expression length per instruction:",
       round(all_expression_length / len(non_zero_values), 2))  # Includes 'done'
 print("Total averaged tokens used:", round(all_token_length, 2))
@@ -348,8 +354,8 @@ all_words = [word for word in filtered_flattened_words if word]
 print(f"There are {len(all_words)} words in total.")
 unique_words = sorted(list(set(flattened_words)))
 # print(unique_words)
-unique_words = [remove_punctuation(word) for word in unique_words]  # Why do I need to do this again?
-unique_words = [word for word in unique_words if word]  # And this?
+unique_words = [remove_punctuation(word) for word in unique_words]
+unique_words = [word for word in unique_words if word]  
 unique_words = sorted(list(set(unique_words)))
 print(f"There are {len(unique_words)} unique words:", unique_words)  # 83
 # ['1', '2', '2,3,4,and', '3', '4', '4\n3rd', '4th', '5', '5x5', 'a', 'after',
