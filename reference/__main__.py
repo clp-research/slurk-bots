@@ -532,8 +532,9 @@ class ReferenceBot(TaskBot):
             room_id,
         )
         grid_instance = self.sessions[room_id].grids[0]
-        self.log_event("grid type", {"content": f"{grid_instance[-1][1]}"}, room_id)
-        self.log_event("target grid", {"content": f"{grid_instance[-2][1]}"}, room_id)
+        self.log_event("grid type", {"content": f"{grid_instance[6][1]}"}, room_id)
+        self.log_event("target grid", {"content": f"{grid_instance[7][1]}"}, room_id)
+        self.log_event("instance id", {"content": f"{grid_instance[8][1]}"}, room_id)
         self.show_items(room_id, grid_instance[:3], self.sessions[room_id].explainer)
         self.show_items(room_id, grid_instance[3:6], self.sessions[room_id].guesser)
         self.send_message_to_user(

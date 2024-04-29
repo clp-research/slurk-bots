@@ -18,6 +18,7 @@ class Dataloader(list):
             for grid in level_grids:
                 filtered_grid = [(key, preprocess(value)) for key, value in grid.items() if "grid" in key]
                 filtered_grid.append(("level", dif_level["name"]))
+                filtered_grid.append(("game id", grid["game_id"]))
                 self.append(filtered_grid)
         return
 
