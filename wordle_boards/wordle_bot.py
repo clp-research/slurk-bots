@@ -724,6 +724,12 @@ class WordleBot2(TaskBot):
                 room_id,
             )
 
+            self.log_event(
+                "instance id",
+                {"content": self.sessions[room_id].words[0]["game_id"]},
+                room_id,
+            )
+
             self.send_message_to_user(
                 STANDARD_COLOR, f"Let's start round {round_n}", room_id
             )
