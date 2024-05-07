@@ -1,0 +1,676 @@
+[
+    {
+        "data": {
+            "content": "critic"
+        },
+        "date_created": "2024-03-20T14:08:18.552036",
+        "date_modified": null,
+        "event": "bot_version",
+        "id": 4844895,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "id": 5439,
+            "name": "tangy-driver",
+            "role": "critic",
+            "status": "joined"
+        },
+        "date_created": "2024-03-20T14:08:19.075873",
+        "date_modified": null,
+        "event": "player",
+        "id": 4844900,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "id": 5438,
+            "name": "sophisticated-bay",
+            "role": "guesser",
+            "status": "joined"
+        },
+        "date_created": "2024-03-20T14:08:19.133041",
+        "date_modified": null,
+        "event": "player",
+        "id": 4844901,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T14:08:23.877704",
+        "date_modified": null,
+        "event": "round",
+        "id": 4844920,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T14:08:23.935187",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4844921,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "caper"
+        },
+        "date_created": "2024-03-20T14:08:24.219987",
+        "date_modified": null,
+        "event": "TARGET_WORD",
+        "id": 4844924,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_frequency"
+        },
+        "date_created": "2024-03-20T14:08:24.276915",
+        "date_modified": null,
+        "event": "WORD_FREQUENCY",
+        "id": 4844925,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "11"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "sandwich decoration"
+        },
+        "date_created": "2024-03-20T14:08:24.349068",
+        "date_modified": null,
+        "event": "CLUE",
+        "id": 4844928,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "caper"
+        },
+        "date_created": "2024-03-20T14:09:35.098699",
+        "date_modified": null,
+        "event": "PROPOSAL",
+        "id": 4844999,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": true
+        },
+        "date_created": "2024-03-20T14:10:00.863798",
+        "date_modified": null,
+        "event": "CRITIC_AGREEMENT",
+        "id": 4845009,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "crust"
+        },
+        "date_created": "2024-03-20T14:10:06.214632",
+        "date_modified": null,
+        "event": "CRITIC_RATIONALE",
+        "id": 4845014,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "caper"
+        },
+        "date_created": "2024-03-20T14:10:21.484984",
+        "date_modified": null,
+        "event": "GUESS",
+        "id": 4845019,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "('caper', ['green', 'green', 'green', 'green', 'green'])"
+        },
+        "date_created": "2024-03-20T14:10:21.543139",
+        "date_modified": null,
+        "event": "LETTER_FEEDBACK",
+        "id": 4845020,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "caper"
+        },
+        "date_created": "2024-03-20T14:10:23.721659",
+        "date_modified": null,
+        "event": "CORRECT_GUESS",
+        "id": 4845022,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T14:10:23.845971",
+        "date_modified": null,
+        "event": "round",
+        "id": 4845025,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T14:10:23.904289",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4845026,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "reign"
+        },
+        "date_created": "2024-03-20T14:10:24.194322",
+        "date_modified": null,
+        "event": "TARGET_WORD",
+        "id": 4845029,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_frequency"
+        },
+        "date_created": "2024-03-20T14:10:24.252601",
+        "date_modified": null,
+        "event": "WORD_FREQUENCY",
+        "id": 4845030,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "10"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "rule"
+        },
+        "date_created": "2024-03-20T14:10:24.318100",
+        "date_modified": null,
+        "event": "CLUE",
+        "id": 4845033,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "order"
+        },
+        "date_created": "2024-03-20T14:11:10.673865",
+        "date_modified": null,
+        "event": "PROPOSAL",
+        "id": 4845093,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": true
+        },
+        "date_created": "2024-03-20T14:11:16.197298",
+        "date_modified": null,
+        "event": "CRITIC_AGREEMENT",
+        "id": 4845098,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Synonym for rule"
+        },
+        "date_created": "2024-03-20T14:11:53.214179",
+        "date_modified": null,
+        "event": "CRITIC_RATIONALE",
+        "id": 4845138,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "order"
+        },
+        "date_created": "2024-03-20T14:11:57.773537",
+        "date_modified": null,
+        "event": "GUESS",
+        "id": 4845173,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "('order', ['grey', 'yellow', 'grey', 'yellow', 'yellow'])"
+        },
+        "date_created": "2024-03-20T14:11:57.831480",
+        "date_modified": null,
+        "event": "LETTER_FEEDBACK",
+        "id": 4845174,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "order"
+        },
+        "date_created": "2024-03-20T14:12:00.022238",
+        "date_modified": null,
+        "event": "FALSE_GUESS",
+        "id": 4845177,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T14:12:00.088013",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4845178,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "reign"
+        },
+        "date_created": "2024-03-20T14:12:55.400295",
+        "date_modified": null,
+        "event": "PROPOSAL",
+        "id": 4845241,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": true
+        },
+        "date_created": "2024-03-20T14:13:01.821605",
+        "date_modified": null,
+        "event": "CRITIC_AGREEMENT",
+        "id": 4845246,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "considers rule in the aspect of ruling, rather than order"
+        },
+        "date_created": "2024-03-20T14:13:18.008383",
+        "date_modified": null,
+        "event": "CRITIC_RATIONALE",
+        "id": 4845263,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "reign"
+        },
+        "date_created": "2024-03-20T14:13:27.173999",
+        "date_modified": null,
+        "event": "GUESS",
+        "id": 4845268,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "('reign', ['green', 'green', 'green', 'green', 'green'])"
+        },
+        "date_created": "2024-03-20T14:13:27.231956",
+        "date_modified": null,
+        "event": "LETTER_FEEDBACK",
+        "id": 4845269,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "reign"
+        },
+        "date_created": "2024-03-20T14:13:29.412882",
+        "date_modified": null,
+        "event": "CORRECT_GUESS",
+        "id": 4845280,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T14:13:30.531586",
+        "date_modified": null,
+        "event": "round",
+        "id": 4845283,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T14:13:30.589451",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4845284,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "field"
+        },
+        "date_created": "2024-03-20T14:13:31.009949",
+        "date_modified": null,
+        "event": "TARGET_WORD",
+        "id": 4845287,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_frequency"
+        },
+        "date_created": "2024-03-20T14:13:31.071300",
+        "date_modified": null,
+        "event": "WORD_FREQUENCY",
+        "id": 4845288,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "7"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "place to play"
+        },
+        "date_created": "2024-03-20T14:13:31.244281",
+        "date_modified": null,
+        "event": "CLUE",
+        "id": 4845292,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "beach"
+        },
+        "date_created": "2024-03-20T14:13:44.591857",
+        "date_modified": null,
+        "event": "PROPOSAL",
+        "id": 4845350,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": true
+        },
+        "date_created": "2024-03-20T14:13:48.086433",
+        "date_modified": null,
+        "event": "CRITIC_AGREEMENT",
+        "id": 4845355,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "is a place to play"
+        },
+        "date_created": "2024-03-20T14:13:56.377577",
+        "date_modified": null,
+        "event": "CRITIC_RATIONALE",
+        "id": 4845367,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "beach"
+        },
+        "date_created": "2024-03-20T14:13:59.502323",
+        "date_modified": null,
+        "event": "GUESS",
+        "id": 4845372,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "('beach', ['grey', 'yellow', 'grey', 'grey', 'grey'])"
+        },
+        "date_created": "2024-03-20T14:13:59.559667",
+        "date_modified": null,
+        "event": "LETTER_FEEDBACK",
+        "id": 4845373,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "beach"
+        },
+        "date_created": "2024-03-20T14:14:01.746727",
+        "date_modified": null,
+        "event": "FALSE_GUESS",
+        "id": 4845376,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T14:14:01.805127",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4845377,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "field"
+        },
+        "date_created": "2024-03-20T14:14:31.969967",
+        "date_modified": null,
+        "event": "PROPOSAL",
+        "id": 4845427,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": true
+        },
+        "date_created": "2024-03-20T14:14:36.641061",
+        "date_modified": null,
+        "event": "CRITIC_AGREEMENT",
+        "id": 4845432,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "the e moved places and is a place to play"
+        },
+        "date_created": "2024-03-20T14:14:48.162510",
+        "date_modified": null,
+        "event": "CRITIC_RATIONALE",
+        "id": 4845446,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "field"
+        },
+        "date_created": "2024-03-20T14:14:54.054061",
+        "date_modified": null,
+        "event": "GUESS",
+        "id": 4845454,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "('field', ['green', 'green', 'green', 'green', 'green'])"
+        },
+        "date_created": "2024-03-20T14:14:54.111688",
+        "date_modified": null,
+        "event": "LETTER_FEEDBACK",
+        "id": 4845455,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "field"
+        },
+        "date_created": "2024-03-20T14:14:56.291139",
+        "date_modified": null,
+        "event": "CORRECT_GUESS",
+        "id": 4845457,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "amt_token": "D3Y3C7",
+            "points": {
+                "history": [
+                    {
+                        "correct": 3,
+                        "warnings": 0,
+                        "wrong": 0
+                    }
+                ],
+                "score": 3
+            },
+            "receiver": 5438,
+            "status_txt": "success"
+        },
+        "date_created": "2024-03-20T14:14:56.423689",
+        "date_modified": null,
+        "event": "confirmation_log",
+        "id": 4845461,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    },
+    {
+        "data": {
+            "amt_token": "CQV51O",
+            "points": {
+                "history": [
+                    {
+                        "correct": 3,
+                        "warnings": 0,
+                        "wrong": 0
+                    }
+                ],
+                "score": 3
+            },
+            "receiver": 5439,
+            "status_txt": "success"
+        },
+        "date_created": "2024-03-20T14:14:56.488946",
+        "date_modified": null,
+        "event": "confirmation_log",
+        "id": 4845463,
+        "receiver_id": null,
+        "room_id": 4067,
+        "user_id": null
+    }
+]
