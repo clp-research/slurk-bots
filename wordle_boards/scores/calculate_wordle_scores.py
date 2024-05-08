@@ -139,3 +139,7 @@ print(calculate_human_scores(f"{ROOT}/selected_logs/critic", "critic_human_score
 
 # Calculate human score for standard version
 # print(calculate_human_scores(f"{ROOT}/selected_logs/standard", "standard_human_scores.json", critic=False))
+
+# to process_logs
+# select_logs(ROOT, "logs_wo_clue_520", "selected_logs/clue")
+
