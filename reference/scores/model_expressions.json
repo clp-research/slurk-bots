@@ -1,0 +1,80 @@
+{
+    "diagonal_grids": {
+        "11": [
+            "The target grid is the one where each row has a single empty cell, and this empty cell moves one position to the right in each subsequent row, starting from the first position in the first row to the last position in the last row."
+        ],
+        "19": [
+            "the target grid has filled cells forming a left-aligned triangle."
+        ],
+        "28": [
+            "The target grid is filled with \"X\"s diagonally from the top right to the bottom left, with each row from the top having one less \"X\" on the left compared to the previous row."
+        ],
+        "0": [
+            "The target grid has filled cells forming a diagonal line from the top right to the bottom left."
+        ]
+    },
+    "line_grids_rows": {
+        "7": [
+            "The grid with a row of filled cells in the second row from the top."
+        ],
+        "14": [
+            "The grid with a row of filled cells in the middle."
+        ],
+        "25": [
+            "The grid with all cells filled in the bottom row."
+        ]
+    },
+    "line_grids_columns": {
+        "2": [
+            "The target grid has filled cells in the first column from the left."
+        ],
+        "3": [
+            "The grid where the first column is empty and the rest are filled."
+        ],
+        "16": [
+            "The target grid has filled cells in the first two columns and the last two columns, with the third column being empty."
+        ]
+    },
+    "random_grids": {
+        "7": [
+            "The target grid is the one with a row of four filled cells at the top, a row with filled cells at the first, third and fifth positions in the third row, and a row with two filled cells at the fourth and fifth positions in the last row."
+        ],
+        "22": [
+            "The target grid has filled cells in the first, third and fifth columns of the third row, and two consecutive filled cells in the fourth and fifth columns of the fourth and fifth rows."
+        ],
+        "16": [
+            "The target grid is the one with a row of three X's in the middle of the third and fourth rows, with an additional X on the right end of these rows."
+        ],
+        "3": [
+            "The target grid is the one where the first row has filled cells in the first, second, and fifth positions, the second row has filled cells in the first and third positions, the third row has filled cells in the first and fourth positions, the fourth row has a filled cell in the third position, and the fifth row has filled cells in the second and fourth positions."
+        ]
+    },
+    "letter_grids": {
+        "22": [
+            "The target grid is the one with a filled top row and a single filled cell in the middle of the remaining rows"
+        ],
+        "16": [
+            "The target grid is the one where the second row has an \"X\" in the second and fourth positions, and the third row has an \"X\" in the third position."
+        ],
+        "1": [
+            "The grid with filled cells forming a border on the top and bottom rows, and on the first column, with an additional filled cell in the third row, second column."
+        ],
+        "3": [
+            "The target grid is the one with a filled top row, a filled first column, and the third row has three filled cells on the left."
+        ]
+    },
+    "shape_grids": {
+        "11": [
+            "The grid with an empty row in the middle."
+        ],
+        "29": [
+            "The target grid is a 5 by 5 grid with filled cells forming a border around the edges and a cross in the middle, with the cross's vertical line filled and the horizontal line having empty cells at the second and fourth positions."
+        ],
+        "2": [
+            "The grid with three filled cells forming a vertical line in the middle of each row."
+        ],
+        "18": [
+            "The target grid is the one with a single vertical line of filled cells in the middle for the first two rows, a horizontal line of filled cells in the middle row, and a full horizontal line of filled cells at the bottom."
+        ]
+    }
+}
