@@ -90,7 +90,6 @@ class Session:
         self.critic_provided = False
         self.proposal_submitted = False
         self.round_guesses_history = []
-        self.word_letters = {}
 
         self.timer = None
         # to make sure parallel processes of closing game do not interfere
@@ -710,9 +709,6 @@ class WordleBot2(TaskBot):
             self.sessions[room_id].word_to_guess = (
                 self.sessions[room_id].words[0]["target_word"].lower()
             )
-            self.sessions[room_id].word_letters = decompose(
-                self.sessions[room_id].word_to_guess
-            )
             self.log_event(
                 "TARGET_WORD",
                 {"content": self.sessions[room_id].word_to_guess},
@@ -1140,25 +1136,54 @@ def check_ready(player):
 
 
 def check_guess(guess, session):
+    """
+    Compare the guessed word with the target word
+    Return a list of tuples with the letter and the color
+
+    green - correct letter in correct position
+    yellow - correct letter in wrong position
+    red - wrong letter
+    """
+    target_word = session.word_to_guess
+
     feedback = []
-    if session.word_to_guess == guess:
+    # Check if the input word is the target word
+    if guess == target_word:
         return ["green"] * 5
-    for i in range(len(guess)):
-        if guess[i] == session.word_to_guess[i]:
-            feedback.append("green")
-        else:
-            if guess[i] in session.word_letters:
-                feedback.append("yellow")
+
+    marked_target_positions = []
+    for index in range(len(guess)):
+        letter = guess[index]
+        if letter in target_word:
+            # Check if the letter is in the correct position
+            target_index = target_word.find(letter)
+            if target_index == -1:
+                # Letter is not in the target word
+                feedback.append("red")
             else:
-                feedback.append("grey")
-    return feedback
+                while target_index in marked_target_positions:
+                    target_index = target_word.find(letter, target_index + 1)
+                    if target_index == -1:
+                        break
 
-
-def decompose(word):
-    letters = {}
-    for i in range(len(word)):
-        if word[i] in letters:
-            letters[word[i]].append(i)
+                if target_index == -1:
+                    # No more occurences of the letter in the target word
+                    feedback.append("red")
+                else:
+                    if target_index == index:
+                        # Letter is in the target word and in the correct position
+                        feedback.append("green")
+                        marked_target_positions.append(target_index)
+                    else:
+                        # Letter is in the target word but not in the correct position
+                        if guess[target_index] == letter:
+                            # There is another occurence of the letter in the guessed word
+                            feedback.append("red")
+                        else:
+                            feedback.append("yellow")
+                            marked_target_positions.append(target_index)
         else:
-            letters[word[i]] = [i]
-    return letters
+            # Letter is not in the target word
+            feedback.append("red")
+    # print(marked_target_positions)
+    return feedback

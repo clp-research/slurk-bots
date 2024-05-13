@@ -14,6 +14,9 @@ class ScoresCalculator:
             "turn scores": {},
             "episode scores": {},
             }
+        # self.agreement = np.nan
+        # self.disa
+
 
     def compute_game_specific_metrics(self,
             aborted,
@@ -36,6 +39,9 @@ class ScoresCalculator:
             repeats_guess, num_guess_repeats = cm.repeats_guess(turn_results)
 
         if use_critic:
+            # agreement = 0
+            # disagreement = 0
+
             total_yes = np.nan
             total_no = np.nan
             use_same_guess_yes = np.nan
@@ -45,6 +51,7 @@ class ScoresCalculator:
             overall_change = [np.nan]
             if change_guess_words:
                 results = cm.change_of_opinion(change_guess_words)
+                # print(results)
                 # print(results)
                 total_yes = results["total_yes"]
                 total_no = results["total_no"]
@@ -100,7 +107,26 @@ class ScoresCalculator:
                 self.scores["episode scores"]["Repetition-Guesser-On-Critic-Disagreement"] = np.nan
                 self.scores["episode scores"]["Non-Repetition-Guesser-On-Critic-Disagreement"] = np.nan
 
+                self.scores["episode scores"]["agreement_count"] \
+                    = np.nan
+                self.scores["episode scores"]["same_guess_submitted"] \
+                    = np.nan
+                self.scores["episode scores"]["guess_change"] \
+                    = np.nan
+
+
+
             else:
+                self.scores["episode scores"]["agreement_count"] \
+                    = total_yes
+                self.scores["episode scores"]["disagreement_count"] \
+                    = total_no
+
+                self.scores["episode scores"]["same_guess_submitted"] \
+                    =  use_same_guess_yes + use_same_guess_no
+                self.scores["episode scores"]["guess_change"] \
+                    = use_diff_guess_yes + use_diff_guess_no
+
                 if total_yes != 0:
 
                     self.scores["episode scores"]["Repetition-Guesser-On-Critic-Agreement"]\
@@ -108,13 +134,19 @@ class ScoresCalculator:
 
                     self.scores["episode scores"]["Non-Repetition-Guesser-On-Critic-Agreement"]\
                         = round(use_diff_guess_yes / total_yes, 2)
+
                 else:
 
 
                     self.scores["episode scores"]["Repetition-Guesser-On-Critic-Agreement"] = 0
                     self.scores["episode scores"]["Non-Repetition-Guesser-On-Critic-Agreement"] = 0
 
+                # self.scores["episode scores"]["agreement_count"] \
+                #     = 0
+
                 if total_no != 0:
+                    # disagreement += total_no
+                    # print(disagreement)
 
                     self.scores["episode scores"]["Repetition-Guesser-On-Critic-Disagreement"] \
                         =round(use_same_guess_no / total_no, 2)
@@ -125,3 +157,8 @@ class ScoresCalculator:
 
                     self.scores["episode scores"]["Repetition-Guesser-On-Critic-Disagreement"] = 0
                     self.scores["episode scores"]["Non-Repetition-Guesser-On-Critic-Disagreement"] = 0
+
+                    # self.scores["episode scores"]["disagreement_count"]\
+                    #     =  0
+
+        return

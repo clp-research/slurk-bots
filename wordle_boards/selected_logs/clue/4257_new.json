@@ -74,7 +74,7 @@
     },
     {
         "data": {
-            "content": 5
+            "content": "5"
         },
         "date_created": "2024-05-03T08:42:04.176981",
         "date_modified": null,
@@ -410,7 +410,7 @@
     },
     {
         "data": {
-            "content": 10
+            "content": "10"
         },
         "date_created": "2024-05-03T08:43:52.891452",
         "date_modified": null,
@@ -700,7 +700,7 @@
     },
     {
         "data": {
-            "content": 17
+            "content": "17"
         },
         "date_created": "2024-05-03T08:47:53.436918",
         "date_modified": null,

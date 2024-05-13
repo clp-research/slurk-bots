@@ -63,6 +63,7 @@ def calculate_scores(episode, critic):
 
             elif info["action"]["type"] == 'instance id':
                 instance_id = info["action"]["content"]
+                # print(type(instance_id))
 
             # calculate requests
             elif info["action"]["type"] == "NOT_VALID_ENGLISH_WORD":
@@ -92,6 +93,7 @@ def calculate_scores(episode, critic):
     scores["episode scores"][METRIC_ABORTED] = 0
     scores["episode scores"][METRIC_LOSE] = 1 if loss else 0
     scores["episode scores"][METRIC_SUCCESS] = 0 if loss else 1
+    # print(agr, disagr)
     return scores, word_difficulty, instance_id
 
 
@@ -107,7 +109,6 @@ def calculate_human_scores(directory, output_file, critic=False):
     for filename in os.listdir(directory):
         if filename.endswith("json"):
             room = filename[:4]
-            print(room)
             file = os.path.join(directory, filename)
             with open(file, "r") as f:
                 selected_logs = json.load(f)
@@ -116,30 +117,92 @@ def calculate_human_scores(directory, output_file, critic=False):
                 for episode_interactions in all_interactions[0]:
                     scores, word_frequency, word_id = calculate_scores(episode_interactions, critic)
                     if not unfinished_episode(scores):
+                        # print(type(word_id))
                         if word_frequency in room_scores[room]:
-                            room_scores[room][word_frequency][word_id ] = scores
+                            room_scores[room][word_frequency][word_id] = scores
                         else:
                             room_scores[room][word_frequency] = {}
                             room_scores[room][word_frequency][word_id] = scores
-    print(room_scores.keys())
+                    # else:
+                        # print(("unifinshed"))
+    # print(room_scores.keys())
     with open(output_file, 'w', encoding ='utf8') as json_file:
         json.dump(room_scores, json_file, indent=4, ensure_ascii = False)
-    return
+    return room_scores
 
+def get_model_scores(episodes, folder, output_file):
+    model_scores = {'high_frequency':{}, 'medium_frequency':{}}
+    for path, directories, files in os.walk(folder):
+        files = [os.path.join(path, file) for file in files if "scores.json" in file]
+        for f in files:
+            info = f.split("/")
+            frequency_type = info[-3]
+            instance = str(int(info[-2].split("_")[-1]) + 1)
+            # instance = str(int(info[-2].split("_")[-1]))
+            if 'high_frequency' in frequency_type:
+                frequency = 'high_frequency'
+            elif 'medium_frequency' in frequency_type:
+                frequency = 'medium_frequency'
+            if instance in episodes[frequency]:
+                with open(f, "r") as file:
+                    scores = json.load(file)
+                    model_scores[frequency][instance] = scores
+    # print(model_scores["high_frequency"].keys())
+    with open(output_file, 'w', encoding ='utf8') as json_file:
+        json.dump(model_scores, json_file, indent=4, ensure_ascii = False)
+
+    return model_scores
+
+def get_instances(scores):
+    episode_instances = {}
+    for room, grid_types in scores.items():
+        for grid, instances in grid_types.items():
+            # print(instances)
+            if grid in episode_instances:
+                new_inst = [
+                    inst for inst in instances if inst not in episode_instances[grid]
+                ]
+                # print(new_inst)
+                episode_instances[grid].extend(new_inst)
+                # print(episode_instances[grid])
+            else:
+                episode_instances[grid] = [inst for inst in instances]
+    return episode_instances
+
+# ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# critic_directory = f"{ROOT}/scores/gpt-4-1106-preview-t0.0--gpt-4-1106-preview-t0.0/wordle_withcritic/"
+# instances_critic = {'medium_frequency': ['4', '19', '11', '10', '6', '15', '16', '18'], 'high_frequency': ['5', '7', '4']}
+#
+#
+# selected_model_scores = get_model_scores(instances_critic, critic_directory)
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Root = '....slurk-bots/wordle_boards"
 
 # Calculate human score for critic version
-print(calculate_human_scores(f"{ROOT}/selected_logs/critic", "critic_human_scores.json", critic=True))
+# critic_human =  calculate_human_scores(f"{ROOT}/selected_logs/critic", "critic_human_scores.json", critic=True)
+# critic_instances = get_instances(critic_human)
+# print(critic_instances)
+# get_model_scores(critic_instances,f"{ROOT}/scores/gpt-4-1106-preview-t0.0--gpt-4-1106-preview-t0.0/wordle_withcritic/",
+#                        f"{ROOT}/scores/critic_model_scores.json")
 
+#
 # Calculate human score for clue version
-# print(calculate_human_scores(f"{ROOT}/selected_logs/clue", "clue_human_scores.json", critic=False))
+# clue_human = calculate_human_scores(f"{ROOT}/selected_logs/clue", "clue_human_scores.json", critic=False)
+# clue_instances = get_instances(clue_human)
+# # print(len(clue_instances["medium_frequency"]))
+# get_model_scores(clue_instances,f"{ROOT}/scores/claude-3-opus-20240229-t0.0--claude-3-opus-20240229-t0.0/wordle_withclue/",
+#                        f"{ROOT}/scores/clue_model_scores.json")
+#
+# # Calculate human score for standard version
+# standard_human = calculate_human_scores(f"{ROOT}/selected_logs/standard", "standard_human_scores.json", critic=False)
+# standard_instances = get_instances(standard_human)
+# get_model_scores(standard_instances ,f"{ROOT}/scores/gpt-4-0125-preview-t0.0--gpt-4-0125-preview-t0.0/wordle/",
+#                        f"{ROOT}/scores/standard_model_scores.json")
 
-# Calculate human score for standard version
-# print(calculate_human_scores(f"{ROOT}/selected_logs/standard", "standard_human_scores.json", critic=False))
-
-# to process_logs
-# select_logs(ROOT, "logs_wo_clue_520", "selected_logs/clue")
+#
+# # to process_logs
+# # select_logs(ROOT, "logs_wo_clue_520", "selected_logs/clue")
 
