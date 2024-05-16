@@ -1,6 +1,9 @@
 import json
 import os
 
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Root = '....slurk-bots/reference"
+
 LOGS_FOR_SCORES = [
     "clue",
     "guess",
@@ -101,3 +104,6 @@ def update_all_rounds(curr_round, all_rounds):
     if len(curr_round["turns"]) != 0:
         all_rounds.append(curr_round)
     return all_rounds
+
+# to process_logs
+# select_logs(ROOT, "logs_ref_509", "selected_logs/reference")

@@ -1,4 +1,3 @@
-# data from https://allisonhorst.github.io/palmerpenguins/
 
 import matplotlib.pyplot as plt
 import os
@@ -45,14 +44,14 @@ def create_plot(model_results, human_resutls, y_label, model_name, lim, dir="plo
     return "plot saved in f'{y_label}_reference.png"
 
 
-with open(os.path.join("human_scores.json"), "r") as f:
-    human_scores = json.load(f)
-
-with open(os.path.join("model_scores.json"), "r") as f:
-    model_scores = json.load(f)
-
 
 if __name__ == "__main__":
+    with open(os.path.join("human_scores.json"), "r") as f:
+        human_scores = json.load(f)
+
+    with open(os.path.join("model_scores.json"), "r") as f:
+        model_scores = json.load(f)
+
     model_length = compute_model_average_scores(
         model_scores, "Average Generated Expression Length"
     )

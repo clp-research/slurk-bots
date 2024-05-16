@@ -27,11 +27,9 @@ def compute_scores(episode_interactions) -> None:
             action = event["action"]
 
             if action["type"] == "grid type":
-                # difficulty =  action["content"]
                 all_scores["grid type"] = action["content"]
 
             if action["type"] == "instance id":
-                # difficulty =  action["content"]
                 all_scores["instance id"] = action["content"]
 
             if action["type"] == "guess":
@@ -64,7 +62,6 @@ def compute_scores(episode_interactions) -> None:
             if aborted:
                 turn_scores["Generated Expression Length"] = 0
                 turn_scores["Generated Expression Number of Tokens"] = 0
-                # turn_scores[METRIC_SUCCESS] = 0
                 turn_scores[METRIC_LOSE] = 0
                 turn_scores[METRIC_ABORTED] = 1
 

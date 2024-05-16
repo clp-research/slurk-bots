@@ -92,14 +92,11 @@ def compute_average_scores(raw_scores, score_name, per_grid_type=True):
     else:
         scores_per_room = {}
         for room, grid_types in raw_scores.items():
-            room_scores = []
-            room_scores.append(
-                [
-                    value["episode_scores"][score_name]
-                    for inst_id in grid_types.values()
-                    for value in inst_id.values()
-                ]
-            )
+            room_scores = [[
+                value["episode_scores"][score_name]
+                for inst_id in grid_types.values()
+                for value in inst_id.values()
+            ]]
             scores_per_room[room] = round(np.mean(room_scores), 2)
         return f"{score_name}: {scores_per_room}"
 
@@ -174,8 +171,6 @@ def compute_main_score(raw_scores, human=True):
 if __name__ == "__main__":
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # root = ".../slurk-bots/reference"
-
-    # select_logs(ROOT, "logs_ref_509", "selected_logs/reference")
 
     logs_folder = f"{ROOT}/selected_logs/reference"
     model_folder = f"{ROOT}/scores/gpt-4-0613-t0.0--gpt-4-0613-t0.0/referencegame"

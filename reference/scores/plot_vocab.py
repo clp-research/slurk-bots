@@ -15,7 +15,6 @@ def plot_most_common_words(word_frequencies, file_name, dir="plots"):
     plt.barh(range(len(words)), frequencies, color="skyblue")
     plt.xlabel("Frequency")
     plt.ylabel("Words")
-    # plt.title('Word Frequency')
     plt.yticks(range(len(words)), words)  # Use words as y-tick labels
 
     plt.xlim(0, 38)
