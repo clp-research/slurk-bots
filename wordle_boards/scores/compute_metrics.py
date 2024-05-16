@@ -65,11 +65,9 @@ class ComputeMetrics:
         use_same_guess_no = 0
         use_diff_guess_no = 0
         overall_change = []
-        # print(records)
         for guesses in records:
             guess, guess_mod, critic_agreement = guesses
             if guess != guess_mod:
-                # print(guess, guess_mod)
                 overall_change.append(1)
                 if critic_agreement == True:
                     total_yes += 1
@@ -79,7 +77,6 @@ class ComputeMetrics:
                     use_diff_guess_no += 1
 
             else:
-                # print(guess, guess_mod)
                 overall_change.append(0)
                 if critic_agreement == True:
                     total_yes += 1
@@ -106,7 +103,6 @@ class ComputeMetrics:
         """
 
         feedback_list = [record[1] for record in records]
-        # print(feedback_list)
         score_list = []
 
         for feedback in feedback_list:
@@ -138,9 +134,7 @@ class ComputeMetrics:
         for guesses in zip(feedback, feedback[1:]):
             guess1, guess2 = guesses
             guess1_dict, _ = self.extract_words_by_color_code(guess1)
-            # print(guess1_dict, _ )
             _, guess2_list = self.extract_words_by_color_code(guess2)
-            # print(_, guess2_list)
             guess1_not_use = []
             guess1_use = []
             guess1_change = []
@@ -168,12 +162,10 @@ class ComputeMetrics:
 
             # TODO: Do I need to penalize position non-change?
             result = len(set(guess1_change) & set(guess2_list))
-            # print(set(guess1_change), set(guess2_list))
             if result:
                 # Increase score by 10 for each yellow letter present in
                 # next guess
                 score += result * 10
-            # print(score)
             score_list.append(score)
         return score_list
 
@@ -184,11 +176,8 @@ class ComputeMetrics:
          ['sneak', 's<green> n<yellow> e<red> a<red> k<green>']
         """
         guesses_list = [record[0] for record in records]
-        # print(guesses_list)
         repeats = int(len(guesses_list) != len(set(guesses_list)))
-        # print(f"Repeats: {repeats}")
         num_of_repeats = len(guesses_list) - len(set(guesses_list))
-        # print(f"Repeats_number {num_of_repeats}")
         return repeats, num_of_repeats
 
     def extract_words_by_color_code(self, guess_word):
@@ -197,11 +186,8 @@ class ComputeMetrics:
         for i in range(len(guess_word[0])):
             letter = guess_word[0][i]
             color_code = guess_word[1][i]
-
             letters_list.append(letter)
-            # print(color_code)
             if color_code not in color_lable_dict:
                 color_lable_dict[color_code] = []
             color_lable_dict[color_code].append(letter)
-        # print(color_lable_dict, letters_list)
         return color_lable_dict, letters_list
