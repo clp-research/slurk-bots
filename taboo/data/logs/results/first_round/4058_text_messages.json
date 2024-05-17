@@ -1,0 +1,1792 @@
+[
+    {
+        "data": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "date_created": "2024-03-20T10:09:55.490123",
+        "date_modified": null,
+        "event": "players",
+        "id": 4843280,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "Are you ready? <br><button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> <button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
+        },
+        "date_created": "2024-03-20T10:09:55.733062",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843285,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Now, waiting for your partner to type 'ready'."
+        },
+        "date_created": "2024-03-20T10:09:58.346391",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843287,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Woo-Hoo! The game will begin now."
+        },
+        "date_created": "2024-03-20T10:09:59.520479",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843289,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T10:10:00.568974",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843290,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 1 of 6"
+        },
+        "date_created": "2024-03-20T10:10:00.581099",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843291,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T10:10:01.583360",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843292,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "resume"
+        },
+        "date_created": "2024-03-20T10:10:01.641177",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843293,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T10:10:01.698773",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843294,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'resume'. You cannot use the following words: continue, summary, restart"
+        },
+        "date_created": "2024-03-20T10:10:01.710438",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843295,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:10:10.158785",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843301,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "to start again",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:10:10.216183",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843302,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "to start again"
+        },
+        "date_created": "2024-03-20T10:10:10.227581",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843303,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "restart",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:10:28.565329",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843309,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "restart"
+        },
+        "date_created": "2024-03-20T10:10:28.578589",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843310,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'restart' was false"
+        },
+        "date_created": "2024-03-20T10:10:29.022489",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843315,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:10:29.524695",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843316,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:11:00.362797",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843326,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "very similar - to begin again",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:11:00.419516",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843327,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "very similar - to begin again"
+        },
+        "date_created": "2024-03-20T10:11:00.429872",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843328,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "renew",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:11:41.047623",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843334,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "renew"
+        },
+        "date_created": "2024-03-20T10:11:41.059705",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843335,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2 'renew' was false"
+        },
+        "date_created": "2024-03-20T10:11:41.509537",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843340,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:11:42.011692",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843341,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:12:06.107895",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843351,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "it is also a word used to describe a CV",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:12:06.165325",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843352,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "it is also a word used to describe a CV"
+        },
+        "date_created": "2024-03-20T10:12:06.176832",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843353,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "resume",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:12:11.279346",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843359,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "resume"
+        },
+        "date_created": "2024-03-20T10:12:11.290317",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843360,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "resume"
+        },
+        "date_created": "2024-03-20T10:12:11.788309",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843365,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 3: resume was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T10:12:11.798616",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843366,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T10:12:12.404395",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843368,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 2 of 6"
+        },
+        "date_created": "2024-03-20T10:12:12.414920",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843369,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T10:12:13.417252",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843370,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "anymore"
+        },
+        "date_created": "2024-03-20T10:12:13.467685",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843371,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T10:12:13.525474",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843372,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'anymore'. You cannot use the following words: now, currently, today"
+        },
+        "date_created": "2024-03-20T10:12:13.537266",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843373,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:13:07.379356",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843383,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "to add on/extend to - usually related to time",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:13:07.436333",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843384,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "to add on/extend to - usually related to time"
+        },
+        "date_created": "2024-03-20T10:13:07.447649",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843385,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "prolong",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:13:34.882533",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843391,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "prolong"
+        },
+        "date_created": "2024-03-20T10:13:34.893792",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843392,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'prolong' was false"
+        },
+        "date_created": "2024-03-20T10:13:35.345982",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843397,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:13:35.847199",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843398,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:14:34.471364",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843410,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "ok maybe not related to time - think to make longer - usually associated with a negative",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:14:34.528837",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843411,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "ok maybe not related to time - think to make longer - usually associated with a negative"
+        },
+        "date_created": "2024-03-20T10:14:34.539929",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843412,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "lengthen",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:15:09.616269",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843418,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "lengthen"
+        },
+        "date_created": "2024-03-20T10:15:09.628360",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843419,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2 'lengthen' was false"
+        },
+        "date_created": "2024-03-20T10:15:10.080050",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843424,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:15:10.582236",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843425,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:16:20.785275",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843435,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:16:20.842305",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843436,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional"
+        },
+        "date_created": "2024-03-20T10:16:20.854383",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843437,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "increase",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:18:26.611159",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843449,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "increase"
+        },
+        "date_created": "2024-03-20T10:18:26.622143",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843450,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T10:18:27.125941",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4843455,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "3 guesses have been already used. You lost this round."
+        },
+        "date_created": "2024-03-20T10:18:27.136503",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843456,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T10:18:27.741321",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843458,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 3 of 6"
+        },
+        "date_created": "2024-03-20T10:18:27.752291",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843459,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T10:18:28.755430",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843460,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "regret"
+        },
+        "date_created": "2024-03-20T10:18:28.806150",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843461,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T10:18:28.863310",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843462,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'regret'. You cannot use the following words: lament, repent, remorse"
+        },
+        "date_created": "2024-03-20T10:18:28.875380",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843463,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:19:12.103617",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843473,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "the feeling that you failed and if you had the chance you would redo it",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:19:12.160270",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843474,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "the feeling that you failed and if you had the chance you would redo it"
+        },
+        "date_created": "2024-03-20T10:19:12.170828",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843475,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "repeat",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:21:14.219325",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843481,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "repeat"
+        },
+        "date_created": "2024-03-20T10:21:14.230656",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843482,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'repeat' was false"
+        },
+        "date_created": "2024-03-20T10:21:14.688045",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843487,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:21:15.189910",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843488,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:21:37.058343",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843498,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "it's a more melancholic version",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:21:37.115266",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843499,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "it's a more melancholic version"
+        },
+        "date_created": "2024-03-20T10:21:37.126661",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843500,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "rethink",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:23:52.505372",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843585,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "rethink"
+        },
+        "date_created": "2024-03-20T10:23:52.517268",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843586,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2 'rethink' was false"
+        },
+        "date_created": "2024-03-20T10:23:52.967117",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843591,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:23:53.468918",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843592,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:24:07.987505",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843610,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "you don't want to live life with these",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:24:08.045663",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843611,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "you don't want to live life with these"
+        },
+        "date_created": "2024-03-20T10:24:08.057365",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843612,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "setback",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:27:10.909423",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843724,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "setback"
+        },
+        "date_created": "2024-03-20T10:27:10.921063",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843725,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T10:27:11.419250",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4843730,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "3 guesses have been already used. You lost this round."
+        },
+        "date_created": "2024-03-20T10:27:11.429511",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843731,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T10:27:12.036459",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843733,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 4 of 6"
+        },
+        "date_created": "2024-03-20T10:27:12.047296",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843734,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T10:27:13.050569",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843735,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "orient"
+        },
+        "date_created": "2024-03-20T10:27:13.103754",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843736,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T10:27:13.161558",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843737,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'orient'. You cannot use the following words: introduce, educate, familiarize"
+        },
+        "date_created": "2024-03-20T10:27:13.172854",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843738,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:28:06.849522",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843756,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "align something/ or countries associated with East Asia",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:28:06.906576",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843757,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "align something/ or countries associated with East Asia"
+        },
+        "date_created": "2024-03-20T10:28:06.917825",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843758,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "parallel",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:30:34.219401",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843821,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "parallel"
+        },
+        "date_created": "2024-03-20T10:30:34.230452",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843822,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'parallel' was false"
+        },
+        "date_created": "2024-03-20T10:30:34.683918",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843827,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T10:30:35.186646",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843828,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:31:03.603476",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843838,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "countries associated with East Asia - also the name of an express train",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:31:03.660595",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843839,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "countries associated with East Asia - also the name of an express train"
+        },
+        "date_created": "2024-03-20T10:31:03.670865",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843840,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "Orient",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:31:12.849365",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843863,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Orient"
+        },
+        "date_created": "2024-03-20T10:31:12.860249",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843864,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "Orient"
+        },
+        "date_created": "2024-03-20T10:31:13.360948",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843869,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2: 'orient' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T10:31:13.373265",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843870,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-20T10:31:13.976369",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843872,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 5 of 6"
+        },
+        "date_created": "2024-03-20T10:31:13.986842",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843873,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T10:31:14.988296",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843874,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "transplant"
+        },
+        "date_created": "2024-03-20T10:31:15.043820",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843875,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T10:31:15.101912",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843876,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'transplant'. You cannot use the following words: relocate, transport, drive"
+        },
+        "date_created": "2024-03-20T10:31:15.112534",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843877,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:32:14.148140",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843912,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "to surgically replace an organ in the body",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:32:14.205993",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843913,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "to surgically replace an organ in the body"
+        },
+        "date_created": "2024-03-20T10:32:14.216618",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843914,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "transplant",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:32:35.725629",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843920,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "transplant"
+        },
+        "date_created": "2024-03-20T10:32:35.736360",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843921,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "transplant"
+        },
+        "date_created": "2024-03-20T10:32:36.228453",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843926,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'transplant' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T10:32:36.239063",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843927,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-20T10:32:36.844490",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843929,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 6 of 6"
+        },
+        "date_created": "2024-03-20T10:32:36.855391",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843930,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T10:32:37.858501",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843931,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "career"
+        },
+        "date_created": "2024-03-20T10:32:37.906892",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843932,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T10:32:37.964697",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843933,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'career'. You cannot use the following words: practice, living, race"
+        },
+        "date_created": "2024-03-20T10:32:37.977137",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843934,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T10:32:49.433951",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843944,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "another name for you job in the long term",
+            "from": "GM impersonated as global-cache, the explainer",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:32:49.491338",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843945,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "another name for you job in the long term"
+        },
+        "date_created": "2024-03-20T10:32:49.502087",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843946,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "career",
+            "from": "GM impersonated as light-executive, the guesser",
+            "to": 5417
+        },
+        "date_created": "2024-03-20T10:32:56.587678",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843960,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "career"
+        },
+        "date_created": "2024-03-20T10:32:56.599541",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843961,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "career"
+        },
+        "date_created": "2024-03-20T10:32:57.101217",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843966,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'career' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T10:32:57.111837",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843967,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "The experiment is over 🎉 🎉 thank you very much for your time!"
+        },
+        "date_created": "2024-03-20T10:32:57.679614",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843969,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **RO6ZAD**</a>"
+        },
+        "date_created": "2024-03-20T10:32:57.701317",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843970,
+        "receiver_id": 5417,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **WQF7K7**</a>"
+        },
+        "date_created": "2024-03-20T10:32:57.756574",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843972,
+        "receiver_id": 5418,
+        "room_id": 4058,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "The room is closing, see you next time 👋"
+        },
+        "date_created": "2024-03-20T10:32:57.817364",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843974,
+        "receiver_id": null,
+        "room_id": 4058,
+        "user_id": 5379
+    }
+]

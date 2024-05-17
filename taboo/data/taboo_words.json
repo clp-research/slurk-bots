@@ -1,12 +1,152 @@
 {
-  "Wine": [
-    "drink",
-    "red",
-    "white",
-    "adult"
-  ],
-  "Yogurt": [
-    "sweet",
-    "dessert"
-  ]
+    "klein": [
+        "small",
+        "little",
+        "short"
+    ],
+    "atmospheric": [
+        "atmosphere",
+        "ambient",
+        "evocative"
+    ],
+    "bloody": [
+        "blood",
+        "rare",
+        "bleeding"
+    ],
+    "colonial": [
+        "colony",
+        "cologne",
+        "settlement"
+    ],
+    "diy": [
+        "home",
+        "yourself",
+        "do"
+    ],
+    "levy": [
+        "raise",
+        "charge",
+        "gather"
+    ],
+    "bypass": [
+        "circumvent",
+        "around",
+        "pass"
+    ],
+    "expedition": [
+        "journey",
+        "discovery",
+        "exploration"
+    ],
+    "rarely": [
+        "rare",
+        "scarce",
+        "seldom"
+    ],
+    "autograph": [
+        "author",
+        "pencil",
+        "signature"
+    ],
+    "contributor": [
+        "contribute",
+        "employee",
+        "participant"
+    ],
+    "spice": [
+        "food",
+        "hot",
+        "condiment"
+    ],
+    "subsidiary": [
+        "incidental",
+        "circumstantial",
+        "substantial"
+    ],
+    "edinburgh": [
+        "scotland",
+        "city",
+        "capital"
+    ],
+    "plaza": [
+        "square",
+        "space",
+        "piazza"
+    ],
+    "athlete": [
+        "sports",
+        "olympic",
+        "athletic"
+    ],
+    "anymore": [
+        "any",
+        "more",
+        "some"
+    ],
+    "cabinet": [
+        "cupboard",
+        "wardrobe",
+        "locker"
+    ],
+    "czech": [
+        "country",
+        "republic",
+        "language"
+    ],
+    "mesh": [
+        "entangle",
+        "net",
+        "intertwine"
+    ],
+    "israel": [
+        "country",
+        "tel aviv",
+        "jew"
+    ],
+    "digital": [
+        "analog",
+        "computer",
+        "digit"
+    ],
+    "vol": [
+        "volume",
+        "sound",
+        "audio"
+    ],
+    "provision": [
+        "commission",
+        "brokerage",
+        "money"
+    ],
+    "msn": [
+        "microsoft",
+        "network",
+        "serial"
+    ],
+    "street": [
+        "road",
+        "asphalt",
+        "drive"
+    ],
+    "identity": [
+        "equality",
+        "id",
+        "person"
+    ],
+    "power": [
+        "plant",
+        "electricity",
+        "physics"
+    ],
+    "skin": [
+        "animal",
+        "leather",
+        "human"
+    ],
+    "degree": [
+        "circle",
+        "qualification",
+        "measure"
+    ]
 }

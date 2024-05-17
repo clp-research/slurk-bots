@@ -1,0 +1,82 @@
+{
+    "line_grids_rows": {
+        "7": [
+            "Second row"
+        ],
+        "14": [
+            "only the middle is filled running horizontal "
+        ],
+        "25": [
+            "X only in the lower row",
+            "the grid with the last row filled"
+        ]
+    },
+    "letter_grids": {
+        "22": [
+            "T"
+        ],
+        "16": [
+            "fisrt row 1 and 5 filled, 2nd row 1 2 4 and 5 filled, 3rd row 1 3 and 5 filled, 4th row 1 and 5 filled, 5th row 1 and 5 filled"
+        ],
+        "1": [
+            "the letter E"
+        ],
+        "3": [
+            "the grid that has an F inside"
+        ]
+    },
+    "shape_grids": {
+        "11": [
+            "corners"
+        ],
+        "29": [
+            "first row filled, 2nd 1 3 and 5 filled, 3rd same like 2nd, 4th same like 2nd. 5th filled all"
+        ],
+        "2": [
+            "3 columns of X in the middle,"
+        ],
+        "18": [
+            "the grid that has a sort of pyramid with X"
+        ]
+    },
+    "diagonal_grids": {
+        "11": [
+            "diagonal"
+        ],
+        "19": [
+            "going up to the right half way full"
+        ],
+        "28": [
+            "stairs but with all the top half of the grid filled with X"
+        ],
+        "0": [
+            "the grid with a line that goes to bottom-left to the top-right"
+        ]
+    },
+    "line_grids_columns": {
+        "2": [
+            "left",
+            "the grid with the first column full of X"
+        ],
+        "3": [
+            "4th row down filled completely "
+        ],
+        "16": [
+            "X everywhere but the middle column"
+        ]
+    },
+    "random_grids": {
+        "7": [
+            "4 on top"
+        ],
+        "22": [
+            "first row 1 and 3 filled, 2nd row 2 filled, 3rd row 1 3 and 4 filled, 4th row 3 and 4 filled 5th row 3 and 4 filled"
+        ],
+        "16": [
+            "two mountains, one with a tunnel"
+        ],
+        "3": [
+            "the grid with the top-left angle full of x"
+        ]
+    }
+}

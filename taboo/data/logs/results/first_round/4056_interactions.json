@@ -1,0 +1,342 @@
+[
+    {
+        "players": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:08:43.265450",
+                    "action": {
+                        "type": "target word",
+                        "content": "quarterly"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:10.645132",
+                    "action": {
+                        "type": "clue",
+                        "content": "instalments paid 4 times a year are..."
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:19.488402",
+                    "action": {
+                        "type": "guess",
+                        "content": "quarterly"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:20.044058",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "quarterly"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:09:21.728172",
+                    "action": {
+                        "type": "target word",
+                        "content": "rate"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:52.415269",
+                    "action": {
+                        "type": "clue",
+                        "content": "interest you pay is based on a percentage, this is the interest ..."
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:10:00.877715",
+                    "action": {
+                        "type": "guess",
+                        "content": "rate"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:10:01.399446",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "rate"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:10:03.083291",
+                    "action": {
+                        "type": "target word",
+                        "content": "assure"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:11:10.680842",
+                    "action": {
+                        "type": "clue",
+                        "content": "another term for \"I promise you\" - I ... you"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:11:19.504380",
+                    "action": {
+                        "type": "guess",
+                        "content": "swear"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:10:03.083291",
+                    "action": {
+                        "type": "target word",
+                        "content": "assure"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:12:11.669934",
+                    "action": {
+                        "type": "clue",
+                        "content": "on the right track - starts with first letter of the alphabet"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:12:59.016504",
+                    "action": {
+                        "type": "guess",
+                        "content": "accept"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:10:03.083291",
+                    "action": {
+                        "type": "target word",
+                        "content": "assure"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:09.358014",
+                    "action": {
+                        "type": "clue",
+                        "content": "I promise you confidently, you should feel certain in what I'm saying. I ... you"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:14.317200",
+                    "action": {
+                        "type": "guess",
+                        "content": "assure"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:14.830955",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "assure"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:15:16.513117",
+                    "action": {
+                        "type": "target word",
+                        "content": "regret"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:35.554616",
+                    "action": {
+                        "type": "clue",
+                        "content": "Term for when you wish you didn't do something"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:41.906764",
+                    "action": {
+                        "type": "guess",
+                        "content": "regret"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:42.427793",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "regret"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:15:44.111004",
+                    "action": {
+                        "type": "target word",
+                        "content": "responsibility"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:00.926697",
+                    "action": {
+                        "type": "clue",
+                        "content": "if I am accountable for something, it is my ...."
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:11.234939",
+                    "action": {
+                        "type": "guess",
+                        "content": "responsibility"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:11.743500",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "responsibility"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5413, name sugary-hockey",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5414, name fried-halftone"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:16:13.425796",
+                    "action": {
+                        "type": "target word",
+                        "content": "sear"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:44.300290",
+                    "action": {
+                        "type": "clue",
+                        "content": "when cooking a steak, you first ... it in a pan to seal the juices in"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:50.984928",
+                    "action": {
+                        "type": "guess",
+                        "content": "sear"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:51.550620",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "sear"
+                    }
+                }
+            ]
+        ]
+    }
+]

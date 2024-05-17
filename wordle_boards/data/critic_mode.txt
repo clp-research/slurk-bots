@@ -1,0 +1,6 @@
+After you enter your guess, the critic will indicate whether they agree
+or disagree with it and provide rationale, but agreeing with
+a guess does not confirm its correctness.
+You may choose to retain your original guess
+(just press on ENTER to submit your guess again)
+or modify it based on given clue and agreement and then submit it.

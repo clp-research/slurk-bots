@@ -25,21 +25,26 @@ This bot manages a game of taboo in which participants have to guess a word that
 
 Game data – a list of words to guess – is supplied via a json file that has the following pattern:
 
-TODO: Currently, the list of words is not yet read from file.
 
 ```json
 {
-  "Applesauce": [
-    "fruit",
-    "tree",
-    "glass",
-    "preserving"
-  ],
-  "Beef patty": [
-    "pork",
-    "ground",
-    "steak"
-  ],
+    "low_en": [
+        {
+            "target_word": "klein",
+            "related_word": [
+                "small",
+                "little",
+                "short"
+            ]
+        },
+        {
+            "target_word": "atmospheric",
+            "related_word": [
+                "atmosphere",
+                "ambient",
+                "evocative"
+            ],
+        },
   ...
 }
 ```

@@ -1,0 +1,634 @@
+[
+    {
+        "data": {
+            "id": 5345,
+            "msg_n": 0,
+            "name": "electrical-wheel",
+            "role": "explainer",
+            "status": "joined"
+        },
+        "date_created": "2024-03-18T11:03:09.397861",
+        "date_modified": null,
+        "event": "player",
+        "id": 4837072,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "id": 5346,
+            "msg_n": 0,
+            "name": "nearest-hop",
+            "role": "guesser",
+            "status": "joined"
+        },
+        "date_created": "2024-03-18T11:03:09.456534",
+        "date_modified": null,
+        "event": "player",
+        "id": 4837073,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-18T11:03:41.454325",
+        "date_modified": null,
+        "event": "round",
+        "id": 4837088,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-18T11:03:41.511692",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4837089,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "line_grids_rows"
+        },
+        "date_created": "2024-03-18T11:03:42.570977",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4837091,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "second"
+        },
+        "date_created": "2024-03-18T11:03:42.628609",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4837092,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "7"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4012,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Second row"
+        },
+        "date_created": "2024-03-18T11:04:42.296275",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4837106,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_created": "2024-03-18T11:04:47.624981",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4837112,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_created": "2024-03-18T11:04:48.743485",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4837115,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-18T11:04:48.800235",
+        "date_modified": null,
+        "event": "round",
+        "id": 4837116,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-18T11:04:48.859672",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4837117,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "letter_grids"
+        },
+        "date_created": "2024-03-18T11:04:49.920421",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4837119,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "second"
+        },
+        "date_created": "2024-03-18T11:04:49.979053",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4837120,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "22"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4012,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "T"
+        },
+        "date_created": "2024-03-18T11:04:54.887245",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4837134,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_created": "2024-03-18T11:04:57.976571",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4837140,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_created": "2024-03-18T11:04:59.097429",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4837143,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-18T11:04:59.154454",
+        "date_modified": null,
+        "event": "round",
+        "id": 4837144,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-18T11:04:59.211508",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4837145,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "shape_grids"
+        },
+        "date_created": "2024-03-18T11:05:00.270146",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4837147,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "third"
+        },
+        "date_created": "2024-03-18T11:05:00.328248",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4837148,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "11"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4012,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "corners"
+        },
+        "date_created": "2024-03-18T11:05:11.194651",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4837162,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-18T11:05:14.593374",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4837168,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-18T11:05:15.712557",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4837171,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-18T11:05:15.769278",
+        "date_modified": null,
+        "event": "round",
+        "id": 4837172,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-18T11:05:15.825781",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4837173,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "diagonal_grids"
+        },
+        "date_created": "2024-03-18T11:05:16.885510",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4837175,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "third"
+        },
+        "date_created": "2024-03-18T11:05:16.943831",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4837176,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "11"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4012,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "diagonal"
+        },
+        "date_created": "2024-03-18T11:05:39.882668",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4837190,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-18T11:05:43.655667",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4837196,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-18T11:05:44.777590",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4837199,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-18T11:05:44.834391",
+        "date_modified": null,
+        "event": "round",
+        "id": 4837200,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-18T11:05:44.890546",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4837201,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "line_grids_columns"
+        },
+        "date_created": "2024-03-18T11:05:45.950028",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4837203,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "third"
+        },
+        "date_created": "2024-03-18T11:05:46.009025",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4837204,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4012,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "left"
+        },
+        "date_created": "2024-03-18T11:05:51.345969",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4837218,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-18T11:05:55.671112",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4837224,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-18T11:05:56.790669",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4837227,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-18T11:05:56.847503",
+        "date_modified": null,
+        "event": "round",
+        "id": 4837228,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-18T11:05:56.904319",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4837229,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "random_grids"
+        },
+        "date_created": "2024-03-18T11:05:57.964499",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4837231,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "second"
+        },
+        "date_created": "2024-03-18T11:05:58.022353",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4837232,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "7"
+        },
+        "date_modified": null,
+        "event": "instance id",
+        "receiver_id": null,
+        "room_id": 4012,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "4 on top"
+        },
+        "date_created": "2024-03-18T11:06:04.201319",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4837246,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_created": "2024-03-18T11:06:07.206016",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4837252,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "2"
+        },
+        "date_created": "2024-03-18T11:06:08.325205",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4837255,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "amt_token": "GUNVTS",
+            "points": {
+                "history": [
+                    {
+                        "correct": 6,
+                        "warnings": 0,
+                        "wrong": 0
+                    }
+                ],
+                "score": 6
+            },
+            "receiver": 5345,
+            "status_txt": "success"
+        },
+        "date_created": "2024-03-18T11:06:09.384196",
+        "date_modified": null,
+        "event": "confirmation_log",
+        "id": 4837257,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    },
+    {
+        "data": {
+            "amt_token": "JNJ5ZB",
+            "points": {
+                "history": [
+                    {
+                        "correct": 6,
+                        "warnings": 0,
+                        "wrong": 0
+                    }
+                ],
+                "score": 6
+            },
+            "receiver": 5346,
+            "status_txt": "success"
+        },
+        "date_created": "2024-03-18T11:06:10.444302",
+        "date_modified": null,
+        "event": "confirmation_log",
+        "id": 4837259,
+        "receiver_id": null,
+        "room_id": 4016,
+        "user_id": null
+    }
+]

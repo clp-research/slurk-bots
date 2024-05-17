@@ -1,0 +1,393 @@
+[
+    {
+        "players": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:08:27.967469",
+                    "action": {
+                        "type": "target word",
+                        "content": "anymore"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:10:18.297757",
+                    "action": {
+                        "type": "clue",
+                        "content": "time"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:10:40.921029",
+                    "action": {
+                        "type": "guess",
+                        "content": "clock"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:08:27.967469",
+                    "action": {
+                        "type": "target word",
+                        "content": "anymore"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:11:16.498165",
+                    "action": {
+                        "type": "clue",
+                        "content": "any longer"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:12:04.031669",
+                    "action": {
+                        "type": "guess",
+                        "content": "waiting"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:08:27.967469",
+                    "action": {
+                        "type": "target word",
+                        "content": "anymore"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:41.791910",
+                    "action": {
+                        "type": "clue",
+                        "content": "opposite of less"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:53.270261",
+                    "action": {
+                        "type": "guess",
+                        "content": "more"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:53.779423",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:13:55.457964",
+                    "action": {
+                        "type": "target word",
+                        "content": "sear"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:53.733660",
+                    "action": {
+                        "type": "clue",
+                        "content": "burn or scortch"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:54.017276",
+                    "action": {
+                        "type": "invalid clue",
+                        "content": "The related word 'burn' (stem=burn)  is similar to the word 'burn' (stem=burn) and it was used in the clue. You both lose :("
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:15:55.700941",
+                    "action": {
+                        "type": "target word",
+                        "content": "array"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:40.947570",
+                    "action": {
+                        "type": "clue",
+                        "content": "a range of"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:18:05.736635",
+                    "action": {
+                        "type": "guess",
+                        "content": "number"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:15:55.700941",
+                    "action": {
+                        "type": "target word",
+                        "content": "array"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:18:47.808933",
+                    "action": {
+                        "type": "clue",
+                        "content": "line-up"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:19:52.823206",
+                    "action": {
+                        "type": "guess",
+                        "content": "offer"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:15:55.700941",
+                    "action": {
+                        "type": "target word",
+                        "content": "array"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:20:35.388806",
+                    "action": {
+                        "type": "clue",
+                        "content": "a formation of"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:20:43.617972",
+                    "action": {
+                        "type": "guess",
+                        "content": "line"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:20:44.124056",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:20:45.804340",
+                    "action": {
+                        "type": "target word",
+                        "content": "obvious"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:21:59.791531",
+                    "action": {
+                        "type": "clue",
+                        "content": "opposite of unsure"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:23:02.569744",
+                    "action": {
+                        "type": "guess",
+                        "content": "certain"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:20:45.804340",
+                    "action": {
+                        "type": "target word",
+                        "content": "obvious"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:24:19.391109",
+                    "action": {
+                        "type": "clue",
+                        "content": "self evident"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:24:19.675441",
+                    "action": {
+                        "type": "invalid clue",
+                        "content": "The related word 'evident' (stem=evid)  is similar to the word 'evident' (stem=evid) and it was used in the clue. You both lose :("
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:24:21.355317",
+                    "action": {
+                        "type": "target word",
+                        "content": "seize"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:24:36.855637",
+                    "action": {
+                        "type": "clue",
+                        "content": "to grab"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:24:37.140801",
+                    "action": {
+                        "type": "invalid clue",
+                        "content": "The related word 'grab' (stem=grab)  is similar to the word 'grab' (stem=grab) and it was used in the clue. You both lose :("
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:24:38.820461",
+                    "action": {
+                        "type": "target word",
+                        "content": "provide"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:24:50.536800",
+                    "action": {
+                        "type": "clue",
+                        "content": "to give"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:24:50.823281",
+                    "action": {
+                        "type": "invalid clue",
+                        "content": "The related word 'give' (stem=give)  is similar to the word 'give' (stem=give) and it was used in the clue. You both lose :("
+                    }
+                }
+            ]
+        ]
+    }
+]

@@ -1,0 +1,248 @@
+{
+    "low_en": [
+        {
+            "target_word": "klein",
+            "related_word": [
+                "small",
+                "little",
+                "short"
+            ]
+        },
+        {
+            "target_word": "atmospheric",
+            "related_word": [
+                "atmosphere",
+                "ambient",
+                "evocative"
+            ]
+        },
+        {
+            "target_word": "bloody",
+            "related_word": [
+                "blood",
+                "rare",
+                "bleeding"
+            ]
+        },
+        {
+            "target_word": "colonial",
+            "related_word": [
+                "colony",
+                "cologne",
+                "settlement"
+            ]
+        },
+        {
+            "target_word": "diy",
+            "related_word": [
+                "home",
+                "yourself",
+                "do"
+            ]
+        },
+        {
+            "target_word": "levy",
+            "related_word": [
+                "raise",
+                "charge",
+                "gather"
+            ]
+        },
+        {
+            "target_word": "bypass",
+            "related_word": [
+                "circumvent",
+                "around",
+                "pass"
+            ]
+        },
+        {
+            "target_word": "expedition",
+            "related_word": [
+                "journey",
+                "discovery",
+                "exploration"
+            ]
+        },
+        {
+            "target_word": "rarely",
+            "related_word": [
+                "rare",
+                "scarce",
+                "seldom"
+            ]
+        },
+        {
+            "target_word": "autograph",
+            "related_word": [
+                "author",
+                "pencil",
+                "signature"
+            ]
+        }
+    ],
+    "medium_en": [
+        {
+            "target_word": "contributor",
+            "related_word": [
+                "contribute",
+                "employee",
+                "participant"
+            ]
+        },
+        {
+            "target_word": "spice",
+            "related_word": [
+                "food",
+                "hot",
+                "condiment"
+            ]
+        },
+        {
+            "target_word": "subsidiary",
+            "related_word": [
+                "incidental",
+                "circumstantial",
+                "substantial"
+            ]
+        },
+        {
+            "target_word": "edinburgh",
+            "related_word": [
+                "scotland",
+                "city",
+                "capital"
+            ]
+        },
+        {
+            "target_word": "plaza",
+            "related_word": [
+                "square",
+                "space",
+                "piazza"
+            ]
+        },
+        {
+            "target_word": "athlete",
+            "related_word": [
+                "sports",
+                "olympic",
+                "athletic"
+            ]
+        },
+        {
+            "target_word": "anymore",
+            "related_word": [
+                "any",
+                "more",
+                "some"
+            ]
+        },
+        {
+            "target_word": "cabinet",
+            "related_word": [
+                "cupboard",
+                "wardrobe",
+                "locker"
+            ]
+        },
+        {
+            "target_word": "czech",
+            "related_word": [
+                "country",
+                "republic",
+                "language"
+            ]
+        },
+        {
+            "target_word": "mesh",
+            "related_word": [
+                "entangle",
+                "net",
+                "intertwine"
+            ]
+        }
+    ],
+    "high_en": [
+        {
+            "target_word": "israel",
+            "related_word": [
+                "country",
+                "tel aviv",
+                "jew"
+            ]
+        },
+        {
+            "target_word": "digital",
+            "related_word": [
+                "analog",
+                "computer",
+                "digit"
+            ]
+        },
+        {
+            "target_word": "vol",
+            "related_word": [
+                "volume",
+                "sound",
+                "audio"
+            ]
+        },
+        {
+            "target_word": "provision",
+            "related_word": [
+                "commission",
+                "brokerage",
+                "money"
+            ]
+        },
+        {
+            "target_word": "msn",
+            "related_word": [
+                "microsoft",
+                "network",
+                "serial"
+            ]
+        },
+        {
+            "target_word": "street",
+            "related_word": [
+                "road",
+                "asphalt",
+                "drive"
+            ]
+        },
+        {
+            "target_word": "identity",
+            "related_word": [
+                "equality",
+                "id",
+                "person"
+            ]
+        },
+        {
+            "target_word": "power",
+            "related_word": [
+                "plant",
+                "electricity",
+                "physics"
+            ]
+        },
+        {
+            "target_word": "skin",
+            "related_word": [
+                "animal",
+                "leather",
+                "human"
+            ]
+        },
+        {
+            "target_word": "degree",
+            "related_word": [
+                "circle",
+                "qualification",
+                "measure"
+            ]
+        }
+    ]
+}

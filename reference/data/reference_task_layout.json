@@ -1,0 +1,208 @@
+{
+  "title": "Reference Picture Task Room",
+  "subtitle": "",
+  "html": [
+    {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "class": "card",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "collapsible",
+                  "layout-content": "Click to see/hide task instructions"
+                },
+                {
+                  "layout-type": "div",
+                  "class": "collapsible-content",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "text_to_modify",
+                      "style": "padding-bottom: 30 px",
+                      "layout-content": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+        ]
+        },
+
+        {
+          "layout-type": "div",
+          "class": "card_grids",
+          "style": "padding: 10px; display: flex",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "id": "grid-area",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                "layout-type": "div",
+                "id": "grid1_container",
+                "style": "display: flex; flex-direction: column; align-items: center;",
+                "layout-content": [
+                {
+                  "layout-type": "div",
+                  "id": "grid1_title",
+                  "style": "max-width: 50%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Grid 1"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid1",
+                  "style": "padding: 10px; margin: 10px;",
+                  "layout-content": ""
+                }]},
+                {
+                  "layout-type": "div",
+                  "id": "grid2_container",
+                  "style": "display: flex; flex-direction: column; align-items: center;",
+                  "layout-content": [
+
+
+                {
+                  "layout-type": "div",
+                  "id": "grid2_title",
+                  "style": "max-width: 50%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Grid 2"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid2",
+                  "style": "padding: 10px; margin: 10px;",
+                  "layout-content": ""
+                }]},
+                {
+                 "layout-type": "div",
+                  "id": "grid3_container",
+                  "style": "display: flex; flex-direction: column; align-items: center;",
+                  "layout-content": [
+                {
+                  "layout-type": "div",
+                  "id": "grid3_title",
+                  "style": "max-width: 50%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Grid 3"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "grid3",
+                  "style": "padding: 10px; margin: 10px;",
+                  "layout-content": ""
+                }]}
+              ]
+            }
+          ]
+        },
+        {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": []}
+
+
+  ],
+  "css": {
+    ".dis-area": {
+      "display": "none;"
+    },
+    ".cards": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "margin": "0px 5px",
+      "padding": "50px"
+    },
+
+    ".hr": {
+      "margin": "10px",
+      "background-color": "#abb2b9",
+      "opacity": ".50"
+    },
+    "time:before": {
+      "content": "''"
+    },
+    ".card": {
+    "position": "relative",
+    "display": "flex",
+      "flex-direction": "column",
+    "min-width": "45%",
+    "background-color": "#fff",
+    "background-clip": "border-box",
+    "border": "1px solid rgba(0,0,0,.125)",
+    "border-radius": ".25rem",
+    "height": "100%",
+    "margin": "0px 5px",
+    "padding": "30px"
+    },
+
+    ".card_grids": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "none",
+      "overflow": "auto",
+      "width": "90%",
+      "margin": "0px 5px"
+    },
+
+    ".collapsible": {
+      "background-color": "#eee",
+      "color": "#800080",
+      "font-size": "1rem",
+      "cursor": "pointer",
+      "padding": "18px",
+      "width": "100%",
+      "border": "none",
+      "text-align": "left",
+      "outline": "none"
+    },
+    ".collapsible-content": {
+      "padding": "18px 18px",
+      "display": "none",
+      "overflow": "hidden",
+      "background-color": "#f1f1f1",
+      "display": "block"
+    },
+      ".button, .message_button": {
+            "text-transform": "uppercase",
+            "font-size": "medium",
+            "border-radius": "5px",
+            "border": "none",
+            "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+            "outline": 0,
+            "background": "#00305E",
+            "width": "100%",
+            "color": "#FFFFFF",
+            "padding": "15px",
+            "cursor": "pointer"
+        },
+        ".message_button": {
+            "margin-top": "3px",
+            "padding": "5px",
+            "width":"49%"
+        }
+  },
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": [
+      "attribute-history",
+      "markdown-history"
+    ],
+    "typing-users": "typing-users",
+    "plain": ["collapsible-task-instructions","reference"]
+  }
+}

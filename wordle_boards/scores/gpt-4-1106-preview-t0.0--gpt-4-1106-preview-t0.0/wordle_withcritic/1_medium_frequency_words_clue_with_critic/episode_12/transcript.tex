@@ -1,0 +1,900 @@
+
+\documentclass{article}
+\usepackage{colortbl}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{supertabular}
+
+\begin{document}
+
+\newcounter{utterance}
+
+\twocolumn
+
+{ \footnotesize  \setcounter{utterance}{1}
+\setlength{\tabcolsep}{0pt}
+\begin{supertabular}{c@{$\;$}|p{.15\linewidth}@{}p{.15\linewidth}p{.15\linewidth}p{.15\linewidth}p{.15\linewidth}p{.15\linewidth}}
+
+    \# & $\;$A & \multicolumn{4}{c}{Game Master} & $\;\:$B\\
+    \hline 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 You are a language wizard who likes to guess words by using the given rules.\\ \tt \\ \tt Welcome to Wordle! You have six attempts to guess the target word, a valid English word of five lowercase letters (a-z). Please use the tags "guess:" and "explanation:" to provide a concise explanation for each guess.\\ \tt \\ \tt To help you make an informed guess, you will receive a clue for the word, such as\\ \tt clue: "snowy white"\\ \tt \\ \tt Here is an example guess based on the clue:\\ \tt guess: apple\\ \tt explanation: In the fairy tail Snow White, the girl is killed because she eats a poisoned apple. And the word apple has 5 letters.\\ \tt \\ \tt I will then indicate whether I agree or disagree with your guess and provide rationale, but agreeing with a guess does not confirm its correctness. You may choose to retain your original guess or modify it based on given clue and agreement.\\ \tt \\ \tt After each guess, your answer will be validated, and you will receive feedback indicating which letters are correct (green), which letters are correct but in the wrong position (yellow), and which letters are incorrect (red). This feedback can be useful in determining which letters to include or exclude in your next guess.\\ \tt \\ \tt For example, the feedback for "apple" might be:\\ \tt guess_feedback: a<yellow> p<yellow> p<green> l<yellow> e<red>\\ \tt \\ \tt Here are some rules to keep in mind:\\ \tt 1. Please do not generate any guess feedback or clue on your own\\ \tt 2. Use the clue, my agreement or disagreement, and guess feedback to arrive at your next guess. This should be reflected in your explanation as well.\\ \tt \\ \tt Let's begin with your first guess.\\ \tt \\ \tt clue:passionate\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess: fiery\\ \tt explanation: The word "fiery" is often used to describe something that is intensely passionate, and it is a valid five-letter English word. 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'fiery', 'explanation': 'The word "fiery" is often used to describe something that is intensely passionate, and it is a valid five-letter English word.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\rangle$B]}  
+	 I need your assistance with a word game in which we need to find a 5-letter word using a clue, a guess and an explanation for the guess.\\ \tt \\ \tt For example, if the clue is "snow white" and the guess is "apple", you will get the information like this:\\ \tt clue:snow white\\ \tt guess:apple\\ \tt explanation:the fairy tale Snow White involves the girl eating a poisoned apple, which has 5 letters.\\ \tt \\ \tt Your task is to either agree or disagree with my guess based on the given clue.\\ \tt \\ \tt If you disagree, I will make another guess, and if you agree, I will proceed in the game using the same guess.\\ \tt \\ \tt Initially, guess feedback is not available, but as the game proceeds, it becomes available. The guess feedback is not for current guess, but rather an indication of what letters can be present in the current guess. A letter highlighted in green indicates that it is a correct letter in the correct position, while yellow indicates that it is a correct letter in the wrong position, and red indicates a wrong letter. At this point, you should use all the provided information, including the clue, guess, explanation, and guess feedback, to decide whether the given guess matches the clue, and also stick to guess feedback or not.\\ \tt \\ \tt Please respond in lowercase letters and stick to this format:\\ \tt agreement:yes or no\\ \tt explanation:your reason for doing so\\ \tt \\ \tt Please note that you must not guess any word based on the riddle clue and stick to the given format while responding.\\ \tt \\ \tt Let's begin!\\ \tt \\ \tt clue:passionate\\ \tt guess:fiery\\ \tt explanation:The word "fiery" is often used to describe something that is intensely passionate, and it is a valid five-letter English word.\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{1,0.85,0.72}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\langle$B]}  
+	 agreement:yes\\ \tt explanation:The guess "fiery" is indeed a five-letter word that can be used to describe something passionate, fitting the clue provided. 
+	  } 
+	   } 
+	   } 
+	  \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'agreement': 'yes', 'explanation': 'The guess "fiery" is indeed a five-letter word that can be used to describe something passionate, fitting the clue provided.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Critic agrees with the Guesser -- Sharing the critic's explanation with the guesser 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 clue:passionate\\ \tt guess_agreement:yes\\ \tt agreement_explanation:The guess "fiery" is indeed a five-letter word that can be used to describe something passionate, fitting the clue provided.\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:blaze\\ \tt explanation:Given the agreement with the previous guess "fiery," I am continuing with the theme of passion and intensity. "Blaze" can also describe a strong fire or passion, and it is a five-letter word. 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'blaze', 'explanation': 'Given the agreement with the previous guess "fiery," I am continuing with the theme of passion and intensity. "Blaze" can also describe a strong fire or passion, and it is a five-letter word.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Change in player1's guess\\ \tt guess_before_critic_opinion: fiery\\ \tt                                                 critic_agreement: yes\\ \tt guess_after_critic_opinion: blaze\\ \tt                                                 Proceeding with guess validation 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 attempts: 1\\ \tt target_word = fiery\\ \tt target_word_clue = passionate\\ \tt guess: blaze\\ \tt guess_feedback: b<red> l<red> a<red> z<red> e<yellow> 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 guess_feedback: b<red> l<red> a<red> z<red> e<yellow> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:revel\\ \tt explanation:Since the letter 'e' is correct but in the wrong position and all other letters from the previous guess are incorrect, I am choosing a new word that includes the letter 'e' in a different position. "Revel" means to take great pleasure or delight, which can be associated with being passionate, and it fits the five-letter criteria. 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'revel', 'explanation': 'Since the letter \'e\' is correct but in the wrong position and all other letters from the previous guess are incorrect, I am choosing a new word that includes the letter \'e\' in a different position. "Revel" means to take great pleasure or delight, which can be associated with being passionate, and it fits the five-letter criteria.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\rangle$B]}  
+	 clue:passionate\\ \tt guess:revel\\ \tt explanation:Since the letter 'e' is correct but in the wrong position and all other letters from the previous guess are incorrect, I am choosing a new word that includes the letter 'e' in a different position. "Revel" means to take great pleasure or delight, which can be associated with being passionate, and it fits the five-letter criteria.\\ \tt guess_feedback: b<red> l<red> a<red> z<red> e<yellow> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{1,0.85,0.72}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\langle$B]}  
+	 agreement:no\\ \tt explanation:the letter 'e' must be included in the guess but not in the position it was in the previous guess. "revel" does not follow the guess feedback as it places the 'e' in the same position as the previous guess where it was indicated to be incorrect. 
+	  } 
+	   } 
+	   } 
+	  \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'agreement': 'no', 'explanation': 'the letter \'e\' must be included in the guess but not in the position it was in the previous guess. "revel" does not follow the guess feedback as it places the \'e\' in the same position as the previous guess where it was indicated to be incorrect.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Critic disagrees with the Guesser -- Sharing the critic's explanation with the guesser 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 clue:passionate\\ \tt guess_agreement:no\\ \tt agreement_explanation:the letter 'e' must be included in the guess but not in the position it was in the previous guess. "revel" does not follow the guess feedback as it places the 'e' in the same position as the previous guess where it was indicated to be incorrect.\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:beget\\ \tt explanation:Acknowledging the disagreement with the previous guess and the feedback, I am now incorporating the letter 'e' in the second position, as it was incorrect in the third position before. "Beget" is a valid five-letter word, and while it doesn't directly relate to passion, it is a new attempt to find the correct placement for 'e' and to introduce new letters for consideration. 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'beget', 'explanation': 'Acknowledging the disagreement with the previous guess and the feedback, I am now incorporating the letter \'e\' in the second position, as it was incorrect in the third position before. "Beget" is a valid five-letter word, and while it doesn\'t directly relate to passion, it is a new attempt to find the correct placement for \'e\' and to introduce new letters for consideration.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Change in player1's guess\\ \tt guess_before_critic_opinion: revel\\ \tt                                                 critic_agreement: no\\ \tt guess_after_critic_opinion: beget\\ \tt                                                 Proceeding with guess validation 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 attempts: 2\\ \tt target_word = fiery\\ \tt target_word_clue = passionate\\ \tt guess: beget\\ \tt guess_feedback: b<red> e<yellow> g<red> e<red> t<red> 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 guess_feedback: b<red> e<yellow> g<red> e<red> t<red> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:leery\\ \tt explanation:Based on the feedback, the letter 'e' is not in the second position but is present somewhere in the word. The word "leery" includes 'e' in the first and third positions, which have not been tested yet, and it is a five-letter word. Although "leery" doesn't directly mean passionate, it fits the constraints given by the feedback. 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'leery', 'explanation': 'Based on the feedback, the letter \'e\' is not in the second position but is present somewhere in the word. The word "leery" includes \'e\' in the first and third positions, which have not been tested yet, and it is a five-letter word. Although "leery" doesn\'t directly mean passionate, it fits the constraints given by the feedback.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\rangle$B]}  
+	 clue:passionate\\ \tt guess:leery\\ \tt explanation:Based on the feedback, the letter 'e' is not in the second position but is present somewhere in the word. The word "leery" includes 'e' in the first and third positions, which have not been tested yet, and it is a five-letter word. Although "leery" doesn't directly mean passionate, it fits the constraints given by the feedback.\\ \tt guess_feedback: b<red> e<yellow> g<red> e<red> t<red> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{1,0.85,0.72}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\langle$B]}  
+	 agreement:no\\ \tt explanation:the letter 'e' is present in the word but not in the first or third position, as indicated by the red color for the letter 'e' in the third position of the previous guess. Therefore, "leery" cannot be the correct guess since it has 'e' in the first and third positions. 
+	  } 
+	   } 
+	   } 
+	  \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'agreement': 'no', 'explanation': 'the letter \'e\' is present in the word but not in the first or third position, as indicated by the red color for the letter \'e\' in the third position of the previous guess. Therefore, "leery" cannot be the correct guess since it has \'e\' in the first and third positions.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Critic disagrees with the Guesser -- Sharing the critic's explanation with the guesser 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 clue:passionate\\ \tt guess_agreement:no\\ \tt agreement_explanation:the letter 'e' is present in the word but not in the first or third position, as indicated by the red color for the letter 'e' in the third position of the previous guess. Therefore, "leery" cannot be the correct guess since it has 'e' in the first and third positions.\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:fever\\ \tt explanation:Considering the feedback and the disagreement, the letter 'e' must be in the fourth position, as it has been indicated to be incorrect in the second and third positions and is not present in the first position. "Fever" is associated with heat, which can metaphorically relate to passion, and it places the 'e' in the fourth position while introducing new letters 'f', 'v', and 'r'. 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'fever', 'explanation': 'Considering the feedback and the disagreement, the letter \'e\' must be in the fourth position, as it has been indicated to be incorrect in the second and third positions and is not present in the first position. "Fever" is associated with heat, which can metaphorically relate to passion, and it places the \'e\' in the fourth position while introducing new letters \'f\', \'v\', and \'r\'.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Change in player1's guess\\ \tt guess_before_critic_opinion: leery\\ \tt                                                 critic_agreement: no\\ \tt guess_after_critic_opinion: fever\\ \tt                                                 Proceeding with guess validation 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 attempts: 3\\ \tt target_word = fiery\\ \tt target_word_clue = passionate\\ \tt guess: fever\\ \tt guess_feedback: f<green> e<yellow> v<red> e<red> r<yellow> 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 guess_feedback: f<green> e<yellow> v<red> e<red> r<yellow> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:freak\\ \tt explanation:From the feedback, we know that 'f' is the correct first letter, 'e' is present but not in the second position, and 'r' is present but not in the fifth position. The word "freak" fits these criteria, with 'f' at the beginning, 'e' in the second position (which we know is incorrect but it can be in the third or fifth), and 'r' not at the end. Additionally, 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'freak', 'explanation': 'From the feedback, we know that \'f\' is the correct first letter, \'e\' is present but not in the second position, and \'r\' is present but not in the fifth position. The word "freak" fits these criteria, with \'f\' at the beginning, \'e\' in the second position (which we know is incorrect but it can be in the third or fifth), and \'r\' not at the end. Additionally,'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\rangle$B]}  
+	 clue:passionate\\ \tt guess:freak\\ \tt explanation:From the feedback, we know that 'f' is the correct first letter, 'e' is present but not in the second position, and 'r' is present but not in the fifth position. The word "freak" fits these criteria, with 'f' at the beginning, 'e' in the second position (which we know is incorrect but it can be in the third or fifth), and 'r' not at the end. Additionally,\\ \tt guess_feedback: f<green> e<yellow> v<red> e<red> r<yellow> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{1,0.85,0.72}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\langle$B]}  
+	 agreement:no\\ \tt explanation:the letter 'e' cannot be in the second position as indicated by the guess feedback, but "freak" has 'e' in the second position. 
+	  } 
+	   } 
+	   } 
+	  \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'agreement': 'no', 'explanation': 'the letter \'e\' cannot be in the second position as indicated by the guess feedback, but "freak" has \'e\' in the second position.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Critic disagrees with the Guesser -- Sharing the critic's explanation with the guesser 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 clue:passionate\\ \tt guess_agreement:no\\ \tt agreement_explanation:the letter 'e' cannot be in the second position as indicated by the guess feedback, but "freak" has 'e' in the second position.\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:feast\\ \tt explanation:Given the feedback, 'f' is correct in the first position, 'e' is present but not in the second or fourth positions, and 'r' is present but not in the fifth position. The word "feast" places 'e' in the third position, which has not been tested yet, 'a' is a new letter introduced, 's' is another new letter, and 't' is a new guess for the fifth position 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'feast', 'explanation': 'Given the feedback, \'f\' is correct in the first position, \'e\' is present but not in the second or fourth positions, and \'r\' is present but not in the fifth position. The word "feast" places \'e\' in the third position, which has not been tested yet, \'a\' is a new letter introduced, \'s\' is another new letter, and \'t\' is a new guess for the fifth position'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Change in player1's guess\\ \tt guess_before_critic_opinion: freak\\ \tt                                                 critic_agreement: no\\ \tt guess_after_critic_opinion: feast\\ \tt                                                 Proceeding with guess validation 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 attempts: 4\\ \tt target_word = fiery\\ \tt target_word_clue = passionate\\ \tt guess: feast\\ \tt guess_feedback: f<green> e<yellow> a<red> s<red> t<red> 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 guess_feedback: f<green> e<yellow> a<red> s<red> t<red> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:ferry\\ \tt explanation:We know 'f' is correct in the first position, 'e' is present but not in the second or fourth positions, and it cannot be in the third position as 'a' was incorrect there. Therefore, 'e' must be in the fifth position. 'r' is present but not in the fifth position, so it could be in the second or third position. The word "ferry" fits these criteria and is associated with carrying or transporting 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'ferry', 'explanation': 'We know \'f\' is correct in the first position, \'e\' is present but not in the second or fourth positions, and it cannot be in the third position as \'a\' was incorrect there. Therefore, \'e\' must be in the fifth position. \'r\' is present but not in the fifth position, so it could be in the second or third position. The word "ferry" fits these criteria and is associated with carrying or transporting'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\rangle$B]}  
+	 clue:passionate\\ \tt guess:ferry\\ \tt explanation:We know 'f' is correct in the first position, 'e' is present but not in the second or fourth positions, and it cannot be in the third position as 'a' was incorrect there. Therefore, 'e' must be in the fifth position. 'r' is present but not in the fifth position, so it could be in the second or third position. The word "ferry" fits these criteria and is associated with carrying or transporting\\ \tt guess_feedback: f<green> e<yellow> a<red> s<red> t<red> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{1,0.85,0.72}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\langle$B]}  
+	 agreement:no\\ \tt explanation:Based on the feedback, 'e' should be in the fifth position, and 'r' should be in the second or third position. However, 'y' has not been confirmed as a correct letter, and 's' and 't' have been indicated as incorrect, which means 'y' is also likely incorrect. Therefore, "ferry" does not fit the feedback provided. 
+	  } 
+	   } 
+	   } 
+	  \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'agreement': 'no', 'explanation': 'Based on the feedback, \'e\' should be in the fifth position, and \'r\' should be in the second or third position. However, \'y\' has not been confirmed as a correct letter, and \'s\' and \'t\' have been indicated as incorrect, which means \'y\' is also likely incorrect. Therefore, "ferry" does not fit the feedback provided.'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Critic disagrees with the Guesser -- Sharing the critic's explanation with the guesser 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 clue:passionate\\ \tt guess_agreement:no\\ \tt agreement_explanation:Based on the feedback, 'e' should be in the fifth position, and 'r' should be in the second or third position. However, 'y' has not been confirmed as a correct letter, and 's' and 't' have been indicated as incorrect, which means 'y' is also likely incorrect. Therefore, "ferry" does not fit the feedback provided.\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:fresh\\ \tt explanation:With 'f' confirmed as the first letter and 'e' now known to be in the fifth position, 'r' must be in the second or third position since it cannot be in the fifth. The word "fresh" places 'r' in the second position, which has not been confirmed yet, and introduces 'h' in the fourth position, which has not been tried before. "Fresh" can be associated with something vigorous or passionate in a metaphor 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'fresh', 'explanation': 'With \'f\' confirmed as the first letter and \'e\' now known to be in the fifth position, \'r\' must be in the second or third position since it cannot be in the fifth. The word "fresh" places \'r\' in the second position, which has not been confirmed yet, and introduces \'h\' in the fourth position, which has not been tried before. "Fresh" can be associated with something vigorous or passionate in a metaphor'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Change in player1's guess\\ \tt guess_before_critic_opinion: ferry\\ \tt                                                 critic_agreement: no\\ \tt guess_after_critic_opinion: fresh\\ \tt                                                 Proceeding with guess validation 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 attempts: 5\\ \tt target_word = fiery\\ \tt target_word_clue = passionate\\ \tt guess: fresh\\ \tt guess_feedback: f<green> r<yellow> e<green> s<red> h<red> 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 guess_feedback: f<green> r<yellow> e<green> s<red> h<red> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:refer\\ \tt explanation: We have confirmed that 'f' is the first letter and 'e' is the third letter. The letter 'r' is present in the word but not in the second position. Since 'e' cannot be the second or fourth letter and 'r' cannot be the fifth, 'r' must be the second letter. The word "refer" fits this pattern, with 'f' as the first letter, 'r' as the second, 'e 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'refer', 'explanation': 'We have confirmed that \'f\' is the first letter and \'e\' is the third letter. The letter \'r\' is present in the word but not in the second position. Since \'e\' cannot be the second or fourth letter and \'r\' cannot be the fifth, \'r\' must be the second letter. The word "refer" fits this pattern, with \'f\' as the first letter, \'r\' as the second, \'e'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\rangle$B]}  
+	 clue:passionate\\ \tt guess:refer\\ \tt explanation:We have confirmed that 'f' is the first letter and 'e' is the third letter. The letter 'r' is present in the word but not in the second position. Since 'e' cannot be the second or fourth letter and 'r' cannot be the fifth, 'r' must be the second letter. The word "refer" fits this pattern, with 'f' as the first letter, 'r' as the second, 'e\\ \tt guess_feedback: f<green> r<yellow> e<green> s<red> h<red> 
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{1,0.85,0.72}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$\langle$B]}  
+	 agreement:yes\\ \tt explanation:Based on the feedback, 'f' is correct in the first position, 'e' is correct in the third position, and 'r' is present but not in the second position. The word "refer" places 'r' in the second and fourth positions, which have not been tested yet, and it fits the criteria of being a five-letter word. Additionally, "refer" can be associated with a strong recommendation or suggestion, which can be a 
+	  } 
+	   } 
+	   } 
+	  \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'agreement': 'yes', 'explanation': 'Based on the feedback, \'f\' is correct in the first position, \'e\' is correct in the third position, and \'r\' is present but not in the second position. The word "refer" places \'r\' in the second and fourth positions, which have not been tested yet, and it fits the criteria of being a five-letter word. Additionally, "refer" can be associated with a strong recommendation or suggestion, which can be a'} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Critic agrees with the Guesser -- Sharing the critic's explanation with the guesser 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.9,0.9,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\langle$GM]}  
+	 clue:passionate\\ \tt guess_agreement:yes\\ \tt agreement_explanation:Based on the feedback, 'f' is correct in the first position, 'e' is correct in the third position, and 'r' is present but not in the second position. The word "refer" places 'r' in the second and fourth positions, which have not been tested yet, and it fits the criteria of being a five-letter word. Additionally, "refer" can be associated with a strong recommendation or suggestion, which can be a\\ \tt  
+	  } 
+	   } 
+	   } 
+	 & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & \multicolumn{4}{p{0.6\linewidth}}{\cellcolor[rgb]{0.8,1,0.9}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [A$\rangle$GM]}  
+	 guess:freer\\ \tt explanation:Given the agreement with the word "refer" and the previous feedback, we know 'f' is correct in the first position, 'e' is correct in the third position, and 'r' is present but not in the second position. Since 'r' cannot be in the fifth position either, it must be in the fourth position. The word "freer" fits this new arrangement, with 'r' in the fourth position and 'e' 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 {'guess': 'freer', 'explanation': 'Given the agreement with the word "refer" and the previous feedback, we know \'f\' is correct in the first position, \'e\' is correct in the third position, and \'r\' is present but not in the second position. Since \'r\' cannot be in the fifth position either, it must be in the fourth position. The word "freer" fits this new arrangement, with \'r\' in the fourth position and \'e\''} 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 Change in player1's guess\\ \tt guess_before_critic_opinion: refer\\ \tt                                                 critic_agreement: yes\\ \tt guess_after_critic_opinion: freer\\ \tt                                                 Proceeding with guess validation 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 attempts: 6\\ \tt target_word = fiery\\ \tt target_word_clue = passionate\\ \tt guess: freer\\ \tt guess_feedback: f<green> r<yellow> e<green> e<red> r<red> 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+    \theutterance \stepcounter{utterance}  
+
+    & & & \multicolumn{2}{p{0.3\linewidth}}{\cellcolor[rgb]{0.95,0.95,0.95}{%
+	\makecell[{{p{\linewidth}}}]{% 
+	  \tt {\tiny [GM$|$GM]}  
+	 game_result = LOSS 
+	  } 
+	   } 
+	   } 
+	 & & \\ 
+ 
+
+\end{supertabular}
+}
+
+\end{document}

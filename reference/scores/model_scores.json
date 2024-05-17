@@ -1,0 +1,542 @@
+{
+    "line_grids_rows": {
+        "25": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 49,
+                    "Generated Expression Number of Tokens": 10,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 49.0,
+                "Average Generated Expression Number of Tokens": 10.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "14": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 50,
+                    "Generated Expression Number of Tokens": 11,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 50.0,
+                "Average Generated Expression Number of Tokens": 11.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "7": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 67,
+                    "Generated Expression Number of Tokens": 15,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 67.0,
+                "Average Generated Expression Number of Tokens": 15.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        }
+    },
+    "letter_grids": {
+        "3": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 126,
+                    "Generated Expression Number of Tokens": 26,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 126.0,
+                "Average Generated Expression Number of Tokens": 26.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "22": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 110,
+                    "Generated Expression Number of Tokens": 23,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 110.0,
+                "Average Generated Expression Number of Tokens": 23.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "1": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 160,
+                    "Generated Expression Number of Tokens": 30,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 160.0,
+                "Average Generated Expression Number of Tokens": 30.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "16": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 146,
+                    "Generated Expression Number of Tokens": 30,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 146.0,
+                "Average Generated Expression Number of Tokens": 30.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        }
+    },
+    "shape_grids": {
+        "2": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 83,
+                    "Generated Expression Number of Tokens": 16,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 0
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 83.0,
+                "Average Generated Expression Number of Tokens": 16.0,
+                "Success": 0,
+                "Lose": 1,
+                "Aborted": 0,
+                "Main Score": 0,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "29": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 228,
+                    "Generated Expression Number of Tokens": 43,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 228.0,
+                "Average Generated Expression Number of Tokens": 43.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "11": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 41,
+                    "Generated Expression Number of Tokens": 9,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 41.0,
+                "Average Generated Expression Number of Tokens": 9.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "18": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 219,
+                    "Generated Expression Number of Tokens": 43,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 219.0,
+                "Average Generated Expression Number of Tokens": 43.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        }
+    },
+    "diagonal_grids": {
+        "0": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 95,
+                    "Generated Expression Number of Tokens": 18,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 95.0,
+                "Average Generated Expression Number of Tokens": 18.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "19": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 65,
+                    "Generated Expression Number of Tokens": 10,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 65.0,
+                "Average Generated Expression Number of Tokens": 10.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "28": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 174,
+                    "Generated Expression Number of Tokens": 34,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 174.0,
+                "Average Generated Expression Number of Tokens": 34.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "11": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 230,
+                    "Generated Expression Number of Tokens": 45,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 230.0,
+                "Average Generated Expression Number of Tokens": 45.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        }
+    },
+    "line_grids_columns": {
+        "2": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 67,
+                    "Generated Expression Number of Tokens": 13,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 67.0,
+                "Average Generated Expression Number of Tokens": 13.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "3": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 65,
+                    "Generated Expression Number of Tokens": 13,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 65.0,
+                "Average Generated Expression Number of Tokens": 13.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "16": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 118,
+                    "Generated Expression Number of Tokens": 22,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 118.0,
+                "Average Generated Expression Number of Tokens": 22.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        }
+    },
+    "random_grids": {
+        "3": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 365,
+                    "Generated Expression Number of Tokens": 68,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 365.0,
+                "Average Generated Expression Number of Tokens": 68.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "22": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 183,
+                    "Generated Expression Number of Tokens": 34,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 183.0,
+                "Average Generated Expression Number of Tokens": 34.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "7": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 235,
+                    "Generated Expression Number of Tokens": 49,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 235.0,
+                "Average Generated Expression Number of Tokens": 49.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        },
+        "16": {
+            "turn scores": {
+                "0": {
+                    "Generated Expression Length": 147,
+                    "Generated Expression Number of Tokens": 32,
+                    "Request Count": 2,
+                    "Violated Request Count": 0,
+                    "Parsed Request Count": 2,
+                    "Success": 1
+                }
+            },
+            "episode scores": {
+                "Average Generated Expression Length": 147.0,
+                "Average Generated Expression Number of Tokens": 32.0,
+                "Success": 1,
+                "Lose": 0,
+                "Aborted": 0,
+                "Main Score": 100,
+                "Request Count": 2,
+                "Violated Request Count": 0,
+                "Parsed Request Count": 2,
+                "Request Success Ratio": 1.0
+            }
+        }
+    }
+}

@@ -1,0 +1,1382 @@
+[
+    {
+        "data": {
+            "Explainer": "user_id 5415, name blocking-margin",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5416, name hard-stave"
+        },
+        "date_created": "2024-03-20T09:09:10.246561",
+        "date_modified": null,
+        "event": "players",
+        "id": 4842019,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "Are you ready? <br><button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> <button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
+        },
+        "date_created": "2024-03-20T09:09:10.500345",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842025,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "blocking-margin has joined the game."
+        },
+        "date_created": "2024-03-20T09:09:10.613990",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842027,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "hard-stave has joined the game."
+        },
+        "date_created": "2024-03-20T09:09:10.980878",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842032,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Now, waiting for your partner to type 'ready'."
+        },
+        "date_created": "2024-03-20T09:09:15.094704",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842036,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "You have already typed 'ready'."
+        },
+        "date_created": "2024-03-20T09:09:24.615495",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842095,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "You have already typed 'ready'."
+        },
+        "date_created": "2024-03-20T09:09:51.929007",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842115,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "what would you give a dehydrated person?",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:10:16.255133",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842166,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "what would you give a dehydrated person?"
+        },
+        "date_created": "2024-03-20T09:10:16.267086",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842167,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "what would you give a dehydrated person?"
+        },
+        "date_created": "2024-03-20T09:10:16.764615",
+        "date_modified": null,
+        "event": "invalid format",
+        "id": 4842172,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "INVALID GUESS: 'what would you give a dehydrated person?' contains more than one word.You both lose this round."
+        },
+        "date_created": "2024-03-20T09:10:16.774748",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842173,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T09:10:17.323221",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842174,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 2 of 6"
+        },
+        "date_created": "2024-03-20T09:10:17.334202",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842175,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:10:18.335836",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842180,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "bypass"
+        },
+        "date_created": "2024-03-20T09:10:18.414526",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842181,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:10:18.494384",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842182,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'bypass'. You cannot use the following words: circumvent, ignore, avoid"
+        },
+        "date_created": "2024-03-20T09:10:18.506676",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842183,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:10:41.763279",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842201,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "it is a word meaning to go around",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:10:41.820668",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842202,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "it is a word meaning to go around"
+        },
+        "date_created": "2024-03-20T09:10:41.831273",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842203,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "spin",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:11:21.583979",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842295,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "spin"
+        },
+        "date_created": "2024-03-20T09:11:21.594428",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842296,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'spin' was false"
+        },
+        "date_created": "2024-03-20T09:11:22.051369",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842301,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T09:11:22.553302",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842302,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:11:58.923459",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842341,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "it means to either go over or around an obstacle",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:11:58.981710",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842342,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "it means to either go over or around an obstacle"
+        },
+        "date_created": "2024-03-20T09:11:58.992015",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842343,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "cross",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:14:44.348522",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842562,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "cross"
+        },
+        "date_created": "2024-03-20T09:14:44.360023",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842563,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2 'cross' was false"
+        },
+        "date_created": "2024-03-20T09:14:44.812465",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842568,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T09:14:45.313387",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842569,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:15:18.323299",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842619,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "in medicine, it is a term used when going around a blocked artery or vein",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:15:18.416386",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842622,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "in medicine, it is a term used when going around a blocked artery or vein"
+        },
+        "date_created": "2024-03-20T09:15:18.428221",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842623,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "angioplasty",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:16:50.069544",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842759,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "angioplasty"
+        },
+        "date_created": "2024-03-20T09:16:50.082138",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842760,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T09:16:50.579019",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4842765,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "3 guesses have been already used. You lost this round."
+        },
+        "date_created": "2024-03-20T09:16:50.589072",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842766,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T09:16:51.240089",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842772,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 3 of 6"
+        },
+        "date_created": "2024-03-20T09:16:51.250142",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842773,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:16:52.266578",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842786,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "fighter"
+        },
+        "date_created": "2024-03-20T09:16:52.344025",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842787,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:16:52.434670",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842789,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'fighter'. You cannot use the following words: warrior, boxer, defendant"
+        },
+        "date_created": "2024-03-20T09:16:52.453333",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842791,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:18:41.044161",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842905,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this is a word that means a person who takes on challenges or battles, you would say they are a real....",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:18:41.105551",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842906,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "this is a word that means a person who takes on challenges or battles, you would say they are a real...."
+        },
+        "date_created": "2024-03-20T09:18:41.116162",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842907,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "warrior",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:19:04.053232",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842945,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "warrior"
+        },
+        "date_created": "2024-03-20T09:19:04.064613",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842946,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'warrior' was false"
+        },
+        "date_created": "2024-03-20T09:19:04.517418",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842951,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T09:19:05.019258",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4842952,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:21:07.042112",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843033,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "similar to that but another word, it means when someone doesnyt give up",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:21:07.099684",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843034,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "similar to that but another word, it means when someone doesnyt give up"
+        },
+        "date_created": "2024-03-20T09:21:07.111729",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843035,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "fighter",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:21:34.424846",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843041,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "fighter"
+        },
+        "date_created": "2024-03-20T09:21:34.437495",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843042,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "fighter"
+        },
+        "date_created": "2024-03-20T09:21:34.932354",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843047,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 2: 'fighter' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:21:34.942705",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843048,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T09:21:35.548399",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843050,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 4 of 6"
+        },
+        "date_created": "2024-03-20T09:21:35.558639",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843051,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:21:36.561750",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843052,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "transplant"
+        },
+        "date_created": "2024-03-20T09:21:36.615792",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843053,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:21:36.673594",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843054,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'transplant'. You cannot use the following words: relocate, transport, drive"
+        },
+        "date_created": "2024-03-20T09:21:36.685456",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843055,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:22:43.961848",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843073,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this is word that in a medical context refers to when a heart is replaced",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:22:44.018752",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843074,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "this is word that in a medical context refers to when a heart is replaced"
+        },
+        "date_created": "2024-03-20T09:22:44.029133",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843075,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "transplant",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:24:32.829753",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843124,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "transplant"
+        },
+        "date_created": "2024-03-20T09:24:32.840360",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843125,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "transplant"
+        },
+        "date_created": "2024-03-20T09:24:33.336328",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843130,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'transplant' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:24:33.346888",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843131,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-20T09:24:33.953734",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843133,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 5 of 6"
+        },
+        "date_created": "2024-03-20T09:24:33.964410",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843134,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:24:34.966647",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843135,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "obvious"
+        },
+        "date_created": "2024-03-20T09:24:35.020596",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843136,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:24:35.078715",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843137,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'obvious'. You cannot use the following words: apparent, evident, blatant"
+        },
+        "date_created": "2024-03-20T09:24:35.090415",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843138,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:25:51.034813",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843184,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this is a word that neans when something is very clear to people, could not be any clearer even to a child",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:25:51.093038",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843185,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "this is a word that neans when something is very clear to people, could not be any clearer even to a child"
+        },
+        "date_created": "2024-03-20T09:25:51.103632",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843186,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "obvious",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:26:58.484691",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843193,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "obvious"
+        },
+        "date_created": "2024-03-20T09:26:58.495582",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843194,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "obvious"
+        },
+        "date_created": "2024-03-20T09:26:58.989304",
+        "date_modified": null,
+        "event": "correct guess",
+        "id": 4843199,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1: 'obvious' was correct! You both win this round."
+        },
+        "date_created": "2024-03-20T09:26:58.999405",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843200,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-20T09:26:59.603530",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843202,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Let's start round 6 of 6"
+        },
+        "date_created": "2024-03-20T09:26:59.613883",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843203,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Wait a bit for the first hint about the word you need to guess"
+        },
+        "date_created": "2024-03-20T09:27:00.615779",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843204,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "responsibility"
+        },
+        "date_created": "2024-03-20T09:27:00.668069",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843205,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:27:00.728149",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843206,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Your task is to explain the word 'responsibility'. You cannot use the following words: blame, obligation, reliability"
+        },
+        "date_created": "2024-03-20T09:27:00.738871",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843207,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:29:11.561550",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843217,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "this is the word that reflects what you have once you have a child",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:29:11.619004",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843218,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "this is the word that reflects what you have once you have a child"
+        },
+        "date_created": "2024-03-20T09:29:11.629422",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843219,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "content": "offspring",
+            "from": "GM impersonated as hard-stave, the guesser",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:29:46.927223",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843225,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "offspring"
+        },
+        "date_created": "2024-03-20T09:29:46.939190",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843226,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "GUESS 1 'offspring' was false"
+        },
+        "date_created": "2024-03-20T09:29:47.387611",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843231,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Please provide a new description"
+        },
+        "date_created": "2024-03-20T09:29:47.889599",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843232,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:30:28.207616",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843242,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "it means like a debt or the care you now have to take because you are..",
+            "from": "GM impersonated as blocking-margin, the explainer",
+            "to": 5416
+        },
+        "date_created": "2024-03-20T09:30:28.264905",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843243,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "it means like a debt or the care you now have to take because you are.."
+        },
+        "date_created": "2024-03-20T09:30:28.276208",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843244,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "Closing session because of inactivity"
+        },
+        "date_created": "2024-03-20T09:35:28.162021",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843251,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **SDW34I**</a>"
+        },
+        "date_created": "2024-03-20T09:35:28.179841",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843252,
+        "receiver_id": 5415,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": true,
+            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **IGA3XH**</a>"
+        },
+        "date_created": "2024-03-20T09:35:28.230953",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843254,
+        "receiver_id": 5416,
+        "room_id": 4057,
+        "user_id": 5379
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "html": false,
+            "message": "The room is closing, see you next time 👋"
+        },
+        "date_created": "2024-03-20T09:35:28.294455",
+        "date_modified": null,
+        "event": "text_message",
+        "id": 4843256,
+        "receiver_id": null,
+        "room_id": 4057,
+        "user_id": 5379
+    }
+]

@@ -1,0 +1,487 @@
+[
+    {
+        "players": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:10:01.641177",
+                    "action": {
+                        "type": "target word",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:10:10.216183",
+                    "action": {
+                        "type": "clue",
+                        "content": "to start again"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:10:28.565329",
+                    "action": {
+                        "type": "guess",
+                        "content": "restart"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:10:01.641177",
+                    "action": {
+                        "type": "target word",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:11:00.419516",
+                    "action": {
+                        "type": "clue",
+                        "content": "very similar - to begin again"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:11:41.047623",
+                    "action": {
+                        "type": "guess",
+                        "content": "renew"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:10:01.641177",
+                    "action": {
+                        "type": "target word",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:12:06.165325",
+                    "action": {
+                        "type": "clue",
+                        "content": "it is also a word used to describe a CV"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:12:11.279346",
+                    "action": {
+                        "type": "guess",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:12:11.788309",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "resume"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:12:13.467685",
+                    "action": {
+                        "type": "target word",
+                        "content": "anymore"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:13:07.436333",
+                    "action": {
+                        "type": "clue",
+                        "content": "to add on/extend to - usually related to time"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:13:34.882533",
+                    "action": {
+                        "type": "guess",
+                        "content": "prolong"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:12:13.467685",
+                    "action": {
+                        "type": "target word",
+                        "content": "anymore"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:14:34.528837",
+                    "action": {
+                        "type": "clue",
+                        "content": "ok maybe not related to time - think to make longer - usually associated with a negative"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:15:09.616269",
+                    "action": {
+                        "type": "guess",
+                        "content": "lengthen"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:12:13.467685",
+                    "action": {
+                        "type": "target word",
+                        "content": "anymore"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:16:20.842305",
+                    "action": {
+                        "type": "clue",
+                        "content": "to further extend - made up of 2 words together - the first meaning a number of things and the second words meaning additional"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:18:26.611159",
+                    "action": {
+                        "type": "guess",
+                        "content": "increase"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:18:27.125941",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:18:28.806150",
+                    "action": {
+                        "type": "target word",
+                        "content": "regret"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:19:12.160270",
+                    "action": {
+                        "type": "clue",
+                        "content": "the feeling that you failed and if you had the chance you would redo it"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:21:14.219325",
+                    "action": {
+                        "type": "guess",
+                        "content": "repeat"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:18:28.806150",
+                    "action": {
+                        "type": "target word",
+                        "content": "regret"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:21:37.115266",
+                    "action": {
+                        "type": "clue",
+                        "content": "it's a more melancholic version"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:23:52.505372",
+                    "action": {
+                        "type": "guess",
+                        "content": "rethink"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:18:28.806150",
+                    "action": {
+                        "type": "target word",
+                        "content": "regret"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:24:08.045663",
+                    "action": {
+                        "type": "clue",
+                        "content": "you don't want to live life with these"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:27:10.909423",
+                    "action": {
+                        "type": "guess",
+                        "content": "setback"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:27:11.419250",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:27:13.103754",
+                    "action": {
+                        "type": "target word",
+                        "content": "orient"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:28:06.906576",
+                    "action": {
+                        "type": "clue",
+                        "content": "align something/ or countries associated with East Asia"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:30:34.219401",
+                    "action": {
+                        "type": "guess",
+                        "content": "parallel"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:27:13.103754",
+                    "action": {
+                        "type": "target word",
+                        "content": "orient"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:31:03.660595",
+                    "action": {
+                        "type": "clue",
+                        "content": "countries associated with East Asia - also the name of an express train"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:31:12.849365",
+                    "action": {
+                        "type": "guess",
+                        "content": "Orient"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:31:13.360948",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "Orient"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:31:15.043820",
+                    "action": {
+                        "type": "target word",
+                        "content": "transplant"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:14.205993",
+                    "action": {
+                        "type": "clue",
+                        "content": "to surgically replace an organ in the body"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:35.725629",
+                    "action": {
+                        "type": "guess",
+                        "content": "transplant"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:36.228453",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "transplant"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5418, name global-cache",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5417, name light-executive"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:32:37.906892",
+                    "action": {
+                        "type": "target word",
+                        "content": "career"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:49.491338",
+                    "action": {
+                        "type": "clue",
+                        "content": "another name for you job in the long term"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:56.587678",
+                    "action": {
+                        "type": "guess",
+                        "content": "career"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:57.101217",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "career"
+                    }
+                }
+            ]
+        ]
+    }
+]
