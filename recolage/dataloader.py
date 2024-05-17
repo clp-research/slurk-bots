@@ -12,12 +12,18 @@ class Dataloader(list):
     def _sample_boards(self):
         self.clear()
         board_ids = set()
+        board_ids = set()
         boards = self._read_board_file()
         images_per_level = self._n // 3
 
         for level in cycle(["easy", "medium", "hard"]):
             if boards.get(level):
                 for board in random.sample(boards[level], images_per_level):
+                    state_id = board["state"]["state_id"]
+
+                    if state_id not in board_ids:
+                        self.append(board)
+                        board_ids.add(state_id)
                     state_id = board["state"]["state_id"]
 
                     if state_id not in board_ids:
@@ -48,6 +54,7 @@ class Dataloader(list):
                 boards[level].append(board)
 
         # load entire dataset
+        # load entire dataset
         if self._n == -1:
             self._n = index        
 
@@ -62,3 +69,4 @@ class Dataloader(list):
 if __name__ == "__main__":
     from pathlib import Path
     d = Dataloader(Path("data/boards.jsonl"), 29)
+
