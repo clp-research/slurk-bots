@@ -3,9 +3,8 @@ import numpy as np
 
 
 def plot_screw(ax, x, y, factor=3, color="b", cell_size=1):
-    if color == 'y':
-        color = 'orange'
-
+    if color == "y":
+        color = "orange"
 
     circle = plt.Circle(
         (x + cell_size / 2, y + cell_size / 2),
@@ -18,8 +17,8 @@ def plot_screw(ax, x, y, factor=3, color="b", cell_size=1):
 
 
 def plot_washer(ax, x, y, color="r", cell_size=1):
-    if color == 'y':
-        color = 'orange'
+    if color == "y":
+        color = "orange"
 
     diamond = plt.Polygon(
         [
@@ -37,9 +36,9 @@ def plot_washer(ax, x, y, color="r", cell_size=1):
     return
 
 
-def plot_nut(ax, x, y, factor=1.4, color="g", cell_size=1):
-    if color == 'y':
-        color = 'orange'
+def plot_nut(ax, x, y, factor=1.2, color="g", cell_size=1):
+    if color == "y":
+        color = "orange"
 
     square = plt.Rectangle(
         (
@@ -57,8 +56,8 @@ def plot_nut(ax, x, y, factor=1.4, color="g", cell_size=1):
 
 
 def plot_bridge_h(ax, x, y, factor=1.6, color="g", cell_size=1):
-    if color == 'y':
-        color = 'orange'
+    if color == "y":
+        color = "orange"
 
     bridge = plt.Rectangle(
         (
@@ -76,9 +75,8 @@ def plot_bridge_h(ax, x, y, factor=1.6, color="g", cell_size=1):
 
 
 def plot_bridge_v(ax, x, y, factor=1.6, color="g", cell_size=1):
-    if color == 'y':
-        color = 'orange'
-
+    if color == "y":
+        color = "orange"
 
     bridge = plt.Rectangle(
         (
@@ -156,7 +154,13 @@ def plot_board(board, filename=None):
     plt.close()
 
 
-long_to_short = {"washer": "W", "nut": "N", "screw": "S"}
+long_to_short = {
+    "washer": "W",
+    "nut": "N",
+    "screw": "S",
+    "bridge-h": "L",
+    "bridge-v": "T",
+}
 long_to_short_color = {"red": "r", "green": "g", "blue": "b", "yellow": "y"}
 
 
@@ -170,9 +174,11 @@ class SameShapeAtAlternateLevels(Exception):
     "Raised when same shapes are stacked at alternate levels"
     pass
 
+
 class SameColorAtAlternateLevels(Exception):
     "Raised when same colors are stacked at alternate levels"
     pass
+
 
 class SameColorStackingError(Exception):
     "Raised when same colors are stacked on top of each other"
@@ -208,39 +214,56 @@ def get_top_layer(board, x, y):
         raise (ValueError("Placement not possible"))
     return top_layer
 
+
 def check_for_errors(top_layer, board, shape, color, x, y):
-    if board[top_layer - 1, 1, x, y] == "S":
+    if board[top_layer - 1, 0, x, y] == "S":
         raise (NotOnTopOfScrewError("Placement not possible"))
 
-    if board[top_layer - 1, 0, x, y] == long_to_short[shape]:
-        raise (SameShapeStackingError("Placement not possible"))            
+    start_layer = top_layer - 1
+    while(start_layer >= 0):
+        if board[start_layer, 0, x, y] == long_to_short[shape]:
+            raise (SameShapeStackingError("Placement not possible"))
+        start_layer -= 1
 
     if shape == "bridge-h":
-        if board[top_layer - 1, 1, x, y] == long_to_short_color[color] or board[top_layer - 1, 1, x, y+1] == long_to_short_color[color]:
+        if board[top_layer - 1, 0, x, y + 1] == "S":
+            raise (NotOnTopOfScrewError("Placement not possible"))
+
+        if (
+            board[top_layer - 1, 1, x, y] == long_to_short_color[color]
+            or board[top_layer - 1, 1, x, y + 1] == long_to_short_color[color]
+        ):
             raise (SameColorStackingError("Placement not possible"))
+
     elif shape == "bridge-v":
-        if board[top_layer - 1, 1, x, y] == long_to_short_color[color] or board[top_layer - 1, 1, x+1, y] == long_to_short_color[color]:
+        if board[top_layer - 1, 0, x + 1, y] == "S":
+            raise (NotOnTopOfScrewError("Placement not possible"))
+
+        if (
+            board[top_layer - 1, 1, x, y] == long_to_short_color[color]
+            or board[top_layer - 1, 1, x + 1, y] == long_to_short_color[color]
+        ):
             raise (SameColorStackingError("Placement not possible"))
     else:
         if board[top_layer - 1, 1, x, y] == long_to_short_color[color]:
             raise (SameColorStackingError("Placement not possible"))
-    
+
+    '''
     if top_layer > 1:
         # check if same shape is placed at alternate levels
         if board[top_layer - 2, 0, x, y] == long_to_short[shape]:
-            raise (SameShapeAtAlternateLevels("Placement not possible"))    
+            raise (SameShapeAtAlternateLevels("Placement not possible"))
 
         # check if same color is placed at alternate levels
         if board[top_layer - 2, 1, x, y] == long_to_short_color[color]:
-            raise (SameColorAtAlternateLevels("Placement not possible"))    
-
-
+            raise (SameColorAtAlternateLevels("Placement not possible"))
+    '''
 
 # TODO: operate on copy of board, so that original board
 # can be returned if placement not possible? (rather than
 # raising an exception)
 def put(board, shape, color, x, y):
-    if x >= board.shape[2] or y >= board.shape[3]:
+    if x >= board.shape[2] or y >= board.shape[3] or x < 0 or y < 0:
         raise (DimensionsMismatchError("Placement not possible"))
 
     top_layer = get_top_layer(board, x, y)
@@ -257,13 +280,10 @@ def put(board, shape, color, x, y):
 
         top_layer_adjacent = get_top_layer(board, x, y + 1)
         if top_layer != top_layer_adjacent:
-            print(f"top_layer: {top_layer}, top_layer_adjacent: {top_layer_adjacent} raising DepthMismatchError")
             raise (DepthMismatchError("Placement not possible"))
 
-        print("Setting values for bridge-h")
         board[top_layer, 0, x, y] = "L"
         board[top_layer, 1, x, y] = color
-
 
         board[top_layer, 0, x, y + 1] = "R"
         board[top_layer, 1, x, y + 1] = color
@@ -284,13 +304,12 @@ def put(board, shape, color, x, y):
         board[top_layer, 0, x, y] = "T"
         board[top_layer, 1, x, y] = color
 
-
         board[top_layer, 0, x + 1, y] = "B"
         board[top_layer, 1, x + 1, y] = color
     else:
         # check if it is being placed on top of another screw
         if top_layer > 0:
-            check_for_errors(top_layer, board, shape, color, x, y)           
+            check_for_errors(top_layer, board, shape, color, x, y)
 
         board[top_layer, 0, x, y] = long_to_short[shape]
         board[top_layer, 1, x, y] = color
@@ -328,3 +347,15 @@ def board_rot90(board):
     }
     board_r[:, 0] = np.vectorize(bridge_rot_dict.get)(board_r[:, 0])
     return board_r
+
+
+def remove_shape(board, x, y):
+    try:
+        top_layer = get_top_layer(board, x, y)
+    except ValueError:
+        #Scenario for height matching the top layer
+        top_layer = 4
+
+    if top_layer > 0:
+        board[top_layer - 1, :, x, y] = "0"
+    return board

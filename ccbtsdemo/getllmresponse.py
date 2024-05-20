@@ -46,7 +46,7 @@ class PromptLLM:
             generic_api_key = self.keys["generic_openai_compatible"]["api_key"]
             generic_api_url = self.keys["generic_openai_compatible"]["base_url"]
 
-    def get_prompt(self, test_data, prompt=[], response=None):
+    def get_prompt(self, test_data, prompt=[], response=None, error=None):
         #with open("/home/admin/Desktop/codebase/slurk_latest_repo/slurk-bots/ccbts/prompt_template_atomic_instruction.txt", "r") as f:
         with open(f"{RELATED_FILE_PATH}/prompt_template_atomic_instruction.txt", "r") as f:            
             template = f.read()
@@ -57,17 +57,22 @@ class PromptLLM:
 
         else:
             prompt.extend([{"role": "assistant", "content": response}])
-            prompt.extend(
-                [{"role": "user", "content": "Instruction\n" + test_data + "\n"}]
-            )
+            if error:
+                prompt.extend(
+                    [{"role": "user", "content": "Execution Error\n" + error + "\n. Please try again. Dont generate additional explanation\n"}]
+                )
+            else:
+                prompt.extend(
+                    [{"role": "user", "content": "Instruction\n" + test_data + "\n"}]
+                )
 
     def generate(self, model, prompt):
         # print(f"Testing model {model} with temperature {self.temperature}")
         if model in self.openai_models:
             return self.call_openai(model, prompt)
         else:
-            #return self.call_hfapi(model, prompt)
-            return self.call_genericapi(model, prompt)
+            return self.call_hfapi(model, prompt)
+            #return self.call_genericapi(model, prompt)
 
     def call_openai(self, model, prompt):
         #client = OpenAI(api_key=openai_api_key, organization=openai_organization)
@@ -104,7 +109,7 @@ class PromptLLM:
     
     def _prepare_data_open_models(self, model, messages):
         model_types = {
-            "llama__models": [
+            "llama_models": [
                 "codellama/CodeLlama-34b-Instruct-hf",
                 "codellama/CodeLlama-70b-Instruct-hf",
                 "mistralai/Mistral-7B-Instruct-v0.1",
@@ -122,7 +127,7 @@ class PromptLLM:
             ],
         }
         if not self.promptconfig["use_hf_api_local"]:
-            if model in model_types["llama__models"]:
+            if model in model_types["llama_models"]:
                 prompt_text = (
                     "".join(
                         [
@@ -142,7 +147,7 @@ class PromptLLM:
             prompt_text = messages
 
         self.temperature = self.temperature or 0.01
-        if "hf" in model or model in model_types["nonllama_models"]:
+        if "hf" in model or model in model_types["llama_models"]:
             model_parameters = {
                 "temperature": self.temperature,
                 "max_new_tokens": self.max_new_tokens,

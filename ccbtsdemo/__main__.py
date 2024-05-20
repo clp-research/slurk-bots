@@ -10,6 +10,8 @@ from .getllmresponse import PromptLLM
 from .preparedata import Dataloader
 from .execresponse import execute_response
 from .base64encode import encode_image_to_base64
+from .dmanager import DialogueManager
+
 
 
 TIMEOUT_TIMER = 60  # minutes
@@ -49,6 +51,9 @@ class CCBTSDemoBot(TaskBot):
         self.rows = 8
         self.cols = 8
         self.dataloader = Dataloader()
+        #self.dmanager = DialogueManager({"width":self.cols, "height":self.rows})
+        #sleep(1)
+        logging.debug(f"CCBTS: __init__ completed, task = {task}, user = {user}")
 
     def on_task_room_creation(self, data):
         logging.debug(f"Task room created, data = {data}")
@@ -72,6 +77,9 @@ class CCBTSDemoBot(TaskBot):
                 logging.debug(
                     f"Setting empty grid during task creation room_id: {room_id} user_id: {usr['id']}"
                 )
+
+                self.dmanager = DialogueManager({"width":self.cols, "height":self.rows})
+                #sleep(1)
 
                 self.load_target_image(room_id, usr["id"])
                 self.setworldstate(room_id, usr["id"])
@@ -229,6 +237,7 @@ class CCBTSDemoBot(TaskBot):
 
 
             self.setworldstate(room_id, user_id)
+            self.dmanager.reset()
 
 
     def handlereset(self, room_id, user_id, command="reset"):
@@ -276,14 +285,50 @@ class CCBTSDemoBot(TaskBot):
 
             # This is the user instruction
             message = data["message"]
+
+            response = self.dmanager.run(message)
+            logging.debug(f"Response: {response}")
+
+            #Show the response in the chat area
+            if response:
+                if not "png" in response:
+                    self.sio.emit(
+                                    "text",
+                                    {
+                                        "room": data["room"],
+                                        # "message": message
+                                        "message": COLOR_MESSAGE.format(
+                                            color=STANDARD_COLOR, message=response
+                                        ),
+                                        "html": True,
+                                        **options,
+                                    },
+                                    callback=self.message_callback,
+                                )
+                else:
+                    base64_string = encode_image_to_base64(response)
+                    self.sio.emit(
+                        "message_command",
+                        {
+                            "command": {
+                                "event": "update_world_state",
+                                "message": base64_string,
+                            },
+                            "room": room_id,
+                            "receiver_id": data["user"]["id"],
+                        },
+                    )
+
+
+            '''
             # Call LLM to generate a response
             self.instructions[self.n_turns + 1] = message
             prompt = []
             pllm = PromptLLM()
             pllm.get_prompt(message, prompt)
             logging.debug(f"Prompt: {prompt}")
-            #model_to_test = "codellama/CodeLlama-34b-Instruct-hf"
-            model_to_test = "fsc-codellama-34b-instruct"#"fsc-openchat-3.5-0106"
+            model_to_test = "codellama/CodeLlama-34b-Instruct-hf"
+            #model_to_test = "fsc-codellama-34b-instruct"#"fsc-openchat-3.5-0106"
 
             generated_response = pllm.generate(model_to_test, prompt)
             logging.debug(f"Generated Response: {generated_response}")
@@ -338,18 +383,8 @@ class CCBTSDemoBot(TaskBot):
                 return
 
             self.n_turns += 1
-            base64_string = encode_image_to_base64(save_filename)
-            self.sio.emit(
-                "message_command",
-                {
-                    "command": {
-                        "event": "update_world_state",
-                        "message": base64_string,
-                    },
-                    "room": room_id,
-                    "receiver_id": data["user"]["id"],
-                },
-            )
+
+            '''
 
         @self.sio.event
         def command(data):
