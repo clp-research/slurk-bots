@@ -38,7 +38,7 @@ class IntentDetection(TaskBot):
     timers_per_room = dict()
 
     def __init__(self, token, user, task, host, port):
-        logging.debug(f"CCBTS Annotations: __init__, task = {task}, user = {user}")
+        logging.debug(f"CCBTS Intent Detection: __init__, task = {task}, user = {user}")
         super().__init__(token, user, task, host, port)
         self.num_images = 0
      
@@ -206,7 +206,7 @@ class IntentDetection(TaskBot):
 
             self._cleanup(room_id, user_id)
 
-            message = "Resets the target board"
+            message = "Resetting the target board"
             self.load_target_image(room_id, user_id)
 
             self.sio.emit(
@@ -263,7 +263,7 @@ class IntentDetection(TaskBot):
     def showwelcomemessage(self, room_id, user_id):
         """Show welcome message."""
         logging.debug(f"Inside showwelcomemessage, room_id = {room_id}, user_id = {user_id}")
-        welcome_message = "Welcome to the COCOBOT Annotation Task Room <br><br> You can start by writing down the instructions for the given board<br><br>"
+        welcome_message = "Welcome to the COCOBOT Intent Detection Task Room <br><br> You can start by writing down the instructions.<br><br>"
         #Downloaded the image from this site: https://apps.timwhitlock.info/emoji/tables/unicode
         #Emoji: SCROLL, U+1F4DC
         task_message = "Read the instructions on the right ⏩<br>"
@@ -304,10 +304,10 @@ class IntentDetection(TaskBot):
             response = self.rhandler.parse(message)
             logging.debug(f"Response: {response}")
 
-            intent_name = COLOR_MESSAGE.format(color=STANDARD_COLOR, message="Name: ")
-            intent_confidence = COLOR_MESSAGE.format(color=STANDARD_COLOR, message=" Confidence: ")
+            intent_name_text = COLOR_MESSAGE.format(color=STANDARD_COLOR, message="Name: ")
+            intent_confidence_text = COLOR_MESSAGE.format(color=STANDARD_COLOR, message=" Confidence: ")
 
-            intent_info = intent_name +response["dialogue_act"]["name"].capitalize() + "<br>" + intent_confidence +str(response["dialogue_act"]["confidence"]) + "<br>"
+            intent_info = intent_name_text + response["dialogue_act"]["name"].capitalize() + "<br>" + intent_confidence_text +str(response["dialogue_act"]["confidence"]) + "<br>"
 
 
             if response["dialogue_act"]["entities"]:
@@ -320,13 +320,13 @@ class IntentDetection(TaskBot):
             else:
                 entity_info = "No entities detected"
 
-            response = intent_info + entity_info
+            response_show = intent_info + entity_info
 
             self.sio.emit(
                 "text",
                 {
                     "room": data["room"],
-                    "message": response,
+                    "message": response_show,
                     "html": True,
                     **options
                 },
