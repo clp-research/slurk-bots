@@ -27,8 +27,8 @@ class RasaModelLoader:
 class RasaHandler:
     def __init__(self):
         logging.debug(f"Loading Rasa NLU model from {RELATED_FOLDER_PATH}")
-        self.agent = Agent.load(f"{RELATED_FOLDER_PATH}/20240529-082546-several-paradigm.tar.gz")
-        logging.debug(f"Loaded Rasa NLU model from {RELATED_FOLDER_PATH}")
+        self.agent = Agent.load(f"{RELATED_FOLDER_PATH}/model.tar.gz")
+        logging.debug(f"Loaded Rasa NLU model")
 
     def parse(self, utterance):
         daresponse = {"utterance": utterance}

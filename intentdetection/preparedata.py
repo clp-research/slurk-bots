@@ -45,7 +45,7 @@ class Dataloader:
         try:
             with open(f"{ROOT}/data/sequences/legends/board_legend_info.json", "r") as file:
                 legend_info = json.load(file)
-                logging.debug(f"Current legend mapping: {legend_info}")
+                #logging.debug(f"Current legend mapping: {legend_info}")
                 return legend_info
         except FileNotFoundError:
             logging.debug("board_legend_info.json is not available, returning empty dict")
