@@ -10,7 +10,7 @@ from .rasahandler import RasaHandler
 TIMEOUT_TIMER = 60  # minutes
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
 STANDARD_COLOR = "Purple"
-
+WARNING_COLOR = "FireBrick"
 
 class RoomTimer:
     def __init__(self, function, room_id):
@@ -41,12 +41,13 @@ class IntentDetection(TaskBot):
         logging.debug(f"CCBTS Intent Detection: __init__, task = {task}, user = {user}")
         super().__init__(token, user, task, host, port)
         self.num_images = 0
+        self.intent_data_to_save = {}
      
 
     def on_task_room_creation(self, data):
         logging.debug(f"Task room created, data = {data}")        
         room_id = data["room"]
-        task_id = data["task"]        
+        task_id = data["task"]
 
         self.num_images = 0
         self.dataloader = Dataloader()         
@@ -299,6 +300,8 @@ class IntentDetection(TaskBot):
                 logging.debug("It was actually a private message o.O")
                 options["receiver_id"] = data["user"]["id"]
 
+
+            self.intent_data_to_save = {}
             message = data["message"]
 
             response = self.rhandler.parse(message)
@@ -333,11 +336,25 @@ class IntentDetection(TaskBot):
                 callback=self.message_callback,
             )
 
-            data_to_save = {
+            self.sio.emit(
+                "text",
+                {
+                    "message": COLOR_MESSAGE.format(color=WARNING_COLOR, message=(
+                        "Do you confirm that the intent detected is correct? <br>"
+                        "<button class='message_button' onclick=\"confirm_selection('yes')\">YES</button> "
+                        "<button class='message_button' onclick=\"confirm_selection('no')\">NO</button>"
+                    )),
+                    "room": room_id,
+                    "receiver_id": data["user"]["id"],
+                    "html": True,
+                },
+            )         
+
+            self.intent_data_to_save = {
                 "utterance": response["utterance"],
                 "details": response["dialogue_act"]
             }
-            self.log_event("intentdetection", data_to_save, room_id)            
+            #self.log_event("intentdetection", data_to_save, room_id)            
 
         @self.sio.event
         def command(data):
@@ -360,7 +377,35 @@ class IntentDetection(TaskBot):
             elif data["command"] == "restart":
                 # re-fetch the target board
                 self.handlereset(room_id, user_id, "restart")
+
             else:
+
+                if isinstance(data["command"], dict):
+                    # commands received from the frontend
+                    event = data["command"]["event"]                    
+
+                    if event == "confirm_intent":
+                        logging.debug(f"User response: {data['command']['answer']}")
+                        self.intent_data_to_save["user_response"] = data["command"]["answer"]
+                        self.log_event("intentdetection", self.intent_data_to_save, room_id) 
+
+                        self.sio.emit(
+                            "text",
+                            {
+                                "room": room_id,
+                                "message": COLOR_MESSAGE.format(
+                                    color=STANDARD_COLOR, message="Logged your response. Please proceed with the next instruction."
+                                ),
+                                "receiver_id": user_id,
+                                "html": True,
+                            },
+                            callback=self.message_callback,
+                        )
+
+
+                        return
+
+                
                 logging.debug(f"Unknown command: {data['command']}")
                 self.sio.emit(
                     "text",

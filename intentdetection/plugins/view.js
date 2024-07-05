@@ -1,4 +1,16 @@
 
+function confirm_selection(answer){
+    socket.emit("message_command",
+        {
+            "command": {
+                "event": "confirm_intent",
+                "answer": answer
+            },
+            "room": self_room
+        }
+    )
+}
+
 
 
 $(document).ready(function () {
@@ -46,9 +58,8 @@ $(document).ready(function () {
                         $("#target-board-legend").hide()
                         $("#target-legend-caption").hide()
                     }
-                        
-
                     break;
+
                 case "close_after_10_images":
                     console.log("closing after 10 images")
                     $("#instruction").val("")
@@ -57,7 +68,7 @@ $(document).ready(function () {
                     $("#target-board-caption").hide()
                     $("#target-board-legend").hide()
                     $("#target-legend-caption").hide()                    
-                    break;
+                    break;            
             }
         }
     });    
