@@ -358,4 +358,10 @@ def remove_shape(board, x, y):
 
     if top_layer > 0:
         board[top_layer - 1, :, x, y] = "0"
+
+        if top_layer - 1 == "T":
+            board[top_layer - 1, :, x+1, y] = "0"
+        elif top_layer - 1 == "L":
+            board[top_layer - 1, :, x, y+1] = "0"
+
     return board

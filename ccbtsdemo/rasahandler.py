@@ -1,39 +1,95 @@
 import logging
+
+import requests
+import uuid
+
 import asyncio
-
-
-from rasa.core.agent import Agent
-from rasa.core.http_interpreter import RasaNLUHttpInterpreter
-from rasa.shared.utils.io import json_to_string
-
-from pathlib import Path
-
-
-ROOT = Path(__file__).parent.resolve()
-RELATED_FOLDER_PATH = Path(
-    f"{ROOT}/data/models/"
-)
+import time
 
 class RasaHandler:
-    def __init__(self):
-        logging.debug(f"Loading Rasa NLU model from {RELATED_FOLDER_PATH}")
-        self.agent = Agent.load(f"{RELATED_FOLDER_PATH}/20240514-061034-magenta-dither.tar.gz")
-        logging.debug(f"Loaded Rasa NLU model from {RELATED_FOLDER_PATH}")
+    def __init__(self, rasa_url, model_path):
+        # Load the Rasa NLU model: model_path = "models/20240619-113705-chalky-hybrid.tar.gz"
+        self.rasa_url = rasa_url
+        self.model_path = model_path
+
+        if not self.rasa_url:
+            from rasa.core.agent import Agent
+            from rasa.core.http_interpreter import RasaNLUHttpInterpreter
+            from rasa.shared.utils.io import json_to_string
+
+            self.agent = Agent.load(model_path)
+
+    def call_rasa_with_retry(self, max_retries=5, delay=2):
+        for attempt in range(max_retries):
+            try:
+                response = requests.post(f"{self.rasa_url}/model/parse", json={"text": "Hello"}, timeout=10)
+                response.raise_for_status()
+                return response.json()
+            except requests.exceptions.RequestException as e:
+                logging.warning(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < max_retries - 1:
+                    logging.info(f"Retrying in {delay} seconds...")
+                    time.sleep(delay)
+                else:
+                    logging.error("Max retries reached. RASA server is not responding.")
+                    raise                  
+
+    def test_rasa_server(self):
+        try:
+            response = self.call_rasa_with_retry()
+            return True
+        except:
+            return False
+
 
     def parse(self, utterance):
         daresponse = {"utterance": utterance}
-        result = asyncio.run(self.agent.parse_message(utterance))
-        logging.debug(f"Received response from Rasa NLU: {result['intent']}")
-        daresponse["dialogue_act"] = result["intent"]["name"].upper()
-        return daresponse
 
+        if self.rasa_url:
+            endpoint = f"{self.rasa_url}/model/parse"
+            payload = {"text": utterance}
+
+            try:
+                result = requests.post(endpoint, json=payload, timeout=30)
+                result = result.json()
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Error connecting to RASA: {e}")
+
+        #logging.debug(f"Received response from Rasa NLU: {result}")
+
+        daresponse["intent"] = {'name': result["intent"]["name"].upper(), 'confidence': round(result["intent"]["confidence"], 2)}
+        daresponse["entities"] = result["entities"]
+
+        return daresponse
     
-    def generate(self, utterance):
-        daresponse = {"utterance": utterance}        
-        result = asyncio.run(self.agent.handle_text(utterance))
-        logging.debug(f"Received response from Rasa NLU: {result}")
-        if result and result[0] and "text" in result[0]:
-            daresponse["response"] = result[0]["text"]
+    def generate(self, utterance, previntent = None):
+        daresponse = {"utterance": utterance}
+
+
+        if self.rasa_url:
+            endpoint = f"{self.rasa_url}/webhooks/rest/webhook"
+            payload = {
+                "sender": str(uuid.uuid4()),  # Generate a unique ID if not provided,
+                "message": utterance
+            }
+
+            result = requests.post(endpoint, json=payload)
+            result = result.json()
         else:
-            daresponse["response"] = "Sorry, I don't understand. Can you please repeat?"
+            result = asyncio.run(self.agent.handle_text(utterance))
+
+        #logging.debug(f"Received response from Rasa NLU: {result}")
+
+        if result:
+            daresponse["output"] = result[0]["text"]
+        else:
+            logging.debug(f"Generating custom response: previntent = {previntent}")
+
+            if previntent in ["TRANSLATE", "UNDO", "SAVE-SKILL", "REPEAT-SKILL"]:
+                daresponse["output"] = "Okay"
+            elif previntent == "GROUND":
+                daresponse["output"] = "Grounding using RoboARM"
+            else:
+                daresponse["output"] = "Sorry, I don't understand. Can you please repeat?"
+        daresponse["rasa_result"] = result
         return daresponse

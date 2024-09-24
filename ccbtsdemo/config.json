@@ -1,0 +1,19 @@
+{
+    "gridsize": {
+        "width": 8,
+        "height": 8
+    },
+    "_hf_llm_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "llm_name": "gpt-4o",
+    "rasa_model_path": "models/20240619-113705-chalky-hybrid.tar.gz",
+    "rasa_url": "http://localhost:5006",
+    "intent_confidence": 0.99,
+    "llm_retry_translate_error": 3,
+    "llm_retry_repeat_error": 3,
+    "pybullet": {
+        "base_url": "http://localhost:5008",
+        "apis_list": ["initialize", "loadshapes", "pick_and_place"]
+    },
+    "use_pybullet_simulation": false,
+    "use_ur5arm": false
+}

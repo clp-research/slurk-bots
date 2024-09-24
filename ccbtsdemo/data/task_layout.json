@@ -1,5 +1,5 @@
 {
-  "title": "COCOBOTS - DEMO",
+  "title": "NL2Cobot Programming - DEMO",
   "html": [
     {
         "layout-type": "div",
@@ -25,7 +25,10 @@
                   "id": "working-board-image",
                   "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
                   "width": 400,
-                  "height": 300
+                  "height": 300,
+                  "style": {
+                          "display": "none"
+                        }                  
                 }
             ]
           },
@@ -56,7 +59,7 @@
               {
                 "layout-type": "text",
                 "id": "instr_text_task",
-                "layout-content": "<a style='color:Blue;'>Your task is to provide the bot with detailed step-by-step instructions to replicate the arrangement of shapes from the left target board onto the right working board.</a><br><br>Available shapes"
+                "layout-content": "<a style='color:Blue;'>Your task is to provide the bot with detailed step-by-step instructions to replicate the arrangement of shapes from the target board.</a><br><br>Available shapes"
               },
               {
                 "layout-type": "image",
@@ -71,7 +74,7 @@
               {
                 "layout-type": "text",
                 "id": "instr_text_details",
-                "layout-content": "Available colors:<br><a style='color:Purple;'>red, green, blue, and yellow</a><br><br>Example instructions:<br>1. place a red washer in the 4th row 3rd column<br><br>2. remove the last placed nut<br><br>Command to reset the target board:<br><a style='color:Purple;'> /restart </a><br><br>Command to reset the working board:<br><a style='color:Purple;'> /clear </a>"
+                "layout-content": "Available colors:<br><a style='color:Purple;'>red, green, blue, and yellow</a><br><br>Example instructions:<br>1. place a red washer in the 4th row 3rd column<br><br>2. remove the last placed nut<br><br>Command to reset the target board:<br><a style='color:Purple;'> /restart </a>"
               }              
             ]
           }
@@ -85,18 +88,16 @@
     "#image-area": {
       "align-content": "left",
       "margin": "30px 20px 15px"
-    }, 
+    },
     "#working-board-image": {
       "margin-left": "40px"
-    },
+    },    
     "#target-board-caption": {
       "margin-left": "155px"
-    },    
-
+    },   
     "#working-board-caption": {
-      "margin-left": "410px"
-    },    
-
+      "margin-left": "355px"
+    },
     "#instructions": {
       "align-content": "left",
       "margin": "30px 20px 15px",

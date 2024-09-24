@@ -5,7 +5,8 @@ function updateimage(base64_encoded_string) {
     console.log("Current image source: " + image_id.src)
     image_id.src = "data:image/png;base64," + base64_encoded_string;
     console.log("New image source: " + image_id.src);
-
+    // Hidden the current world state image
+    //image_id.style.display = "none";
     //$("#current-world-state").attr("src", filename);
 }
 
@@ -34,6 +35,15 @@ $(document).ready(() => {
                 case "set_target_image":
                     console.log("Setting the target image");
                     set_target_image(data.command.message);
+                    break;
+                case "hide_working_board":
+                    console.log("Hiding the working board");
+                    image_id = document.getElementById("working-board-image");
+                    image_id.style.display = "none";
+
+                    image_caption_id = document.getElementById("working-board-caption");
+                    image_caption_id.style.display = "none";
+
                     break;
             }
         }

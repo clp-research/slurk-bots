@@ -2,54 +2,97 @@ import logging
 from .getllmresponse import PromptLLM
 
 class DialogueTranslator:
-    def __init__(self):
+    def __init__(self, llm_model):
         self.pllm = PromptLLM()
-        self.prompt = []
-        self.response = None
-        self.model = "codellama/CodeLlama-34b-Instruct-hf"#"meta-llama/Meta-Llama-3-8B-Instruct"#
-        #self.model = "gpt-4o"
+        self.prompt = {}
+        self.response = {}
+        #self.model = "codellama/CodeLlama-34b-Instruct-hf"#"meta-llama/Meta-Llama-3-8B-Instruct"#
+        self.model = llm_model#"gpt-4o"
 
-    def reset(self):
-        self.prompt = []
-        self.response = None
+    def reset(self, prompt_type=None):
+        if not prompt_type:
+            self.prompt = {}
+            self.response = {}
+            return
+        self.prompt[prompt_type] = []
+        self.response[prompt_type] = None
 
+    def _cleanup_response(self, response, response_type):
+        code_labels = ["Output", "Output:", "Output :", "Output\n", "Output\n:"]
+        func_labels = ["Function", "Function:", "Function :", "Function\n", "Function\n:"]
+        if response_type == "code":
+            labels = code_labels
+        elif response_type == "function":
+            labels = func_labels
 
-    def _cleanup_response(self, response):
-        logging.debug(f"Response before cleanup: {response}")
-        labels = ["Output", "Output:", "Output :", "Output\n", "Output\n:"]
         for label in labels:
             response = response.replace(label, "")
             
         try:
             response = response.strip().split("\n")
+            logging.error(f"0. Response = {response}")
             if response:
+                if "```python" in response[0]:
+                    response[0] = response[0].replace("```python", "").strip()
+                    response[-1] = response[-1].replace("```", "").strip()
+
+                logging.error(f"1. Response = {response}")
+
+                if "```" in response[0]:
+                    response[0] = response[0].replace("```", "").strip()
+                    response[-1] = response[-1].replace("```", "").strip()
+
+                logging.error(f"2. Response = {response}")
+
                 if response[0] in [":", ".", ","]:
                     response = response[1:]
 
-                if response:
-                    if response[-1] in [":", ".", ","]:
-                        response = response[:-1]
+                logging.error(f"3. Response = {response}")
 
-                for resp in response:
-                    if resp[-1] in [":", ".", ","]:
-                        response[response.index(resp)] = resp[:-1]
+                if response:
+                    if response_type == "code":
+                        if response[-1] in [":", ".", ","]:
+                            response = response[:-1]
+
+                        for resp in response:
+                            logging.error(f"4.1 Response = {resp}")
+                            if not resp:
+                                continue
+                            if resp[-1] in [":", ".", ","] and ("if" not in resp or "for" not in resp or "while" not in resp):
+                                response[response.index(resp)] = resp[:-1]
+                            logging.error(f"4.2 Response = {resp}")
         except Exception as error:
-            logging.error(f"Error in cleanup_response: response: {response}, error: {error}")
+            logging.error("Error in cleanup_response: ", response, error)
         
         response = "\n".join(response)
+        logging.error(f"5 Response = {response}")
         return response
+    
 
+    def run(self, prompt_type, instruction, skill_name=None, skill_code=None, error=None):
 
-    def run(self, utterance, error=None):
-        self.pllm.get_prompt(utterance, self.prompt, self.response, error)
+        if prompt_type not in self.prompt:
+            self.prompt[prompt_type] = []
+            self.response[prompt_type] = None
 
-        self.response = self.pllm.generate(self.model, self.prompt)
+        reponse_type = None
 
-        logging.debug(f"Response from LLM: {self.response}")
+        if prompt_type == "translate":
+            self.pllm.get_prompt(instruction, self.prompt[prompt_type], self.response[prompt_type], error)
+            reponse_type = "code"
+        elif prompt_type == "repeat-skill":
+            self.pllm.repeat_prompt(instruction, skill_name, skill_code, self.prompt[prompt_type], self.response[prompt_type], error)
+            reponse_type = "code"
+        elif prompt_type == "abstract-skill":
+            self.pllm.abstract_prompt(skill_name, skill_code, self.prompt[prompt_type], self.response[prompt_type], error)
+            reponse_type = "function"
 
-        self.response = self._cleanup_response(self.response)
+        model_response = self.pllm.generate(self.model, self.prompt[prompt_type])
 
-        return self.response
+        self.response[prompt_type] = self._cleanup_response(model_response, reponse_type)
+
+        return self.response[prompt_type]
+
     
 if __name__=="__main__":
     dt = DialogueTranslator()

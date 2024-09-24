@@ -6,3 +6,7 @@ openai
 matplotlib
 numpy
 rasa
+huggingface-hub
+pybullet == 3.2.0
+transformers
+torch

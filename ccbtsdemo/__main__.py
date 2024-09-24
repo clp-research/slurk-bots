@@ -18,6 +18,7 @@ TIMEOUT_TIMER = 60  # minutes
 
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
 STANDARD_COLOR = "Purple"
+RESPONSE_COLOR = "Green"
 
 
 class RoomTimer:
@@ -51,9 +52,15 @@ class CCBTSDemoBot(TaskBot):
         self.rows = 8
         self.cols = 8
         self.dataloader = Dataloader()
+        #logging.debug(f"CCBTS: Calling Dialogue Manager")
         #self.dmanager = DialogueManager({"width":self.cols, "height":self.rows})
         #sleep(1)
         logging.debug(f"CCBTS: __init__ completed, task = {task}, user = {user}")
+
+    def load_rasa_model(self):
+        logging.debug(f"CCBTS: Calling Dialogue Manager")
+        self.dmanager = DialogueManager({"width":self.cols, "height":self.rows})
+        logging.debug(f"CCBTS: loaded the model")
 
     def on_task_room_creation(self, data):
         logging.debug(f"Task room created, data = {data}")
@@ -78,9 +85,11 @@ class CCBTSDemoBot(TaskBot):
                     f"Setting empty grid during task creation room_id: {room_id} user_id: {usr['id']}"
                 )
 
-                self.dmanager = DialogueManager({"width":self.cols, "height":self.rows})
+                self.dmanager = DialogueManager()#{"width":self.cols, "height":self.rows})
                 #sleep(1)
+                self.simulationtype = self.dmanager.getsimulationtype()
 
+                self.rearrange_layout(room_id, usr["id"], self.simulationtype)
                 self.load_target_image(room_id, usr["id"])
                 self.setworldstate(room_id, usr["id"])
                 self.showwelcomemessage(room_id, usr["id"])
@@ -177,7 +186,7 @@ class CCBTSDemoBot(TaskBot):
 
     def showwelcomemessage(self, room_id, user_id):
         """Show welcome message."""
-        welcome_message = "Welcome to the COCOBOT Task Room <br><br> You can start by typing your instructions in the chat area<br><br>"
+        welcome_message = "Welcome to the Task Room <br><br> You can start by typing your instructions in the chat area<br><br>"
         #Downloaded the image from this site: https://apps.timwhitlock.info/emoji/tables/unicode
         #Emoji: SCROLL, U+1F4DC
         task_message = "Read the instructions on the right ⏩<br>"
@@ -194,6 +203,24 @@ class CCBTSDemoBot(TaskBot):
             },
             callback=self.message_callback,
         )
+
+    def hideworkingboard(self, room_id, user_id):
+        """Hide the working board."""
+        self.sio.emit(
+            "message_command",
+            {
+                "command": {"event": "hide_working_board"},
+                "room": room_id,
+                "receiver_id": user_id,
+            },
+        )
+
+    def rearrange_layout(self, room_id, user_id, simulation_type):
+        logging.debug(f"rearrange_layout: simulation_type = {simulation_type}")
+        # If simulation_type is not virtual (2.5 world), hide the working board
+        if simulation_type != "virtual":
+            logging.debug(f"simulation_type != virtual, calling hideworkingboard")
+            self.hideworkingboard(room_id, user_id)
 
     def load_target_image(self, room_id, user_id):
         """Load the target image."""
@@ -212,12 +239,18 @@ class CCBTSDemoBot(TaskBot):
         logging.debug(f"Inside setworldstate, room_id = {room_id}, user_id = {user_id}")
         #save_filename = resetboardstate(self.rows, self.cols)
         #base64_string = encode_image_to_base64(save_filename)#get_empty_world_state()
-        base64_string = self.dataloader.get_empty_world_state()
+
+        if self.simulationtype != "virtual":
+            event_name = "hide_working_board"
+            base64_string = ""
+        else:
+            event_name = "update_world_state"
+            base64_string = self.dataloader.get_empty_world_state()
 
         self.sio.emit(
             "message_command",
             {
-                "command": {"event": "update_world_state", "message": base64_string},
+                "command": {"event": event_name, "message": base64_string},
                 "room": room_id,
                 "receiver_id": user_id,
             },
@@ -286,105 +319,149 @@ class CCBTSDemoBot(TaskBot):
             # This is the user instruction
             message = data["message"]
 
+            if not self.dmanager.israsaready():
+                self.sio.emit(
+                                "text",
+                                {
+                                    "room": data["room"],
+                                    "message": COLOR_MESSAGE.format(
+                                        color=STANDARD_COLOR, message="Failure in connecting to RASA Server, Try after a minute"
+                                    ),
+                                    "html": True,
+                                    **options,
+                                },
+                                callback=self.message_callback,
+                            )
+                return
+
             response = self.dmanager.run(message)
             logging.debug(f"Response: {response}")
 
             #Show the response in the chat area
             if response:
-                if not "png" in response:
+                #if not "png" in response["output"]:
+                confidence = str(response["dialogue_act"]["confidence"])
+                intent_info = "Rasa Intent Details: "+ "<br>" + "Name: " +response["dialogue_act"]["name"].capitalize() + "<br>" + " Confidence: " +confidence
+                intent_info = COLOR_MESSAGE.format(color=STANDARD_COLOR, message=intent_info)
+
+                if "entities" in response:
+                    if response["entities"]:
+                        entity_info = "Entities:"+ "<br>"
+                        for entity_name, entity_value in response["entities"].items():
+                            entity_info += entity_name.capitalize() + ": " + entity_value + "<br>"
+                        intent_info += "<br>" + COLOR_MESSAGE.format(color=STANDARD_COLOR, message=entity_info)
+                '''
+                if response['llmresponse'] and response['llmresponse']['Intent'] and response['llmresponse']['Confidence']:
+                    confidence = str(round(response['llmresponse']['Confidence'], 2))
+                    llm_intent_info = "LLM Intent Details: "+ "<br>" + "Name: " +response['llmresponse']['Intent'].capitalize() + "<br>" + " Confidence: " +confidence
+
+                    slots = response['llmresponse']['Slots']
+                    if slots:
+                        llm_intent_info += "<br>" + "Slots: " + "<br>"
+                        for slot_name, slot_value in slots.items():
+                            logging.debug(f"Slot Name: {slot_name}, Slot Value: {slot_value}")
+                            llm_intent_info += slot_name.capitalize()+ ": "
+                            if isinstance(slot_value, dict):
+                                for key, value in slot_value.items():
+                                    llm_intent_info += str(value) + "<br>"
+                            else:
+                                llm_intent_info += str(slot_value) + "<br>"
+                    llm_intent_info = COLOR_MESSAGE.format(color="Blue", message=llm_intent_info)
+                '''
+                if not "png" in response["output"]:
+                    message = response["output"]
+                else:
+                    if response["dialogue_act"]["name"].lower() == "translate":
+                        message = f"Generated Code: <br> {response['code']}"
+                    else:    
+                        message = f"Code Undo: <br> {response['code']}"
+
+                output = COLOR_MESSAGE.format(color=RESPONSE_COLOR, message=message)
+
+
+                self.sio.emit(
+                                "text",
+                                {
+                                    "room": data["room"],
+                                    "message": intent_info,
+                                    #"message": COLOR_MESSAGE.format(
+                                    #    color=STANDARD_COLOR, message=output
+                                    #),
+                                    "html": True,
+                                    **options,
+                                },
+                                callback=self.message_callback,
+                            )
+                '''
+                self.sio.emit(
+                                "text",
+                                {
+                                    "room": data["room"],
+                                    "message": llm_intent_info,
+                                    #"message": COLOR_MESSAGE.format(
+                                    #    color=STANDARD_COLOR, message=output
+                                    #),
+                                    "html": True,
+                                    **options,
+                                },
+                                callback=self.message_callback,
+                            )
+                '''
+                self.sio.emit(
+                                "text",
+                                {
+                                    "room": data["room"],
+                                    "message": output,
+                                    #"message": COLOR_MESSAGE.format(
+                                    #    color=STANDARD_COLOR, message=output
+                                    #),
+                                    "html": True,
+                                    **options,
+                                },
+                                callback=self.message_callback,
+                            )
+                #else:
+
+                if "png" in response["output"]:
+                    logging.debug(f"Code: {response['code']}\nSimulation Type = {self.simulationtype}")
+
+
                     self.sio.emit(
                                     "text",
                                     {
                                         "room": data["room"],
-                                        # "message": message
                                         "message": COLOR_MESSAGE.format(
-                                            color=STANDARD_COLOR, message=response
+                                            color=STANDARD_COLOR, message="Updated the working board"
                                         ),
                                         "html": True,
                                         **options,
                                     },
                                     callback=self.message_callback,
-                                )
-                else:
-                    base64_string = encode_image_to_base64(response)
-                    self.sio.emit(
-                        "message_command",
-                        {
-                            "command": {
-                                "event": "update_world_state",
-                                "message": base64_string,
+                                )  
+
+
+                    if self.simulationtype == "virtual":
+                        base64_string = encode_image_to_base64(response["output"])
+                        self.sio.emit(
+                            "message_command",
+                            {
+                                "command": {
+                                    "event": "update_world_state",
+                                    "message": base64_string,
+                                },
+                                "room": room_id,
+                                "receiver_id": data["user"]["id"],
                             },
-                            "room": room_id,
-                            "receiver_id": data["user"]["id"],
-                        },
-                    )
-
-
-            '''
-            # Call LLM to generate a response
-            self.instructions[self.n_turns + 1] = message
-            prompt = []
-            pllm = PromptLLM()
-            pllm.get_prompt(message, prompt)
-            logging.debug(f"Prompt: {prompt}")
-            model_to_test = "codellama/CodeLlama-34b-Instruct-hf"
-            #model_to_test = "fsc-codellama-34b-instruct"#"fsc-openchat-3.5-0106"
-
-            generated_response = pllm.generate(model_to_test, prompt)
-            logging.debug(f"Generated Response: {generated_response}")
-            self.model_response[self.n_turns + 1] = generated_response
-            logging.debug(
-                f"Instructions: {self.instructions}, Model Response: {self.model_response}"
-            )
-
-            self.sio.emit(
-                "text",
-                {
-                    "room": data["room"],
-                    # "message": message
-                    "message": "Corresponding Code:"
-                    + "\n"
-                    + COLOR_MESSAGE.format(
-                        color=STANDARD_COLOR, message=generated_response
-                    ),
-                    "html": True,
-                    **options,
-                },
-                callback=self.message_callback,
-            )
-
-            # Execute the response
-            logging.debug(f"Calling execute_response with {self.rows}, {self.cols}")
-            save_filename, error, turn = execute_response(
-                self.rows, self.cols, self.model_response
-            )
-            if error:
-                # Remove the code from the response and add the error message
-                self.model_response[turn] = (
-                    "EXEC_ERROR occurred in turn "
-                    + str(turn)
-                    + " while executing the response"
-                )
-                self.sio.emit(
-                    "text",
-                    {
-                        "room": data["room"],
-                        # "message": message
-                        "message": "An error: "
-                        + COLOR_MESSAGE.format(
-                            color=STANDARD_COLOR, message=f"{error},"
                         )
-                        + " occurred while executing the response",
-                        "html": True,
-                        **options,
-                    },
-                    callback=self.message_callback,
-                )
-                return
+                    elif self.simulationtype == "pybullet":
+                        self.dmanager.showpbsimulation(response["code"])
 
-            self.n_turns += 1
+                    elif self.simulationtype == "realarm":
+                        self.dmanager.showrealarm(response["code"])
+                      
 
-            '''
+                #if response['code']:
+                #    self.dmanager.pickandplace(response['code'])
 
         @self.sio.event
         def command(data):
@@ -433,5 +510,6 @@ if __name__ == "__main__":
 
     # create bot instance
     ccbts_demo_bot = CCBTSDemoBot(args.token, args.user, args.task, args.host, args.port)
+    #ccbts_demo_bot.load_rasa_model()
     # connect to chat server
     ccbts_demo_bot.run()

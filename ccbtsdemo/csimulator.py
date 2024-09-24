@@ -1,10 +1,6 @@
+import logging
 import re
 import json
-import logging
-
-from PIL import Image
-import io
-import base64
 
 from .coco import (
     init_board,
@@ -30,51 +26,21 @@ RELATED_FILE_PATH = Path(
 )
 
 
+
 class CodeSimulator:
     def __init__(self, gridwidth, gridheight):
         self.gridwidth = gridwidth
         self.gridheight = gridheight
-        self.code_dict = {}
-        self.num_turns = 0
-        self.cur_world = None
+        self.reset()
+
 
     def reset(self):
-        self.code_list = []
         self.cur_world = None
+        self.num_turns = 0
+        self.code_dict = {}
 
-    def convert_np_array_to_image(self, array):
-        img = Image.fromarray(array)
-        img_byte_array = io.BytesIO()
-        img.save(img_byte_array, format="PNG")
-        img_byte_array = img_byte_array.getvalue()
-        return img_byte_array
-
-    def encode_pil_image_to_base64(self, img_byte_array):
-        encoded_string = base64.b64encode(img_byte_array)
-        return encoded_string.decode("utf-8")
-
-    def cleanup_response(self, value):
-        if "```python" in value:
-            value = value.replace("```python", "").strip()
-        if "```" in value:
-            value = value.replace("```", "").strip()
-        if value[0] == ":":
-            value = value[1:].strip()
-        if value[-1] in ["\n", ";", ".", ","]:
-            value = value[:-1].strip()
-        if "Output:" in value:
-            value = value.split("Output:")[1].strip()
-        elif "Output" in value:
-            value = value.split("Output")[1].strip()
-
-        return value
-
-
-    def resetboardstate(self, rows, cols):
-        board = init_board(rows, cols)
-        save_filename = f"{RELATED_FILE_PATH}/empty_world_state.png"
-        plot_board(board, save_filename)
-        return save_filename        
+        board = init_board(self.gridwidth, self.gridheight)
+        plot_board(board, "b1.png")        
 
 
     def _get_x_y(self, code):
@@ -87,12 +53,32 @@ class CodeSimulator:
             return x, y
         else:
             return None, None
+        
+    def get_current_world_code(self):
+        code_list = []
+        for step in self.code_dict:
+            if self.code_dict[step]["status"] == "UNDO":
+                continue
+            for code in self.code_dict[step]["code"]:
+                code_list.append(code)
+        return code_list
+
 
     def undo(self):
-        if self.num_turns == 0:
-            return "No actions to undo"
+        if self.num_turns == 0 or self.cur_world is None:
+            return None, None
 
-        for c_ in self.code_dict[self.num_turns - 1]:
+        cur_turns = self.num_turns
+        while(cur_turns > 0 and self.code_dict[cur_turns - 1]["status"] == "UNDO"):
+            cur_turns -= 1
+
+        if cur_turns <= 0:
+            return None, None
+        
+        use_turn = cur_turns - 1
+
+        undo_code = self.code_dict[use_turn]["code"]
+        for c_ in self.code_dict[use_turn]["code"]:
             x, y = self._get_x_y(c_)
             logging.debug(f"Undoing: {c_}, x: {x}, y: {y}")
             if x is not None and y is not None:
@@ -100,15 +86,48 @@ class CodeSimulator:
             else:
                 logging.debug("Undo failed for code: ", c_)
 
-        self.code_dict[self.num_turns] = ["UNDO"]
-        self.num_turns += 1
-        save_filename = f"{RELATED_FILE_PATH}/gen_response_{len(self.cur_world)}.png"
-        plot_board(self.cur_world, save_filename)        
-        return save_filename
-            
+
+        self.code_dict[use_turn]["status"] = "UNDO"
+        save_filename = f"{RELATED_FILE_PATH}/gen_response_{len(self.cur_world)}_undo.png"
+        plot_board(self.cur_world, save_filename)
+        plot_board(self.cur_world, "b1.png")
+        return save_filename, undo_code
+
+
+    def getskill(self, filename):
+        try:
+            with open(f"{RELATED_FILE_PATH}/{filename}", "r") as file:
+                return file.read()
+        except Exception as error:
+            logging.error(f"Error in reading skill file: {filename}, {error}")
+            return None
+        
+    def _list_occupied_cells_with_details(self, board):
+        occupied_cells = {}
+
+        if board is None:
+            return occupied_cells
+
+        for row in range(board.shape[2]):
+            for col in range(board.shape[3]):
+                cell_elements = []
+                # check each layer for the current cell
+                for layer in range(board.shape[0]):
+                    # get shape and color
+                    shape = board[layer, 0, row, col]
+                    color = board[layer, 1, row, col]
+                    # If the shape is not '0', then the cell is occupied
+                    if shape != "0":
+                        cell_elements.append((shape, color))
+
+                if cell_elements:
+                    occupied_cells[f"{row}:{col}"] = cell_elements
+
+        return occupied_cells           
+
 
     def run(self, code):
-        print("Running code: ", code)
+        #print("Running code: ", code)
 
         if self.cur_world is None:
             self.cur_world = init_board(self.gridwidth, self.gridheight)
@@ -119,25 +138,56 @@ class CodeSimulator:
                 exec(c_)
             except Exception as error:
                 logging.error(f"Error in executing code: {c_}, {error}")
-                return None
+                logging.error(f"Board State: {self._list_occupied_cells_with_details(self.cur_world)}")
+                raise error
 
 
-        self.code_dict[self.num_turns] = code
+        #self.code_dict[self.num_turns] = code
+        self.code_dict[self.num_turns] = {"code": code, "status": "run"}
         self.num_turns += 1
         self.cur_world = board
         save_filename = f"{RELATED_FILE_PATH}/gen_response_{len(self.cur_world)}.png"
         plot_board(board, save_filename)
-        return save_filename        
-        #plot_board(board, "b1.png")
+        plot_board(board, "b1.png")
+        return save_filename 
+
+    def repeat_run(self, skill_code, repeat_code):
+        print(f"Running repeat code: {repeat_code}")
+        if self.cur_world is None:
+            self.cur_world = init_board(self.gridwidth, self.gridheight)
+        
+        board = self.cur_world
+        total_code = skill_code + "\n" + repeat_code
+        #for c_ in total_code:
+        exec(total_code)
+
+        self.code_dict[self.num_turns] = {"code": total_code, "status": "run"}
+        self.num_turns += 1
+        self.cur_world = board
+        plot_board(board, "b1.png")
 
     def save(self, filename):
+        if not self.code_dict:
+            logging.debug(f"No code to save, returning")
+            return False
+
         logging.debug(f"Current code dict: {self.code_dict}, Saving to {filename}")
         with open(f"{RELATED_FILE_PATH}/{filename}", "w") as file:
             file.write("board=init_board(8,8)\n\n")
             for step in self.code_dict:
-                for code in self.code_dict[step]:
+                if self.code_dict[step]["status"] == "UNDO":
+                    continue
+                for code in self.code_dict[step]["code"]:
                     file.write(f"{code}\n")
                 file.write("\n")
-        return f"Saved the skill to {RELATED_FILE_PATH}/{filename}"
+        logging.debug(f"Saved the skill at {RELATED_FILE_PATH}/{filename}")
+        return True
+
+
+    def save_abstract_function(self, filename, skill_function):
+        logging.debug(f"Saving abstract function to {filename}, skill_function: {skill_function}")
+        with open(f"{RELATED_FILE_PATH}/{filename}", "w") as file:
+            file.write(skill_function)
+            logging.debug(f"Saved abstract function to {filename}")
             
 
