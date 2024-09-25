@@ -1,0 +1,666 @@
+[
+    {
+        "data": {
+            "Explainer": "user_id 5407, name human-bourbon",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5411, name citron-funding"
+        },
+        "date_created": "2024-03-20T09:07:31.303097",
+        "date_modified": null,
+        "event": "players",
+        "id": 4841853,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T09:08:26.168707",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841917,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "anymore"
+        },
+        "date_created": "2024-03-20T09:08:27.967469",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4841929,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:08:28.057045",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4841931,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:10:18.240972",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842177,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "time",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:10:18.297757",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842178,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "clock",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:10:40.921029",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842193,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:11:16.440891",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842270,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "any longer",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:11:16.498165",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842271,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "waiting",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:12:04.031669",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842349,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:13:41.735144",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842456,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "opposite of less",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:13:41.791910",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842457,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "more",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:13:53.270261",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842488,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T09:13:53.779423",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4842494,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T09:13:54.395139",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842497,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "sear"
+        },
+        "date_created": "2024-03-20T09:13:55.457964",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842500,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:13:55.515370",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842501,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:15:53.677028",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842682,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "burn or scortch",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:15:53.733660",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842683,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The related word 'burn' (stem=burn)  is similar to the word 'burn' (stem=burn) and it was used in the clue. You both lose :("
+        },
+        "date_created": "2024-03-20T09:15:54.017276",
+        "date_modified": null,
+        "event": "invalid clue",
+        "id": 4842687,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T09:15:54.634767",
+        "date_modified": null,
+        "event": "round",
+        "id": 4842690,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "array"
+        },
+        "date_created": "2024-03-20T09:15:55.700941",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4842693,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:15:55.758154",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4842694,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:16:40.890668",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842741,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "a range of",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:16:40.947570",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842742,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "number",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:18:05.736635",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842863,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:18:47.752279",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842913,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "line-up",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:18:47.808933",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842914,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "offer",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:19:52.823206",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4842962,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:20:35.330829",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4842987,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "a formation of",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:20:35.388806",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4842988,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "line",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:20:43.617972",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843007,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "3"
+        },
+        "date_created": "2024-03-20T09:20:44.124056",
+        "date_modified": null,
+        "event": "max turns reached",
+        "id": 4843013,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T09:20:44.741075",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843016,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "obvious"
+        },
+        "date_created": "2024-03-20T09:20:45.804340",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843019,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "medium_en"
+        },
+        "date_created": "2024-03-20T09:20:45.862380",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843020,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:21:59.734069",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843065,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "opposite of unsure",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:21:59.791531",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843066,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "certain",
+            "from": "GM impersonated as citron-funding, the guesser",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:23:02.569744",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4843081,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:24:19.334011",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843105,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "self evident",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:24:19.391109",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843106,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The related word 'evident' (stem=evid)  is similar to the word 'evident' (stem=evid) and it was used in the clue. You both lose :("
+        },
+        "date_created": "2024-03-20T09:24:19.675441",
+        "date_modified": null,
+        "event": "invalid clue",
+        "id": 4843110,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 5
+        },
+        "date_created": "2024-03-20T09:24:20.291050",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843113,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "seize"
+        },
+        "date_created": "2024-03-20T09:24:21.355317",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843116,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "low_en"
+        },
+        "date_created": "2024-03-20T09:24:21.412987",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843117,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:24:36.799030",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843148,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "to grab",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:24:36.855637",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843149,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The related word 'grab' (stem=grab)  is similar to the word 'grab' (stem=grab) and it was used in the clue. You both lose :("
+        },
+        "date_created": "2024-03-20T09:24:37.140801",
+        "date_modified": null,
+        "event": "invalid clue",
+        "id": 4843153,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 6
+        },
+        "date_created": "2024-03-20T09:24:37.755740",
+        "date_modified": null,
+        "event": "round",
+        "id": 4843156,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "provide"
+        },
+        "date_created": "2024-03-20T09:24:38.820461",
+        "date_modified": null,
+        "event": "target word",
+        "id": 4843159,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "high_en"
+        },
+        "date_created": "2024-03-20T09:24:38.878147",
+        "date_modified": null,
+        "event": "difficulty level",
+        "id": 4843160,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T09:24:50.479364",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4843167,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "to give",
+            "from": "GM impersonated as human-bourbon, the explainer",
+            "to": 5411
+        },
+        "date_created": "2024-03-20T09:24:50.536800",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4843168,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "The related word 'give' (stem=give)  is similar to the word 'give' (stem=give) and it was used in the clue. You both lose :("
+        },
+        "date_created": "2024-03-20T09:24:50.823281",
+        "date_modified": null,
+        "event": "invalid clue",
+        "id": 4843172,
+        "receiver_id": null,
+        "room_id": 4054,
+        "user_id": null
+    }
+]

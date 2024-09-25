@@ -1,0 +1,1004 @@
+[
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-03-20T08:07:27.486317",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841422,
+        "receiver_id": 5404,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_instr",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Description</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Let us play a game. The goal is to fill an empty grid that looks like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>A filled grid below is 5x5 and can look like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>I want you to describe this grid to the other player, step by step. You don't need to describe the empty squares, which are denoted with &quot;&#9634;&quot;. Only describe the location of letters in the grid. Then you wait for the other player to say &quot;What is your next instruction?&quot;, and then you continue with the next step. Take the size of the grid into consideration while giving instructions. When you have described everything, you say &quot;DONE&quot;.</p>\n<br>\n<b>Here's an example:</b>\n<br>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put an E in first row third column</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Fill the last row with X</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: DONE</p>\n<br>\n<p><b>Ok. Please proceed in the same way for the grid you will be assigned in the chat area, and that will also be displayed on your right throughout the game).</b></p>\n<br>\n<br>\n</body>\n</html>\n\n\n\n"
+            }
+        },
+        "date_created": "2024-03-20T08:07:27.554889",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841424,
+        "receiver_id": 5403,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_instr",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Drawing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Let us draw something together. There is an empty grid with a size 5x5, like so:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>The other player will give you instructions like \"put an X in the top left\", and you save the grid (hit 'ENTER') after applying the given instruction, like so:</p>\n<br>\n<table>\n    <tr>\n        <td>X</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Now start with the provided 5x5 empty grid and execute the following commands at each step. Once you have typed all necessary characters just type 'ENTER' and wait for a message confirming your grid was saved. Do not send any other message to the other player on the chat area.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-03-20T08:07:27.616354",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841426,
+        "receiver_id": 5404,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_keyboard_instructions",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Typing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-03-20T08:07:27.680571",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841428,
+        "receiver_id": 5404,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "ready"
+        },
+        "date_created": "2024-03-20T08:08:15.648229",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841430,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "ready"
+        },
+        "date_created": "2024-03-20T08:08:30.455891",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841433,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-20T08:08:31.519095",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841435,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "GM": "DrawingBot",
+            "Player_A": "investor-player",
+            "Player_B": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:08:31.577083",
+        "date_modified": null,
+        "event": "players",
+        "id": 4841436,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n"
+        },
+        "date_created": "2024-03-20T08:08:31.633466",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4841437,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-03-20T08:08:31.689893",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4841438,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-03-20T08:08:32.381156",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841448,
+        "receiver_id": 5403,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Put T in first row third column"
+        },
+        "date_created": "2024-03-20T08:10:10.361397",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841455,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:10:10.522496",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841459,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Put T in first row third column",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:10:10.619496",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841460,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:10:30.292467",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841470,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "▢ ▢ T ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:10:30.355337",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841471,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "DONE"
+        },
+        "date_created": "2024-03-20T08:12:06.439213",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841481,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:12:06.575621",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841484,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "DONE",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:12:06.705972",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841485,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-20T08:12:07.578203",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841498,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "\nG G G G G\n▢ G ▢ ▢ ▢\n▢ ▢ G ▢ ▢\n▢ ▢ ▢ G ▢\nG G G G G\n"
+        },
+        "date_created": "2024-03-20T08:12:07.635324",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4841499,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-03-20T08:12:07.692318",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4841500,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-03-20T08:12:07.703526",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841501,
+        "receiver_id": 5404,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td>G</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>G</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>G</td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n<td>G</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-03-20T08:12:07.788559",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841506,
+        "receiver_id": 5403,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Fill the second row with G"
+        },
+        "date_created": "2024-03-20T08:13:23.024182",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841515,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:13:23.093246",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841517,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Fill the second row with G",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:13:23.150888",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841518,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢GGGGG▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:13:42.469422",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841529,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\nG G G G G\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:13:42.538172",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841530,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Fill the the third row with G"
+        },
+        "date_created": "2024-03-20T08:15:08.487282",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841546,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:15:08.552077",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841548,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Fill the the third row with G",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:15:08.609358",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841549,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢GGGGGGGGGG▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:15:20.160108",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841559,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\nG G G G G\nG G G G G\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:15:20.222075",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841560,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Fill the fourth row with G"
+        },
+        "date_created": "2024-03-20T08:15:38.166889",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841570,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:15:38.234527",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841572,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Fill the fourth row with G",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:15:38.292868",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841573,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢GGGGGGGGGGGGGGG▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:15:53.693863",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841583,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\nG G G G G\nG G G G G\nG G G G G\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:15:53.756920",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841584,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "DONE"
+        },
+        "date_created": "2024-03-20T08:15:58.127068",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841594,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:15:58.193176",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841596,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "DONE",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:15:58.252006",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841597,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-20T08:15:59.111554",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841610,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "▢ ▢ N ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N"
+        },
+        "date_created": "2024-03-20T08:15:59.168056",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4841611,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "random"
+        },
+        "date_created": "2024-03-20T08:15:59.225121",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4841612,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-03-20T08:15:59.236022",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841613,
+        "receiver_id": 5404,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>N</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td>N</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td>N</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>N</td>\n<td>N</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-03-20T08:15:59.316753",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841618,
+        "receiver_id": 5403,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Fill the first row with N"
+        },
+        "date_created": "2024-03-20T08:16:43.855014",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841627,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:16:43.920130",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841629,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Fill the first row with N",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:16:43.979231",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841630,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "NNNNN▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:17:00.811957",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841640,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "N N N N N\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:17:00.873444",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841641,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Put N in the third row first column"
+        },
+        "date_created": "2024-03-20T08:17:44.615147",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841651,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:17:44.680310",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841653,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Put N in the third row first column",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:17:44.737549",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841654,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "NNNNN▢▢▢▢▢N▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:17:56.090047",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841664,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "N N N N N\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:17:56.151311",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841665,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Put N in the fourth row firts column"
+        },
+        "date_created": "2024-03-20T08:18:28.680457",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841675,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:18:28.747050",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841677,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Put N in the fourth row firts column",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:18:28.804889",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841678,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "NNNNN▢▢▢▢▢N▢▢▢▢N▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-20T08:18:44.892082",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841688,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "N N N N N\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:18:44.954042",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841689,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Put N in the last row fourth and fifth column"
+        },
+        "date_created": "2024-03-20T08:19:25.720318",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841699,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:19:25.785559",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841701,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Put N in the last row fourth and fifth column",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:19:25.842786",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841702,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "NNNNN▢▢▢▢▢N▢▢▢▢N▢▢▢▢▢▢▢NN"
+            }
+        },
+        "date_created": "2024-03-20T08:19:34.626968",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841712,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "content": "N N N N N\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N",
+            "from": "humble-molality",
+            "to": "GM"
+        },
+        "date_created": "2024-03-20T08:19:34.688279",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4841713,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "done"
+        },
+        "date_created": "2024-03-20T08:19:45.830897",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841723,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5403
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-20T08:19:45.898719",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4841725,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "done",
+            "from": "GM impersonated as investor-player",
+            "to": "humble-molality"
+        },
+        "date_created": "2024-03-20T08:19:45.955892",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4841726,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-20T08:19:46.815691",
+        "date_modified": null,
+        "event": "round",
+        "id": 4841739,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "survey",
+                "survey": "<form id=\"surveyForm\" onkeydown=\"return event.key != 'Enter';\">\n    <br>\n    <fieldset style=\"padding: 10px\">\n        <legend>1. Rate your playing experience:</legend>\n        <div class=\"horizontal-group\">\n            <label><input type=\"radio\" name=\"playing_experience\" value=\"1\"> 1 - Poor</label>\n            <label><input type=\"radio\" name=\"playing_experience\" value=\"2\"> 2 - Average</label>\n            <label><input type=\"radio\" name=\"playing_experience\" value=\"3\"> 3 - Excellent</label>\n        </div>\n        <span class=\"error-message\" style=\"color: #FF0000\" id=\"errorExperience\"></span>\n    </fieldset>\n\n    <fieldset style=\"padding: 10px\">\n        <legend>2. Did you encounter any problems?</legend>\n        <div class=\"vertical-group\">\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"1\"> 1 - No problems</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"2\"> 2 - My partner left or was inactive</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"3\"> 3 - I did not understand the task</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"4\"> 4 - My partner did not understand the task</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"5\"> 5 - There were technical problems with the platform</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"6\"> 6 - Other</label>                \n        </div>\n        <input type=\"text\" name=\"player_rating_other\" style=\"width: 100%;\" placeholder=\"Please specify\"> <!-- Additional input for 'Other' option -->\n        <span class=\"error-message\" style=\"color: #FF0000\" id=\"errorPartner\"></span>\n    </fieldset>\n\n    <p style=\"margin-top: 2em; margin-bottom: 2em; color: #FF0000; text-align: center;\">Remember to copy your token from the chat window on the left once you have completed the survey</p>\n</form>\n\n<button class=\"button\" role=\"button\" id=\"survey_button\">Submit</button>\n"
+            }
+        },
+        "date_created": "2024-03-20T08:19:46.884698",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841741,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "answers": {
+                    "1. Rate your playing experience:": "2",
+                    "2. Did you encounter any problems?": "4"
+                },
+                "event": "submit_survey"
+            }
+        },
+        "date_created": "2024-03-20T08:20:00.107868",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841744,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "answers": {
+                    "1. Rate your playing experience:": "2",
+                    "2. Did you encounter any problems?": "4"
+                },
+                "event": "submit_survey"
+            }
+        },
+        "date_created": "2024-03-20T08:20:25.764854",
+        "date_modified": null,
+        "event": "command",
+        "id": 4841749,
+        "receiver_id": null,
+        "room_id": 4051,
+        "user_id": 5404
+    }
+]

@@ -1,0 +1,440 @@
+[
+    {
+        "players": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:08:26.524583",
+                    "action": {
+                        "type": "target word",
+                        "content": "designation"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:08:37.581464",
+                    "action": {
+                        "type": "clue",
+                        "content": "okay"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:23.877960",
+                    "action": {
+                        "type": "guess",
+                        "content": "What's next?"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:24.396616",
+                    "action": {
+                        "type": "invalid format",
+                        "content": "What's next?"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:09:26.020718",
+                    "action": {
+                        "type": "target word",
+                        "content": "stimulate"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:44.361962",
+                    "action": {
+                        "type": "clue",
+                        "content": "when you rub something"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:09:54.074106",
+                    "action": {
+                        "type": "guess",
+                        "content": "stroke"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:09:26.020718",
+                    "action": {
+                        "type": "target word",
+                        "content": "stimulate"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:10:48.458637",
+                    "action": {
+                        "type": "clue",
+                        "content": "no, when you touch your skin to allow a better blood flow, "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:10:55.902879",
+                    "action": {
+                        "type": "guess",
+                        "content": "massage"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:09:26.020718",
+                    "action": {
+                        "type": "target word",
+                        "content": "stimulate"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:12:47.054600",
+                    "action": {
+                        "type": "clue",
+                        "content": "no, the other word lol, like you are activating energy or something "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:08.807157",
+                    "action": {
+                        "type": "guess",
+                        "content": "stimulate"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:09.313549",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "stimulate"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:13:16.027243",
+                    "action": {
+                        "type": "target word",
+                        "content": "clear"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:37.434557",
+                    "action": {
+                        "type": "clue",
+                        "content": "Glass window is ??"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:44.493661",
+                    "action": {
+                        "type": "guess",
+                        "content": "clear"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:13:45.002176",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "clear"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:13:46.682261",
+                    "action": {
+                        "type": "target word",
+                        "content": "contributor"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:14:18.495223",
+                    "action": {
+                        "type": "clue",
+                        "content": "when you play a stokvel you do what ?"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:14:42.357584",
+                    "action": {
+                        "type": "guess",
+                        "content": "save"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:13:46.682261",
+                    "action": {
+                        "type": "target word",
+                        "content": "contributor"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:18.339246",
+                    "action": {
+                        "type": "clue",
+                        "content": "No, the money that you invest you call it what? but that money as a person "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:15:49.794364",
+                    "action": {
+                        "type": "guess",
+                        "content": "interest"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:13:46.682261",
+                    "action": {
+                        "type": "target word",
+                        "content": "contributor"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:38.961066",
+                    "action": {
+                        "type": "clue",
+                        "content": "What do you do to your retirement fund ?"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:55.323351",
+                    "action": {
+                        "type": "guess",
+                        "content": "invest"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:16:55.835751",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:16:57.517441",
+                    "action": {
+                        "type": "target word",
+                        "content": "none"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:17:32.120600",
+                    "action": {
+                        "type": "clue",
+                        "content": "zero is equal to what ?"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:17:38.863951",
+                    "action": {
+                        "type": "guess",
+                        "content": "nothing"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:16:57.517441",
+                    "action": {
+                        "type": "target word",
+                        "content": "none"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:17:49.415044",
+                    "action": {
+                        "type": "clue",
+                        "content": "the other word"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:18:07.017435",
+                    "action": {
+                        "type": "guess",
+                        "content": "nought"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:16:57.517441",
+                    "action": {
+                        "type": "target word",
+                        "content": "none"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:18:34.103597",
+                    "action": {
+                        "type": "clue",
+                        "content": "its a four letter word "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:18:54.659217",
+                    "action": {
+                        "type": "guess",
+                        "content": "nada"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:18:55.167249",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5412, name animato-depot",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5410, name direct-quadtree"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T09:18:56.853394",
+                    "action": {
+                        "type": "target word",
+                        "content": "embroidery"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T09:20:42.955053",
+                    "action": {
+                        "type": "clue",
+                        "content": "If you are into T-shirt printing business, what is the process of writing on the shirt called? its starts with E, theres also a machine to do that process"
+                    }
+                }
+            ]
+        ]
+    }
+]

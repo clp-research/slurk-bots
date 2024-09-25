@@ -1,0 +1,31 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "nippy-cafe",
+            "Player_B": "chilly-map"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:46:50.059845",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nZ Z Z \u25a2 Z\nZ \u25a2 Z \u25a2 Z\nZ \u25a2 \u25a2 \u25a2 \u25a2\nZ \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:47:33.499811",
+                    "action": {
+                        "type": "clue",
+                        "content": "put a z in column 1 row 2,3,4,and 5"
+                    }
+                }
+            ]
+        ]
+    }
+]

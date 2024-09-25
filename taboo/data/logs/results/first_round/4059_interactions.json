@@ -1,0 +1,594 @@
+[
+    {
+        "players": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:22:18.330413",
+                    "action": {
+                        "type": "target word",
+                        "content": "designation"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:22:46.632735",
+                    "action": {
+                        "type": "clue",
+                        "content": "When you reach somewhere"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:22:55.902951",
+                    "action": {
+                        "type": "guess",
+                        "content": "arrive"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:22:18.330413",
+                    "action": {
+                        "type": "target word",
+                        "content": "designation"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:23:18.281542",
+                    "action": {
+                        "type": "clue",
+                        "content": "The end place, after travelling"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:23:26.615240",
+                    "action": {
+                        "type": "guess",
+                        "content": "destination"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:22:18.330413",
+                    "action": {
+                        "type": "target word",
+                        "content": "designation"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:23:58.519077",
+                    "action": {
+                        "type": "clue",
+                        "content": "Sorry, my bad, but close to that"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:24:12.796247",
+                    "action": {
+                        "type": "guess",
+                        "content": "destined"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:24:13.311293",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:24:14.994667",
+                    "action": {
+                        "type": "target word",
+                        "content": "induce"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:24:37.677907",
+                    "action": {
+                        "type": "clue",
+                        "content": "When a baby has to be brought out early"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:24:57.983451",
+                    "action": {
+                        "type": "guess",
+                        "content": "induced"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:24:14.994667",
+                    "action": {
+                        "type": "target word",
+                        "content": "induce"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:25:11.448602",
+                    "action": {
+                        "type": "clue",
+                        "content": "Singular to that"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:25:17.742647",
+                    "action": {
+                        "type": "guess",
+                        "content": "induce"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:25:18.247154",
+                    "action": {
+                        "type": "correct guess",
+                        "content": "induce"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:25:19.928677",
+                    "action": {
+                        "type": "target word",
+                        "content": "seize"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:25:59.607004",
+                    "action": {
+                        "type": "clue",
+                        "content": "When you gain control and take"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:26:47.539947",
+                    "action": {
+                        "type": "guess",
+                        "content": "power"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:25:19.928677",
+                    "action": {
+                        "type": "target word",
+                        "content": "seize"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:27:46.743045",
+                    "action": {
+                        "type": "clue",
+                        "content": "You want it, so take it"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:28:14.968245",
+                    "action": {
+                        "type": "guess",
+                        "content": "steal"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:25:19.928677",
+                    "action": {
+                        "type": "target word",
+                        "content": "seize"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:28:43.145581",
+                    "action": {
+                        "type": "clue",
+                        "content": "Back to, taking control"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:29:19.663892",
+                    "action": {
+                        "type": "guess",
+                        "content": "thieve"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:29:20.176739",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:29:21.858726",
+                    "action": {
+                        "type": "target word",
+                        "content": "plaza"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:30:07.276715",
+                    "action": {
+                        "type": "clue",
+                        "content": "A large area in a city, lots in Italy"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:31:07.496751",
+                    "action": {
+                        "type": "guess",
+                        "content": "suburb"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:29:21.858726",
+                    "action": {
+                        "type": "target word",
+                        "content": "plaza"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:31:39.050029",
+                    "action": {
+                        "type": "clue",
+                        "content": "A shaped area, maybe lined with trees, restaurants etc, very pretty"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:31:57.493978",
+                    "action": {
+                        "type": "guess",
+                        "content": "square"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:29:21.858726",
+                    "action": {
+                        "type": "target word",
+                        "content": "plaza"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:32:50.473528",
+                    "action": {
+                        "type": "clue",
+                        "content": "In a built up area, lively in the evening"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:33:51.478242",
+                    "action": {
+                        "type": "guess",
+                        "content": "old town"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:33:51.987364",
+                    "action": {
+                        "type": "invalid format",
+                        "content": "old town"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:33:53.610964",
+                    "action": {
+                        "type": "target word",
+                        "content": "provide"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:34:42.634808",
+                    "action": {
+                        "type": "clue",
+                        "content": "If you aid someone, replenish, help them"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:34:57.850170",
+                    "action": {
+                        "type": "guess",
+                        "content": "care"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:33:53.610964",
+                    "action": {
+                        "type": "target word",
+                        "content": "provide"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:35:35.552470",
+                    "action": {
+                        "type": "clue",
+                        "content": "Issue them aid "
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:36:14.993311",
+                    "action": {
+                        "type": "guess",
+                        "content": "assist"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:33:53.610964",
+                    "action": {
+                        "type": "target word",
+                        "content": "provide"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:36:48.437939",
+                    "action": {
+                        "type": "clue",
+                        "content": "Hand over, distribute, supply"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:36:48.719311",
+                    "action": {
+                        "type": "invalid clue",
+                        "content": "The related word 'supply' (stem=suppli)  is similar to the word 'supply' (stem=suppli) and it was used in the clue. You both lose :("
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "Explainer": "user_id 5419, name huge-patio",
+            "GM": "TabooBot",
+            "Guesser": "user_id 5420, name plain-pastry"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:36:50.401064",
+                    "action": {
+                        "type": "target word",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:37:08.680873",
+                    "action": {
+                        "type": "clue",
+                        "content": "Carry on"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:37:19.115680",
+                    "action": {
+                        "type": "guess",
+                        "content": "continue"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:36:50.401064",
+                    "action": {
+                        "type": "target word",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:37:32.847511",
+                    "action": {
+                        "type": "clue",
+                        "content": "Begin again"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:37:55.545940",
+                    "action": {
+                        "type": "guess",
+                        "content": "persevere"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-20T10:36:50.401064",
+                    "action": {
+                        "type": "target word",
+                        "content": "resume"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:38:32.715003",
+                    "action": {
+                        "type": "clue",
+                        "content": "The game goes ahead again, for example"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:39:04.028935",
+                    "action": {
+                        "type": "guess",
+                        "content": "restart"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-20T10:39:04.548936",
+                    "action": {
+                        "type": "max turns reached",
+                        "content": "3"
+                    }
+                }
+            ]
+        ]
+    }
+]

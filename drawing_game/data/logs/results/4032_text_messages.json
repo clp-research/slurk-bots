@@ -1,0 +1,1406 @@
+[
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-03-19T10:56:53.481720",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838642,
+        "receiver_id": 5378,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_instr",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Description</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Let us play a game. The goal is to fill an empty grid that looks like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>A filled grid below is 5x5 and can look like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>I want you to describe this grid to the other player, step by step. You don't need to describe the empty squares, which are denoted with &quot;&#9634;&quot;. Only describe the location of letters in the grid. Then you wait for the other player to say &quot;What is your next instruction?&quot;, and then you continue with the next step. Take the size of the grid into consideration while giving instructions. When you have described everything, you say &quot;DONE&quot;.</p>\n<br>\n<b>Here's an example:</b>\n<br>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Put an E in first row third column</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: Fill the last row with X</p>\n<br>\n<p>What is your next instruction?<br>\nInstruction: DONE</p>\n<br>\n<p><b>Ok. Please proceed in the same way for the grid you will be assigned in the chat area, and that will also be displayed on your right throughout the game).</b></p>\n<br>\n<br>\n</body>\n</html>\n\n\n\n"
+            }
+        },
+        "date_created": "2024-03-19T10:56:53.513856",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838644,
+        "receiver_id": 5377,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_instr",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Drawing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Let us draw something together. There is an empty grid with a size 5x5, like so:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>The other player will give you instructions like \"put an X in the top left\", and you save the grid (hit 'ENTER') after applying the given instruction, like so:</p>\n<br>\n<table>\n    <tr>\n        <td>X</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Now start with the provided 5x5 empty grid and execute the following commands at each step. Once you have typed all necessary characters just type 'ENTER' and wait for a message confirming your grid was saved. Do not send any other message to the other player on the chat area.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-03-19T10:56:53.589130",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838646,
+        "receiver_id": 5378,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_keyboard_instructions",
+                "message": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Grid Typing</title>\n<style>\n    table {\n        border-collapse: collapse;\n        width: 150px;\n    }\n\n    td {\n        border: 1px solid #000;\n        width: 30px;\n        height: 30px;\n        text-align: center;\n        vertical-align: middle;\n    }\n\n    .empty {\n        /* Remove background-color property */\n    }\n</style>\n</head>\n<body>\n\n<p>Type in letters by clicking on a cell and then typing the desired letter on the keyboard, like this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td>E</td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n</table>\n<br>\n<p>Add letters one by one and type 'enter' only when you feel you have followed all instructions in the turn. For example, if the other player says 'Fill the last row with X' do this:</p>\n<br>\n<table>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n        <td class=\"empty\"></td>\n    </tr>\n    <tr>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n        <td>X</td>\n    </tr>\n</table>\n<br>\n<p>and then hit 'ENTER'.</p>\n<br>\n<p>The final drawn grid will only be compared against the target grid after the other player says 'DONE', you don't need to type anything extra.</p>\n<br>\n<br>\n</body>\n</html>\n"
+            }
+        },
+        "date_created": "2024-03-19T10:56:53.656530",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838648,
+        "receiver_id": 5378,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "ready"
+        },
+        "date_created": "2024-03-19T10:57:10.044436",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838650,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "ready"
+        },
+        "date_created": "2024-03-19T10:57:23.732400",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838666,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {
+            "number": 1
+        },
+        "date_created": "2024-03-19T10:57:24.796057",
+        "date_modified": null,
+        "event": "round",
+        "id": 4838668,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "GM": "DrawingBot",
+            "Player_A": "meek-ocelot",
+            "Player_B": "flat-patio"
+        },
+        "date_created": "2024-03-19T10:57:24.854125",
+        "date_modified": null,
+        "event": "players",
+        "id": 4838669,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "\nN ▢ ▢ ▢ N\nN N ▢ N N\nN ▢ N ▢ N\nN N ▢ N N\nN ▢ ▢ ▢ N\n"
+        },
+        "date_created": "2024-03-19T10:57:24.910791",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4838670,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-03-19T10:57:24.966600",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4838671,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td>N</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>N</td>\n</tr>\n<tr>\n<td>N</td>\n<td>N</td>\n<td class=\"empty\"></td>\n<td>N</td>\n<td>N</td>\n</tr>\n<tr>\n<td>N</td>\n<td class=\"empty\"></td>\n<td>N</td>\n<td class=\"empty\"></td>\n<td>N</td>\n</tr>\n<tr>\n<td>N</td>\n<td>N</td>\n<td class=\"empty\"></td>\n<td>N</td>\n<td>N</td>\n</tr>\n<tr>\n<td>N</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>N</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-03-19T10:57:25.656043",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838681,
+        "receiver_id": 5377,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "type two Ns in the first and last grid of the first row"
+        },
+        "date_created": "2024-03-19T10:58:15.581108",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838695,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T10:58:15.646644",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838697,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "type two Ns in the first and last grid of the first row",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T10:58:15.704527",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838698,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "NN▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢NN"
+            }
+        },
+        "date_created": "2024-03-19T10:58:44.485336",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838708,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "N N ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ N N",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T10:58:44.547248",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838709,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "Type 4 Ns in all the grids of the second row , exerpt the middle grid"
+        },
+        "date_created": "2024-03-19T11:00:02.179298",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838765,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:00:02.244842",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838767,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "Type 4 Ns in all the grids of the second row , exerpt the middle grid",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:00:02.302406",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838768,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢NN▢NN▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:00:57.222046",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838804,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\nN N ▢ N N\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:00:57.282036",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838805,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "On the third row, Type Ns from the first grid skipping one grid after typing each N up until the last grid"
+        },
+        "date_created": "2024-03-19T11:02:22.974802",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838818,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:02:23.042135",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838820,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "On the third row, Type Ns from the first grid skipping one grid after typing each N up until the last grid",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:02:23.100056",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838821,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢N▢N▢N▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:03:37.991588",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838831,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ N ▢ N\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:03:38.054389",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838832,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "4th row, repeat instruction number 2, type Ns in all the grids exerpt middle grid"
+        },
+        "date_created": "2024-03-19T11:04:20.662230",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838842,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:04:20.727548",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838844,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "4th row, repeat instruction number 2, type Ns in all the grids exerpt middle grid",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:04:20.786787",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838845,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢NN▢NN▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:04:57.327448",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838855,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN N ▢ N N\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:04:57.390190",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838856,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "last row, repeat instruction number 1, type N in the first and last grid"
+        },
+        "date_created": "2024-03-19T11:05:44.742771",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838866,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:05:44.807384",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838868,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "last row, repeat instruction number 1, type N in the first and last grid",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:05:44.864755",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838869,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢N▢▢▢N"
+            }
+        },
+        "date_created": "2024-03-19T11:07:13.696643",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838883,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nN ▢ ▢ ▢ N",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:07:13.761734",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838884,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "DONE"
+        },
+        "date_created": "2024-03-19T11:07:28.805002",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838894,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:07:28.872634",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838896,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "DONE",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:07:28.930561",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838897,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 2
+        },
+        "date_created": "2024-03-19T11:07:29.803374",
+        "date_modified": null,
+        "event": "round",
+        "id": 4838910,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ H\n▢ ▢ ▢ ▢ H\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢"
+        },
+        "date_created": "2024-03-19T11:07:29.861305",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4838911,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "random"
+        },
+        "date_created": "2024-03-19T11:07:29.918957",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4838912,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-03-19T11:07:29.930196",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838913,
+        "receiver_id": 5378,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>H</td>\n<td class=\"empty\"></td>\n<td>H</td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>H</td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>H</td>\n<td class=\"empty\"></td>\n</tr>\n<tr>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-03-19T11:07:30.006095",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838918,
+        "receiver_id": 5377,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "on the second row, type H in grid number 3 and 4\n3rd row, type H in last grid\n4th row, type H in grid 4"
+        },
+        "date_created": "2024-03-19T11:10:02.442428",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838927,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:10:02.508016",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838929,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "on the second row, type H in grid number 3 and 4\n3rd row, type H in last grid\n4th row, type H in grid 4",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:10:02.565668",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838930,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢H▢▢▢▢▢H▢▢▢▢H▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:10:49.562804",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838940,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ H ▢ ▢\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ H ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:10:49.624707",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838941,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "done"
+        },
+        "date_created": "2024-03-19T11:10:55.658265",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838951,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:10:55.725939",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838953,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "done",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:10:55.782663",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838954,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 3
+        },
+        "date_created": "2024-03-19T11:10:56.641925",
+        "date_modified": null,
+        "event": "round",
+        "id": 4838967,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "\nT ▢ ▢ ▢ T\nT T ▢ T T\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T\n"
+        },
+        "date_created": "2024-03-19T11:10:56.699860",
+        "date_modified": null,
+        "event": "target grid",
+        "id": 4838968,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "compact"
+        },
+        "date_created": "2024-03-19T11:10:56.756948",
+        "date_modified": null,
+        "event": "grid type",
+        "id": 4838969,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "command": "drawing_game_init"
+            }
+        },
+        "date_created": "2024-03-19T11:10:56.768124",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838970,
+        "receiver_id": 5378,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "send_grid",
+                "message": "<br><br><!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\ntable {\nborder-collapse: collapse;\nwidth: 150px;\n}\n\ntd {\nborder: 1px solid #000;\nwidth: 30px;\nheight: 30px;\ntext-align: center;\nvertical-align: middle;\n}\n\n.empty {\n/* Remove background-color property */\n}\n</style>\n<title>Grid Example</title>\n</head>\n<body>\n\n<table>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n<tr>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n<td class=\"empty\"></td>\n<td>T</td>\n</tr>\n</table>\n\n</body>\n</html>"
+            }
+        },
+        "date_created": "2024-03-19T11:10:56.847648",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838975,
+        "receiver_id": 5377,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "type T in the first square of the grid , first row"
+        },
+        "date_created": "2024-03-19T11:13:54.706145",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838984,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:13:54.771376",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4838986,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "type T in the first square of the grid , first row",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:13:54.828990",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4838987,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:14:15.187562",
+        "date_modified": null,
+        "event": "command",
+        "id": 4838997,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "T ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:14:15.250292",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4838998,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "type T in the last square of the first row"
+        },
+        "date_created": "2024-03-19T11:14:38.590259",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839008,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:14:38.655341",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839010,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "type T in the last square of the first row",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:14:38.712594",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839011,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:15:29.108861",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839021,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ T\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:15:29.171598",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839022,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "on the second row, type T in the first square"
+        },
+        "date_created": "2024-03-19T11:15:56.634104",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839032,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:15:56.701339",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839034,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "on the second row, type T in the first square",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:15:56.758231",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839035,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:16:11.220533",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839045,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\nT ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:16:11.283271",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839046,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "second row again type T on second square"
+        },
+        "date_created": "2024-03-19T11:16:35.174864",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839056,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:16:35.239765",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839058,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "second row again type T on second square",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:16:35.297365",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839059,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:16:50.116502",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839069,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ T ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:16:50.178678",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839070,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "on the same row, skip the third square and type T on the 4th"
+        },
+        "date_created": "2024-03-19T11:17:30.577793",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839080,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:17:30.644990",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839082,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "on the same row, skip the third square and type T on the 4th",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:17:30.703367",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839083,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:17:57.628803",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839093,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ T ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:17:57.691062",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839094,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "same row , last square"
+        },
+        "date_created": "2024-03-19T11:18:08.931007",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839104,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:18:08.996951",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839106,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "same row , last square",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:18:09.056123",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839107,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢T▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:18:25.573543",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839117,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ T\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:18:25.637518",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839118,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "from the third row, type Ts on the first squares of the rows up until last row"
+        },
+        "date_created": "2024-03-19T11:19:39.607891",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839128,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:19:39.675968",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839130,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "from the third row, type Ts on the first squares of the rows up until last row",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:19:39.733063",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839131,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢T▢▢▢▢T▢▢▢▢T▢▢▢▢"
+            }
+        },
+        "date_created": "2024-03-19T11:22:09.007238",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839141,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nT ▢ ▢ ▢ ▢\nT ▢ ▢ ▢ ▢\nT ▢ ▢ ▢ ▢",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:22:09.070488",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839142,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "do the same in the third and last rows"
+        },
+        "date_created": "2024-03-19T11:22:28.266275",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839152,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:22:28.329393",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839154,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "do the same in the third and last rows",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:22:28.386096",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839155,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "from": "player_b",
+                "guess": "▢▢▢▢▢▢▢▢▢▢T▢T▢TT▢T▢TT▢T▢T"
+            }
+        },
+        "date_created": "2024-03-19T11:22:58.143325",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839165,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5378
+    },
+    {
+        "data": {
+            "content": "▢ ▢ ▢ ▢ ▢\n▢ ▢ ▢ ▢ ▢\nT ▢ T ▢ T\nT ▢ T ▢ T\nT ▢ T ▢ T",
+            "from": "flat-patio",
+            "to": "GM"
+        },
+        "date_created": "2024-03-19T11:22:58.206318",
+        "date_modified": null,
+        "event": "guess",
+        "id": 4839166,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": "done"
+        },
+        "date_created": "2024-03-19T11:23:05.194241",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839176,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {},
+        "date_created": "2024-03-19T11:23:05.261566",
+        "date_modified": null,
+        "event": "turn",
+        "id": 4839178,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "content": "done",
+            "from": "GM impersonated as meek-ocelot",
+            "to": "flat-patio"
+        },
+        "date_created": "2024-03-19T11:23:05.320049",
+        "date_modified": null,
+        "event": "clue",
+        "id": 4839179,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "number": 4
+        },
+        "date_created": "2024-03-19T11:23:06.174036",
+        "date_modified": null,
+        "event": "round",
+        "id": 4839192,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": null
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "event": "survey",
+                "survey": "<form id=\"surveyForm\" onkeydown=\"return event.key != 'Enter';\">\n    <br>\n    <fieldset style=\"padding: 10px\">\n        <legend>1. Rate your playing experience:</legend>\n        <div class=\"horizontal-group\">\n            <label><input type=\"radio\" name=\"playing_experience\" value=\"1\"> 1 - Poor</label>\n            <label><input type=\"radio\" name=\"playing_experience\" value=\"2\"> 2 - Average</label>\n            <label><input type=\"radio\" name=\"playing_experience\" value=\"3\"> 3 - Excellent</label>\n        </div>\n        <span class=\"error-message\" style=\"color: #FF0000\" id=\"errorExperience\"></span>\n    </fieldset>\n\n    <fieldset style=\"padding: 10px\">\n        <legend>2. Did you encounter any problems?</legend>\n        <div class=\"vertical-group\">\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"1\"> 1 - No problems</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"2\"> 2 - My partner left or was inactive</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"3\"> 3 - I did not understand the task</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"4\"> 4 - My partner did not understand the task</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"5\"> 5 - There were technical problems with the platform</label>\n            <label style=\"display: block; margin-bottom: 5px\"><input type=\"radio\" name=\"player_rating\" value=\"6\"> 6 - Other</label>                \n        </div>\n        <input type=\"text\" name=\"player_rating_other\" style=\"width: 100%;\" placeholder=\"Please specify\"> <!-- Additional input for 'Other' option -->\n        <span class=\"error-message\" style=\"color: #FF0000\" id=\"errorPartner\"></span>\n    </fieldset>\n\n    <p style=\"margin-top: 2em; margin-bottom: 2em; color: #FF0000; text-align: center;\">Remember to copy your token from the chat window on the left once you have completed the survey</p>\n</form>\n\n<button class=\"button\" role=\"button\" id=\"survey_button\">Submit</button>\n"
+            }
+        },
+        "date_created": "2024-03-19T11:23:06.246539",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839194,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5362
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "answers": {
+                    "1. Rate your playing experience:": "2",
+                    "2. Did you encounter any problems?": "4"
+                },
+                "event": "submit_survey"
+            }
+        },
+        "date_created": "2024-03-19T11:23:41.134831",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839197,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    },
+    {
+        "data": {
+            "broadcast": false,
+            "command": {
+                "answers": {
+                    "1. Rate your playing experience:": "2",
+                    "2. Did you encounter any problems?": "4"
+                },
+                "event": "submit_survey"
+            }
+        },
+        "date_created": "2024-03-19T11:23:54.215027",
+        "date_modified": null,
+        "event": "command",
+        "id": 4839202,
+        "receiver_id": null,
+        "room_id": 4032,
+        "user_id": 5377
+    }
+]

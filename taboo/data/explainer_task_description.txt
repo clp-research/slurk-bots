@@ -1,0 +1,24 @@
+Welcome!
+
+    You are playing a collaborative word guessing game in which you have to describe
+    a target word for another player to guess.
+
+    Rules:
+
+    1) You cannot use the target word itself, parts or morphological variants of it in your description.
+
+    2) The same rules apply for the related words that you will be given.
+
+    3) Type the description of the word in the chat at the bottom of the page.
+
+    Guesses from the other player will start with "GUESS".
+
+    End conditions:
+
+    i) If you use the target word or a related word in your description, then you lose.
+
+    ii) If the other player can guess the target word in 3 tries, you both win.
+
+    Important: You are under time pressure, give short descriptions that are to the point!
+
+    Please type "ready" to begin the game!

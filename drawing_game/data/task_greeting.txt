@@ -1,0 +1,4 @@
+**Welcome to the Drawing Instructions Game!**
+
+
+Please type **ready** to begin the game.

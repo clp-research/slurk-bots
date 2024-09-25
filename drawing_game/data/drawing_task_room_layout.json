@@ -1,0 +1,395 @@
+{
+  "title": "Drawing Game Task Room",
+  "html": [
+    {
+      "layout-type": "div",
+      "id": "typing",
+      "style": "margin: 5px 10px; min-height: 20px"
+    },
+    {
+      "layout-type": "div",
+      "class": "cards",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "class": "card",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "id": "instr_title",
+              "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;"
+                },
+            {
+              "layout-type": "div",
+              "id": "instr",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "collapsible",
+                  "layout-content": "Click to see task instructions",
+                  "style": "font-weight: bold;"
+                },
+                {
+                  "layout-type": "div",
+                  "class": "collapsible-content",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "text_to_modify",
+                      "style": "padding-bottom: 5px",
+                      "layout-content": ""
+                    }
+                  ]
+                },
+                {
+                  "layout-type": "div",
+                  "id": "game",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "wrapper",
+                      "layout-content": [
+                        {
+                          "layout-type": "div",
+                          "id": "game-board"
+                        },
+                        {
+                          "layout-type": "div",
+                          "id": "keyboard-cont",
+                          "layout-content": [
+                            {
+                              "layout-type": "div",
+                              "class": "first-row",
+                              "layout-content": [
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "Q"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "W"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "E"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "R"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "T"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "Y"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "U"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "I"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "O"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "P"
+                                }
+                              ]
+                            },
+                            {
+                              "layout-type": "div",
+                              "class": "second-row",
+                              "layout-content": [
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "A"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "S"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "D"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "F"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "G"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "H"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "J"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "K"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "L"
+                                }
+                              ]
+                            },
+                            {
+                              "layout-type": "div",
+                              "class": "third-row",
+                              "layout-content": [
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "DEL"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "Z"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "X"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "C"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "V"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "B"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "N"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "M"
+                                },
+                                {
+                                  "layout-type": "button",
+                                  "class": "keyboard-button",
+                                  "layout-content": "ENTER"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "layout-type": "div",
+          "class": "card",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "id": "grid-area",
+              "layout-content": [
+                {
+                  "layout-type": "div",
+                  "id": "grid_title",
+                  "style": "max-width: 100%; height: auto; object-fit: contain; font-weight: bold;",
+                  "layout-content": "Target grid"
+                },
+                {
+                  "layout-type": "div",
+                  "id": "current-grid",
+                  "style": "max-width: 100%; height: auto; object-fit: contain;",
+                  "layout-content": ""
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "css": {
+    ".dis-area": {
+      "display": "none;"
+    },
+    ".cards": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "row",
+      "margin": "0px 10px",
+      "padding": "15px"
+    },
+    ".card": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "min-width": "45%",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "1px solid rgba(0,0,0,.125)",
+      "border-radius": ".25rem",
+      "height": "100%",
+      "margin": "0px 15px",
+      "padding": "20px"
+    },
+    ".hr": {
+      "margin": "10px",
+      "background-color": "#abb2b9",
+      "opacity": ".50"
+    },
+    "time:before": {
+      "content": "''"
+    },
+    "#grid-area": {
+      "margin": "0 auto",
+      "align-items": "center",
+      "justify-content": "center",
+      "background-color": "#eee",
+      "padding": "18px"
+    },
+    ".letter-box": {
+      "padding-top": "0.5rem",
+      "border": "2px solid gray",
+      "border-radius": "3px",
+      "margin": "2px",
+      "font-size": "2.5rem",
+      "font-weight": "700",
+      "height": "2rem",
+      "width": "2rem",
+      "display": "flex",
+      "justify-content": "center",
+      "align-items": "center",
+      "text-transform": "uppercase"
+    },
+    ".filled-box": {
+      "border": "2px solid black"
+    },
+    ".letter-row": {
+      "display": "flex"
+    },
+    "#keyboard-cont": {
+      "margin": "1rem 0",
+      "display": "flex",
+      "flex-direction": "column",
+      "align-items": "center",
+      "justify-content": "center"
+    },
+    "#keyboard-cont div": {
+      "display": "flex"
+    },
+    ".second-row": {
+      "margin": "0.5rem 0"
+    },
+    ".keyboard-button": {
+      "font-size": "1rem",
+      "font-weight": "700",
+      "padding": "0.5rem",
+      "margin": "0 2px",
+      "cursor": "pointer",
+      "text-transform": "uppercase"
+    },
+    "#instr": {
+      "text-justify": "inter-word",
+      "margin": "10px",
+      "flex-direction": "row"
+    },
+    ".collapsible": {
+      "background-color": "#eee",
+      "color": "#444",
+      "font-size": "1rem",
+      "cursor": "pointer",
+      "padding": "18px",
+      "width": "100%",
+      "border": "none",
+      "text-align": "left",
+      "outline": "none"
+    },
+    ".collapsible-content": {
+      "padding": "18px 18px",
+      "display": "none",
+      "overflow": "hidden",
+      "background-color": "#f1f1f1",
+      "flex-direction": "row"
+    },
+    "#instr_title": {
+      "max-width": "100%",
+      "height": "auto",
+      "object-fit": "contain",
+      "font-weight": "bold",
+      "display": "flex",
+      "flex-direction": "row",
+      "padding": "18px 18px"
+    },
+    "#game-board": {
+      "display": "flex",
+      "align-items": "center",
+      "flex-direction": "column"
+    },
+    "#wrapper": {
+      "display": "flex",
+      "align-items": "center",
+      "justify-content": "center",
+      "flex-direction": "column",
+      "column-gap": "2rem"
+    },
+    "#game": {
+      "display": "flex",
+      "flex-direction": "row"
+    }
+  },
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-intercepted-message",
+    "print-history": [
+      "attribute-history",
+      "markdown-history"
+    ],
+    "typing-users": "typing-users",
+    "plain": ["collapsible-task-instructions","drawing_game", "survey"]
+  }
+}
