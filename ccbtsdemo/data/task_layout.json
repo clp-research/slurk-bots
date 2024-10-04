@@ -34,6 +34,52 @@
           },
           {
             "layout-type": "div",
+            "id": "board-buttons",
+            "style": {
+              "display": "flex",
+              "justify-content": "space-around"
+            },              
+            "layout-content": [            
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "button-nextboard",
+                  "layout-content": "Go to Next Board",
+                  "style": "background-color: #3361ff;color:#ffffff"
+                },             
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "button-clearboard",
+                  "layout-content": "Clear Working Board",
+                  "style": "background-color: #3361ff;color:#ffffff"
+                }                
+            ]
+          },
+          {
+            "layout-type": "div",
+            "id": "board-captions",
+            "style": {
+              "display": "flex",
+              "justify-content": "space-around"
+            },              
+            "layout-content": [
+                {
+                  "layout-type": "text",
+                  "id": "target-board-caption-0",
+                  "layout-content": "<a style='color:Green;'></a>"
+                },               
+                {
+                  "layout-type": "text",
+                  "id": "working-board-caption-0",
+                  "layout-content": "<a style='color:Maroon;'></a>"
+                }
+            ]
+          },            
+          {
+            "layout-type": "div",
             "id": "board-captions",
             "style": {
               "display": "flex",
@@ -44,7 +90,7 @@
                   "layout-type": "text",
                   "id": "target-board-caption",
                   "layout-content": "<a style='color:Green;'>Target Board</a>"
-                },
+                },               
                 {
                   "layout-type": "text",
                   "id": "working-board-caption",
@@ -74,8 +120,8 @@
               {
                 "layout-type": "text",
                 "id": "instr_text_details",
-                "layout-content": "Available colors:<br><a style='color:Purple;'>red, green, blue, and yellow</a><br><br>Example instructions:<br>1. place a red washer in the 4th row 3rd column<br><br>2. remove the last placed nut<br><br>Command to reset the target board:<br><a style='color:Purple;'> /restart </a>"
-              }              
+                "layout-content": "Available colors:<br><a style='color:Red;'>red, <a style='color:Green;'>green, <a style='color:Blue;'>blue, <a style='color:Purple;'>and <a style='color:#D2B01F;'>yellow</a><br><br>Available Functionality:<br><ol><li>Place shapes on board:<ul><li>Example: place a red washer in the 4th row 3rd column</li></ul><br><br><li>Saving the sequence of actions to a file<ul><li>The file name should contain letters followed by numbers or hyphen to connect other words</li></ul><ul><li>Example: save the actions as k1-bridge. </li></ul><br><br><li>Repeating the saved actions from a file<ul><li>Example: repeat k1-bridge in 5th row 1st column. Use red color for washer and blue color for bridge.</li></ul><br><br><li>Undo the last placement<ul><li>Example: remove the last placed nut</li></ul></ol><br><br>Command to clear the working board:<br><a style='color:Purple;'> /clear </a>"
+              }
             ]
           }
         ]
@@ -96,7 +142,7 @@
       "margin-left": "155px"
     },   
     "#working-board-caption": {
-      "margin-left": "355px"
+      "margin-left": "350px"     
     },
     "#instructions": {
       "align-content": "left",
@@ -104,7 +150,38 @@
       "display": "flex",
       "flex-direction": "column",
       "gap": "20px"
-    }    
+    },
+    "#button-nextboard": {
+      "width": "95px",
+      "height": "40px",
+      "margin-left": "320px"
+    },
+    "#button-clearboard": {
+      "width": "95px",
+      "height": "60px",
+      "margin-left": "350px"
+    },
+    ".button, .message_button": {
+      "text-transform": "uppercase",
+      "border-radius": "5px",
+      "border": "none",
+      "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+      "outline": 0,
+      "background": "#00305E",
+      "width": "100%",
+      "color": "#FFFFFF",
+      "padding": "5px",
+      "cursor": "pointer"
+    },    
+    ".message_button": {
+      "margin-top": "3px",
+      "padding": "5px",
+      "width":"49%"
+    },
+    ".button:hover, .message_button:hover": {
+      "content": "''",
+      "background": "#818BAC"
+    }           
   },  
   "scripts": {
     "incoming-text": "markdown",

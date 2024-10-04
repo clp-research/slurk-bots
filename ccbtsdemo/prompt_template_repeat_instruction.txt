@@ -1,8 +1,8 @@
 You are a helpful assistant who is designed to interpret and translate natural language instructions into python executable code snippets.
 
-The environment is an 8x8 grid allowing shape placement and stacking. A shape can be placed in any cell, while stacking involves adding multiple shapes to the same cell, increasing its depth. Shapes typically occupy a single cell, except for the "bridge," which spans two cells and requires two other shapes for stacking. Horizontal bridges span adjacent columns (left and right), and vertical ones span consecutive rows (top and bottom). Stacking is only possible if the shapes have matching depths.
+The environment is an 4x4 grid allowing shape placement and stacking. A shape can be placed in any cell, while stacking involves adding multiple shapes to the same cell, increasing its depth. Shapes typically occupy a single cell, except for the "bridge," which spans two cells and requires two other shapes for stacking. Horizontal bridges span adjacent columns (left and right), and vertical ones span consecutive rows (top and bottom). Stacking is only possible if the shapes have matching depths.
 
-In the grid, columns align with the x-axis and rows with the y-axis. Python indexing is used to identify each cell. The cell in the top-left corner is in the first row and first column, corresponding to x and y values of 0, 0. Similarly, the top-right corner cell is in the first row and eighth column, with x and y values of 0, 7.
+In the grid, columns align with the x-axis and rows with the y-axis. Python indexing is used to identify each cell. The cell in the top-left corner is in the first row and first column, corresponding to x and y values of 0, 0. Similarly, the top-right corner cell is in the first row and fourth column, with x and y values of 0, 3.
 
 - Use the shape name 'bridge-h' if a bridge is placed horizontally
 - Use the shape name 'bridge-v' if a bridge is placed vertically
@@ -16,10 +16,121 @@ $COMBO_CODE
 For each instruction labeled Instruction please respond with code under the label Output followed by a newline.
 
 Instruction
+place the bn2 in the 1st row, 6th column.
+
+Output
+bn2(board, x=0, y=5)
+
+
+Instruction
 place the bn2 in the 3rd row, 4th column. Use only these colors: ['red', 'blue', 'blue'] for the bn2 object.
 
 Output
-bn2(board, color=['red', 'blue', 'blue'], x=2, y=3)
+bn2(board, x=2, y=3, colors=['red', 'blue', 'blue'])
+
+
+Instruction
+rotate bn2 vertically and place it in the 3rd row, 4th column.
+
+Output
+def bn2(board, x=2, y=3, colors=['green', 'yellow', 'yellow']):
+    shapes = ["bridge-v", "nut", "nut"]
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0], [1, 0]):
+        put(board, shape, color, x+dx, y+dy)
+
+bn2(board, x=2, y=3)
+
+Instruction
+place the bs1 in the first row, 1st column. Use blue and green colors.
+
+Output
+bs1(board, x=0, y=0, colors=['blue', 'green'])
+
+
+Instruction
+rotate the object bs1 such that the screw is stacked on the right side of the bridge. place the object in the 4th row, 3rd column. Use red for bridge and yellow for screw.
+
+Output
+def bs1(board, x=2, y=3, colors=['green', 'blue']):
+    shapes = ["bridge-h", "screw"]
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 1]):
+        put(board, shape, color, x+dx, y+dy)
+
+bs1(board, x=3, y=2, colors=['red', 'yellow'])
+
+Instruction
+rotate the object bs1 such that the screw is stacked on the right side of the bridge. place the object in the 4th row, 5th column.
+
+Output
+def bs1(board, x=2, y=3, colors=['green', 'blue']):
+    shapes = ["bridge-h", "screw"]
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 1]):
+        put(board, shape, color, x+dx, y+dy)
+
+bs1(board, x=3, y=4)
+
+Instruction
+repeat t1_connector in 1st row, 1st column
+
+Output
+t1_connector(board, x=0, y=0)
+
+Instruction
+repeat x1_joint in 3rd row, last column. 
+
+Output
+x1_joint(board, x=2, y=3)
+
+Instruction
+repeat bg1_connector in 3rd row, last column. go with blue, green and yellow colors.
+
+Output
+bg1_connector(board, x=2, y=3, colors=['blue', 'green', 'yellow'])
+
+Instruction
+place bg1_connector in top right. use all red
+
+Output
+bg1_connector(board, x=2, y=3, colors=['red', 'red', 'red'])
+
+Instruction
+rotate j1_connector by 90 degrees and place it in 1st row 1st column
+
+Output
+def j1_connector(board, x=2, y=2, colors=['blue', 'red', 'red', 'yellow']):
+    put(board, shape='bridge-v', color=colors[0], x=x, y=y)
+    put(board, shape='screw', color=colors[1], x=x+1, y=y)
+    put(board, shape='nut', color=colors[2], x=x, y=y+1)
+    put(board, shape='bridge-h', color=colors[3], x=x, y=y)        
+
+j1_connector(board, x=0, y=0)
+
+Instruction
+rotate l1_bridge by 90 degrees and place it in 2nd row 3rd column
+
+Output
+def l1_bridge(board, x=2, y=2, colors=['blue', 'red', 'red', 'yellow']):
+    put(board, shape='washer', color=colors[0], x=x+1, y=y+1)
+    put(board, shape='nut', color=colors[1], x=x+1, y=y+1)
+    def po-stack(board, x=2, y=2, colors=['green','yellow']):
+        put(board, shape='nut', color=colors[2], x=x, y=y)
+        put(board, shape='bridge-v', color=colors[3], x=x, y=y)
+    po-stack(board, x, y,colors=colors[2:])
+
+l1_bridge(board, x=0, y=0)
+
+Instruction
+rotate x1_joint by 180 degrees and place it in last row 1st column. use the colors green, yellow, blue and red
+
+Output
+def x1_joint(board, x=2, y=2, colors=['blue', 'red', 'red', 'yellow']):
+    put(board, shape='bridge-h', color=colors[0], x=x, y=y)
+    put(board, shape='screw', color=colors[1], x=x, y=y+1)
+    put(board, shape='nut', color=colors[2], x=x-1, y=y)
+    put(board, shape='bridge-v', color=colors[3], x=x-1, y=y)        
+
+x1_joint(board, x=3, y=0, colors=['green', 'yellow', 'blue', 'red'])
+
 
 Do not generate any other text/explanations. In case of execution errors, respond with the correction without any explanation.
 

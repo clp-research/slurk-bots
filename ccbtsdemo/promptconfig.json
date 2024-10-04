@@ -27,7 +27,7 @@
         "codellama/CodeLlama-34b-Instruct-hf"
     ],
     "temperature": 0.0,
-    "max_new_tokens": 250,
+    "max_new_tokens": 500,
     "use_hf_api_local": false,
     "prompt_header_template": {
         "forder": "ablation_prompts/forder_only_one_removal/prompt_template_atomic_instruction_smpl_0_info.txt",

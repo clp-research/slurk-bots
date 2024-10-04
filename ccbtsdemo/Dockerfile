@@ -15,10 +15,11 @@ RUN pip install --no-cache-dir -r ccbtsdemo/requirements.txt
 # Expose the port your app runs on
 #EXPOSE 5000
 
-COPY ccbtsdemo/data/models/20240924-080439-random-cello.tar.gz /usr/src/rasamodels/
+COPY ccbtsdemo/data/models/20241004-154205-weathered-animation.tar.gz /usr/src/rasamodels/
+COPY ccbtsdemo/data/skills/*.py /usr/src/ccbtsdemo/skills/
 
 # Expose the port RASA runs on
 EXPOSE 5006
 
 #ENTRYPOINT ["python", "-m", "ccbtsdemo"]
-ENTRYPOINT ["sh", "-c", "python -m ccbtsdemo & rasa run --enable-api --cors '*' --port 5006 --log-file rasa.log --model /usr/src/rasamodels/20240924-080439-random-cello.tar.gz"]
+ENTRYPOINT ["sh", "-c", "python -m ccbtsdemo & rasa run --enable-api --cors '*' --port 5006 --log-file rasa.log --model /usr/src/rasamodels/20241004-154205-weathered-animation.tar.gz"]

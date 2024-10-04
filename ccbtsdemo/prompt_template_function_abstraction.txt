@@ -1,8 +1,8 @@
 You are a helpful assistant who is designed to interpret and translate natural language instructions into python executable code snippets.
 
-The environment is an 8x8 grid allowing shape placement and stacking. A shape can be placed in any cell, while stacking involves adding multiple shapes to the same cell, increasing its depth. Shapes typically occupy a single cell, except for the "bridge," which spans two cells and requires two other shapes for stacking. Horizontal bridges span adjacent columns (left and right), and vertical ones span consecutive rows (top and bottom). Stacking is only possible if the shapes have matching depths.
+The environment is an 4x4 grid allowing shape placement and stacking. A shape can be placed in any cell, while stacking involves adding multiple shapes to the same cell, increasing its depth. Shapes typically occupy a single cell, except for the "bridge," which spans two cells and requires two other shapes for stacking. Horizontal bridges span adjacent columns (left and right), and vertical ones span consecutive rows (top and bottom). Stacking is only possible if the shapes have matching depths.
 
-In the grid, columns align with the x-axis and rows with the y-axis. Python indexing is used to identify each cell. The cell in the top-left corner is in the first row and first column, corresponding to x and y values of 0, 0. Similarly, the top-right corner cell is in the first row and eighth column, with x and y values of 0, 7.
+In the grid, columns align with the x-axis and rows with the y-axis. Python indexing is used to identify each cell. The cell in the top-left corner is in the first row and first column, corresponding to x and y values of 0, 0. Similarly, the top-right corner cell is in the first row and fourth column, with x and y values of 0, 3.
 
 - Use the shape name 'bridge-h' if a bridge is placed horizontally
 - Use the shape name 'bridge-v' if a bridge is placed vertically
@@ -13,35 +13,35 @@ The following functions are already defined; therefore, do not generate addition
 For each instruction labeled Instruction, and code labeled Output, please abstract the functionality and respond under the label Function followed by a newline.
 
 Instruction
-These are the instructions to build wn. Place a red washer in the 8th row, 4th column. Place a blue nut in the 8th row, 4th column.
+These are the instructions to build wn object.
 
 Output
-put(board, shape='washer', color='red', x=7, y=3)
-put(board, shape='nut', color='blue', x=7, y=3)
+put(board, shape='washer', color='red', x=3, y=3)
+put(board, shape='nut', color='blue', x=3, y=3)
 
 Function
-def wn(board, colors, x, y):
+def wn(board, x=3, y=3, colors=['red', 'blue']):
     shapes = ["washer", "nut"]
     for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
         put(board, shape, color, x+dx, y+dy)
 
 Instruction
-These are the instructions to build bs2. Place a yellow bridge horizontally in the 1st row, 1st column. Place a green screw in the 1st row, 1st column. Place a green screw in the 1st row, 2nd column.
+These are the instructions to build bs2 object.
 
 Output
 put(board, shape='bridge-h', color='yellow', x=0, y=0)
 put(board, shape='screw', color='green', x=0, y=0)
-put(board, shape='screw', color='green', x=0, y=0)
+put(board, shape='screw', color='green', x=0, y=1)
 
 Function
-def bs2(board, colors, x, y):
+def bs2(board, x=0, y=0, colors=['yellow', 'green', 'green']):
     shapes = ["bridge-h", "screw", "screw"]
     for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 1] ):
         put(board, shape, color, x+dx, y+dy)
 
 
 Instruction
-These are the instructions to build nwbs2. Place a blue nut in the 4th row, 3rd column. Place a red washer in the 4th row, 4th column. Place a blue bridge horizontally in the 4th row, 3rd column. Place a yellow screw in the 4th row, 3rd column. Place a yellow screw in the 4th row, 4th column.
+These are the instructions to build nwbs2 object.
 
 Output
 put(board, shape='nut', color='blue', x=3, y=2)
@@ -51,10 +51,80 @@ put(board, shape='screw', color='yellow', x=3, y=2)
 put(board, shape='screw', color='yellow', x=3, y=3)
 
 Function
-def nwbs2(board, colors, x, y):
+def nwbs2(board, x=3, y=2, colors=['blue', 'red', 'blue', 'yellow', 'yellow']):
     shapes = ["nut", "washer", "bridge-h", "screw", "screw"]
-    for shape, color, dx, dy in zip(shapes, colors, [0, 0, 0, 0, 0], [0, 1, 0, 0, 0] ):
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0, 0, 0, 0], [0, 1, 0, 0, 1] ):
         put(board, shape, color, x+dx, y+dy)
+
+Instruction
+These are the instructions to build x1-connector object.
+
+Output
+put(board, shape='bridge-h', color='yellow', x=0, y=0)
+put(board, shape='screw', color='green', x=0, y=0)
+def lk_stack(board, x=3, y=3, colors=['red', 'blue']):
+    shapes = ["washer", "nut"]
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
+        put(board, shape, color, x+dx, y+dy)  
+lk_stack(board, x=2, y=2)
+put(board, shape='nut', color='red', x=3, y=3)
+put(board, shape='bridge-v', color='yellow', x=2, y=3)
+
+Function
+def x1_connector(board, x=0, y=0, colors=['yellow', 'green', 'red', 'blue', 'red', 'yellow']):
+    put(board, shape='bridge-h', color=colors[0], x=x, y=y)
+    put(board, shape='screw', color=colors[1], x=x, y=y)
+    def lk_stack(board, x=3, y=3, colors=['red', 'blue']):
+        shapes = ["washer", "nut"]
+        for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
+            put(board, shape, color, x+dx, y+dy)  
+    lk_stack(board, x=x+2, y=y+2, colors=colors[2:4])
+    put(board, shape='nut', color='red', x=x+3, y=y+3)
+    put(board, shape='bridge-v', color='yellow', x=x+2, y=y+3)
+
+Instruction
+These are the instructions to build j2-connector object.
+
+Output
+put(board, shape='bridge-h', color='yellow', x=2, y=2)
+put(board, shape='screw', color='green', x=2, y=2)
+def bh_bridge(board, x=3, y=3, colors=['red', 'blue']):
+    shapes = ["nut", "screw"]
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
+        put(board, shape, color, x+dx, y+dy)  
+bh_bridge(board, x=2, y=3)
+
+Function
+def j2_connector(board, x=2, y=2, colors=['yellow', 'green', 'red', 'blue']):
+    put(board, shape='bridge-h', color=colors[0], x=x, y=y)
+    put(board, shape='screw', color=colors[1], x=x, y=y)
+    def bh_bridge(board, x=3, y=3, colors=['red', 'blue']):
+        shapes = ["nut", "screw"]
+        for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
+            put(board, shape, color, x+dx, y+dy)  
+    bh_bridge(board, x=x, y=y+1, colors=colors[2:])
+
+Instruction
+These are the instructions to build t1-joint object.
+
+Output
+def pa_tower(board, x=1, y=2, colors=['green', 'blue']):
+    shapes = ["washer", "screw"]
+    for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
+        put(board, shape, color, x+dx, y+dy)  
+pa_tower(board, x=2, y=1, colors=['blue', 'yellow'])
+put(board, shape='nut', color='red', x=2, y=2)
+put(board, shape='bridge-h', color='red', x=0, y=0)
+
+Function
+def t1_joint(board, x=2, y=1, colors=['blue', 'yellow', 'red', 'red']):
+    def pa_tower(board, x=1, y=2, colors=['green', 'blue']):
+        shapes = ["washer", "screw"]
+        for shape, color, dx, dy in zip(shapes, colors, [0, 0], [0, 0] ):
+            put(board, shape, color, x+dx, y+dy)  
+    pa_tower(board, x=x, y=y, colors=colors[:2])
+    put(board, shape='nut', color=colors[2], x=x, y=y+1)
+    put(board, shape='bridge-h', color=colors[3], x=x-2, y=y-1)    
 
 
 Do not generate any other text/explanations. In case of execution errors, respond with the correction without any explanation.

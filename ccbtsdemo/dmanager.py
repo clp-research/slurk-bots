@@ -3,6 +3,7 @@ import argparse
 import importlib
 import logging
 import json
+import re
 
 from pathlib import Path
 
@@ -79,24 +80,40 @@ class DialogueManager:
 
     def _getentities(self, entities):
         entity_extract = {}
+        logging.debug(f"Entities: {entities}")
         for entity in entities:
-            if entity["entity"] == "skill_name":
+            if "entity" in entity:
+                if entity["entity"] == "skill_name":
+                    entity_extract["name"] = "skill_name"
+                    entity_extract["value"] = entity["value"]
+                    break
+            elif entity == "skill-name":
                 entity_extract["name"] = "skill_name"
-                entity_extract["value"] = entity["value"]
+                entity_extract["value"] = entity["skill-name"]
                 break
-
         return entity_extract
+    
+    def _getentities_using_regex(self, instruction):
+        #pattern = r'(k\d+b?\d*|[a-z]+\d+(?:[a-z]+\d+)*-[a-z]+|[a-z]+\d+(?:[a-z]+\d+)*|[a-z]+-[a-z]+)'
+        pattern = r'(k\d+b?\d*|[a-z]+\d+(?:[a-z]+\d+)*_[a-z]+|[a-z]+\d+(?:[a-z]+\d+)*|[a-z]+_[a-z]+)'
+
+        extracted = None
+        matches = re.findall(pattern, instruction)
+        if matches:
+            extracted = ', '.join(matches)
+            logging.debug(f"Extracted: {extracted}")
+        else:
+            logging.debug("No match found for entity extraction")
+        return extracted   
+
 
     def _handle_no_entity(self, daresponse, prev_intent):
         logging.error(
             f"Failure in extracting the skill name, available entities are: {daresponse['entities']}"
         )
-        result = {
-            "utterance": daresponse["utterance"],
-            "dialogue_act": prev_intent,
-            "output": self.rgen.handleerror("No skill name provided."),
-        }
-        return result
+        rgenop = self.rgen.handleerror("No skill name provided.")
+
+        return rgenop, None
 
     def _gen_abstract_function(self, entity_extract, skill_filename):
         skill_code = self.csimulator.getskill(skill_filename)
@@ -167,14 +184,17 @@ class DialogueManager:
             }
             return result
 
-    def _prepare_result(self, utterance, da_act, output, code, dllmresponse, entities=None):
+    def _prepare_result(self, utterance, daresponse, botresponse):
+
+        if daresponse["entities"] and isinstance(daresponse["entities"], dict):
+            daresponse["entities"] = [daresponse["entities"]]
+
         result = {
             "utterance": utterance,
-            "dialogue_act": da_act,
-            "output": output,
-            "code": code,
-            "llmresponse": dllmresponse,
-            "entities": entities,
+            "dialogue_act": daresponse["intent"],
+            "detectionresponse": daresponse,
+            "botresponse": botresponse,
+            "entities": daresponse["entities"],
         }
         return result
     
@@ -200,6 +220,29 @@ class DialogueManager:
             except:
                 counter += 1
         return False
+    
+    def setllmmodel(self, model):
+        self.dtranslator.setllmmodel(model)
+    
+    def handleintent(self, daresponse):
+        if daresponse["intent"]["confidence"] < self.config["intent_confidence"]:
+            return "low-confidence", None
+
+        intent_handlers = {
+                    "TRANSLATE": self._handle_translate,
+                    "UNDO": self._confirm_undo,
+                    "GREET": self._handle_others,
+                    "GOODBYE": self._handle_others,
+                    "SAVE-SKILL": self._handle_save_skill,
+                    "REPEAT-SKILL": self._handle_repeat_skill,
+                    "CLEAR": self._handleclear,
+                }
+        handler = intent_handlers.get(daresponse["intent"]["name"])
+        if handler:
+            return handler(daresponse)        
+        else:
+            return None, None
+    
 
     def _handle_translate(self, daresponse):
         prev_intent = daresponse["intent"]
@@ -212,44 +255,37 @@ class DialogueManager:
             dtresponse = self.dtranslator.run(
                 "translate", daresponse["utterance"], None, None, simulerror
             )
-            logging.debug(f"Translate Code: {dtresponse}")
+            logging.debug(f"Translated Code:\n{dtresponse}")
             if dtresponse:
-                dtresponse = dtresponse.strip().split("\n")
+                if "for" in dtresponse:
+                    dtresponse = [dtresponse.strip()]
+                else:
+                    dtresponse = dtresponse.strip().split("\n")
                 try:
                     save_filename = self.csimulator.run(dtresponse)
-                    return self._prepare_result(
-                        daresponse["utterance"],
-                        prev_intent,
-                        save_filename,
-                        dtresponse,
-                        daresponse,
-                    )
+                    return save_filename, dtresponse
 
                 except Exception as error:
                     # TODO: Handle exceptions - reprompt the model with the errors
                     logging.error(f"Error: {error}, {type(error)}, {str(error)}")
-                    simulerror = str(type(error)) + str(error)
+                    simulerror = str(type(error)).replace("<", "&lt;").replace(">", "&gt;") + " " + str(error).replace("<", "&lt;").replace(">", "&gt;")
 
                     retry += 1
 
-        rgenop = "Failure in executing the LLM generated code. Please try again."#self.rgen.handleerror(simulerror)
+        rgenop = f"Failure in executing the translated code.<br>{simulerror}<br>Please try again"#self.rgen.handleerror(simulerror)
         logging.error(
-            f"Error in executing the LLM generated code (for 3 times)"#: Response from RGen: {rgenop}"
+            f"Error in executing the LLM generated code"#: Response from RGen: {rgenop}"
         )
-        return self._prepare_result(
-            daresponse["utterance"], prev_intent, rgenop, None, daresponse
-        )
+        return rgenop, dtresponse
 
-    def _handle_undo(self, daresponse):
-        prev_intent = daresponse["intent"]
-        output_filename, undo_code = self.csimulator.undo()
-        return self._prepare_result(
-            daresponse["utterance"],
-            prev_intent,
-            output_filename,
-            undo_code,
-            daresponse,
-        )
+    def _confirm_undo(self, daresponse):
+        #return self.csimulator.undo()
+        #Get the confirmation from the user before doing undo
+        return "Undoing the last action", None
+    
+    def handle_undo(self):
+        return self.csimulator.undo()
+        
 
     def _handle_save_skill(self, daresponse):
         prev_intent = daresponse["intent"]
@@ -257,7 +293,11 @@ class DialogueManager:
         # if not entity_value:
         # DM should check if it is available from the context, if not generate a response asking for the skill name
         if not entity_extract:
-            return self._handle_no_entity(daresponse, prev_intent)
+            extracted = self._getentities_using_regex(daresponse["utterance"])
+            if extracted:
+                entity_extract = {"value": extracted}
+            else:
+                return self._handle_no_entity(daresponse, prev_intent)
 
         skill_filename = f"{entity_extract['value']}.py"
         logging.debug(f"Extracted the skillname: {skill_filename}")
@@ -267,30 +307,21 @@ class DialogueManager:
             abstract_func_filename = self._gen_abstract_function(
                 entity_extract, skill_filename
             )
-
-            return self._prepare_result(
-                daresponse["utterance"],
-                prev_intent,
-                f"Saved the code in: {abstract_func_filename}",
-                None,
-                daresponse,
-                entity_extract,
-            )
+            # If we return abstract_func_filename -> it may unnecessarily expose the internal file structure
+            return skill_filename, None
         else:
-            return self._prepare_result(
-                daresponse["utterance"],
-                prev_intent,
-                "No code to save",
-                None,
-                daresponse,
-            )
+            return "No active code available for saving. Try later", None
 
     def _handle_repeat_skill(self, daresponse):
         prev_intent = daresponse["intent"]
 
         entity_extract = self._getentities(daresponse["entities"])
         if not entity_extract:
-            return self._handle_no_entity(daresponse, prev_intent)
+            extracted = self._getentities_using_regex(daresponse["utterance"])
+            if extracted:
+                entity_extract = {"value": extracted}
+            else:            
+                return self._handle_no_entity(daresponse, prev_intent)
 
         skill_filename = f"{entity_extract['value']}_abstract.py"
         logging.debug(f"Retrieving skill with the filename: {skill_filename}")
@@ -298,13 +329,7 @@ class DialogueManager:
         logging.debug(f"Retrieved Skill Code: {skill_code}")
 
         if skill_code is None:
-            return self._prepare_result(
-                daresponse["utterance"],
-                prev_intent,
-                f"No skill found with the name: {entity_extract['value']}",
-                None,
-                daresponse,
-            )
+            return f"No skill found with the name: {entity_extract['value']}",None
 
         retry = 0
         simulerror = None
@@ -319,80 +344,62 @@ class DialogueManager:
             logging.debug(f"Repeat Code: {repeat_code}")
 
             try:
-                self.csimulator.repeat_run(skill_code, repeat_code)
+                save_filename = self.csimulator.repeat_run(skill_code, repeat_code)
                 self.dtranslator.reset("repeat-skill")
-                return self._prepare_result(
-                    daresponse["utterance"],
-                    prev_intent,
-                    f"Repeated the skill: {entity_extract['value']}",
-                    None,
-                    daresponse,
-                )
+                return save_filename, None
             except Exception as error:
                 # TODO: Handle exceptions - reprompt the model with the errors
                 logging.error(f"Error: {str(type(error)) + str(error)}")
-                simulerror = str(type(error)) + str(error)
+                simulerror = str(type(error)).replace("<", "&lt;").replace(">", "&gt;") + " " + str(error).replace("<", "&lt;").replace(">", "&gt;")
 
                 retry += 1
 
         self.dtranslator.reset("repeat-skill")
-        rgenop = "Failure in executing the LLM generated code. Please try again."#self.rgen.handleerror(simulerror)
+        rgenop = f"Failure in executing the translated code.<br>{simulerror}<br>Please try again."#self.rgen.handleerror(simulerror)
         logging.error(rgenop)
-        return self._prepare_result(
-            daresponse["utterance"], prev_intent, rgenop, None, daresponse
-        )
+        return rgenop, skill_code
 
     def _handle_others(self, daresponse):
-        prev_intent = daresponse["intent"]
         genoutput = self.rgen.generate(daresponse["utterance"])
         # logging.debug(genoutput["output"])
-        return self._prepare_result(
-            daresponse["utterance"],
-            prev_intent,
-            genoutput["output"],
-            None,
-            daresponse,
-        )
+        return genoutput["output"], None
 
-    def _handle_ground(self, daresponse):
-        prev_intent = daresponse["intent"]
-        logging.debug("Moving the action to roboarm!")
-        result = {
-            "utterance": daresponse["utterance"],
-            "dialogue_act": prev_intent,
-            "output": "Moving the action to roboarm!",
-            "code": None,
-            "llmresponse": daresponse,
-        }
+    def _handleclear(self, daresponse):
+
+        return "cleared the grid", None
 
     def run(self, utterance):
         if utterance.lower() == "clear":
             self.dad.reset()
             self.dtranslator.reset()
             self.csimulator.reset()
-            return self._prepare_result(utterance, {"name": "clear", "confidence": 1.0}, "cleared the grid", None, None)
+            daresponse = {"intent": {"name": "CLEAR", "confidence": 1.0}, "entities": None}
+            return self._prepare_result(utterance, daresponse, "cleared the grid")
         '''
         if utterance.lower() == "show in simulation":
-            daresponse = {"rasa_result": { "intent": "robosimulation", "confidence": 1.0}}
+            daresponse = {"intent": {"name": "showrobosimulation", "confidence": 1.0}, "entities": None}}
             self.pbrobot.perform_pick_and_place()
-            return self._prepare_result(utterance, daresponse["rasa_result"]["intent"], "showed the simulation", None, None)
+            return self._prepare_result(utterance, daresponse, "updated the simulation")
         
         '''
-        if utterance.lower() == "show me":
+        if "show me" in utterance.lower():
             code_list = self.csimulator.get_current_world_code()
             logging.debug(f"Got the current world code: {code_list}")
-
+            daresponse = {"intent": {"name": None, "codenfidence": 1.0}, "entities": None}
             if self.pbsimulation:
-                daresponse = {"rasa_result": { "intent": "pbsimulation", "confidence": 1.0}}
+                daresponse["intent"]["name"] = "SHOW_PBSIMULATION"
                 self.pbrobot.perform_pick_and_place(code_list)
             elif self.realroboarm:
-                daresponse = {"rasa_result": { "intent": "roboreal", "confidence": 1.0}}
+                daresponse["intent"]["name"] = "SHOW_ROBOREAL"
                 self.aground.perform_pick_and_place(code_list)
             else:
-                daresponse = {"rasa_result": { "intent": "vsimulation", "confidence": 1.0}}
-                #TODO: Here the 2.5 Grid should be shown
+                daresponse["intent"]["name"] = "SHOW_VSIMULATION"
 
-            return self._prepare_result(utterance, daresponse["rasa_result"]["intent"], "showed the simulation", None, None)
+            return self._prepare_result(utterance, daresponse, "Updated the simulation")
+        
+        if any(x in utterance.lower() for x in ["remove", "undo", "revert"]):
+            daresponse = {"intent": {"name": "UNDO", "confidence": 1.0}, "entities": None}
+            return self._prepare_result(utterance, daresponse, "Received the undo command")
 
         daresponse = self.dad.run(utterance)
         logging.debug(f"DA Response: {daresponse}")
@@ -421,46 +428,14 @@ class DialogueManager:
                 logging.debug(
                     f"Confidence is still low: {daresponse['intent']['confidence']} with LLM, Reprompting the user"
                 )
-                return self._prepare_result(
-                    daresponse["utterance"],
-                    daresponse["intent"],
-                    self.rgen.handleerror(),
-                    None,
-                    daresponse,
+
+                return self._prepare_result(utterance, daresponse, "Sorry, I don't understand. Can you please repeat?"
                 )
 
         genresponse = self.rgen.generate(utterance, daresponse["intent"]["name"])
         logging.info(f"Genresponse: {genresponse}")
-        if genresponse["output"] == "Sorry, I don't understand. Can you please repeat?":
-            return self._prepare_result(
-                daresponse["utterance"],
-                daresponse["intent"],
-                "Sorry, I don't understand. Can you please repeat?",
-                None,
-                daresponse,
-            )
 
-        intent_handlers = {
-            "TRANSLATE": self._handle_translate,
-            "UNDO": self._handle_undo,
-            "GREET": self._handle_others,
-            "ACKNOWLEDGEMENT": self._handle_others,
-            "GOODBYE": self._handle_others,
-            "SAVE-SKILL": self._handle_save_skill,
-            "REPEAT-SKILL": self._handle_repeat_skill,
-            "GROUND": self._handle_ground,
-        }
-
-        handler = intent_handlers.get(daresponse["intent"]["name"])
-        if handler:
-            return handler(daresponse)
-
-        return self._prepare_result(
-            daresponse["utterance"],
-            daresponse["intent"],
-            "No handler found for the intent.",
-            None,
-            daresponse,
+        return self._prepare_result(utterance, daresponse, genresponse["output"],
         )
     
     def showpbsimulation(self, code):

@@ -9,6 +9,19 @@ class DialogueTranslator:
         #self.model = "codellama/CodeLlama-34b-Instruct-hf"#"meta-llama/Meta-Llama-3-8B-Instruct"#
         self.model = llm_model#"gpt-4o"
 
+
+    def setllmmodel(self, model):
+        if model == "model_llm370b":
+            model_name = "meta-llama/Meta-Llama-3-70B-Instruct"
+        elif model == "model_llm8b":
+            model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+        elif model == "model_codellama":
+            model_name = "codellama/CodeLlama-34b-Instruct-hf"
+        elif model == "model_gpt4o":
+            model_name = "gpt-4o"
+        logging.info(f"Setting LLM model to {model_name}")
+        self.model = model_name
+
     def reset(self, prompt_type=None):
         if not prompt_type:
             self.prompt = {}
@@ -30,24 +43,17 @@ class DialogueTranslator:
             
         try:
             response = response.strip().split("\n")
-            logging.error(f"0. Response = {response}")
             if response:
                 if "```python" in response[0]:
                     response[0] = response[0].replace("```python", "").strip()
                     response[-1] = response[-1].replace("```", "").strip()
 
-                logging.error(f"1. Response = {response}")
-
                 if "```" in response[0]:
                     response[0] = response[0].replace("```", "").strip()
                     response[-1] = response[-1].replace("```", "").strip()
 
-                logging.error(f"2. Response = {response}")
-
                 if response[0] in [":", ".", ","]:
                     response = response[1:]
-
-                logging.error(f"3. Response = {response}")
 
                 if response:
                     if response_type == "code":
@@ -55,18 +61,16 @@ class DialogueTranslator:
                             response = response[:-1]
 
                         for resp in response:
-                            logging.error(f"4.1 Response = {resp}")
                             if not resp:
                                 continue
-                            if resp[-1] in [":", ".", ","] and ("if" not in resp or "for" not in resp or "while" not in resp):
+                            if resp[-1] in [":", ".", ","] and ("if" not in resp and "for" not in resp and "while" not in resp and not resp[0].contains("def")):
                                 response[response.index(resp)] = resp[:-1]
-                            logging.error(f"4.2 Response = {resp}")
+
         except Exception as error:
             logging.error("Error in cleanup_response: ", response, error)
-        
+
         response = "\n".join(response)
-        logging.error(f"5 Response = {response}")
-        return response
+        return response.strip()
     
 
     def run(self, prompt_type, instruction, skill_name=None, skill_code=None, error=None):
@@ -91,11 +95,14 @@ class DialogueTranslator:
 
         self.response[prompt_type] = self._cleanup_response(model_response, reponse_type)
 
+
+        logging.debug(f"Prompt Type: {self.prompt[prompt_type]},\nResponse:\n{self.response[prompt_type]}")
         return self.response[prompt_type]
 
     
 if __name__=="__main__":
-    dt = DialogueTranslator()
-    utterance = "place a red washer in the 3rd row, 4th column"
-    response = dt.run(utterance)
+    dt = DialogueTranslator(None)
+    utterance = "fill the grid with red washers"#"place a red washer in the 3rd row, 4th column"
+    response = dt.run("translate", utterance)
     print(response)
+

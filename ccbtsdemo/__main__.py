@@ -19,6 +19,9 @@ TIMEOUT_TIMER = 60  # minutes
 COLOR_MESSAGE = '<a style="color:{color};">{message}</a>'
 STANDARD_COLOR = "Purple"
 RESPONSE_COLOR = "Green"
+BOT_RESPONSE_COLOR = "Blue"
+LLM_ERROR_COLOR = "Red"
+WARNING_COLOR = "FireBrick"
 
 
 class RoomTimer:
@@ -52,6 +55,7 @@ class CCBTSDemoBot(TaskBot):
         self.rows = 8
         self.cols = 8
         self.dataloader = Dataloader()
+        self.debug_logs = False
         #logging.debug(f"CCBTS: Calling Dialogue Manager")
         #self.dmanager = DialogueManager({"width":self.cols, "height":self.rows})
         #sleep(1)
@@ -226,14 +230,29 @@ class CCBTSDemoBot(TaskBot):
         """Load the target image."""
         logging.debug(f"Inside load_target_image, room_id = {room_id}, user_id = {user_id}")
         base64_string = self.dataloader.get_target_image()
-        self.sio.emit(
-            "message_command",
-            {
-                "command": {"event": "set_target_image", "message": base64_string},
-                "room": room_id,
-                "receiver_id": user_id,
-            },
-        )
+        if base64_string is not None:
+            self.sio.emit(
+                "message_command",
+                {
+                    "command": {"event": "set_target_image", "message": base64_string},
+                    "room": room_id,
+                    "receiver_id": user_id,
+                },
+            )
+        else:
+            self.sio.emit(
+                "text",
+                {
+                    "room": room_id,
+                    "message": COLOR_MESSAGE.format(
+                        color=STANDARD_COLOR, message="All target boards have been used. Closing the room"
+                    ),
+                    "html": True,
+                },
+                callback=self.message_callback,
+            )
+            self.close_room(room_id)
+
 
     def setworldstate(self, room_id, user_id):
         logging.debug(f"Inside setworldstate, room_id = {room_id}, user_id = {user_id}")
@@ -280,9 +299,9 @@ class CCBTSDemoBot(TaskBot):
         self._cleanup(room_id, user_id)
 
         if command in ["clear", "reset"]:
-            message = "Resets the world state"
+            message = "Reset the world state"
         elif command == "restart":
-            message = "Resets the target board"
+            message = "Updated the target board"
             self.load_target_image(room_id, user_id)
 
         self.sio.emit(
@@ -344,86 +363,125 @@ class CCBTSDemoBot(TaskBot):
                 intent_info = "Rasa Intent Details: "+ "<br>" + "Name: " +response["dialogue_act"]["name"].capitalize() + "<br>" + " Confidence: " +confidence
                 intent_info = COLOR_MESSAGE.format(color=STANDARD_COLOR, message=intent_info)
 
-                if "entities" in response:
-                    if response["entities"]:
-                        entity_info = "Entities:"+ "<br>"
-                        for entity_name, entity_value in response["entities"].items():
-                            entity_info += entity_name.capitalize() + ": " + entity_value + "<br>"
-                        intent_info += "<br>" + COLOR_MESSAGE.format(color=STANDARD_COLOR, message=entity_info)
-                '''
-                if response['llmresponse'] and response['llmresponse']['Intent'] and response['llmresponse']['Confidence']:
-                    confidence = str(round(response['llmresponse']['Confidence'], 2))
-                    llm_intent_info = "LLM Intent Details: "+ "<br>" + "Name: " +response['llmresponse']['Intent'].capitalize() + "<br>" + " Confidence: " +confidence
+                if response["entities"]:
+                    entity_info = "Entities:"+ "<br>"
+                    for entity in response["entities"]:
+                        for entity_name, entity_value in entity.items():
+                            if entity_name not in ["entity", "value"]:
+                                continue
+                            entity_info += entity_name.capitalize() + ": " + str(entity_value) + "<br>"
+                    intent_info += "<br>" + COLOR_MESSAGE.format(color=STANDARD_COLOR, message=entity_info)
 
-                    slots = response['llmresponse']['Slots']
-                    if slots:
-                        llm_intent_info += "<br>" + "Slots: " + "<br>"
-                        for slot_name, slot_value in slots.items():
-                            logging.debug(f"Slot Name: {slot_name}, Slot Value: {slot_value}")
-                            llm_intent_info += slot_name.capitalize()+ ": "
-                            if isinstance(slot_value, dict):
-                                for key, value in slot_value.items():
-                                    llm_intent_info += str(value) + "<br>"
+                if self.debug_logs:
+                    self.sio.emit(
+                                    "text",
+                                    {
+                                        "room": data["room"],
+                                        "message": intent_info,
+                                        #"message": COLOR_MESSAGE.format(
+                                        #    color=STANDARD_COLOR, message=output
+                                        #),
+                                        "html": True,
+                                        **options,
+                                    },
+                                    callback=self.message_callback,
+                                )
+                
+                self.sio.emit(
+                                "text",
+                                {
+                                    "room": data["room"],
+                                    "message": COLOR_MESSAGE.format(
+                                        color=BOT_RESPONSE_COLOR, message=response['botresponse']
+                                    ),
+                                    "html": True,
+                                    **options,
+                                },
+                                callback=self.message_callback,
+                            )                
+
+                da_detected = response["dialogue_act"]["name"]
+                if da_detected.lower() in ["greet", "goodbye"]:
+                    return
+
+                dm_output, dm_code = self.dmanager.handleintent(response["detectionresponse"])
+                if dm_output == "low-confidence":
+                    return
+
+                if dm_output is None and dm_code is None:
+                    self.sio.emit(
+                                    "text",
+                                    {
+                                        "room": data["room"],
+                                        "message": COLOR_MESSAGE.format(
+                                            color=STANDARD_COLOR, message="Sorry, I am not able to understand the instruction. Please try again."
+                                        ),
+                                        "html": True,
+                                        **options,
+                                    },
+                                    callback=self.message_callback,
+                                )
+                    return              
+
+                message = None
+                message_color = RESPONSE_COLOR
+                if dm_output is not None and "png" not in dm_output:
+                    if da_detected.lower() == "save-skill":
+                        if ".py" in dm_output:
+                            if self.debug_logs:
+                                message = f"Saved the code to file: {dm_output}"
                             else:
-                                llm_intent_info += str(slot_value) + "<br>"
-                    llm_intent_info = COLOR_MESSAGE.format(color="Blue", message=llm_intent_info)
-                '''
-                if not "png" in response["output"]:
-                    message = response["output"]
+                                message_color = BOT_RESPONSE_COLOR
+                                message = f"Saved!"
+                        else:
+                            message_color = LLM_ERROR_COLOR
+                            message = dm_output
+                    elif da_detected.lower() in ["translate", "repeat-skill"]:
+                        # LLM_ERROR_COLOR is used assuming that the output is an error message
+                        message_color = LLM_ERROR_COLOR
+
+                        if self.debug_logs:
+                            message = f"{dm_output}"
+                            if dm_code:
+                                message += f"<br><br>Generated Code:<br>{dm_code}"
+                        else:
+                            message = f"{dm_output}"
+                    elif da_detected.lower() == "undo":
+                        message_color = WARNING_COLOR
+                        message=(
+                        "Do you confirm that you want to undo previous action? <br>"
+                        "<button class='message_button' onclick=\"confirm_undo('yes')\">YES</button> "
+                        "<button class='message_button' onclick=\"confirm_undo('no')\">NO</button>"
+                        )
+
+                    else:
+                        message = dm_output
                 else:
-                    if response["dialogue_act"]["name"].lower() == "translate":
-                        message = f"Generated Code: <br> {response['code']}"
-                    else:    
-                        message = f"Code Undo: <br> {response['code']}"
+                    if dm_code:
+                        if da_detected.lower() in ["translate", "repeat-skill"]:
+                            message = f"Generated Code: <br> {dm_code}"
+                        elif da_detected.lower() == "undo":
+                            message = f"Code Undo: <br> {dm_code}"
 
-                output = COLOR_MESSAGE.format(color=RESPONSE_COLOR, message=message)
-
-
-                self.sio.emit(
-                                "text",
-                                {
-                                    "room": data["room"],
-                                    "message": intent_info,
-                                    #"message": COLOR_MESSAGE.format(
-                                    #    color=STANDARD_COLOR, message=output
-                                    #),
-                                    "html": True,
-                                    **options,
-                                },
-                                callback=self.message_callback,
-                            )
-                '''
-                self.sio.emit(
-                                "text",
-                                {
-                                    "room": data["room"],
-                                    "message": llm_intent_info,
-                                    #"message": COLOR_MESSAGE.format(
-                                    #    color=STANDARD_COLOR, message=output
-                                    #),
-                                    "html": True,
-                                    **options,
-                                },
-                                callback=self.message_callback,
-                            )
-                '''
-                self.sio.emit(
-                                "text",
-                                {
-                                    "room": data["room"],
-                                    "message": output,
-                                    #"message": COLOR_MESSAGE.format(
-                                    #    color=STANDARD_COLOR, message=output
-                                    #),
-                                    "html": True,
-                                    **options,
-                                },
-                                callback=self.message_callback,
-                            )
+                if message:
+                    output_to_show = COLOR_MESSAGE.format(color=message_color, message=message)
+                    self.sio.emit(
+                                    "text",
+                                    {
+                                        "room": data["room"],
+                                        "message": output_to_show,
+                                        #"message": COLOR_MESSAGE.format(
+                                        #    color=STANDARD_COLOR, message=output
+                                        #),
+                                        "html": True,
+                                        **options,
+                                    },
+                                    callback=self.message_callback,
+                                )
                 #else:
 
-                if "png" in response["output"]:
-                    logging.debug(f"Code: {response['code']}\nSimulation Type = {self.simulationtype}")
+                if "png" in dm_output:
+                    logging.debug(f"Code: {dm_code}\nSimulation Type = {self.simulationtype}")
 
 
                     self.sio.emit(
@@ -441,7 +499,7 @@ class CCBTSDemoBot(TaskBot):
 
 
                     if self.simulationtype == "virtual":
-                        base64_string = encode_image_to_base64(response["output"])
+                        base64_string = encode_image_to_base64(dm_output)
                         self.sio.emit(
                             "message_command",
                             {
@@ -454,14 +512,10 @@ class CCBTSDemoBot(TaskBot):
                             },
                         )
                     elif self.simulationtype == "pybullet":
-                        self.dmanager.showpbsimulation(response["code"])
+                        self.dmanager.showpbsimulation(dm_code)
 
                     elif self.simulationtype == "realarm":
-                        self.dmanager.showrealarm(response["code"])
-                      
-
-                #if response['code']:
-                #    self.dmanager.pickandplace(response['code'])
+                        self.dmanager.showrealarm(dm_code)
 
         @self.sio.event
         def command(data):
@@ -478,26 +532,145 @@ class CCBTSDemoBot(TaskBot):
                 return
 
             # commands from the user
-            if data["command"] in ["clear", "reset"]:
-                # clear the board, resets state and other variables
-                self.handlereset(room_id, user_id, "reset")
-            elif data["command"] == "restart":
-                # re-fetch the target board
-                self.handlereset(room_id, user_id, "restart")
-            else:
-                logging.debug(f"Unknown command: {data['command']}")
-                self.sio.emit(
-                    "text",
-                    {
-                        "room": room_id,
-                        "message": COLOR_MESSAGE.format(
-                            color=STANDARD_COLOR, message="Unknown command"
-                        ),
-                        "receiver_id": user_id,
-                        "html": True,
-                    },
-                    callback=self.message_callback,
-                )
+            if isinstance(data["command"], dict):
+                # commands received from the frontend
+                event = data["command"]["event"]
+                if event == "move_to_next_board":
+                    logging.debug(f"Move to next board command received")
+
+                    data_to_save = {
+                        "message": "Move to Next Target Board",
+                    }
+                    self.log_event("user_instruction", data_to_save, room_id)
+                    self.handlereset(room_id, user_id, "restart")
+                elif event == "clear_working_board":
+                    logging.debug(f"Clear working board command received")
+
+                    data_to_save = {
+                        "message": "Clear the Working Board",
+                    }
+                    self.log_event("user_instruction", data_to_save, room_id)
+                    self.handlereset(room_id, user_id, "clear")
+                elif event == "confirm_undo_intent":
+                    user_answer = data['command']['answer']
+                    logging.debug(f"User response: {user_answer}")
+
+                    data_to_save = {
+                        "message": f"user_response: {user_answer}",
+                    }
+                    self.log_event("user_instruction", data_to_save, room_id)
+                    message_color = BOT_RESPONSE_COLOR
+                    if user_answer == "yes":
+                        dm_output, dm_code = self.dmanager.handle_undo()
+                        if "png" in dm_output:
+                            logging.debug(f"Code: {dm_code}\nSimulation Type = {self.simulationtype}")
+                           
+                            if self.debug_logs:
+                                message_color = RESPONSE_COLOR
+                                if dm_code:
+                                    message = f"Code Undo: <br> {dm_code}"
+
+                                self.sio.emit(
+                                                "text",
+                                                {
+                                                    "room": room_id,
+                                                    "message": COLOR_MESSAGE.format(
+                                                        color=message_color, message=message
+                                                    ),
+                                                    "receiver_id": user_id,
+                                                    "html": True,
+                                                },
+                                                callback=self.message_callback,
+                                            )  
+
+                            message_color = BOT_RESPONSE_COLOR
+                            message="Updated the working board"
+                            self.sio.emit(
+                                            "text",
+                                            {
+                                                "room": room_id,
+                                                "message": COLOR_MESSAGE.format(
+                                                    color=message_color, message=message
+                                                ),
+                                                "receiver_id": user_id,
+                                                "html": True,
+                                            },
+                                            callback=self.message_callback,
+                                        )   
+
+                            if self.simulationtype == "virtual":
+                                base64_string = encode_image_to_base64(dm_output)
+                                self.sio.emit(
+                                    "message_command",
+                                    {
+                                        "command": {
+                                            "event": "update_world_state",
+                                            "message": base64_string,
+                                        },
+                                        "room": room_id,
+                                        "receiver_id": user_id,
+                                    },
+                                )
+                        else:
+                            message_color = LLM_ERROR_COLOR
+                            self.sio.emit(
+                                "text",
+                                {
+                                    "room": room_id,
+                                    "message": COLOR_MESSAGE.format(
+                                        color=message_color, message=dm_output
+                                    ),
+                                    "receiver_id": user_id,
+                                    "html": True,
+                                },
+                                callback=self.message_callback,
+                            )
+                    else:
+                        self.sio.emit(
+                            "text",
+                            {
+                                "room": room_id,
+                                "message": COLOR_MESSAGE.format(
+                                    color=message_color, message="Ignoring Undo. Please continue."
+                                ),
+                                "receiver_id": user_id,
+                                "html": True,
+                            },
+                            callback=self.message_callback,
+                        )
+
+
+                        return                        
+
+
+            elif isinstance(data["command"], str):
+                if data["command"] in ["clear", "reset"]:
+                    # clear the board, resets state and other variables
+                    self.handlereset(room_id, user_id, "reset")
+                elif data["command"] == "restart":
+                    # re-fetch the target board
+                    self.handlereset(room_id, user_id, "restart")
+                elif data["command"] == "toggle_debug":
+                    if self.debug_logs:
+                        self.debug_logs = False
+                    else:
+                        self.debug_logs = True
+                elif data["command"] in ["model_llm370b", "model_llm38b", "model_gpt4"]:
+                    self.dmanager.setllmmodel(data["command"])
+                else:
+                    logging.debug(f"Unknown command: {data['command']}")
+                    self.sio.emit(
+                        "text",
+                        {
+                            "room": room_id,
+                            "message": COLOR_MESSAGE.format(
+                                color=STANDARD_COLOR, message="Unknown command"
+                            ),
+                            "receiver_id": user_id,
+                            "html": True,
+                        },
+                        callback=self.message_callback,
+                    )
 
 
 if __name__ == "__main__":

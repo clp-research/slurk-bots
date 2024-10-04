@@ -263,7 +263,7 @@ def check_for_errors(top_layer, board, shape, color, x, y):
 # can be returned if placement not possible? (rather than
 # raising an exception)
 def put(board, shape, color, x, y):
-    if x >= board.shape[2] or y >= board.shape[3] or x < 0 or y < 0:
+    if x >= board.shape[2] or y >= board.shape[3] or x < 0 or y < 0 or color not in ["red", "green", "blue", "yellow"]:
         raise (DimensionsMismatchError("Placement not possible"))
 
     top_layer = get_top_layer(board, x, y)

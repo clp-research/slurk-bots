@@ -20,9 +20,47 @@ function set_target_image(base64_encoded_string) {
     //$("#current-world-state").attr("src", filename);
 }
 
+function confirm_undo(answer){
+    socket.emit("message_command",
+        {
+            "command": {
+                "event": "confirm_undo_intent",
+                "answer": answer
+            },
+            "room": self_room
+        }
+    )
+}
 
-$(document).ready(() => {
+
+$(document).ready(function () {
     console.log("Document ready");
+    $("#button-nextboard").click( function(){
+        console.log("sending next board event");
+        socket.emit("message_command",
+            {
+                "command": {
+                    "event": "move_to_next_board",
+                    "message": "moving to next board"
+                },
+                "room": self_room
+            }
+        )
+    })
+
+    $("#button-clearboard").click( function(){
+        console.log("sending clear board event");
+        socket.emit("message_command",
+            {
+                "command": {
+                    "event": "clear_working_board",
+                    "message": "clear working board"
+                },
+                "room": self_room
+            }
+        )
+    })    
+
     socket.on("command", (data) => {
         console.log("Received command: " + JSON.stringify(data));
         if (typeof (data.command) === "object") {

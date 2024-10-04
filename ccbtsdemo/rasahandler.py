@@ -1,5 +1,5 @@
 import logging
-
+import random
 import requests
 import uuid
 
@@ -32,7 +32,7 @@ class RasaHandler:
                     time.sleep(delay)
                 else:
                     logging.error("Max retries reached. RASA server is not responding.")
-                    raise                  
+                    raise e
 
     def test_rasa_server(self):
         try:
@@ -65,7 +65,7 @@ class RasaHandler:
     def generate(self, utterance, previntent = None):
         daresponse = {"utterance": utterance}
 
-
+        '''
         if self.rasa_url:
             endpoint = f"{self.rasa_url}/webhooks/rest/webhook"
             payload = {
@@ -85,11 +85,24 @@ class RasaHandler:
         else:
             logging.debug(f"Generating custom response: previntent = {previntent}")
 
-            if previntent in ["TRANSLATE", "UNDO", "SAVE-SKILL", "REPEAT-SKILL"]:
-                daresponse["output"] = "Okay"
-            elif previntent == "GROUND":
-                daresponse["output"] = "Grounding using RoboARM"
+            if previntent in ["TRANSLATE", "UNDO", "SAVE-SKILL", "REPEAT-SKILL", "GREET", "GOODBYE"]:
+                daresponse["output"] = "Processing..."
             else:
                 daresponse["output"] = "Sorry, I don't understand. Can you please repeat?"
         daresponse["rasa_result"] = result
+        '''
+        if previntent == "TRANSLATE":
+            daresponse["output"] = random.choice(["Okay", "Processing translation...", "On it!"])
+        elif previntent == "SAVE-SKILL":
+            daresponse["output"] = random.choice(["Okay", "Saving skill...", "On it!"])
+        elif previntent == "REPEAT-SKILL":
+            daresponse["output"] = random.choice(["Okay", "Repeating skill...", "On it!"])
+        elif previntent == "UNDO":
+            daresponse["output"] = random.choice(["Okay", "Undoing...", "On it!"])
+        elif previntent == "GREET":
+            daresponse["output"] = random.choice(["Hello!", "Hi!", "Hey! What are we building today?", "Hi! What can I do for you today?"])
+        elif previntent == "GOODBYE":
+            daresponse["output"] = random.choice(["Goodbye!", "See you later!", "Bye! Have a great day!", "It was nice collaborating with you. Goodbye!"])
+        else:
+            daresponse["output"] = "Sorry, I don't understand. Can you please repeat"
         return daresponse
