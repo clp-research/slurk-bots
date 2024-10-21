@@ -451,9 +451,6 @@
     },
     {
         "data": {
-            "content": "3"
-        },
-        "date_created": "2024-03-20T10:29:20.176739",
         "date_modified": null,
         "event": "max turns reached",
         "id": 4843795,
