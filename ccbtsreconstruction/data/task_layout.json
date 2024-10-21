@@ -1,0 +1,329 @@
+{
+  "title": "COCOBOTS - Reconstruct the Board",
+  "html": [
+    {
+      "layout-type": "div",
+      "id": "instruction_card",
+      "class": "card",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "style": "height: 100%",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                  "layout-type": "div",
+                  "style": "border-style: rounded; border: 1px solid #CECDCD; border-radius: 5px; margin: 10px; width: 75%; height: 100%",
+                  "layout-content": [
+                    {
+                      "layout-type": "b",
+                      "style": "color: #00305E",
+                      "layout-content": [
+                        "Naming Legend for objects"
+                      ]
+                    },
+                    {
+                      "layout-type": "div",
+                      "style": "display: flex; overflow-x: scroll; height: 100%; align-items: center",
+                      "id": "instr"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },  
+    {
+      "layout-type": "div",
+      "class": "hidden_card",
+      "id": "wizard_interface",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "style": "padding: 10px; display: flex",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "layout-content": "Next Board",
+                  "id": "next_board_button",
+                  "style": "padding: 10px; margin: 5px;"
+                }
+              ]
+            },
+            {
+              "layout-type": "hr",
+              "layout-content": "",
+              "style": "margin: 10px; background-color: #abb2b9; opacity: .50;"
+            },
+            {
+              "layout-type": "div",
+              "style": "display: flex",
+              "layout-content": [
+                {
+                  "layout-type": "button",
+                  "class": "button",
+                  "role": "button",
+                  "id": "clear_board_button",
+                  "layout-content": "Clear Board",
+                  "style": "padding: 10px; margin: 5px;"
+                }
+              ]
+            },
+            {
+              "layout-type": "hr",
+              "layout-content": "",
+              "style": "margin: 10px; background-color: #abb2b9; opacity: .50;"
+            }
+          ]
+        }
+      ]
+    },    
+    
+
+    {
+      "layout-type": "div",
+      "class": "hidden_card",
+      "id": "golmi_card",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "style": "display: flex",
+          "id": "board_container",
+          "layout-content": [
+            {
+              "layout-type": "div",
+              "style": "width: 50%",
+              "layout-content": [
+                {
+                  "layout-type": "b",
+                  "style": "color: #00305E; margin-left: 10px",
+                  "layout-content": "Working Board"
+                },
+                {
+                  "layout-type": "div",
+                  "class": "board_container",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "working_board",
+                      "style": "width: 100%",
+                      "layout-content": [
+                        {
+                          "layout-type": "div",
+                          "class": "viewport",
+                          "style": "padding: 10px; margin: 0px auto",
+                          "layout-content": [
+                            {
+                              "layout-type": "canvas",
+                              "id": "working_background",
+                              "width": "300px",
+                              "height": "300px"
+                            },
+                            {
+                              "layout-type": "canvas",
+                              "id": "working_objects",
+                              "width": "300px",
+                              "height": "300px"
+                            },
+                            {
+                              "layout-type": "canvas",
+                              "id": "working_gripper",
+                              "width": "300px",
+                              "height": "300px"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "layout-type": "div",
+              "style": "width: 50%",
+              "layout-content": [
+                {
+                  "layout-type": "b",
+                  "style": "color: #00305E; margin-left: 10px",
+                  "id": "variable_board_description",
+                  "layout-content": ""
+                },
+                {
+                  "layout-type": "div",
+                  "class": "board_container",
+                  "layout-content": [
+                    {
+                      "layout-type": "div",
+                      "id": "target_board",
+                      "style": "width: 100%",
+                      "layout-content": [
+                        {
+                          "layout-type": "div",
+                          "class": "viewport",
+                          "style": "padding: 10px; margin: 0px auto",
+                          "layout-content": [
+                            {
+                              "layout-type": "canvas",
+                              "id": "target_background",
+                              "height": "300px",
+                              "width": "300px"
+                            },
+                            {
+                              "layout-type": "canvas",
+                              "id": "target_objects",
+                              "height": "300px",
+                              "width": "300px"
+                            },
+                            {
+                              "layout-type": "canvas",
+                              "id": "target_gripper",
+                              "height": "300px",
+                              "width": "300px"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "css": {
+    ".viewport": {
+      "position": "relative;",
+      "height": "300px",
+      "width": "300px"
+    },
+    ".viewport canvas": {
+      "position": "absolute;"
+    },
+    "canvas": {
+      "background-color": "transparent;",
+      "border": "1px solid #000000;"
+    },
+    "table": {
+      "letter-spacing": "0.5rem",
+      "font-size": "0.8rem",
+      "border": "0.2rem solid #CECDCD"
+    },
+    "td, th": {
+      "padding": "0.1rem 1rem",
+      "border": "0.2rem solid #CECDCD"
+    },
+    "td": {
+      "text-align": "center",
+      "font-size": "1.3rem",
+      "font-weight": "900",
+      "border": "0.2rem solid white"
+    },
+    ".card, .hidden_card": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "min-width": "0",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "1px solid rgba(0,0,0,.125)",
+      "border-radius": ".25rem",
+      "height": "100%",
+      "margin": "0px 15px",
+      "padding": "10px"
+    },
+    "time:before": {
+      "content": "''"
+    },
+    "#image-area": {
+      "margin": "0 auto",
+      "align-items": "center",
+      "justify-content": "center"
+    },
+    ".hidden_card": {
+      "display": "none"
+    },
+    ".text_cont": {
+      "border": "1px solid #CECDCD",
+      "border-radius": "10px",
+      "padding": "5px",
+      "width": "50%",
+      "margin": "5px"
+    },
+    ".editor": {
+      "border": "1px solid #CECDCD",
+      "border-radius": "10px",
+      "padding": "10px",
+      "height": "50%",
+      "display": "flex"
+    },    
+    ".button, .message_button": {
+      "text-transform": "uppercase",
+      "border-radius": "5px",
+      "border": "none",
+      "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+      "outline": 0,
+      "background": "#00305E",
+      "width": "100%",
+      "color": "#FFFFFF",
+      "padding": "5px",
+      "cursor": "pointer"
+    },    
+    ".message_button": {
+      "margin-top": "3px",
+      "padding": "5px",
+      "width":"49%"
+    },
+    ".button:hover, .message_button:hover": {
+      "content": "''",
+      "background": "#818BAC"
+    },
+    ".green_button:hover": {
+      "content": "''",
+      "background": "#75bf7d"
+    },
+    ".red_button": {
+      "@extend .button;": "",
+      "background": "#d92e2e"
+    },
+    ".red_button:hover": {
+      "content": "''",
+      "background": "#cf8f8f"
+    },
+    ".board_container": {
+      "border-style": "rounded",
+      "border": "1px solid #CECDCD",
+      "border-radius": "5px",
+      "margin-top": "10px",
+      "margin-right": "10px",
+      "width": "100%"
+    }        
+  },
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": "markdown-history",
+    "plain": [
+      "view",
+      "ccbts",
+      "cocosurvey",
+      "COCOLayerView"             
+    ]
+  },
+  "show_latency": false
+}

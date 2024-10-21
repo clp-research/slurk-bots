@@ -1,0 +1,522 @@
+{
+    "5_bwbwn_1": {
+        "raw_instructions": "1. Place a blue washer in the 6th row, 3rd column.\n2. Add a red horizontal bridge above in column 2.\n3. Stack a green vertical bridge on top of the objects in row 5, column 3.\n4. Place a red washer on top of the upper part of the green bridge.\n5. Stack a green nut on top of the red washer.",
+        "cleaned_instructions": "Place a blue washer in the 6th row, 3rd column. Add a red horizontal bridge above in column 2. Stack a green vertical bridge on top of the objects in row 5, column 3. Place a red washer on top of the upper part of the green bridge. Stack a green nut on top of the red washer."
+    },
+    "5_bwbns_2": {
+        "raw_instructions": "1. Place a blue washer in the 6th row, 4th column.\n2. Position a red horizontal bridge one row above, in column 3.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the washer.\n4. Place a red nut on top of the bridges in row 5, column 4.\n5. Now stack a yellow screw on top of the nut.",
+        "cleaned_instructions": "Place a blue washer in the 6th row, 4th column. Position a red horizontal bridge one row above, in column 3. Stack a green vertical bridge on top of the right side of the red bridge and the washer. Place a red nut on top of the bridges in row 5, column 4. Now stack a yellow screw on top of the nut."
+    },
+    "4_wwbn_1": {
+        "raw_instructions": "1. Put two washers in the 6th row, 3rd and 4th column. The left one is red, and the right one is blue.\n2. Stack a green horizontal bridge on top of the two washers.\n3. Place a blue nut on top of the left side of the bridge.",
+        "cleaned_instructions": "Put two washers in the 6th row, 3rd and 4th column. The left one is red, and the right one is blue. Stack a green horizontal bridge on top of the two washers. Place a blue nut on top of the left side of the bridge."
+    },
+    "5_bbbwn_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 7th row, 1st column.\n2. Add a blue bridge horizontally one row below, in the 2nd column.\n3. Stack a green vertical bridge on top of the bridges in the 7th row, 2nd column.\n4. Place a red washer on top of the upper half of the green bridge.\n5. Add a blue nut on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 7th row, 1st column. Add a blue bridge horizontally one row below, in the 2nd column. Stack a green vertical bridge on top of the bridges in the 7th row, 2nd column. Place a red washer on top of the upper half of the green bridge. Add a blue nut on top of the washer."
+    },
+    "3_bnw_2": {
+        "raw_instructions": "1. Position a red horizontal bridge in the 5th row, 4th column.\n2. Add a blue nut with a yellow washer stacked on top on top of the left side of the bridge.",
+        "cleaned_instructions": "Position a red horizontal bridge in the 5th row, 4th column. Add a blue nut with a yellow washer stacked on top on top of the left side of the bridge."
+    },
+    "4_bbbn_2": {
+        "raw_instructions": "1. Place a blue horizontal bridge in the 6th row, 4th column.\n2. Add a vertical bridge in color red in the same row, 3rd column.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the left side of the blue bridge.\n4. Put a yellow nut on top of the green bridge in row 6, column 3.",
+        "cleaned_instructions": "Place a blue horizontal bridge in the 6th row, 4th column. Add a vertical bridge in color red in the same row, 3rd column. Stack a green horizontal bridge on top of the upper part of the red bridge and the left side of the blue bridge. Put a yellow nut on top of the green bridge in row 6, column 3."
+    },
+    "5_wwbns_1": {
+        "raw_instructions": "1. Place two washers in the 5th row, 1st and 2nd column. The left one is red and the right washer is blue.\n2. Stack a green horizontal bridge on top of the two washers.\n3. Add a red nut on top of the green bridge in the 1st column.\n4. Stack a yellow screw on top of the nut.",
+        "cleaned_instructions": "Place two washers in the 5th row, 1st and 2nd column. The left one is red and the right washer is blue. Stack a green horizontal bridge on top of the two washers. Add a red nut on top of the green bridge in the 1st column. Stack a yellow screw on top of the nut."
+    },
+    "3_bnb_2": {
+        "raw_instructions": "1. Position a yellow nut in the 5th row, 3rd column.\n2. Place a green vertical bridge on the left side of the nut.\n3. Stack a red horizontal bridge on top of the upper part of the green bridge and on top of the nut.",
+        "cleaned_instructions": "Position a yellow nut in the 5th row, 3rd column. Place a green vertical bridge on the left side of the nut. Stack a red horizontal bridge on top of the upper part of the green bridge and on top of the nut."
+    },
+    "5_wwbns_2": {
+        "raw_instructions": "1. Place a red and a blue washer in the 6th row, 2nd and 3rd column.\n2. Add a green horizontal bridge on top of the two washers.\n3. Place a red nut on top of the left side of the green bridge.\n4. Stack a blue screw on top of the nut.",
+        "cleaned_instructions": "Place a red and a blue washer in the 6th row, 2nd and 3rd column. Add a green horizontal bridge on top of the two washers. Place a red nut on top of the left side of the green bridge. Stack a blue screw on top of the nut."
+    },
+    "2_nw_2": {
+        "raw_instructions": "1. Place a green nut with a yellow washer stacked on top in the 5th row, 3rd column.",
+        "cleaned_instructions": "Place a green nut with a yellow washer stacked on top in the 5th row, 3rd column."
+    },
+    "3_nws_1": {
+        "raw_instructions": "1. Position a red nut in the 5th row, 1st column.\n2. Add a blue washer on top of it.\n3. Stack a green screw on top of the washer.",
+        "cleaned_instructions": "Position a red nut in the 5th row, 1st column. Add a blue washer on top of it. Stack a green screw on top of the washer."
+    },
+    "4_bnbw_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 3rd column.\n2. Put a blue nut next to the upper part of the bridge in column 4.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and on top of the nut.\n4. Finally, stack a red washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 3rd column. Put a blue nut next to the upper part of the bridge in column 4. Stack a green horizontal bridge on top of the upper part of the red bridge and on top of the nut. Finally, stack a red washer on top of the left side of the green bridge."
+    },
+    "3_nnb_2": {
+        "raw_instructions": "1. Place two nuts in row 5, column 3 and 4. The left one is red and the right one is blue.\n2. Stack a yellow horizontal bridge on top of the two nuts.",
+        "cleaned_instructions": "Place two nuts in row 5, column 3 and 4. The left one is red and the right one is blue. Stack a yellow horizontal bridge on top of the two nuts."
+    },
+    "5_bwbnw_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 6th row, 2nd column.\n2. Position a blue washer below the right part of the bridge.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the blue washer.\n4. Place a red nut on top of the upper part of the green bridge.\n5. Stack a green washer on top of the nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 6th row, 2nd column. Position a blue washer below the right part of the bridge. Stack a green vertical bridge on top of the right side of the red bridge and the blue washer. Place a red nut on top of the upper part of the green bridge. Stack a green washer on top of the nut."
+    },
+    "5_bnbns_1": {
+        "raw_instructions": "1. Position a blue nut in the 7th row, 3rd column.\n2. Add a red horizontal bridge on row above, in column 2.\n3. Stack a green vertical bridge on top of the right side of the red bridge and on top of the nut.\n4. Add another nut in color red on top of the upper half of the green bridge.\n5. Finally, stack a yellow screw on top of the red nut.",
+        "cleaned_instructions": "Position a blue nut in the 7th row, 3rd column. Add a red horizontal bridge on row above, in column 2. Stack a green vertical bridge on top of the right side of the red bridge and on top of the nut. Add another nut in color red on top of the upper half of the green bridge. Finally, stack a yellow screw on top of the red nut."
+    },
+    "2_wn_2": {
+        "raw_instructions": "1. Place a green washer with a yellow nut stacked on top in the last row, 3rd column.",
+        "cleaned_instructions": "Place a green washer with a yellow nut stacked on top in the last row, 3rd column."
+    },
+    "4_nwbs_1": {
+        "raw_instructions": "1. Place a blue washer in the last row, 3rd column.\n2. Add a red nut to the left of the washer.\n3. Stack a green horizontal bridge on top of the two other objects.\n4. Place a yellow screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a blue washer in the last row, 3rd column. Add a red nut to the left of the washer. Stack a green horizontal bridge on top of the two other objects. Place a yellow screw on top of the left side of the bridge."
+    },
+    "5_nnbws_2": {
+        "raw_instructions": "1. Put a blue nut in the 6th row, 2nd column.\n2. Add another nut in color red on the left side of the blue one.\n3. Stack a green horizontal bridge on top of the two nuts.\n4. Place a red washer on top of the left side of the green bridge.\n5. Position a blue screw on top of the washer.",
+        "cleaned_instructions": "Put a blue nut in the 6th row, 2nd column. Add another nut in color red on the left side of the blue one. Stack a green horizontal bridge on top of the two nuts. Place a red washer on top of the left side of the green bridge. Position a blue screw on top of the washer."
+    },
+    "5_wbbns_1": {
+        "raw_instructions": "1. Put a red washer in the 5th row, 1st column.\n2. Add a blue horizontal bridge in the same row, in the next column.\n3. Stack a green horizontal bridge on top of the washer and the left part of the blue bridge.\n4. Position a red nut on top of the left side of the green bridge.\n5. Stack a blue screw on top of the red nut.",
+        "cleaned_instructions": "Put a red washer in the 5th row, 1st column. Add a blue horizontal bridge in the same row, in the next column. Stack a green horizontal bridge on top of the washer and the left part of the blue bridge. Position a red nut on top of the left side of the green bridge. Stack a blue screw on top of the red nut."
+    },
+    "5_wbbns_2": {
+        "raw_instructions": "1. Position a blue horizontal bridge in the last row, 2nd column.\n2. Add a red washer in the bottom left corner.\n3. Stack a green bridge on top of the washer and the left side of the blue bridge.\n4. Place a red nut on top of the left side of the green bridge.\n5. Stack a yellow screw on top of the nut.",
+        "cleaned_instructions": "Position a blue horizontal bridge in the last row, 2nd column. Add a red washer in the bottom left corner. Stack a green bridge on top of the washer and the left side of the blue bridge. Place a red nut on top of the left side of the green bridge. Stack a yellow screw on top of the nut."
+    },
+    "5_bwbws_1": {
+        "raw_instructions": "1. Put a blue washer in the last row, 2nd column.\n2. Place a red horizontal bridge in the row above, 1st column.\n3. Position a green vertical bridge on top of the right side of the red bridge and the washer.\n4. Stack a red washer on top of the upper part of the green bridge.\n5. Add a green screw on top of the red washer.",
+        "cleaned_instructions": "Put a blue washer in the last row, 2nd column. Place a red horizontal bridge in the row above, 1st column. Position a green vertical bridge on top of the right side of the red bridge and the washer. Stack a red washer on top of the upper part of the green bridge. Add a green screw on top of the red washer."
+    },
+    "2_ws_2": {
+        "raw_instructions": "1. Place a green washer in the 6th row, 4th column.\n2. Add a yellow screw on top.",
+        "cleaned_instructions": "Place a green washer in the 6th row, 4th column. Add a yellow screw on top."
+    },
+    "4_bwns_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the bottom left corner.\n2. Stack a blue washer on top in the bottom left corner.\n3. Put a red nut on top of the washer.\n4. Finally, add a blue screw on top of the nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the bottom left corner. Stack a blue washer on top in the bottom left corner. Put a red nut on top of the washer. Finally, add a blue screw on top of the nut."
+    },
+    "2_nw_1": {
+        "raw_instructions": "1. Position a red nut in the 5th row, 3rd column.\n2. Stack a blue washer on top",
+        "cleaned_instructions": "Position a red nut in the 5th row, 3rd column. Stack a blue washer on top"
+    },
+    "4_bwbs_2": {
+        "raw_instructions": "1. Place a blue washer in the 7th row, 5th column.\n2. Add a red vertical bridge in the 7th row, 4th column.\n3. Stack a green horizontal bridge on top of the upper half of the red bridge and the washer.\n4. Put a blue screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a blue washer in the 7th row, 5th column. Add a red vertical bridge in the 7th row, 4th column. Stack a green horizontal bridge on top of the upper half of the red bridge and the washer. Put a blue screw on top of the left side of the green bridge."
+    },
+    "5_bnbns_2": {
+        "raw_instructions": "1. Position a red horizontal bridge in the 5th row, 1st column.\n2. Add a blue nut below the right side of the bridge.\n3. Place a green vertical bridge on top of the right side of the red bridge and on top of the nut.\n4. Stack a red nut on top of the upper half of the green bridge.\n5. Place a blue screw on top of the red nut.",
+        "cleaned_instructions": "Position a red horizontal bridge in the 5th row, 1st column. Add a blue nut below the right side of the bridge. Place a green vertical bridge on top of the right side of the red bridge and on top of the nut. Stack a red nut on top of the upper half of the green bridge. Place a blue screw on top of the red nut."
+    },
+    "3_wns_2": {
+        "raw_instructions": "1. Place a red washer in the 5th row, 3rd column.\n2. Add a blue nut on top of the washer.\n3. Put a green screw on top of the nut.",
+        "cleaned_instructions": "Place a red washer in the 5th row, 3rd column. Add a blue nut on top of the washer. Put a green screw on top of the nut."
+    },
+    "4_nbbw_2": {
+        "raw_instructions": "1. Position a blue horizontal bridge in the 5th row, 2nd column.\n2. Add a red nut to the left of the bridge in column 1.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Place a yellow washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Position a blue horizontal bridge in the 5th row, 2nd column. Add a red nut to the left of the bridge in column 1. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge. Place a yellow washer on top of the left side of the green bridge."
+    },
+    "4_nnbw_2": {
+        "raw_instructions": "1. Place a red nut in the bottom left corner.\n2. Position a blue nut next to the red one in column 2.\n3. Stack a green horizontal bridge on top of the two nuts.\n4. Add a yellow washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red nut in the bottom left corner. Position a blue nut next to the red one in column 2. Stack a green horizontal bridge on top of the two nuts. Add a yellow washer on top of the left side of the green bridge."
+    },
+    "4_wnbn_2": {
+        "raw_instructions": "1. Put a red washer in the last row, 2nd column.\n2. Position a blue nut in the same row, 3rd column.\n3. Stack a green horizontal bridge on top of the two objects.\n4. Place another blue nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Put a red washer in the last row, 2nd column. Position a blue nut in the same row, 3rd column. Stack a green horizontal bridge on top of the two objects. Place another blue nut on top of the left side of the green bridge."
+    },
+    "4_nwbw_1": {
+        "raw_instructions": "1. Put a red nut in the 7th row, 2nd column.\n2. Place a blue washer to the right of it.\n3. Stack a green bridge horizontally on top of the nut and the washer.\n4. Now place another washer on top of the left side of the bridge. Its color is yellow.",
+        "cleaned_instructions": "Put a red nut in the 7th row, 2nd column. Place a blue washer to the right of it. Stack a green bridge horizontally on top of the nut and the washer. Now place another washer on top of the left side of the bridge. Its color is yellow."
+    },
+    "4_wnbs_1": {
+        "raw_instructions": "1. Position a red washer in the 5th row, 2nd column.\n2. Place a blue nut next to it in column 3.\n3. Stack a green horizontal bridge on top of the washer and the nut.\n4. Put a blue screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Position a red washer in the 5th row, 2nd column. Place a blue nut next to it in column 3. Stack a green horizontal bridge on top of the washer and the nut. Put a blue screw on top of the left side of the bridge."
+    },
+    "4_wbbn_1": {
+        "raw_instructions": "1. Place a red washer in the 6th row, 3rd column.\n2. Now position a blue horizontal bridge next to it in row 6, column 4.\n3. Stack a green horizontal bridge on top of the washer and the left side of the bridge.\n4. Place a yellow nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red washer in the 6th row, 3rd column. Now position a blue horizontal bridge next to it in row 6, column 4. Stack a green horizontal bridge on top of the washer and the left side of the bridge. Place a yellow nut on top of the left side of the green bridge."
+    },
+    "4_bnws_1": {
+        "raw_instructions": "1. Put a red horizontal bridge in the last row, 3rd column.\n2. Place a blue nut on top of its right side.\n3. Stack a red washer on top of the nut.\n4. Finally, stack a blue screw on top of the washer.",
+        "cleaned_instructions": "Put a red horizontal bridge in the last row, 3rd column. Place a blue nut on top of its right side. Stack a red washer on top of the nut. Finally, stack a blue screw on top of the washer."
+    },
+    "3_nbb_2": {
+        "raw_instructions": "1. Place a red nut in the last row, 2nd column.\n2. Position a blue horizontal bridge to the right of it in the 3rd column.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.",
+        "cleaned_instructions": "Place a red nut in the last row, 2nd column. Position a blue horizontal bridge to the right of it in the 3rd column. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge."
+    },
+    "5_bbbws_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 4th column.\n2. Position a blue horizontal bridge below the right side of the red bridge.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge.\n4. Place a red washer on top of the upper side of the green bridge.\n5. Stack a green screw on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 4th column. Position a blue horizontal bridge below the right side of the red bridge. Stack a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge. Place a red washer on top of the upper side of the green bridge. Stack a green screw on top of the washer."
+    },
+    "3_wns_1": {
+        "raw_instructions": "1. Position a red washer in the 6th row, 4th column.\n2. Place a blue nut on top of it.\n3. Put a yellow screw on top of the nut.",
+        "cleaned_instructions": "Position a red washer in the 6th row, 4th column. Place a blue nut on top of it. Put a yellow screw on top of the nut."
+    },
+    "5_bwbns_1": {
+        "raw_instructions": "1. Put a red horizontal bridge in the 6th row, 1st column.\n2. Place a blue washer below the right side of the bridge.\n3. Stack a green vertical bridge on top of the right side of the red bridge and on top of the washer.\n4. Now stack a red nut on top of the upper part of the green bridge.\n5. Place a blue screw on top of the nut.",
+        "cleaned_instructions": "Put a red horizontal bridge in the 6th row, 1st column. Place a blue washer below the right side of the bridge. Stack a green vertical bridge on top of the right side of the red bridge and on top of the washer. Now stack a red nut on top of the upper part of the green bridge. Place a blue screw on top of the nut."
+    },
+    "4_wwbs_2": {
+        "raw_instructions": "1. Position a red washer in the 7th row, 3rd column.\n2. Place a blue washer to the right of it.\n3. Stack a green bridge horizontally on top of the two washers.\n4. Place a blue screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Position a red washer in the 7th row, 3rd column. Place a blue washer to the right of it. Stack a green bridge horizontally on top of the two washers. Place a blue screw on top of the left side of the bridge."
+    },
+    "4_bnbw_2": {
+        "raw_instructions": "1. Place a red vertical bridge in the 6th row, 3rd column.\n2. Put a blue nut in row 6 as well, in column 4.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the nut.\n4. Place a yellow washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 6th row, 3rd column. Put a blue nut in row 6 as well, in column 4. Stack a green horizontal bridge on top of the upper part of the red bridge and the nut. Place a yellow washer on top of the left side of the green bridge."
+    },
+    "4_wnbw_1": {
+        "raw_instructions": "1. Put a red washer in the 7th row, 3rd column.\n2. Place a blue nut to the right of the washer in column 4.\n3. Stack a green horizontal bridge on top of the two other objects.\n4. Place a blue washer on top of the right side of the green bridge.",
+        "cleaned_instructions": "Put a red washer in the 7th row, 3rd column. Place a blue nut to the right of the washer in column 4. Stack a green horizontal bridge on top of the two other objects. Place a blue washer on top of the right side of the green bridge."
+    },
+    "4_nwbn_1": {
+        "raw_instructions": "1. Position a red nut in the 7th row, 4th column.\n2. Place a blue washer in the same row, 5th column.\n3. Stack a green horizontal bridge on top of the nut and the washer.\n4. Finally, stack a blue nut on top of the right side of the bridge.",
+        "cleaned_instructions": "Position a red nut in the 7th row, 4th column. Place a blue washer in the same row, 5th column. Stack a green horizontal bridge on top of the nut and the washer. Finally, stack a blue nut on top of the right side of the bridge."
+    },
+    "5_bbbns_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5ht row, 3rd column.\n2. Position a blue horizontal bridge below the right side of the red bridge.\n3. Place a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge.\n4. Stack a red nut on top of the upper part of the green bridge.\n5. Place a blue screw on top of the nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5ht row, 3rd column. Position a blue horizontal bridge below the right side of the red bridge. Place a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge. Stack a red nut on top of the upper part of the green bridge. Place a blue screw on top of the nut."
+    },
+    "4_wnbn_1": {
+        "raw_instructions": "1. Position a red washer in the 7th row, 3rd column.\n2. Add a blue nut to the right of it.\n3. Stack a green horizontal bridge on top of the two other objects.\n4. Place a yellow nut on top of the left side of the bridge.",
+        "cleaned_instructions": "Position a red washer in the 7th row, 3rd column. Add a blue nut to the right of it. Stack a green horizontal bridge on top of the two other objects. Place a yellow nut on top of the left side of the bridge."
+    },
+    "4_wbbs_2": {
+        "raw_instructions": "1. Put a red washer in the 5th row, 1st column.\n2. Place a blue horizontal bridge in the 5th row, 2nd column.\n3. Position a green horizontal bridge on top of the washer and the left side of the blue bridge.\n4. Stack a blue screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Put a red washer in the 5th row, 1st column. Place a blue horizontal bridge in the 5th row, 2nd column. Position a green horizontal bridge on top of the washer and the left side of the blue bridge. Stack a blue screw on top of the left side of the green bridge."
+    },
+    "2_bn_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 3rd column.\n2. Stack a blue nut on top of its left side.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 3rd column. Stack a blue nut on top of its left side."
+    },
+    "4_nnbs_1": {
+        "raw_instructions": "1. Place two nuts in the 6th row, in column 3 and 4. The left one is red and the right one is blue.\n2. Stack a green horizontal bridge on top of the two nuts.\n3. Place a red screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Place two nuts in the 6th row, in column 3 and 4. The left one is red and the right one is blue. Stack a green horizontal bridge on top of the two nuts. Place a red screw on top of the left side of the bridge."
+    },
+    "4_nnbs_2": {
+        "raw_instructions": "1. Place a red and a blue nut in the 7th row, column 2 and 3.\n2. Stack a green horizontal bridge on top of them.\n3. Position a yellow screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red and a blue nut in the 7th row, column 2 and 3. Stack a green horizontal bridge on top of them. Position a yellow screw on top of the left side of the bridge."
+    },
+    "3_bws_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 2nd column.\n2. Stack a blue washer on top of the left side of the bridge.\n3. Place a yellow screw on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 2nd column. Stack a blue washer on top of the left side of the bridge. Place a yellow screw on top of the washer."
+    },
+    "3_nws_2": {
+        "raw_instructions": "1. Place a red nut in the 5th row, 1st column.\n2. Add a blue washer on top of it.\n3. Finally, stack a red screw on top of the washer.",
+        "cleaned_instructions": "Place a red nut in the 5th row, 1st column. Add a blue washer on top of it. Finally, stack a red screw on top of the washer."
+    },
+    "4_bbbs_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 6th row, 1st column.\n2. Put a blue horizontal bridge in the same row, 2nd column.\n3. Stack a green horizontal bridge on top of the top half of the red bridge and the left side of the blue bridge.\n4. Place a blue screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 6th row, 1st column. Put a blue horizontal bridge in the same row, 2nd column. Stack a green horizontal bridge on top of the top half of the red bridge and the left side of the blue bridge. Place a blue screw on top of the left side of the green bridge."
+    },
+    "2_bw_2": {
+        "raw_instructions": "1. Position a red vertical bridge in the 7th row, 3rd column.\n2. Place a blue washer on top of the upper side of the bridge.",
+        "cleaned_instructions": "Position a red vertical bridge in the 7th row, 3rd column. Place a blue washer on top of the upper side of the bridge."
+    },
+    "3_wbb_1": {
+        "raw_instructions": "1. Place a red washer in the 6th row, 2nd column.\n2. Add a blue horizontal bridge in the 6th row as well, 3rd column.\n3. Stack a yellow horizontal bridge on top of the washer and the left side of the blue bridge.",
+        "cleaned_instructions": "Place a red washer in the 6th row, 2nd column. Add a blue horizontal bridge in the 6th row as well, 3rd column. Stack a yellow horizontal bridge on top of the washer and the left side of the blue bridge."
+    },
+    "4_nbbn_2": {
+        "raw_instructions": "1. Place a red nut in the last row, 3rd column.\n2. Add a blue horizontal bridge to the right of the nut.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Stack a blue nut on top of the right side of the green bridge",
+        "cleaned_instructions": "Place a red nut in the last row, 3rd column. Add a blue horizontal bridge to the right of the nut. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge. Stack a blue nut on top of the right side of the green bridge"
+    },
+    "4_nbbs_1": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 4th column.\n2. Add a blue horizontal bridge next to it on the right side.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Stack a red screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 4th column. Add a blue horizontal bridge next to it on the right side. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge. Stack a red screw on top of the left side of the green bridge."
+    },
+    "5_bnbws_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 4th column.\n2. Add a blue nut below the right side of the bridge.\n3. Stack a green vertical bridge on top of the right side of the birdge and the nut.\n4. Put a red washer on top of the upper part of the green bridge.\n5. Stack a blue screw on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 4th column. Add a blue nut below the right side of the bridge. Stack a green vertical bridge on top of the right side of the birdge and the nut. Put a red washer on top of the upper part of the green bridge. Stack a blue screw on top of the washer."
+    },
+    "5_bwbnw_1": {
+        "raw_instructions": "1. Position a red horizontal bridge in the 6th row, 3rd column.\n2. Place a blue washer in the 7th row, 4th column.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the washer.\n4. Place a red nut on top of the upper half of the green bridge.\n5. Stack a yellow washer on top of the nut.",
+        "cleaned_instructions": "Position a red horizontal bridge in the 6th row, 3rd column. Place a blue washer in the 7th row, 4th column. Stack a green vertical bridge on top of the right side of the red bridge and the washer. Place a red nut on top of the upper half of the green bridge. Stack a yellow washer on top of the nut."
+    },
+    "3_wwb_1": {
+        "raw_instructions": "1. Put a red washer in the 5th row, 4th column.\n2. Place another washer in color blue next to it in column 5.\n3. Stack a green horizontal bridge on top of the two washers.",
+        "cleaned_instructions": "Put a red washer in the 5th row, 4th column. Place another washer in color blue next to it in column 5. Stack a green horizontal bridge on top of the two washers."
+    },
+    "3_wwb_2": {
+        "raw_instructions": "1. Place a green washer in the bottom left corner.\n2. Add a yellow washer next to it to the right.\n3. Stack a red horizontal bridge on top of the two washers.",
+        "cleaned_instructions": "Place a green washer in the bottom left corner. Add a yellow washer next to it to the right. Stack a red horizontal bridge on top of the two washers."
+    },
+    "4_nbbs_2": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 4th column.\n2. Put a blue horizontal bridge in the 6th row, 5th column.\n3. Add a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Stack a yellow screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 4th column. Put a blue horizontal bridge in the 6th row, 5th column. Add a green horizontal bridge on top of the nut and the left side of the blue bridge. Stack a yellow screw on top of the left side of the green bridge."
+    },
+    "5_nwbws_2": {
+        "raw_instructions": "1. Place a red nut in the 7th row, 2nd column.\n2. Add a blue washer to the right of it.\n3. Stack a green horizontal bridge on top of the nut and the washer.\n4. Place a red washer on top of the left side of the bridge.\n5. Finally, place a blue screw on top of the red washer.",
+        "cleaned_instructions": "Place a red nut in the 7th row, 2nd column. Add a blue washer to the right of it. Stack a green horizontal bridge on top of the nut and the washer. Place a red washer on top of the left side of the bridge. Finally, place a blue screw on top of the red washer."
+    },
+    "4_bnbs_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 4th column.\n2. Add a blue nut to the right of the upper half of the bridge.\n3. Stack a green horizontal bridge on top of the upper half of the red bridge and the blue nut.\n4. Now stack a red screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 4th column. Add a blue nut to the right of the upper half of the bridge. Stack a green horizontal bridge on top of the upper half of the red bridge and the blue nut. Now stack a red screw on top of the left side of the green bridge."
+    },
+    "4_nnbw_1": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 4th column.\n2. Add a blue nut next to it in column 5.\n3. Stack a green horizontal bridge on top of the two nuts.\n4. Put a red washer on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 4th column. Add a blue nut next to it in column 5. Stack a green horizontal bridge on top of the two nuts. Put a red washer on top of the left side of the bridge."
+    },
+    "3_nwb_2": {
+        "raw_instructions": "1. Place a red nut in row 6, column 3.\n2. Put a blue washer in the same row, column 4.\n3. Stack a yellow horizontal bridge on top of the two other objects.",
+        "cleaned_instructions": "Place a red nut in row 6, column 3. Put a blue washer in the same row, column 4. Stack a yellow horizontal bridge on top of the two other objects."
+    },
+    "4_wwbn_2": {
+        "raw_instructions": "1. Place a red washer in the 7th row, 2nd column.\n2. Position a blue washer next to it on the right.\n3. Stack a green horizontal bridge on top of the two washers.\n4. Stack a red nut on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red washer in the 7th row, 2nd column. Position a blue washer next to it on the right. Stack a green horizontal bridge on top of the two washers. Stack a red nut on top of the left side of the bridge."
+    },
+    "4_wbbn_2": {
+        "raw_instructions": "1. Position a red washer in row 6, column 3.\n2. Add a blue horizontal bridge in the same row, column 4.\n3. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge.\n4. Now stack a red nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Position a red washer in row 6, column 3. Add a blue horizontal bridge in the same row, column 4. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge. Now stack a red nut on top of the left side of the green bridge."
+    },
+    "3_wbb_2": {
+        "raw_instructions": "1. Place a red washer in the 7th row, 1st column.\n2. Add a blue horizontal bridge next to it in column 2.\n3. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge.",
+        "cleaned_instructions": "Place a red washer in the 7th row, 1st column. Add a blue horizontal bridge next to it in column 2. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge."
+    },
+    "4_wbbw_2": {
+        "raw_instructions": "1. Place a red washer in row 5, column 2.\n2. Position a blue horizontal bridge in the same row, 3rd column.\n3. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge.\n4. Stack a blue washer on top of the right side of the green bridge.",
+        "cleaned_instructions": "Place a red washer in row 5, column 2. Position a blue horizontal bridge in the same row, 3rd column. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge. Stack a blue washer on top of the right side of the green bridge."
+    },
+    "5_bnbwn_1": {
+        "raw_instructions": "1. Position a red horizontal bridge in 5th row, 1st column.\n2. Place a blue nut below the right side of the bridge.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the blue nut.\n4. Stack a red washer on top of the upper side of the green bridge.\n5. Finally, stack a green nut on top of the washer.",
+        "cleaned_instructions": "Position a red horizontal bridge in 5th row, 1st column. Place a blue nut below the right side of the bridge. Stack a green vertical bridge on top of the right side of the red bridge and the blue nut. Stack a red washer on top of the upper side of the green bridge. Finally, stack a green nut on top of the washer."
+    },
+    "4_bwbn_2": {
+        "raw_instructions": "1. Place a red vertical bridge in the 6th row, 1st column.\n2. Put a blue washer in the 6th row, 2nd column.\n3. Stack a green horizontal bridge on top of the upper side of the red bridge and the blue washer.\n4. Stack a red nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 6th row, 1st column. Put a blue washer in the 6th row, 2nd column. Stack a green horizontal bridge on top of the upper side of the red bridge and the blue washer. Stack a red nut on top of the left side of the green bridge."
+    },
+    "4_bnbn_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 2nd column.\n2. Place a blue nut next to the upper side of the bridge on the right.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the nut.\n4. Put another nut on top of the left side of the green bridge. It is red.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 2nd column. Place a blue nut next to the upper side of the bridge on the right. Stack a green horizontal bridge on top of the upper part of the red bridge and the nut. Put another nut on top of the left side of the green bridge. It is red."
+    },
+    "4_bbbw_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 4th column.\n2. Put a blue horizontal bridge in the 7th row, 5h column.\n3. Stack a green horizontal bridge on top of the upper side of the red bridge and the left side of the blue bridge.\n4. Finally, stack a blue washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 4th column. Put a blue horizontal bridge in the 7th row, 5h column. Stack a green horizontal bridge on top of the upper side of the red bridge and the left side of the blue bridge. Finally, stack a blue washer on top of the left side of the green bridge."
+    },
+    "2_wn_1": {
+        "raw_instructions": "1. Place a red washer in the last row, 4th column.\n2. Stack a blue nut on top of it.",
+        "cleaned_instructions": "Place a red washer in the last row, 4th column. Stack a blue nut on top of it."
+    },
+    "4_wnbw_2": {
+        "raw_instructions": "1. Place a red washer in the 5th row, first column.\n2. Add a blue nut next to it on the right.\n3. Stack a green horizontal bridge on top of the washer and the nut.\n4. Stack a red washer on top of the right side of the bridge.",
+        "cleaned_instructions": "Place a red washer in the 5th row, first column. Add a blue nut next to it on the right. Stack a green horizontal bridge on top of the washer and the nut. Stack a red washer on top of the right side of the bridge."
+    },
+    "3_wnb_2": {
+        "raw_instructions": "1. Place a red washer in the 7th row, 2nd column.\n2. Put a blue nut in the same row, 3rd column.\n3. Stack a yellow horizontal bridge on top of the washer and the nut.",
+        "cleaned_instructions": "Place a red washer in the 7th row, 2nd column. Put a blue nut in the same row, 3rd column. Stack a yellow horizontal bridge on top of the washer and the nut."
+    },
+    "5_bbbwn_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 1st column.\n2. Put another horizontal bridge in the 6th row, 2nd column. Its color is blue.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge.\n4. Stack a red washer on top of the upper side of the green bridge.\n5. Place a green nut on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 1st column. Put another horizontal bridge in the 6th row, 2nd column. Its color is blue. Stack a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge. Stack a red washer on top of the upper side of the green bridge. Place a green nut on top of the washer."
+    },
+    "4_bwbw_2": {
+        "raw_instructions": "1. Put a red vertical bridge in the 6th row, 3rd column.\n2. Place a blue washer next to it in row 6, column 4.\n3. Stack a green horizontal bridge on top of the upper half of the red bridge and on top of the washer.\n4. Now place another washer on top of the left side of the green bridge. Its color is yellow.",
+        "cleaned_instructions": "Put a red vertical bridge in the 6th row, 3rd column. Place a blue washer next to it in row 6, column 4. Stack a green horizontal bridge on top of the upper half of the red bridge and on top of the washer. Now place another washer on top of the left side of the green bridge. Its color is yellow."
+    },
+    "5_bbbns_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 6th row, 1st column.\n2. Put another horizontal bridge in the 7th row, 2nd column. The color is blue.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge.\n4. Stack a red nut on top of the upper half of the green bridge.\n5. Place a green screw on top of the red nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 6th row, 1st column. Put another horizontal bridge in the 7th row, 2nd column. The color is blue. Stack a green vertical bridge on top of the right side of the red bridge and the left side of the blue bridge. Stack a red nut on top of the upper half of the green bridge. Place a green screw on top of the red nut."
+    },
+    "4_bnws_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 6th row, 3rd column.\n2. Stack a blue nut on top of its left side.\n3. Now put a red washer on top of the nut.\n4. Place a yellow screw on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 6th row, 3rd column. Stack a blue nut on top of its left side. Now put a red washer on top of the nut. Place a yellow screw on top of the washer."
+    },
+    "4_bbbw_2": {
+        "raw_instructions": "1. Place a red vertical bridge in the 5th row, 1st column.\n2. Add a blue horizontal bridge in the 5th row, 2nd column.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the left side of the blue bridge.\n4. Place a yellow washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 5th row, 1st column. Add a blue horizontal bridge in the 5th row, 2nd column. Stack a green horizontal bridge on top of the upper part of the red bridge and the left side of the blue bridge. Place a yellow washer on top of the left side of the green bridge."
+    },
+    "4_bwbw_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 1st column.\n2. Add a blue washer in the 7th row, 2nd column.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the washer.\n4. Stack another blue washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 1st column. Add a blue washer in the 7th row, 2nd column. Stack a green horizontal bridge on top of the upper part of the red bridge and the washer. Stack another blue washer on top of the left side of the green bridge."
+    },
+    "4_nwbn_2": {
+        "raw_instructions": "1. Position a red nut in the bottom left corner.\n2. Place a blue washer next to it in column 2.\n3. Stack a green horizontal bridge on top of the two other objects.\n4. Put a yellow nut on top of the right side of the bridge.",
+        "cleaned_instructions": "Position a red nut in the bottom left corner. Place a blue washer next to it in column 2. Stack a green horizontal bridge on top of the two other objects. Put a yellow nut on top of the right side of the bridge."
+    },
+    "4_bnbn_2": {
+        "raw_instructions": "1. Place a red vertical bridge in the 6th row, 2nd column.\n2. Put a blue nut next to the upper part of the bridge in column 3.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the nut.\n4. Stack a yellow nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 6th row, 2nd column. Put a blue nut next to the upper part of the bridge in column 3. Stack a green horizontal bridge on top of the upper part of the red bridge and the nut. Stack a yellow nut on top of the left side of the green bridge."
+    },
+    "5_bnbwn_2": {
+        "raw_instructions": "1. Position a red horizontal bridge in the 6th row, 3rd column.\n2. Place a blue nut below the right part of the bridge.\n3. Stack a green vertical bridge on top of the right side of the red bridge and on top of the nut.\n4. Put a red washer on top of the upper half of the green bridge and add a blue nut on top.",
+        "cleaned_instructions": "Position a red horizontal bridge in the 6th row, 3rd column. Place a blue nut below the right part of the bridge. Stack a green vertical bridge on top of the right side of the red bridge and on top of the nut. Put a red washer on top of the upper half of the green bridge and add a blue nut on top."
+    },
+    "5_bbbnw_2": {
+        "raw_instructions": "1. Position a red horizontal bridge in the 7th row, 1st column.\n2. Place a blue horizontal bridge in the last row, 2nd column.\n3. Stack a green vertical bridge on top in the 7th row, 2nd column.\n4. Place a red nut on top of the upper half of the green bridge.\n5. Stack a green washer on top of the nut.",
+        "cleaned_instructions": "Position a red horizontal bridge in the 7th row, 1st column. Place a blue horizontal bridge in the last row, 2nd column. Stack a green vertical bridge on top in the 7th row, 2nd column. Place a red nut on top of the upper half of the green bridge. Stack a green washer on top of the nut."
+    },
+    "3_bns_2": {
+        "raw_instructions": "1. Put a red horizontal bridge in the 7th row, 4th column.\n2. Add a blue nut on top of its left side.\n3. Stack a red screw on top of the nut.",
+        "cleaned_instructions": "Put a red horizontal bridge in the 7th row, 4th column. Add a blue nut on top of its left side. Stack a red screw on top of the nut."
+    },
+    "4_bbbn_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 5th row, 2nd column.\n2. Position a blue horizontal bridge in the same row, 3rd column.\n3. Stack a green horizontal bridge on top of the other two bridges in the 5th row, 2nd column.\n4. Place a blue nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 5th row, 2nd column. Position a blue horizontal bridge in the same row, 3rd column. Stack a green horizontal bridge on top of the other two bridges in the 5th row, 2nd column. Place a blue nut on top of the left side of the green bridge."
+    },
+    "5_bwbws_2": {
+        "raw_instructions": "1. Put a blue washer in the last row, 4th column.\n2. Add a red horizontal bridge in the row above, 3rd column.\n3. Place a green vertical bridge on top of the right side of the red bridge and the washer.\n4. Stack a red washer on top of the upper part of the green bridge.\n5. Finally, place a yellow screw on top of the red washer.",
+        "cleaned_instructions": "Put a blue washer in the last row, 4th column. Add a red horizontal bridge in the row above, 3rd column. Place a green vertical bridge on top of the right side of the red bridge and the washer. Stack a red washer on top of the upper part of the green bridge. Finally, place a yellow screw on top of the red washer."
+    },
+    "4_bwbs_1": {
+        "raw_instructions": "1. Position a red vertical bridge in the 5th row, 2nd column.\n2. Place a blue washer next to the upper part of the bridge on the right.\n3. Stack a green horizontal bridge on top of the upper part of the red bridge and the washer.\n4. Place a yellow screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Position a red vertical bridge in the 5th row, 2nd column. Place a blue washer next to the upper part of the bridge on the right. Stack a green horizontal bridge on top of the upper part of the red bridge and the washer. Place a yellow screw on top of the left side of the green bridge."
+    },
+    "5_nwbws_1": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 4th column.\n2. Add a blue washer in the same row, 5th column.\n3. Stack a green horizontal bridge on top of the two objects.\n4. Place a red washer on top of the left side of the bridge.\n5. Stack a yellow screw on top of the red washer.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 4th column. Add a blue washer in the same row, 5th column. Stack a green horizontal bridge on top of the two objects. Place a red washer on top of the left side of the bridge. Stack a yellow screw on top of the red washer."
+    },
+    "2_bn_1": {
+        "raw_instructions": "1. Place a green horizontal bridge in the 5th row, 3rd column.\n2. Stack a yellow nut on top of its left side.",
+        "cleaned_instructions": "Place a green horizontal bridge in the 5th row, 3rd column. Stack a yellow nut on top of its left side."
+    },
+    "5_bbbnw_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 3rd column.\n2. Position a blue horizontal bridge below the right side of the red bridge.\n3. Stack a green vertical bridge on top of the right side of the red bridge and on top of the left side of the blue bridge.\n4. Stack a red nut on top of the upper part of the green bridge.\n5. Place a blue washer on top of the nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 3rd column. Position a blue horizontal bridge below the right side of the red bridge. Stack a green vertical bridge on top of the right side of the red bridge and on top of the left side of the blue bridge. Stack a red nut on top of the upper part of the green bridge. Place a blue washer on top of the nut."
+    },
+    "3_bwn_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 6th row, 4th column.\n2. Stack a blue washer on top of its left side.\n3. Put a yellow nut on top of the washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 6th row, 4th column. Stack a blue washer on top of its left side. Put a yellow nut on top of the washer."
+    },
+    "4_nwbs_2": {
+        "raw_instructions": "1. Place a red nut in the 7th row, 4th column.\n2. Add a blue washer to the right of the nut.\n3. Stack a green horizontal bridge on top of the two other objects.\n4. Stack a blue screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red nut in the 7th row, 4th column. Add a blue washer to the right of the nut. Stack a green horizontal bridge on top of the two other objects. Stack a blue screw on top of the left side of the bridge."
+    },
+    "3_bwn_1": {
+        "raw_instructions": "1. Position a red horizontal bridge in the 5th row, 1st column.\n2. Add a blue washer on top of the left side of the bridge.\n3. Stack a red nut on top of the washer.",
+        "cleaned_instructions": "Position a red horizontal bridge in the 5th row, 1st column. Add a blue washer on top of the left side of the bridge. Stack a red nut on top of the washer."
+    },
+    "5_bbbws_2": {
+        "raw_instructions": "1. Put a red horizontal bridge in the 6th row, 1st column.\n2. Place a blue horizontal bridge below the right side of the red bridge.\n3. Stack a green bridge vertically on top of the right side of the red bridge and the left side of the blue bridge.\n4. Put a red washer on top of the upper half of the green bridge.\n5. Stack a yellow screw on top of the washer.",
+        "cleaned_instructions": "Put a red horizontal bridge in the 6th row, 1st column. Place a blue horizontal bridge below the right side of the red bridge. Stack a green bridge vertically on top of the right side of the red bridge and the left side of the blue bridge. Put a red washer on top of the upper half of the green bridge. Stack a yellow screw on top of the washer."
+    },
+    "2_ns_1": {
+        "raw_instructions": "1. Position a green nut in the 5th row, 4th column.\n2. Stack a yellow screw on top of it.",
+        "cleaned_instructions": "Position a green nut in the 5th row, 4th column. Stack a yellow screw on top of it."
+    },
+    "3_bnw_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the last row, 3rd column.\n2. Position a blue nut on top of the left side of the bridge.\n3. Stack a green washer on top of the nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the last row, 3rd column. Position a blue nut on top of the left side of the bridge. Stack a green washer on top of the nut."
+    },
+    "4_wbbw_1": {
+        "raw_instructions": "1. Put a red washer in the last row, 3rd column.\n2. Add a blue horizontal bridge to the right of the washer.\n3. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge.\n4. Place a yellow washer on top of the right side of the green bridge.",
+        "cleaned_instructions": "Put a red washer in the last row, 3rd column. Add a blue horizontal bridge to the right of the washer. Stack a green horizontal bridge on top of the washer and the left side of the blue bridge. Place a yellow washer on top of the right side of the green bridge."
+    },
+    "5_nbbws_1": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 1st column.\n2. Add a blue horizontal bridge to the right of the nut in column 2.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Place a red washer on top of the left side of the green bridge.\n5. Stack a yellow screw on top of the washer.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 1st column. Add a blue horizontal bridge to the right of the nut in column 2. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge. Place a red washer on top of the left side of the green bridge. Stack a yellow screw on top of the washer."
+    },
+    "5_nnbws_1": {
+        "raw_instructions": "1. Place a red nut in the last row, 3rd column.\n2. Put a blue nut in the same row, 4th column.\n3. Stack a green horizontal bridge on top of the two nuts.\n4. Place a red washer on top of the left side of the bridge.\n5. Stack a green screw on top of the washer.",
+        "cleaned_instructions": "Place a red nut in the last row, 3rd column. Put a blue nut in the same row, 4th column. Stack a green horizontal bridge on top of the two nuts. Place a red washer on top of the left side of the bridge. Stack a green screw on top of the washer."
+    },
+    "3_wnb_1": {
+        "raw_instructions": "1. Place a red washer in the 6th row, 4th column.\n2. Put a blue nut next to the washer on the right side.\n3. Stack a green horizontal bridge on top of the other two objects.",
+        "cleaned_instructions": "Place a red washer in the 6th row, 4th column. Put a blue nut next to the washer on the right side. Stack a green horizontal bridge on top of the other two objects."
+    },
+    "5_bnbnw_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in row 6, column 2.\n2. Add a blue nut below the right side of the bridge.\n3. Now stack a green vertical bridge on top of the nut and the right side of the red bridge.\n4. Stack a red nut on top of the upper half of the green bridge.\n5. Finally, stack a green washer on top of the red nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in row 6, column 2. Add a blue nut below the right side of the bridge. Now stack a green vertical bridge on top of the nut and the right side of the red bridge. Stack a red nut on top of the upper half of the green bridge. Finally, stack a green washer on top of the red nut."
+    },
+    "5_wnbns_2": {
+        "raw_instructions": "1. Place a red washer in the 5th row, first column.\n2. Put a blue nut in the same row, 2nd column.\n3. Stack a horizontal bridge on top of the washer and the nut.\n4. Place a red nut on top of the left side of the bridge.\n5. Stack a green screw on top of the red nut.",
+        "cleaned_instructions": "Place a red washer in the 5th row, first column. Put a blue nut in the same row, 2nd column. Stack a horizontal bridge on top of the washer and the nut. Place a red nut on top of the left side of the bridge. Stack a green screw on top of the red nut."
+    },
+    "2_bs_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 4th column.\n2. Stack a blue screw on top of the upper half of the bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 4th column. Stack a blue screw on top of the upper half of the bridge."
+    },
+    "3_bwb_1": {
+        "raw_instructions": "1. Place a green vertical bridge in the 7th row, 3rd column.\n2. Put a yellow washer in the 7th row, 4th column.\n3. Now stack a red horizontal bridge on top of the upper half of the green bridge and the washer.",
+        "cleaned_instructions": "Place a green vertical bridge in the 7th row, 3rd column. Put a yellow washer in the 7th row, 4th column. Now stack a red horizontal bridge on top of the upper half of the green bridge and the washer."
+    },
+    "2_ws_1": {
+        "raw_instructions": "1. Place a red washer in the 7th row, 3rd column.\n2. Stack a blue screw on top of it.",
+        "cleaned_instructions": "Place a red washer in the 7th row, 3rd column. Stack a blue screw on top of it."
+    },
+    "4_nbbn_1": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 1st column.\n2. Add a blue horizontal bridge next to the nut in the 6th row, 2nd column.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Stack a yellow nut on top of the right side of the green bridge.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 1st column. Add a blue horizontal bridge next to the nut in the 6th row, 2nd column. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge. Stack a yellow nut on top of the right side of the green bridge."
+    },
+    "5_bnbnw_1": {
+        "raw_instructions": "1. Place a blue nut in the last row, 5th column.\n2. Put a red horizontal bridge in the 7th row, 4th column.\n3. Stack a green vertical bridge on top of the right side of the red bridge and on top of the blue nut.\n4. Now stack a red nut on top of the upper half of the green bridge.\n5. Place a yellow washer on top of the red nut.",
+        "cleaned_instructions": "Place a blue nut in the last row, 5th column. Put a red horizontal bridge in the 7th row, 4th column. Stack a green vertical bridge on top of the right side of the red bridge and on top of the blue nut. Now stack a red nut on top of the upper half of the green bridge. Place a yellow washer on top of the red nut."
+    },
+    "4_wwbs_1": {
+        "raw_instructions": "1. Place a red washer in the bottom left corner.\n2. Put a blue washer next to it on the right side.\n3. Stack a green horizontal bridge on top of the two washers.\n4. Place a yellow screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red washer in the bottom left corner. Put a blue washer next to it on the right side. Stack a green horizontal bridge on top of the two washers. Place a yellow screw on top of the left side of the bridge."
+    },
+    "3_bws_2": {
+        "raw_instructions": "1. Put a red horizontal bridge in the 5th row, 3rd column.\n2. Add a blue washer on top of its left side.\n3. Stack a red screw on top of the washer.",
+        "cleaned_instructions": "Put a red horizontal bridge in the 5th row, 3rd column. Add a blue washer on top of its left side. Stack a red screw on top of the washer."
+    },
+    "3_nnb_1": {
+        "raw_instructions": "1. Place a red nut in the 7th row, 4th column.\n2. Position a blue nut to the right of the red one.\n3. Stack a green horizontal bridge on top of both nuts.",
+        "cleaned_instructions": "Place a red nut in the 7th row, 4th column. Position a blue nut to the right of the red one. Stack a green horizontal bridge on top of both nuts."
+    },
+    "5_wnbns_1": {
+        "raw_instructions": "1. Put a red washer in the 7th row, 3rd column.\n2. Place a blue nut to the right of the washer.\n3. Stack a green horizontal bridge on top of the washer and nut.\n4. Place a red nut on top of the left side of the bridge.\n5. Stack a blue screw on top of the red nut.",
+        "cleaned_instructions": "Put a red washer in the 7th row, 3rd column. Place a blue nut to the right of the washer. Stack a green horizontal bridge on top of the washer and nut. Place a red nut on top of the left side of the bridge. Stack a blue screw on top of the red nut."
+    },
+    "4_nwbw_2": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 2nd column.\n2. Position a blue washer to the right of the nut.\n3. Stack a green horizontal bridge on top of the nut and washer.\n4. Place a red washer on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 2nd column. Position a blue washer to the right of the nut. Stack a green horizontal bridge on top of the nut and washer. Place a red washer on top of the left side of the bridge."
+    },
+    "5_bwbwn_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 5th row, 3rd column.\n2. Position a blue washer below the right side of the bridge.\n3. Stack a green vertical bridge on top of the right side of the bridge and the washer.\n4. Stack a red washer on top of the upper part of the green bridge.\n5. Place a blue nut on top of the red washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 5th row, 3rd column. Position a blue washer below the right side of the bridge. Stack a green vertical bridge on top of the right side of the bridge and the washer. Stack a red washer on top of the upper part of the green bridge. Place a blue nut on top of the red washer."
+    },
+    "5_bnbws_1": {
+        "raw_instructions": "1. Place a red horizontal bridge in the 7th row, 4th column.\n2. Put a blue nut in the last row, 5th column.\n3. Stack a green vertical bridge on top of the right side of the red bridge and the blue nut.\n4. Place a red washer on top of the upper half of the green bridge.\n5. Put a yellow screw on top of the red washer.",
+        "cleaned_instructions": "Place a red horizontal bridge in the 7th row, 4th column. Put a blue nut in the last row, 5th column. Stack a green vertical bridge on top of the right side of the red bridge and the blue nut. Place a red washer on top of the upper half of the green bridge. Put a yellow screw on top of the red washer."
+    },
+    "3_nbb_1": {
+        "raw_instructions": "1. Place a green nut in the 5th row, 1st column.\n2. Put a yellow horizontal bridge in the same row, 2nd column.\n3. Stack a red horizontal bridge on top of the nut and the left side of the yellow bridge.",
+        "cleaned_instructions": "Place a green nut in the 5th row, 1st column. Put a yellow horizontal bridge in the same row, 2nd column. Stack a red horizontal bridge on top of the nut and the left side of the yellow bridge."
+    },
+    "2_bw_1": {
+        "raw_instructions": "1. Position a red horizontal bridge in the last row, 3rd column.\n2. Stack a blue washer on top of its left side.",
+        "cleaned_instructions": "Position a red horizontal bridge in the last row, 3rd column. Stack a blue washer on top of its left side."
+    },
+    "4_bwns_2": {
+        "raw_instructions": "1. Place a red horizontal bridge in the last row, 3rd column.\n2. Put a blue washer on top of the left side of the bridge.\n3. Stack a red nut on top of the washer.\n4. Finally, place a green screw on top of the nut.",
+        "cleaned_instructions": "Place a red horizontal bridge in the last row, 3rd column. Put a blue washer on top of the left side of the bridge. Stack a red nut on top of the washer. Finally, place a green screw on top of the nut."
+    },
+    "3_bbb_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 4th column.\n2. Put a blue horizontal bridge in the 7th row, 5th column.\n3. Stack a yellow horizontal bridge on top of the upper part of the red bridge and the left part of the blue bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 4th column. Put a blue horizontal bridge in the 7th row, 5th column. Stack a yellow horizontal bridge on top of the upper part of the red bridge and the left part of the blue bridge."
+    },
+    "3_nwb_1": {
+        "raw_instructions": "1. Place a red nut in the 5th row, 2nd column.\n2. Add a blue washer to the right of it.\n3. Stack a green horizontal bridge on top of both objects.",
+        "cleaned_instructions": "Place a red nut in the 5th row, 2nd column. Add a blue washer to the right of it. Stack a green horizontal bridge on top of both objects."
+    },
+    "3_bwb_2": {
+        "raw_instructions": "1. Position a red vertical bridge in the 6th row, 2nd column.\n2. Place a blue washer in the 6th row, 3rd column.\n3. Stack a yellow horizontal bridge on top of the upper part of the bridge and the washer.",
+        "cleaned_instructions": "Position a red vertical bridge in the 6th row, 2nd column. Place a blue washer in the 6th row, 3rd column. Stack a yellow horizontal bridge on top of the upper part of the bridge and the washer."
+    },
+    "4_bwbn_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 5th row, 4th column.\n2. Put a blue washer in the 5th row, 5th column.\n3. Stack a green horizontal bridge on top of the upper half of the red bridge and the washer.\n4. Stack a yellow nut on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 5th row, 4th column. Put a blue washer in the 5th row, 5th column. Stack a green horizontal bridge on top of the upper half of the red bridge and the washer. Stack a yellow nut on top of the left side of the green bridge."
+    },
+    "4_bnbs_2": {
+        "raw_instructions": "1. Place a red vertical bridge in the 7th row, 2nd column.\n2. Position a blue nut in the 7th row, 2rd column.\n3. Put a green horizontal bridge on top of the upper half of the red bridge and the nut.\n4. Stack a yellow screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red vertical bridge in the 7th row, 2nd column. Position a blue nut in the 7th row, 2rd column. Put a green horizontal bridge on top of the upper half of the red bridge and the nut. Stack a yellow screw on top of the left side of the green bridge."
+    },
+    "4_wnbs_2": {
+        "raw_instructions": "1. Place a red washer in the bottom left corner.\n2. Put a blue nut next to it in column 2.\n3. Stack a green horizontal bridge on top of the washer and the nut.\n4. Place a yellow screw on top of the left side of the bridge.",
+        "cleaned_instructions": "Place a red washer in the bottom left corner. Put a blue nut next to it in column 2. Stack a green horizontal bridge on top of the washer and the nut. Place a yellow screw on top of the left side of the bridge."
+    },
+    "2_ns_2": {
+        "raw_instructions": "1. Place a red nut in the last row, 3rd column.\n2. Stack a blue screw on top of the nut.",
+        "cleaned_instructions": "Place a red nut in the last row, 3rd column. Stack a blue screw on top of the nut."
+    },
+    "3_bnb_1": {
+        "raw_instructions": "1. Place a red vertical bridge in the 5th row, 4th column.\n2. Put a blue nut in the 5th row, 5th column.\n3. Stack a green horizontal bridge on top of the upper half of the red bridge and the nut.",
+        "cleaned_instructions": "Place a red vertical bridge in the 5th row, 4th column. Put a blue nut in the 5th row, 5th column. Stack a green horizontal bridge on top of the upper half of the red bridge and the nut."
+    },
+    "3_bns_1": {
+        "raw_instructions": "1. Put a red horizontal bridge in the 5th row, 4th column.\n2. Place a blue nut on top of the left side of the bridge.\n3. Position a green screw on top of the nut.",
+        "cleaned_instructions": "Put a red horizontal bridge in the 5th row, 4th column. Place a blue nut on top of the left side of the bridge. Position a green screw on top of the nut."
+    },
+    "4_nbbw_1": {
+        "raw_instructions": "1. Place a red nut in the 6th row, 3rd column.\n2. Put a blue horizontal bridge in the 6th row, 4th column.\n3. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge.\n4. Stack a blue washer on top of the left side of the green bridge.",
+        "cleaned_instructions": "Place a red nut in the 6th row, 3rd column. Put a blue horizontal bridge in the 6th row, 4th column. Stack a green horizontal bridge on top of the nut and the left side of the blue bridge. Stack a blue washer on top of the left side of the green bridge."
+    },
+    "4_wbbs_1": {
+        "raw_instructions": "1. Put a red washer in the 6th row, 4th column.\n2. Place a blue horizontal bridge in the same row, 5th column.\n3. Place a green horizontal bridge on top of the washer and the left side of the blue bridge.\n4. Stack a yellow screw on top of the left side of the green bridge.",
+        "cleaned_instructions": "Put a red washer in the 6th row, 4th column. Place a blue horizontal bridge in the same row, 5th column. Place a green horizontal bridge on top of the washer and the left side of the blue bridge. Stack a yellow screw on top of the left side of the green bridge."
+    }
+}

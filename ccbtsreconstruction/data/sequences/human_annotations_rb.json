@@ -1,0 +1,522 @@
+{
+    "3_nws_2": {
+        "raw_instructions": "1. Position 8 nws objects in the first row. The nut is red, the washer is yellow, and the screw is blue.\n2. Repeat the process for the 4th and 7th row.",
+        "cleaned_instructions": "Position 8 nws objects in the first row. The nut is red, the washer is yellow, and the screw is blue. Repeat the process for the 4th and 7th row."
+    },
+    "4_wnbn_2": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th row with wnbn objects. The upper nut is green, the lower one is blue. The bridge is red, and the washer is yellow.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th row with wnbn objects. The upper nut is green, the lower one is blue. The bridge is red, and the washer is yellow."
+    },
+    "5_wbbns_1": {
+        "raw_instructions": "1. Place two wbbns objects with a blue washer, a red nut and vertical bridge, and a yellow screw and horizontal bridge in the first row, in the 1st and 5th column.\n2. Position two more wbbns objects in the same colors in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place two wbbns objects with a blue washer, a red nut and vertical bridge, and a yellow screw and horizontal bridge in the first row, in the 1st and 5th column. Position two more wbbns objects in the same colors in the 5th row, in the same columns."
+    },
+    "4_wbbn_1": {
+        "raw_instructions": "1. Put two wbbn objects in the first row, in the first and fifth column. The left bridge is green, the right one is red, and the washer and nut are yellow.\n2. Position two more wbbn objects in the 5th row, in the same colors. Their parts are colored in the same way as the other two objects.",
+        "cleaned_instructions": "Put two wbbn objects in the first row, in the first and fifth column. The left bridge is green, the right one is red, and the washer and nut are yellow. Position two more wbbn objects in the 5th row, in the same colors. Their parts are colored in the same way as the other two objects."
+    },
+    "4_nwbn_3": {
+        "raw_instructions": "Place two nwbn objects in the first row, in the first and 5th column. Add two more in the fifth row, in the same two columns. All nwbn objects include a red nut in the upper half, and a green nut in the lower half, as well as a blue bridge, and a green washer.",
+        "cleaned_instructions": "Place two nwbn objects in the first row, in the first and 5th column. Add two more in the fifth row, in the same two columns. All nwbn objects include a red nut in the upper half, and a green nut in the lower half, as well as a blue bridge, and a green washer."
+    },
+    "4_bwns_1": {
+        "raw_instructions": "Fill the first, 4th, and 7th column with bwns objects. The bridge is yellow, the nut is red, the washer is green, and the screw is blue.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th column with bwns objects. The bridge is yellow, the nut is red, the washer is green, and the screw is blue."
+    },
+    "3_bws_2": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th row with bws objects composed of a yellow screw, a blue washer, and a green vertical bridge.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th row with bws objects composed of a yellow screw, a blue washer, and a green vertical bridge."
+    },
+    "5_nwbws_1": {
+        "raw_instructions": "1. Place two nwbws objects in the 1st row, 1st and 5th column. The objects include red washers, a blue screw, a green nut, and a yellow bridge.\n2. Position two more nwbws objects in the same colors in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place two nwbws objects in the 1st row, 1st and 5th column. The objects include red washers, a blue screw, a green nut, and a yellow bridge. Position two more nwbws objects in the same colors in the 5th row, in the same columns."
+    },
+    "3_nnb_3": {
+        "raw_instructions": "Position two nnb objects in the 1st and two nnb objects in the 5th row. The two objects on the left side are in column 1, while the other two are in column 5. The four objects form the corner points of a square. They include a yellow bridge, a red nut in the upper half, and a blue nut in the lower half.",
+        "cleaned_instructions": "Position two nnb objects in the 1st and two nnb objects in the 5th row. The two objects on the left side are in column 1, while the other two are in column 5. The four objects form the corner points of a square. They include a yellow bridge, a red nut in the upper half, and a blue nut in the lower half."
+    },
+    "2_bs_1": {
+        "raw_instructions": "1. Place 8 bs objects in the first column. The bridge is yellow, and the screw is red.\n2. Fill the 4th and 7th column with bs objects in the same colors as well.",
+        "cleaned_instructions": "Place 8 bs objects in the first column. The bridge is yellow, and the screw is red. Fill the 4th and 7th column with bs objects in the same colors as well."
+    },
+    "3_bwn_1": {
+        "raw_instructions": "1. Position three bwn objects in the first row, in column 1, 4 and 7. The washer is red, the horizontal bridge is blue, and the nut is green.\n2. Repeat this pattern for all other rows.",
+        "cleaned_instructions": "Position three bwn objects in the first row, in column 1, 4 and 7. The washer is red, the horizontal bridge is blue, and the nut is green. Repeat this pattern for all other rows."
+    },
+    "3_bnb_1": {
+        "raw_instructions": "1. Place two bnb objects in the first row, in the first and 5th column. The vertical bridge is blue and the other two parts of the bnb object are red.\n2. Put two more bnb objects in the same colors in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place two bnb objects in the first row, in the first and 5th column. The vertical bridge is blue and the other two parts of the bnb object are red. Put two more bnb objects in the same colors in the 5th row, in the same columns."
+    },
+    "5_bwbwn_1": {
+        "raw_instructions": "1. Position one bwbwn object in the top left corner. The upper washer is blue, the one below is red. The vertical bridge is green, and the nut and the horizontal bridge are yellow.\n2. Place another bwbwn object in the same row, in the 5th column. The colors are the same as before.\n3. Put two more bwbwn objects in the same colors in the 5th row, in the same two column as the two other objects.",
+        "cleaned_instructions": "Position one bwbwn object in the top left corner. The upper washer is blue, the one below is red. The vertical bridge is green, and the nut and the horizontal bridge are yellow. Place another bwbwn object in the same row, in the 5th column. The colors are the same as before. Put two more bwbwn objects in the same colors in the 5th row, in the same two column as the two other objects."
+    },
+    "4_nwbn_1": {
+        "raw_instructions": "Fill the first, 4th, and 7th column with nwbn objects. Each of the three columns contains 8 objects. The nwbn objects include a green washer, two yellow nuts, and a blue horizontal bridge.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th column with nwbn objects. Each of the three columns contains 8 objects. The nwbn objects include a green washer, two yellow nuts, and a blue horizontal bridge."
+    },
+    "4_bnbn_1": {
+        "raw_instructions": "Place four bnbn objects with a blue horizontal bridge, two green nuts and a green vertical bridge on the board. The first one is positioned in the top left corner and another one 4 squares to the right of it. Two more are added in the 5th row, in the first and 5th column as well.",
+        "cleaned_instructions": "Place four bnbn objects with a blue horizontal bridge, two green nuts and a green vertical bridge on the board. The first one is positioned in the top left corner and another one 4 squares to the right of it. Two more are added in the 5th row, in the first and 5th column as well."
+    },
+    "3_nnb_2": {
+        "raw_instructions": "Fill the first, 4th, and 7th row with nnb objects. The upper nut is yellow, the one below is red, and the vertical bridge is blue.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th row with nnb objects. The upper nut is yellow, the one below is red, and the vertical bridge is blue."
+    },
+    "2_nw_5": {
+        "raw_instructions": "1. Place two nw objects in the first row, in the first and fifth column. The washer is red and the nut is green.\n2. Put two more objects of the same type and color in the fifth row, in the same two columns as before.",
+        "cleaned_instructions": "Place two nw objects in the first row, in the first and fifth column. The washer is red and the nut is green. Put two more objects of the same type and color in the fifth row, in the same two columns as before."
+    },
+    "4_bnws_2": {
+        "raw_instructions": "Fill the first, fourth, and seventh row with bnws objects with a red bridge, a green nut and screw, and a blue washer.",
+        "cleaned_instructions": "Fill the first, fourth, and seventh row with bnws objects with a red bridge, a green nut and screw, and a blue washer."
+    },
+    "4_bbbs_1": {
+        "raw_instructions": "1. Position two bbbs objects in the first row, in the first and fifth column. The vertical bridges are blue, the horizontal bridge is green, and the screw is red.\n2. Repeat the same pattern by placing two of the objects in the fifth row, in the same columns.",
+        "cleaned_instructions": "Position two bbbs objects in the first row, in the first and fifth column. The vertical bridges are blue, the horizontal bridge is green, and the screw is red. Repeat the same pattern by placing two of the objects in the fifth row, in the same columns."
+    },
+    "5_bbbwn_1": {
+        "raw_instructions": "1. Place a bbbwn object in the top left corner. The nut is green, the washer is red, and the vertical bridge directly under the washer is green. The other vertical bridge and the horizontal bridge are blue.\n2. Put another bbbwn objects in the same colors in the 5th row, 1st column.\n3. Add two more bbbwn objects in the same colors in the same rows as the two objects before, both in column 5.",
+        "cleaned_instructions": "Place a bbbwn object in the top left corner. The nut is green, the washer is red, and the vertical bridge directly under the washer is green. The other vertical bridge and the horizontal bridge are blue. Put another bbbwn objects in the same colors in the 5th row, 1st column. Add two more bbbwn objects in the same colors in the same rows as the two objects before, both in column 5."
+    },
+    "3_nbb_1": {
+        "raw_instructions": "1. Put a nbb object in the top left corner. The nut is red and the horizontal bridge on top is green. The vertical bridge is blue.\n2. Place another nbb object in the same colors in the same row, in column 5.\n3. Add two more nbb objects in the same colors in row 5, in the same two columns as the first two objects.",
+        "cleaned_instructions": "Put a nbb object in the top left corner. The nut is red and the horizontal bridge on top is green. The vertical bridge is blue. Place another nbb object in the same colors in the same row, in column 5. Add two more nbb objects in the same colors in row 5, in the same two columns as the first two objects."
+    },
+    "5_nwbws_2": {
+        "raw_instructions": "Fill the first, fourth, and seventh column with nwbws objects. The nut is green, the washers are yellow, and the screw and the horizontal bridge are red.",
+        "cleaned_instructions": "Fill the first, fourth, and seventh column with nwbws objects. The nut is green, the washers are yellow, and the screw and the horizontal bridge are red."
+    },
+    "3_bwn_2": {
+        "raw_instructions": "Fill the first, 4th, and 7th row with bwn objects. The vertical bridge is yellow, the nut is blue, and the washer is red.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th row with bwn objects. The vertical bridge is yellow, the nut is blue, and the washer is red."
+    },
+    "4_bnbw_1": {
+        "raw_instructions": "1. Place a bnbw object in the top left corner. The vertical bridge with the red washer stacked on top is green, the nut is blue, and the horizontal bridge is yellow.\n2. Add three other bnbw objects in the same colors in  row 1, column 5, and in row 5, column 1, and in row 5, column 5.",
+        "cleaned_instructions": "Place a bnbw object in the top left corner. The vertical bridge with the red washer stacked on top is green, the nut is blue, and the horizontal bridge is yellow. Add three other bnbw objects in the same colors in  row 1, column 5, and in row 5, column 1, and in row 5, column 5."
+    },
+    "5_wwbns_2": {
+        "raw_instructions": "Fill the 1st, 4th, 7th column with wwbns objects with a blue horizontal bridge, red washers, a green screw, and a red nut.",
+        "cleaned_instructions": "Fill the 1st, 4th, 7th column with wwbns objects with a blue horizontal bridge, red washers, a green screw, and a red nut."
+    },
+    "3_wbb_1": {
+        "raw_instructions": "1. Place a wbb object in the top left corner. The yellow washer is on the left side with a green horizontal bridge on top. The other bridge is red.\n2. Put another wbb objects in the same colors in the same row, column 5.\n3. Add two more wbb objects in the same colors in the 5th row, in the same two columns as before.",
+        "cleaned_instructions": "Place a wbb object in the top left corner. The yellow washer is on the left side with a green horizontal bridge on top. The other bridge is red. Put another wbb objects in the same colors in the same row, column 5. Add two more wbb objects in the same colors in the 5th row, in the same two columns as before."
+    },
+    "3_wnb_3": {
+        "raw_instructions": "Place four wnb objects on the board. The washer on the left side is red, the nut is yellow, and the horizontal bridge is green. The washers form the corner points of a square. Put two of the objects in the first row, in column 1 and 5. Add another two wnb objects in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place four wnb objects on the board. The washer on the left side is red, the nut is yellow, and the horizontal bridge is green. The washers form the corner points of a square. Put two of the objects in the first row, in column 1 and 5. Add another two wnb objects in the 5th row, in the same columns."
+    },
+    "3_nwb_1": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th column with nwb objects. The red nut is on the left side, the green bridge is horizontal, and the blue washer is on the right side.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th column with nwb objects. The red nut is on the left side, the green bridge is horizontal, and the blue washer is on the right side."
+    },
+    "3_nwb_3": {
+        "raw_instructions": "1. Place two nwb objects in the first row, in column 1 and 5. The vertical bridge is yellow, the nut and the washer are green.\n2. Add two more nwb objects in the same colors in the 5th row, in the same two columns.",
+        "cleaned_instructions": "Place two nwb objects in the first row, in column 1 and 5. The vertical bridge is yellow, the nut and the washer are green. Add two more nwb objects in the same colors in the 5th row, in the same two columns."
+    },
+    "4_wwbs_1": {
+        "raw_instructions": "Place a wwbs object in each row, in column 1, 4 and 7. The screw is blue, the bridge is red, the left washer is green, and the right washer is yellow.",
+        "cleaned_instructions": "Place a wwbs object in each row, in column 1, 4 and 7. The screw is blue, the bridge is red, the left washer is green, and the right washer is yellow."
+    },
+    "2_ws_2": {
+        "raw_instructions": "1. Place eight ws objects in the first row. The washer is yellow and the screw is green.\n2. Put eight more ws objects in the same colors in the 4th row, in all columns.\n3. Fill the 7th row with ws objects in the same colors as well.",
+        "cleaned_instructions": "Place eight ws objects in the first row. The washer is yellow and the screw is green. Put eight more ws objects in the same colors in the 4th row, in all columns. Fill the 7th row with ws objects in the same colors as well."
+    },
+    "3_bws_3": {
+        "raw_instructions": "1. Place a bws object in the top left corner. The bridge is yellow, the washer is green and the screw is red.\n2. Add another bws object in the same color in the same row, in column 5.\n3. Place two more bws objects in the same colors in the 5th row, in column 1 and 5.",
+        "cleaned_instructions": "Place a bws object in the top left corner. The bridge is yellow, the washer is green and the screw is red. Add another bws object in the same color in the same row, in column 5. Place two more bws objects in the same colors in the 5th row, in column 1 and 5."
+    },
+    "4_bnws_1": {
+        "raw_instructions": "1. Fill the first column with bnws objects. The nut and the screw are yellow, the washer is green, and the bridge is blue.\n2. Place eight more bnws objects in the same colors in the 4th column.\n3. Finally, fill the 7th row with bnws objects in the same colors as well.",
+        "cleaned_instructions": "Fill the first column with bnws objects. The nut and the screw are yellow, the washer is green, and the bridge is blue. Place eight more bnws objects in the same colors in the 4th column. Finally, fill the 7th row with bnws objects in the same colors as well."
+    },
+    "4_wwbs_3": {
+        "raw_instructions": "1. Put two wwbs objects in the first row, in column 1 and 5. The bridge is yellow, the screw is blue, the left washer is red, and the right washer is green.\n2. Add to more objects of the same type and color in the 5th row, in the same columns.",
+        "cleaned_instructions": "Put two wwbs objects in the first row, in column 1 and 5. The bridge is yellow, the screw is blue, the left washer is red, and the right washer is green. Add to more objects of the same type and color in the 5th row, in the same columns."
+    },
+    "2_ws_1": {
+        "raw_instructions": "1. Place eight ws objects in the first column, one in each row. The washer is green and the screw is red.\n2. Repeat the pattern for column 4 and 7.",
+        "cleaned_instructions": "Place eight ws objects in the first column, one in each row. The washer is green and the screw is red. Repeat the pattern for column 4 and 7."
+    },
+    "4_nwbs_1": {
+        "raw_instructions": "1. Place three nwbs objects in the first row, in the 1st, 4th, and 7th column. The nut and the washer are yellow, the screw is red, and the bridge is green.\n2. Repeat the pattern for all other rows.",
+        "cleaned_instructions": "Place three nwbs objects in the first row, in the 1st, 4th, and 7th column. The nut and the washer are yellow, the screw is red, and the bridge is green. Repeat the pattern for all other rows."
+    },
+    "5_nbbws_1": {
+        "raw_instructions": "1. Place a nbbws object in the top left corner. The screw and the bottom bridge are blue, the other bridge is yellow, the washer is red, and the nut is green.\n2. Put another object of the same type and color in the same row, in column 5.\n3. Place two more nbbws objects in the same colors in the 5th row, in the 1st and 5th column.",
+        "cleaned_instructions": "Place a nbbws object in the top left corner. The screw and the bottom bridge are blue, the other bridge is yellow, the washer is red, and the nut is green. Put another object of the same type and color in the same row, in column 5. Place two more nbbws objects in the same colors in the 5th row, in the 1st and 5th column."
+    },
+    "4_bnbs_1": {
+        "raw_instructions": "1. Place a bnbs object in the top left corner. The vertical bridge and the nut are green, the horizontal bridge is yellow, and the screw is red.\n2. Put another bnbs object in the same colors in the 5th row, 1st column.\n3. Add two more bnbs objects in the same colors in the same two rows, in column 5.",
+        "cleaned_instructions": "Place a bnbs object in the top left corner. The vertical bridge and the nut are green, the horizontal bridge is yellow, and the screw is red. Put another bnbs object in the same colors in the 5th row, 1st column. Add two more bnbs objects in the same colors in the same two rows, in column 5."
+    },
+    "4_bbbn_1": {
+        "raw_instructions": "Place four bbbn objects on the board. One is in the top left corner, another one in the same row, in column 5. Place two more bbbn objects in the 5th row, in column 1 and 5. All four objects have a green nut, a red vertical bridge, a green horizontal bridge in the upper half and a blue horizontal bridge below.",
+        "cleaned_instructions": "Place four bbbn objects on the board. One is in the top left corner, another one in the same row, in column 5. Place two more bbbn objects in the 5th row, in column 1 and 5. All four objects have a green nut, a red vertical bridge, a green horizontal bridge in the upper half and a blue horizontal bridge below."
+    },
+    "4_wnbw_2": {
+        "raw_instructions": "1. Fill the first row with wnbw objects with a yellow bridge, a red nut and a red washer in the lower half, and a green washer in the upper half.\n2. Repeat step 1 for the 4th and 7th row.",
+        "cleaned_instructions": "Fill the first row with wnbw objects with a yellow bridge, a red nut and a red washer in the lower half, and a green washer in the upper half. Repeat step 1 for the 4th and 7th row."
+    },
+    "4_bbbb_1": {
+        "raw_instructions": "1. Place two bbbb objects in the first row, in the 1st and 5th column. The horizontal bridges are blue, the vertical ones are green.\n2. Put two more bbbb objects in the 5th row, in the same columns. The horizontal bridges are blue as well, and the vertical bridges are green too.",
+        "cleaned_instructions": "Place two bbbb objects in the first row, in the 1st and 5th column. The horizontal bridges are blue, the vertical ones are green. Put two more bbbb objects in the 5th row, in the same columns. The horizontal bridges are blue as well, and the vertical bridges are green too."
+    },
+    "3_bnw_2": {
+        "raw_instructions": "1. Place 8 bnw objects in the 7th row. The bridge is red, the washer is green, and the nut is yellow.\n2. Fill the 4th and 1st row with bnw objects in the same colors as well.",
+        "cleaned_instructions": "Place 8 bnw objects in the 7th row. The bridge is red, the washer is green, and the nut is yellow. Fill the 4th and 1st row with bnw objects in the same colors as well."
+    },
+    "2_ns_4": {
+        "raw_instructions": "1. Place a ns object with a red nut and a yellow screw in the top left corner.\n2. Add another ns object in the same colors in the top right corner.\n3. Place two ns objects in the same colors in the two bottom corners as well.",
+        "cleaned_instructions": "Place a ns object with a red nut and a yellow screw in the top left corner. Add another ns object in the same colors in the top right corner. Place two ns objects in the same colors in the two bottom corners as well."
+    },
+    "2_wn_2": {
+        "raw_instructions": "1. Fill the first, 4th, and 7th row with wn objects that include a yellow nut and a blue washer.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th row with wn objects that include a yellow nut and a blue washer."
+    },
+    "3_bns_3": {
+        "raw_instructions": "1. Place two bns objects in the first row, in column 1 and in column 5. The screw and the bridge are blue, while the nut is green.\n2. Position two more bns objects with parts in the same colors in the 5th row, in the same columns as before.",
+        "cleaned_instructions": "Place two bns objects in the first row, in column 1 and in column 5. The screw and the bridge are blue, while the nut is green. Position two more bns objects with parts in the same colors in the 5th row, in the same columns as before."
+    },
+    "4_bwns_3": {
+        "raw_instructions": "1. Put two bwns objects in the 5th row, in the 1st and 5th column. The screw and the washer are green, the nut is blue, and the bridge is red.\n2. Add two more bwns objects in the first row, in the same columns. The colors of the objects are the same as before.",
+        "cleaned_instructions": "Put two bwns objects in the 5th row, in the 1st and 5th column. The screw and the washer are green, the nut is blue, and the bridge is red. Add two more bwns objects in the first row, in the same columns. The colors of the objects are the same as before."
+    },
+    "4_wnbw_3": {
+        "raw_instructions": "Position four wnbw objects on the board. The left washer is yellow, the right washer is green, the nut is blue, and the bridge is red. The first object is placed in the top left corner, another one in the same row, in column 5. The two other objects are positioned in the 5th row, in the 1st and 5th column as well.",
+        "cleaned_instructions": "Position four wnbw objects on the board. The left washer is yellow, the right washer is green, the nut is blue, and the bridge is red. The first object is placed in the top left corner, another one in the same row, in column 5. The two other objects are positioned in the 5th row, in the 1st and 5th column as well."
+    },
+    "5_nnbws_2": {
+        "raw_instructions": "Fill the first, 4th and 7th column with 8 nnbws objects each. The bridge and the screw are blue, the washer is yellow, and the nuts are green.",
+        "cleaned_instructions": "Fill the first, 4th and 7th column with 8 nnbws objects each. The bridge and the screw are blue, the washer is yellow, and the nuts are green."
+    },
+    "4_nnbw_1": {
+        "raw_instructions": "1. Place a nnbw object in the 1st, 4th and 7th column in row 1. The left nut is yellow, the right nut and the washer are red, and the bridge is blue.\n2. Repeat the first step for all rows.",
+        "cleaned_instructions": "Place a nnbw object in the 1st, 4th and 7th column in row 1. The left nut is yellow, the right nut and the washer are red, and the bridge is blue. Repeat the first step for all rows."
+    },
+    "5_wnbns_2": {
+        "raw_instructions": "1. Place 8 wnbns objects in the first column. The washer is red, the nuts are yellow, the screw is blue, and the bridge is green.\n2. Add 8 more objects of the same type and color in the 4th column.\n3. Finally, fill the 7th column with the same object as well.",
+        "cleaned_instructions": "Place 8 wnbns objects in the first column. The washer is red, the nuts are yellow, the screw is blue, and the bridge is green. Add 8 more objects of the same type and color in the 4th column. Finally, fill the 7th column with the same object as well."
+    },
+    "4_wnbn_1": {
+        "raw_instructions": "1. Place three wnbn objects in the first row. The first one is positioned in the first column, the next one in the 4th column, and the third one in the 7th column. The left nut is always blue, the right nut is yellow, the washer is red and the bridge is green.\n2. Repeat the first step for all other rows.",
+        "cleaned_instructions": "Place three wnbn objects in the first row. The first one is positioned in the first column, the next one in the 4th column, and the third one in the 7th column. The left nut is always blue, the right nut is yellow, the washer is red and the bridge is green. Repeat the first step for all other rows."
+    },
+    "2_wn_3": {
+        "raw_instructions": "Place 8 wn objects on the diagonal from the top left corner to the bottom right corner. The nut is yellow and the washer is green.",
+        "cleaned_instructions": "Place 8 wn objects on the diagonal from the top left corner to the bottom right corner. The nut is yellow and the washer is green."
+    },
+    "5_bbbns_1": {
+        "raw_instructions": "1. Place two bbbns objects in the first row, in column 1 and 5. The horizontal bridge is green, the upper vertical bridge is yellow and the vertical bridge below is red. The nut is green and the screw is blue.\n2. Add two more bbbns objects in the same colors in the 5th row, in the same two columns.",
+        "cleaned_instructions": "Place two bbbns objects in the first row, in column 1 and 5. The horizontal bridge is green, the upper vertical bridge is yellow and the vertical bridge below is red. The nut is green and the screw is blue. Add two more bbbns objects in the same colors in the 5th row, in the same two columns."
+    },
+    "4_nnbw_2": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th row with nnbw objects. The bridge is green, the washer is yellow, and the two nuts are red.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th row with nnbw objects. The bridge is green, the washer is yellow, and the two nuts are red."
+    },
+    "4_nnbw_3": {
+        "raw_instructions": "1. Position two nnbw objects in the first row, in the first and fifth column. The washer and the lower nut are green, the other nut is blue, and the bridge is red.\n2. Place two other nnbw objects in the same colors in the 5th row, in the same columns.",
+        "cleaned_instructions": "Position two nnbw objects in the first row, in the first and fifth column. The washer and the lower nut are green, the other nut is blue, and the bridge is red. Place two other nnbw objects in the same colors in the 5th row, in the same columns."
+    },
+    "3_bws_1": {
+        "raw_instructions": "1. Place a bws object in each row for column 1, 4 and 7. The screw is blue, the washer is red, and the horizontal bridge is green.",
+        "cleaned_instructions": "Place a bws object in each row for column 1, 4 and 7. The screw is blue, the washer is red, and the horizontal bridge is green."
+    },
+    "2_nw_3": {
+        "raw_instructions": "1. Fill the diagonal from the top left corner to the bottom right corner with nw objects. The nut is blue and the washer is yellow for each object.",
+        "cleaned_instructions": "Fill the diagonal from the top left corner to the bottom right corner with nw objects. The nut is blue and the washer is yellow for each object."
+    },
+    "5_nnbws_1": {
+        "raw_instructions": "1. Place a nnbws object in the top left corner. The left nut is red, the right one is green, the bridge is blue, the washer is red, and the screw is yellow.\n2. Put another nnbws object in the same colors 4 squares diagonally to the right of the first object.\n3. Place another nnbws object 4 steps below the top left corner. The colors are the same.\n4. Position the last nnbws object in the same colors 4 steps to the right of the top left corner.",
+        "cleaned_instructions": "Place a nnbws object in the top left corner. The left nut is red, the right one is green, the bridge is blue, the washer is red, and the screw is yellow. Put another nnbws object in the same colors 4 squares diagonally to the right of the first object. Place another nnbws object 4 steps below the top left corner. The colors are the same. Position the last nnbws object in the same colors 4 steps to the right of the top left corner."
+    },
+    "4_nwbs_3": {
+        "raw_instructions": "1. Position two nwbs objects in the first row, in the first and 4th column. The nut is blue, the bridge is red, the screw is green, and the washer is yellow.\n2. Place two more objects of the same type and color in the 5th row, in the same columns.",
+        "cleaned_instructions": "Position two nwbs objects in the first row, in the first and 4th column. The nut is blue, the bridge is red, the screw is green, and the washer is yellow. Place two more objects of the same type and color in the 5th row, in the same columns."
+    },
+    "4_wbbs_1": {
+        "raw_instructions": "1. Place two wbbs objects in the first row, in the 1st and 5th column. The washer is green, the horizontal bridge is blue, and the screw and vertical bridge are yellow.\n2. Position two more wbbs objects in the same colors in the 5th row, in the 1st and 5th column.",
+        "cleaned_instructions": "Place two wbbs objects in the first row, in the 1st and 5th column. The washer is green, the horizontal bridge is blue, and the screw and vertical bridge are yellow. Position two more wbbs objects in the same colors in the 5th row, in the 1st and 5th column."
+    },
+    "5_bwbws_1": {
+        "raw_instructions": "1. Position two bwbws objects in the first row, in column 1 and 5. The upper washer is blue, the vertical bridge is green, and the other three parts of the bwbws object are red.\n2. Place two more bwbws objects of the same color in the 5th row, in the same columns as the two other objects.",
+        "cleaned_instructions": "Position two bwbws objects in the first row, in column 1 and 5. The upper washer is blue, the vertical bridge is green, and the other three parts of the bwbws object are red. Place two more bwbws objects of the same color in the 5th row, in the same columns as the two other objects."
+    },
+    "3_bwb_1": {
+        "raw_instructions": "Place four bwb objects with a blue horizontal bridge, and a green vertical bridge and washer on the board. The first two are positioned in the first row, in the 1st and 5th column. The other two are placed in the same two columns, in row 5.",
+        "cleaned_instructions": "Place four bwb objects with a blue horizontal bridge, and a green vertical bridge and washer on the board. The first two are positioned in the first row, in the 1st and 5th column. The other two are placed in the same two columns, in row 5."
+    },
+    "3_bns_2": {
+        "raw_instructions": "Fill the first, 4th and 7th row with bns objects with a yellow bridge, a blue nut, and a green screw. In each of the three rows there are 8 bns objects.",
+        "cleaned_instructions": "Fill the first, 4th and 7th row with bns objects with a yellow bridge, a blue nut, and a green screw. In each of the three rows there are 8 bns objects."
+    },
+    "4_nwbn_2": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th row with nwbn objects with a green washer, a green upper nut, and yellow bridge with a blue nut stacked on top.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th row with nwbn objects with a green washer, a green upper nut, and yellow bridge with a blue nut stacked on top."
+    },
+    "5_bnbnw_1": {
+        "raw_instructions": "1. Position two bnbnw objects in the first row, in the first and 5th column. The vertical bridge and the left nut are red, while the right nut is blue, and the horizontal bridge and the washer are yellow.\n2. Place two more objects of the same type and color in the 5th row, in the same columns.",
+        "cleaned_instructions": "Position two bnbnw objects in the first row, in the first and 5th column. The vertical bridge and the left nut are red, while the right nut is blue, and the horizontal bridge and the washer are yellow. Place two more objects of the same type and color in the 5th row, in the same columns."
+    },
+    "4_bbbw_1": {
+        "raw_instructions": "1. Put a bbbw object in the top left corner. The right bridge and the vertical bridge are blue, the left horizontal bridge is red, and the washer is green.\n2. Add another bbbw object in the same row, in column 5. The object colors are the same as before.\n3. Position two more bbbw objects in the same colors in the 5th row, in the 1st and 5th column.",
+        "cleaned_instructions": "Put a bbbw object in the top left corner. The right bridge and the vertical bridge are blue, the left horizontal bridge is red, and the washer is green. Add another bbbw object in the same row, in column 5. The object colors are the same as before. Position two more bbbw objects in the same colors in the 5th row, in the 1st and 5th column."
+    },
+    "5_bnbws_1": {
+        "raw_instructions": "1. Place two bnbws objects in the first row, in the 1st and 5th column.\n2. Add two more bnbws objects in the 5th row, the 1st and 5th column as well.\nAll objects contain a red nut, horizontal bridge and screw, a blue washer and a yellow vertical bridge.",
+        "cleaned_instructions": "Place two bnbws objects in the first row, in the 1st and 5th column. Add two more bnbws objects in the 5th row, the 1st and 5th column as well. All objects contain a red nut, horizontal bridge and screw, a blue washer and a yellow vertical bridge."
+    },
+    "4_nwbw_1": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th column with nwbw objects. The washers are red, the bridge is yellow, and the nut is green.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th column with nwbw objects. The washers are red, the bridge is yellow, and the nut is green."
+    },
+    "2_nw_1": {
+        "raw_instructions": "Fill the first, 4th, and 7th column with nw objects of a red washer and a yellow nut.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th column with nw objects of a red washer and a yellow nut."
+    },
+    "3_bbb_1": {
+        "raw_instructions": "1. Place one bbb object in the top left corner. The upper horizontal bridge is green, the other one is red. The vertical bridge is blue.\n2. Put another bbb object in the same colors in the 5th row, 1st column.\n3. Position a third bbb object in the same colors in the first row, 5th column.\n4. Place another bbb object in the same colors in the 5th row, 5th column.",
+        "cleaned_instructions": "Place one bbb object in the top left corner. The upper horizontal bridge is green, the other one is red. The vertical bridge is blue. Put another bbb object in the same colors in the 5th row, 1st column. Position a third bbb object in the same colors in the first row, 5th column. Place another bbb object in the same colors in the 5th row, 5th column."
+    },
+    "4_bwbn_1": {
+        "raw_instructions": "Place four bwbn objects on the board. The vertical bridge is blue, the horizontal bridge is red, the nut is blue and the washer is red. Put one of the objects in the top left corner, the next one in the same row, 5th column. Add another bwbn object in the 5th row, 5th column. Place the last bwbn object in the 5th row, 1st column.",
+        "cleaned_instructions": "Place four bwbn objects on the board. The vertical bridge is blue, the horizontal bridge is red, the nut is blue and the washer is red. Put one of the objects in the top left corner, the next one in the same row, 5th column. Add another bwbn object in the 5th row, 5th column. Place the last bwbn object in the 5th row, 1st column."
+    },
+    "3_bwn_3": {
+        "raw_instructions": "Place four bwn objects on the board. The nut is red, the bridge is green, and the washer is blue.\n1. Position the first bwn object in the top left corner.\n2. Add another one in row 5, column 5.\n3. Place two more bwn objects so that the four red nuts form the corner points of a square.",
+        "cleaned_instructions": "Place four bwn objects on the board. The nut is red, the bridge is green, and the washer is blue. Position the first bwn object in the top left corner. Add another one in row 5, column 5. Place two more bwn objects so that the four red nuts form the corner points of a square."
+    },
+    "2_bw_2": {
+        "raw_instructions": "Only use bw objects with a red vertical bridge and a blue washer. Fill the first, 4th, and 7th row with bw objects.",
+        "cleaned_instructions": "Only use bw objects with a red vertical bridge and a blue washer. Fill the first, 4th, and 7th row with bw objects."
+    },
+    "2_bn_1": {
+        "raw_instructions": "Fill the 1st, 4th and 7th column with bn objects. The nut is green and the horizontal bridge is yellow.",
+        "cleaned_instructions": "Fill the 1st, 4th and 7th column with bn objects. The nut is green and the horizontal bridge is yellow."
+    },
+    "4_nwbs_2": {
+        "raw_instructions": "Fill the firsth, fourth, and seventh row with nwbs objects. The vertical bridge is red, the other parts are green.",
+        "cleaned_instructions": "Fill the firsth, fourth, and seventh row with nwbs objects. The vertical bridge is red, the other parts are green."
+    },
+    "2_ns_1": {
+        "raw_instructions": "Place a ns object with a green screw and a yellow nut in each row of column 1, 4, and 7.",
+        "cleaned_instructions": "Place a ns object with a green screw and a yellow nut in each row of column 1, 4, and 7."
+    },
+    "3_wns_2": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th row with wns objects. The nut is green, and the other two parts are red.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th row with wns objects. The nut is green, and the other two parts are red."
+    },
+    "2_bs_2": {
+        "raw_instructions": "1. Fill the first row with bs objects with a green vertical bridge and a red screw.\n2. Place 8 bs objects in the same color in the 4th row.\n3. Continue the pattern for the 7th row.",
+        "cleaned_instructions": "Fill the first row with bs objects with a green vertical bridge and a red screw. Place 8 bs objects in the same color in the 4th row. Continue the pattern for the 7th row."
+    },
+    "2_nw_4": {
+        "raw_instructions": "Place a nw object in each corner. The washer is green and the nut is red.",
+        "cleaned_instructions": "Place a nw object in each corner. The washer is green and the nut is red."
+    },
+    "4_wnbs_3": {
+        "raw_instructions": "1. Place a wnbs object in the top left corner. The washer is green, the nut is gred, the screw is green, and the bridge is yellow.\n2. Add another wnbs object in the same colors in the same row, in column 5.\n3. Place a wnbs object in the same colors in the 5th row, in the 1st column.\n4. Add a last wnbs object in the same colors in the 5th row, 5th column, so that the four objects form a square.",
+        "cleaned_instructions": "Place a wnbs object in the top left corner. The washer is green, the nut is gred, the screw is green, and the bridge is yellow. Add another wnbs object in the same colors in the same row, in column 5. Place a wnbs object in the same colors in the 5th row, in the 1st column. Add a last wnbs object in the same colors in the 5th row, 5th column, so that the four objects form a square."
+    },
+    "5_wnbns_1": {
+        "raw_instructions": "Place a wnbns object in the top left corner and one in the same row, in the 5th column. Add two more wnbns objects in the 5th row, in the same two columns. All wnbns objects have a yellow nut under a green bridge, a red washer, and a red nut with a blue screw on top.",
+        "cleaned_instructions": "Place a wnbns object in the top left corner and one in the same row, in the 5th column. Add two more wnbns objects in the 5th row, in the same two columns. All wnbns objects have a yellow nut under a green bridge, a red washer, and a red nut with a blue screw on top."
+    },
+    "2_ws_4": {
+        "raw_instructions": "Place a ws object in each corner of the board. Each object has a green screw and a yellow washer.",
+        "cleaned_instructions": "Place a ws object in each corner of the board. Each object has a green screw and a yellow washer."
+    },
+    "3_wns_3": {
+        "raw_instructions": "1. Place wns objects in the first row, in column 1 and 5. The screw is red and the other two parts are blue.\n2. Add two more wns objects in the same colors in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place wns objects in the first row, in column 1 and 5. The screw is red and the other two parts are blue. Add two more wns objects in the same colors in the 5th row, in the same columns."
+    },
+    "3_wns_1": {
+        "raw_instructions": "Place a wns object in each row, in column 1, 4 and 7. The washer is yellow, the nut is blue, and the screw is green.",
+        "cleaned_instructions": "Place a wns object in each row, in column 1, 4 and 7. The washer is yellow, the nut is blue, and the screw is green."
+    },
+    "2_bw_1": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th column with bw objects. The bridge is red and the washer is yellow.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th column with bw objects. The bridge is red and the washer is yellow."
+    },
+    "5_bnbwn_1": {
+        "raw_instructions": "1. Place two bnbwn objects in the first row, in column 1 and 5. The nuts are green, the vertical bridge is yellow, the horizontal bridge and the washer are blue.\n2. Add two more objects of the same type and color in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place two bnbwn objects in the first row, in column 1 and 5. The nuts are green, the vertical bridge is yellow, the horizontal bridge and the washer are blue. Add two more objects of the same type and color in the 5th row, in the same columns."
+    },
+    "5_bwbnw_1": {
+        "raw_instructions": "Place four bwbnw objects on the board. They have a green vertical bridge, a red horizontal bridge, two blue washers, and a yellow nut. One is placed in the top left corner. The next object is positioned 4 squares to the right of the first bwbnw object. Another object is placed 4 squares below the first object and the last object is in row 5, column 5.",
+        "cleaned_instructions": "Place four bwbnw objects on the board. They have a green vertical bridge, a red horizontal bridge, two blue washers, and a yellow nut. One is placed in the top left corner. The next object is positioned 4 squares to the right of the first bwbnw object. Another object is placed 4 squares below the first object and the last object is in row 5, column 5."
+    },
+    "5_wwbns_1": {
+        "raw_instructions": "1. Place two wwbns objects in the first row, in column 1 and 5. The washer on top is red, the other washer is blue. The screw and the bridge are green, and the nut is blue.\n2. Add two more wwbns objects in the 5th row, in the same columns. They have the same colour as the other two objects.",
+        "cleaned_instructions": "Place two wwbns objects in the first row, in column 1 and 5. The washer on top is red, the other washer is blue. The screw and the bridge are green, and the nut is blue. Add two more wwbns objects in the 5th row, in the same columns. They have the same colour as the other two objects."
+    },
+    "2_ns_2": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th row with ns objects. The nut is always red, and the screw is blue.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th row with ns objects. The nut is always red, and the screw is blue."
+    },
+    "4_nnbs_2": {
+        "raw_instructions": "Fill the first, fourth, and 7th row with nnbs objects. The nuts are red, the bridge is yellow, and the screw is red as well.",
+        "cleaned_instructions": "Fill the first, fourth, and 7th row with nnbs objects. The nuts are red, the bridge is yellow, and the screw is red as well."
+    },
+    "2_bw_3": {
+        "raw_instructions": "1. Place a bw object with a green washer and a red bridge in the top left corner.\n2. Add another bw object in the same colors in the same row, column 5.\n3. Place a third bw objects in the same colors in the 5th row, 1st column.\n4. The last bw object in the same colors is in the same row, in column 5.",
+        "cleaned_instructions": "Place a bw object with a green washer and a red bridge in the top left corner. Add another bw object in the same colors in the same row, column 5. Place a third bw objects in the same colors in the 5th row, 1st column. The last bw object in the same colors is in the same row, in column 5."
+    },
+    "5_bwbns_1": {
+        "raw_instructions": "There are four bwbns objects on the board. The vertical bridge is green, the horizontal bridge and the washer are red, the nut is yellow, and the screw is blue. Place two of them in the first row, in column 1 and 5, and two more in the 5th row, in the same columns.",
+        "cleaned_instructions": "There are four bwbns objects on the board. The vertical bridge is green, the horizontal bridge and the washer are red, the nut is yellow, and the screw is blue. Place two of them in the first row, in column 1 and 5, and two more in the 5th row, in the same columns."
+    },
+    "3_wnb_1": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th column with wnb objects. The bridge is blue, the washer is green, and the nut is yellow.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th column with wnb objects. The bridge is blue, the washer is green, and the nut is yellow."
+    },
+    "4_wwbs_2": {
+        "raw_instructions": "1. Place 8 wwbs objects in the first row. The washers are red, the bride is green, and the screw is blue.\n2. Repeat the pattern for the 4th and 7th row.",
+        "cleaned_instructions": "Place 8 wwbs objects in the first row. The washers are red, the bride is green, and the screw is blue. Repeat the pattern for the 4th and 7th row."
+    },
+    "3_bnw_1": {
+        "raw_instructions": "1. Place 8 bnw objects in the first column, one in each row. The bridge is blue, the nut is yellow, and the washer is red.\n2. Fill the 4th column with bnw objects in the same colors.\n3. Add 8 more bnw objects in the same colors in the 7th column.",
+        "cleaned_instructions": "Place 8 bnw objects in the first column, one in each row. The bridge is blue, the nut is yellow, and the washer is red. Fill the 4th column with bnw objects in the same colors. Add 8 more bnw objects in the same colors in the 7th column."
+    },
+    "4_bwbw_1": {
+        "raw_instructions": "Place four bwbw objects on the board, two in the first row and two in the 5th row, in column 1 and 5 for both rows. The horizontal bridge is red, the other parts of the bwbw object are yellow.",
+        "cleaned_instructions": "Place four bwbw objects on the board, two in the first row and two in the 5th row, in column 1 and 5 for both rows. The horizontal bridge is red, the other parts of the bwbw object are yellow."
+    },
+    "3_nnb_1": {
+        "raw_instructions": "1. Place three nnb object in the first row, in column 1, 4 and 7. The bridge is green and the nuts are red.\n2. Repeat the pattern for all rows.",
+        "cleaned_instructions": "Place three nnb object in the first row, in column 1, 4 and 7. The bridge is green and the nuts are red. Repeat the pattern for all rows."
+    },
+    "4_wwbn_1": {
+        "raw_instructions": "Fill the 1st, 4th, and 7th column with wwbn objects. The nut and the washer on the left are yellow, the bridge is red, and the other washer is green.",
+        "cleaned_instructions": "Fill the 1st, 4th, and 7th column with wwbn objects. The nut and the washer on the left are yellow, the bridge is red, and the other washer is green."
+    },
+    "3_bnw_3": {
+        "raw_instructions": "1. Place two bnw objects in the first row, in column 1 and 5. The nut is green, the other two parts are red.\n2. Put two more bnw objects of the same color in the 5th row, in the same columns.",
+        "cleaned_instructions": "Place two bnw objects in the first row, in column 1 and 5. The nut is green, the other two parts are red. Put two more bnw objects of the same color in the 5th row, in the same columns."
+    },
+    "3_wwb_1": {
+        "raw_instructions": "1. Place 8 wwb objects in the first column, one in each row. The bridge is red, the left washer is yellow, and the other washer is green.\n2. Fill the 4th column with wwb objects in the same colors as well.\n3. Repeat step 2 for the 7th column as well.",
+        "cleaned_instructions": "Place 8 wwb objects in the first column, one in each row. The bridge is red, the left washer is yellow, and the other washer is green. Fill the 4th column with wwb objects in the same colors as well. Repeat step 2 for the 7th column as well."
+    },
+    "4_bwns_2": {
+        "raw_instructions": "1. Place eight bwns objects in the first row. The bridge is green, the washer and the screw are red, and the nut is yellow.\n2. Repeat step 1 for the rows 4 and 7.",
+        "cleaned_instructions": "Place eight bwns objects in the first row. The bridge is green, the washer and the screw are red, and the nut is yellow. Repeat step 1 for the rows 4 and 7."
+    },
+    "4_bwbs_1": {
+        "raw_instructions": "This board contains 4 bwbs objects and they all have a green vertical bridge, a blue horizontal bridge, a red washer, and a blue screw.\n1. Place the first bwbs object in the top left corner and add another one in the same row, in column 5.\n2. Position two more bwbs objects in the 5th row, in column 1 and 5.",
+        "cleaned_instructions": "This board contains 4 bwbs objects and they all have a green vertical bridge, a blue horizontal bridge, a red washer, and a blue screw. Place the first bwbs object in the top left corner and add another one in the same row, in column 5. Position two more bwbs objects in the 5th row, in column 1 and 5."
+    },
+    "4_nnbs_1": {
+        "raw_instructions": "1. Fill the first column with nnbs objects with a green bridge, two red washers and a red screw.\n2. Place 8 more nnbs objects in the same colors in the 4th column.\n3. Position a nnbs object in the same colors in each row, in column 7 as well.",
+        "cleaned_instructions": "Fill the first column with nnbs objects with a green bridge, two red washers and a red screw. Place 8 more nnbs objects in the same colors in the 4th column. Position a nnbs object in the same colors in each row, in column 7 as well."
+    },
+    "3_nws_1": {
+        "raw_instructions": "1. Place three nws objects in the first row, in column 1, 4 and 7. The nut is red, the washer is blue, and the screw is green.\n2. Repeat the first step for all other rows.",
+        "cleaned_instructions": "Place three nws objects in the first row, in column 1, 4 and 7. The nut is red, the washer is blue, and the screw is green. Repeat the first step for all other rows."
+    },
+    "4_wbbw_1": {
+        "raw_instructions": "1. Place a wbbw object in the 5th row, 5th column. The vertical bridge is blue, the horizontal one is red, and the two washers are green.\n2. Put another wbbw object in the same colors four squares above the other object.\n3. Position another wbbw object in the same colors 4 squares to the left of the first object.\n4. Place the last wbbw object in the same colors in the top left corner.",
+        "cleaned_instructions": "Place a wbbw object in the 5th row, 5th column. The vertical bridge is blue, the horizontal one is red, and the two washers are green. Put another wbbw object in the same colors four squares above the other object. Position another wbbw object in the same colors 4 squares to the left of the first object. Place the last wbbw object in the same colors in the top left corner."
+    },
+    "2_ns_3": {
+        "raw_instructions": "Fill the diagonal from the top left corner to the bottom right corner with eight ns objects. The nut is blue and the screw is yellow.",
+        "cleaned_instructions": "Fill the diagonal from the top left corner to the bottom right corner with eight ns objects. The nut is blue and the screw is yellow."
+    },
+    "4_wwbn_2": {
+        "raw_instructions": "1. Fill the first row with wwbn objects. The nut is yellow, the upper washer is red, the washer below is green, and the bridge is blue.\n2. Fill the 4th and 7th row with objects of the same type and color as well.",
+        "cleaned_instructions": "Fill the first row with wwbn objects. The nut is yellow, the upper washer is red, the washer below is green, and the bridge is blue. Fill the 4th and 7th row with objects of the same type and color as well."
+    },
+    "4_wnbw_1": {
+        "raw_instructions": "Place three wnbw objects in each row, in column 1, 4 and 7. The bridge is blue, the left washer is red, the right washer is yellow, and the nut is green.",
+        "cleaned_instructions": "Place three wnbw objects in each row, in column 1, 4 and 7. The bridge is blue, the left washer is red, the right washer is yellow, and the nut is green."
+    },
+    "2_bn_2": {
+        "raw_instructions": "1. Place 8 bn objects with a blue bridge and a green nut in the first row.\n2. Fill the 4th and 7th row with bn objects in the same colors as well.",
+        "cleaned_instructions": "Place 8 bn objects with a blue bridge and a green nut in the first row. Fill the 4th and 7th row with bn objects in the same colors as well."
+    },
+    "4_wnbs_2": {
+        "raw_instructions": "All wnbs objects have a green nut, a red bridge, and a blue washer and blue screw.\n1. Place 8 wnbs objects in the first row.\n2. Fill the 4th row with wnbs objects as well.\n3. Put wnbs objects in row 7, one in each column.",
+        "cleaned_instructions": "All wnbs objects have a green nut, a red bridge, and a blue washer and blue screw. Place 8 wnbs objects in the first row. Fill the 4th row with wnbs objects as well. Put wnbs objects in row 7, one in each column."
+    },
+    "3_nws_3": {
+        "raw_instructions": "1. Place a nws object in each corner of the square from the top left corner to the corner in row 5, column 5. Each nws object has a blue nut, a yellow washer, and a green screw.",
+        "cleaned_instructions": "Place a nws object in each corner of the square from the top left corner to the corner in row 5, column 5. Each nws object has a blue nut, a yellow washer, and a green screw."
+    },
+    "2_wn_1": {
+        "raw_instructions": "1. Place three wn objects with a red nut and a green washer in the first row, in columns 1, 4 and 7.\n2. Repeat the first step for all other rows.",
+        "cleaned_instructions": "Place three wn objects with a red nut and a green washer in the first row, in columns 1, 4 and 7. Repeat the first step for all other rows."
+    },
+    "4_nnbs_3": {
+        "raw_instructions": "There are four nnbs objects on the board that form a square. They are placed in the top left corner, in row 1, column 5, in row 5, column 1, and in row 5, column 5. The left square is always yellow, the right one is green, the bridge is red, and the screw is yellow.",
+        "cleaned_instructions": "There are four nnbs objects on the board that form a square. They are placed in the top left corner, in row 1, column 5, in row 5, column 1, and in row 5, column 5. The left square is always yellow, the right one is green, the bridge is red, and the screw is yellow."
+    },
+    "3_bns_1": {
+        "raw_instructions": "Place 8 bns objects each in column 1, 4, and 7. The bridge is yellow, the nut is blue, and the screw is green.",
+        "cleaned_instructions": "Place 8 bns objects each in column 1, 4, and 7. The bridge is yellow, the nut is blue, and the screw is green."
+    },
+    "5_bbbnw_1": {
+        "raw_instructions": "1. Place a bbbnw object in the top left corner. The nut is red, the washer is yellow, the horizontal bridge is blue, the left vertical bridge is red, and the right vertical bridge is yellow.\n2. Place another bbbnw object of the same color in the same row, in column 5.\n3. Add one more bbbnw object in the same colors in the 5th row, in the 1st column.\n4. Put a last bbbnw object in the 5th row, 5th column. It has the same colors as the other three objects.",
+        "cleaned_instructions": "Place a bbbnw object in the top left corner. The nut is red, the washer is yellow, the horizontal bridge is blue, the left vertical bridge is red, and the right vertical bridge is yellow. Place another bbbnw object of the same color in the same row, in column 5. Add one more bbbnw object in the same colors in the 5th row, in the 1st column. Put a last bbbnw object in the 5th row, 5th column. It has the same colors as the other three objects."
+    },
+    "2_nw_2": {
+        "raw_instructions": "Place one nw object in each column in the first, 4th, and 7th row. The washer is red, and the nut is green.",
+        "cleaned_instructions": "Place one nw object in each column in the first, 4th, and 7th row. The washer is red, and the nut is green."
+    },
+    "2_wn_4": {
+        "raw_instructions": "Place one wn object in each corner of the board. Each object has a yellow washer and a green nut.",
+        "cleaned_instructions": "Place one wn object in each corner of the board. Each object has a yellow washer and a green nut."
+    },
+    "2_bn_3": {
+        "raw_instructions": "1. Place a bn object in the 5th row, 5th column. The nut is green and the bridge is yellow.\n2. Add one more object of the same type and color 4 squares to the left of the first object and another one 4 squares above the first object.\n3. Put the fourth bn object in the same colors in the top left corner.",
+        "cleaned_instructions": "Place a bn object in the 5th row, 5th column. The nut is green and the bridge is yellow. Add one more object of the same type and color 4 squares to the left of the first object and another one 4 squares above the first object. Put the fourth bn object in the same colors in the top left corner."
+    },
+    "3_wwb_3": {
+        "raw_instructions": "Add four wwb objects on the board, with a green bridge, a red washer on the left and a blue washer on the right. The first two objects are placed in the first row, in the 1st and 5th column, the other two are positioned in the fifth row, in the same columns.",
+        "cleaned_instructions": "Add four wwb objects on the board, with a green bridge, a red washer on the left and a blue washer on the right. The first two objects are placed in the first row, in the 1st and 5th column, the other two are positioned in the fifth row, in the same columns."
+    },
+    "3_nwb_2": {
+        "raw_instructions": "Fill the 1st, 4th and 7th row with nwb objects. The objects have a yellow bridge, a blue nut, and a green washer.",
+        "cleaned_instructions": "Fill the 1st, 4th and 7th row with nwb objects. The objects have a yellow bridge, a blue nut, and a green washer."
+    },
+    "3_wwb_2": {
+        "raw_instructions": "1. Place eight wwb objects in the first row, one in each column. The bridge is green, the upper washer is blue, and the other washer is red.\n2. Position 8 more wwb objects in both the 4th and the 7th row. The objects have the same color as in step 1.",
+        "cleaned_instructions": "Place eight wwb objects in the first row, one in each column. The bridge is green, the upper washer is blue, and the other washer is red. Position 8 more wwb objects in both the 4th and the 7th row. The objects have the same color as in step 1."
+    },
+    "5_bbbws_1": {
+        "raw_instructions": "1. Place a bbbws object in the top left corner. The screw is blue, the washer is red, the vertical bridge is yellow, the right horizontal bridge is red, and the left horizontal bridge is green.\n2. Place another bbbws object in the same colors in the 5th row, in the same column.\n3. Position two more bbbws objects in the same colors in the 1st and 5th row, both in the 5th column.",
+        "cleaned_instructions": "Place a bbbws object in the top left corner. The screw is blue, the washer is red, the vertical bridge is yellow, the right horizontal bridge is red, and the left horizontal bridge is green. Place another bbbws object in the same colors in the 5th row, in the same column. Position two more bbbws objects in the same colors in the 1st and 5th row, both in the 5th column."
+    },
+    "4_nbbs_1": {
+        "raw_instructions": "1. Put two nbbs objects in the 5th row, in the 1st and 5th column. The screw and the nut are yellow, the top bridge is blue, and the bottom bridge is red.\n2. Add two more nbbs objects in the first row, in the same columns. The colors of the objects are the same as before.",
+        "cleaned_instructions": "Put two nbbs objects in the 5th row, in the 1st and 5th column. The screw and the nut are yellow, the top bridge is blue, and the bottom bridge is red. Add two more nbbs objects in the first row, in the same columns. The colors of the objects are the same as before."
+    },
+    "4_nbbw_1": {
+        "raw_instructions": "1. Position two nbbw objects in the first row, in the 1st and 5th column. The nut is green, the vertical bridge is red, the horizontal bridge is blue, and the washer is yellow.\n2. Place two more nbbw objects in the same colors in the 5th row, in the same columns.",
+        "cleaned_instructions": "Position two nbbw objects in the first row, in the 1st and 5th column. The nut is green, the vertical bridge is red, the horizontal bridge is blue, and the washer is yellow. Place two more nbbw objects in the same colors in the 5th row, in the same columns."
+    },
+    "2_ws_3": {
+        "raw_instructions": "1. Place eight ws objects on the diagonal from the top left corner to the bottom right corner. Each ws object has a green screw and a red washer.",
+        "cleaned_instructions": "Place eight ws objects on the diagonal from the top left corner to the bottom right corner. Each ws object has a green screw and a red washer."
+    },
+    "5_bnbns_1": {
+        "raw_instructions": "1. Place two bnbns objects in the first row, in column 1 and 5.\n2. Add two more bnbns objects in the 5th row, in the same columns.\nAll bnbns objects have a red nut with a yellow screw stacked on top, another nut in yellow, a blue vertical bridge, and a red horizontal bridge.",
+        "cleaned_instructions": "Place two bnbns objects in the first row, in column 1 and 5. Add two more bnbns objects in the 5th row, in the same columns. All bnbns objects have a red nut with a yellow screw stacked on top, another nut in yellow, a blue vertical bridge, and a red horizontal bridge."
+    },
+    "3_wnb_2": {
+        "raw_instructions": "1. Place 8 wnb objects in the first row. The bridge is red, the washer is green, and the nut is blue.\n2. Add 8 more wnb objects in the same colors in the 4th column.\n3. Fill the 7th row with wnb objects in the same colors as well.",
+        "cleaned_instructions": "Place 8 wnb objects in the first row. The bridge is red, the washer is green, and the nut is blue. Add 8 more wnb objects in the same colors in the 4th column. Fill the 7th row with wnb objects in the same colors as well."
+    },
+    "4_bnws_3": {
+        "raw_instructions": "1. Place two bnws objects in the 5th row, in column 1 and 5. The bridge and the washer are blue, while the screw and the nut are yellow.\n2. Add two more bnws objects in the first row, in the same columns as the other two objects. The colors are the same as before.",
+        "cleaned_instructions": "Place two bnws objects in the 5th row, in column 1 and 5. The bridge and the washer are blue, while the screw and the nut are yellow. Add two more bnws objects in the first row, in the same columns as the other two objects. The colors are the same as before."
+    },
+    "4_wnbs_1": {
+        "raw_instructions": "Position one wnbs object in each row for the columns 1, 4, and 7. The horizontal bridge is blue, the nut is green, and the screw and the washer are yellow.",
+        "cleaned_instructions": "Position one wnbs object in each row for the columns 1, 4, and 7. The horizontal bridge is blue, the nut is green, and the screw and the washer are yellow."
+    },
+    "4_nwbw_2": {
+        "raw_instructions": "Fill the first, 4th, and 7th row with nwbw objects. The nwbw objects include a yellow washer on top and another washer in blue, a red nut, and a green vertical bridge.",
+        "cleaned_instructions": "Fill the first, 4th, and 7th row with nwbw objects. The nwbw objects include a yellow washer on top and another washer in blue, a red nut, and a green vertical bridge."
+    }
+}
