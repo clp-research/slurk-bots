@@ -1,0 +1,513 @@
+[
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "meek-ocelot",
+            "Player_B": "flat-patio"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:57:24.910791",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nN \u25a2 \u25a2 \u25a2 N\nN N \u25a2 N N\nN \u25a2 N \u25a2 N\nN N \u25a2 N N\nN \u25a2 \u25a2 \u25a2 N\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:58:15.704527",
+                    "action": {
+                        "type": "clue",
+                        "content": "type two Ns in the first and last grid of the first row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T10:58:44.547248",
+                    "action": {
+                        "type": "guess",
+                        "content": "N N \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 N N"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:57:24.910791",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nN \u25a2 \u25a2 \u25a2 N\nN N \u25a2 N N\nN \u25a2 N \u25a2 N\nN N \u25a2 N N\nN \u25a2 \u25a2 \u25a2 N\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:00:02.302406",
+                    "action": {
+                        "type": "clue",
+                        "content": "Type 4 Ns in all the grids of the second row , exerpt the middle grid"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:00:57.282036",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN N \u25a2 N N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:57:24.910791",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nN \u25a2 \u25a2 \u25a2 N\nN N \u25a2 N N\nN \u25a2 N \u25a2 N\nN N \u25a2 N N\nN \u25a2 \u25a2 \u25a2 N\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:02:23.100056",
+                    "action": {
+                        "type": "clue",
+                        "content": "On the third row, Type Ns from the first grid skipping one grid after typing each N up until the last grid"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:03:38.054389",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 N \u25a2 N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:57:24.910791",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nN \u25a2 \u25a2 \u25a2 N\nN N \u25a2 N N\nN \u25a2 N \u25a2 N\nN N \u25a2 N N\nN \u25a2 \u25a2 \u25a2 N\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:04:20.786787",
+                    "action": {
+                        "type": "clue",
+                        "content": "4th row, repeat instruction number 2, type Ns in all the grids exerpt middle grid"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:04:57.390190",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN N \u25a2 N N\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:57:24.910791",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nN \u25a2 \u25a2 \u25a2 N\nN N \u25a2 N N\nN \u25a2 N \u25a2 N\nN N \u25a2 N N\nN \u25a2 \u25a2 \u25a2 N\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:05:44.864755",
+                    "action": {
+                        "type": "clue",
+                        "content": "last row, repeat instruction number 1, type N in the first and last grid"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:07:13.761734",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nN \u25a2 \u25a2 \u25a2 N"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T10:57:24.910791",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nN \u25a2 \u25a2 \u25a2 N\nN N \u25a2 N N\nN \u25a2 N \u25a2 N\nN N \u25a2 N N\nN \u25a2 \u25a2 \u25a2 N\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:07:28.930561",
+                    "action": {
+                        "type": "clue",
+                        "content": "DONE"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:07:29.918957",
+                    "action": {
+                        "type": "grid type",
+                        "content": "random"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "meek-ocelot",
+            "Player_B": "flat-patio"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:07:29.861305",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 H \u25a2 H\n\u25a2 \u25a2 \u25a2 \u25a2 H\n\u25a2 \u25a2 \u25a2 H \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:10:02.565668",
+                    "action": {
+                        "type": "clue",
+                        "content": "on the second row, type H in grid number 3 and 4\n3rd row, type H in last grid\n4th row, type H in grid 4"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:10:49.624707",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 H \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 H \u25a2\n\u25a2 \u25a2 \u25a2 H \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:07:29.861305",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 H \u25a2 H\n\u25a2 \u25a2 \u25a2 \u25a2 H\n\u25a2 \u25a2 \u25a2 H \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:10:55.782663",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:10:56.756948",
+                    "action": {
+                        "type": "grid type",
+                        "content": "compact"
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "players": {
+            "GM": "DrawingBot",
+            "Player_A": "meek-ocelot",
+            "Player_B": "flat-patio"
+        },
+        "turns": [
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:13:54.828990",
+                    "action": {
+                        "type": "clue",
+                        "content": "type T in the first square of the grid , first row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:14:15.250292",
+                    "action": {
+                        "type": "guess",
+                        "content": "T \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:14:38.712594",
+                    "action": {
+                        "type": "clue",
+                        "content": "type T in the last square of the first row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:15:29.171598",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 T\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:15:56.758231",
+                    "action": {
+                        "type": "clue",
+                        "content": "on the second row, type T in the first square"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:16:11.283271",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nT \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:16:35.297365",
+                    "action": {
+                        "type": "clue",
+                        "content": "second row again type T on second square"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:16:50.178678",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 T \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:17:30.703367",
+                    "action": {
+                        "type": "clue",
+                        "content": "on the same row, skip the third square and type T on the 4th"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:17:57.691062",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 T \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:18:09.056123",
+                    "action": {
+                        "type": "clue",
+                        "content": "same row , last square"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:18:25.637518",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 T\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:19:39.733063",
+                    "action": {
+                        "type": "clue",
+                        "content": "from the third row, type Ts on the first squares of the rows up until last row"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:22:09.070488",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nT \u25a2 \u25a2 \u25a2 \u25a2\nT \u25a2 \u25a2 \u25a2 \u25a2\nT \u25a2 \u25a2 \u25a2 \u25a2"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:22:28.386096",
+                    "action": {
+                        "type": "clue",
+                        "content": "do the same in the third and last rows"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:22:58.206318",
+                    "action": {
+                        "type": "guess",
+                        "content": "\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\n\u25a2 \u25a2 \u25a2 \u25a2 \u25a2\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T"
+                    }
+                }
+            ],
+            [
+                {
+                    "from": "GM",
+                    "to": "GM",
+                    "timestamp": "2024-03-19T11:10:56.699860",
+                    "action": {
+                        "type": "target grid",
+                        "content": "\nT \u25a2 \u25a2 \u25a2 T\nT T \u25a2 T T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\nT \u25a2 T \u25a2 T\n"
+                    }
+                },
+                {
+                    "from": null,
+                    "to": null,
+                    "timestamp": "2024-03-19T11:23:05.320049",
+                    "action": {
+                        "type": "clue",
+                        "content": "done"
+                    }
+                }
+            ]
+        ]
+    }
+]

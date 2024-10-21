@@ -1,0 +1,80 @@
+{
+  "title": "Our Nice Room",
+  "html": [
+    {
+      "layout-type": "div",
+      "class": "card",
+      "layout-content": [
+        {
+          "layout-type": "input",
+          "id": "input_box"
+        },
+        {
+          "layout-type": "input",
+          "id": "result_box"
+        },
+        {
+          "layout-type": "button",
+          "class": "button",
+          "role": "button",
+          "layout-content": "submit",
+          "id": "submit"
+        },
+        {
+          "layout-type": "hr",
+          "layout-content": "",
+          "style": "margin: 2px; background-color: #abb2b9; opacity: .50;"
+        },
+        {
+          "layout-type": "div",
+          "id": "text_to_modify",
+          "layout-content": "TEXT TO MODIFY"
+        }
+      ]
+    }
+  ],
+  "css": {
+    ".card": {
+      "position": "relative",
+      "display": "flex",
+      "flex-direction": "column",
+      "min-width": "0",
+      "background-color": "#fff",
+      "background-clip": "border-box",
+      "border": "1px solid rgba(0,0,0,.125)",
+      "border-radius": ".25rem",
+      "height": "100vh!important",
+      "margin": "0px 15px",
+      "padding": "20px"
+    },
+    ".button": {
+      "text-transform": "uppercase",
+      "font-size": "medium",
+      "border-radius": "5px",
+      "border": "none",
+      "box-shadow": "rgba(0,0,0,0.14902) 0 1px 1px 0,rgba(0,0,0,0.09804) 0 1px 2px 0",
+      "margin-top": "10px",
+      "outline": 0,
+      "background": "#00305E",
+      "width": "100%",
+      "color": "#FFFFFF",
+      "padding": "15px",
+      "cursor": "pointer"
+    },
+    ".button:hover" : {
+        "content": "''",
+        "background": "#818BAC"
+    }
+  },
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": [
+      "attribute-history",
+      "markdown-history"
+    ],
+    "typing-users": "typing-users",
+    "plain": ["testbot"]
+  }
+}

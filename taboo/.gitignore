@@ -5,3 +5,6 @@ taboo_all_quality_scores.png
 winning_clues.csv
 clues_human.csv
 taboo_performance_room_.png
+experiments.py
+utils.py
+logs/2.jsonl

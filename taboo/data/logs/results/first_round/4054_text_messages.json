@@ -1,20 +1,6 @@
 [
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "human-bourbon has joined the game."
-        },
-        "date_created": "2024-03-20T09:07:31.095803",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841851,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "Explainer": "user_id 5407, name human-bourbon",
             "GM": "TabooBot",
             "Guesser": "user_id 5411, name citron-funding"
@@ -29,76 +15,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "citron-funding has joined the game."
-        },
-        "date_created": "2024-03-20T09:07:31.418048",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841855,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": true,
-            "message": "Are you ready? <br><button class='message_button' onclick=\"confirm_ready('yes')\">YES</button> <button class='message_button' onclick=\"confirm_ready('no')\">NO</button>"
-        },
-        "date_created": "2024-03-20T09:07:31.597073",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841859,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Now, waiting for your partner to type 'ready'."
-        },
-        "date_created": "2024-03-20T09:07:42.212843",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841862,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "You have already typed 'ready'."
-        },
-        "date_created": "2024-03-20T09:08:05.483128",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841901,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Woo-Hoo! The game will begin now."
-        },
-        "date_created": "2024-03-20T09:08:25.118577",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841914,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "number": 1
         },
         "date_created": "2024-03-20T09:08:26.168707",
@@ -108,34 +24,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Let's start round 1 of 6"
-        },
-        "date_created": "2024-03-20T09:08:26.180042",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841918,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Wait a bit for the first hint about the word you need to guess"
-        },
-        "date_created": "2024-03-20T09:08:27.919666",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841927,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -160,20 +48,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Your task is to explain the word 'anymore'. You cannot use the following words: now, currently, today"
-        },
-        "date_created": "2024-03-20T09:08:28.068078",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4841932,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -201,20 +75,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "time"
-        },
-        "date_created": "2024-03-20T09:10:18.308114",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842179,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "clock",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -226,48 +86,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "clock"
-        },
-        "date_created": "2024-03-20T09:10:40.931958",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842194,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "GUESS 1 'clock' was false"
-        },
-        "date_created": "2024-03-20T09:10:41.383940",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842199,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Please provide a new description"
-        },
-        "date_created": "2024-03-20T09:10:41.886661",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842204,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -295,20 +113,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "any longer"
-        },
-        "date_created": "2024-03-20T09:11:16.508628",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842272,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "waiting",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -320,48 +124,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "waiting"
-        },
-        "date_created": "2024-03-20T09:12:04.043219",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842350,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "GUESS 2 'waiting' was false"
-        },
-        "date_created": "2024-03-20T09:12:04.498629",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842355,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Please provide a new description"
-        },
-        "date_created": "2024-03-20T09:12:05.000433",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842356,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -389,20 +151,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "opposite of less"
-        },
-        "date_created": "2024-03-20T09:13:41.803017",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842458,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "more",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -414,20 +162,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "more"
-        },
-        "date_created": "2024-03-20T09:13:53.281356",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842489,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -443,20 +177,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "3 guesses have been already used. You lost this round."
-        },
-        "date_created": "2024-03-20T09:13:53.790379",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842495,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "number": 2
         },
         "date_created": "2024-03-20T09:13:54.395139",
@@ -466,34 +186,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Let's start round 2 of 6"
-        },
-        "date_created": "2024-03-20T09:13:54.405397",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842498,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Wait a bit for the first hint about the word you need to guess"
-        },
-        "date_created": "2024-03-20T09:13:55.408509",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842499,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -518,20 +210,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Your task is to explain the word 'sear'. You cannot use the following words: char, dry, burn"
-        },
-        "date_created": "2024-03-20T09:13:55.526524",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842502,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -559,20 +237,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "burn or scortch"
-        },
-        "date_created": "2024-03-20T09:15:53.743782",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842684,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "The related word 'burn' (stem=burn)  is similar to the word 'burn' (stem=burn) and it was used in the clue. You both lose :("
         },
         "date_created": "2024-03-20T09:15:54.017276",
@@ -585,20 +249,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "The related word 'burn' (stem=burn)  is similar to the word 'burn' (stem=burn) and it was used in the clue. You both lose :("
-        },
-        "date_created": "2024-03-20T09:15:54.027779",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842688,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "number": 3
         },
         "date_created": "2024-03-20T09:15:54.634767",
@@ -608,34 +258,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Let's start round 3 of 6"
-        },
-        "date_created": "2024-03-20T09:15:54.645620",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842691,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Wait a bit for the first hint about the word you need to guess"
-        },
-        "date_created": "2024-03-20T09:15:55.648193",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842692,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -660,20 +282,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Your task is to explain the word 'array'. You cannot use the following words: cluster, grouping, attire"
-        },
-        "date_created": "2024-03-20T09:15:55.769394",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842695,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -701,20 +309,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "a range of"
-        },
-        "date_created": "2024-03-20T09:16:40.958943",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842743,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "number",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -726,48 +320,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "number"
-        },
-        "date_created": "2024-03-20T09:18:05.747323",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842864,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "GUESS 1 'number' was false"
-        },
-        "date_created": "2024-03-20T09:18:06.198295",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842869,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Please provide a new description"
-        },
-        "date_created": "2024-03-20T09:18:06.700409",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842870,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -795,20 +347,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "line-up"
-        },
-        "date_created": "2024-03-20T09:18:47.819549",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842915,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "offer",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -820,48 +358,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "offer"
-        },
-        "date_created": "2024-03-20T09:19:52.834874",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842963,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "GUESS 2 'offer' was false"
-        },
-        "date_created": "2024-03-20T09:19:53.286512",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842968,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Please provide a new description"
-        },
-        "date_created": "2024-03-20T09:19:53.787864",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842969,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -889,20 +385,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "a formation of"
-        },
-        "date_created": "2024-03-20T09:20:35.400204",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4842989,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "line",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -914,20 +396,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "line"
-        },
-        "date_created": "2024-03-20T09:20:43.629881",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843008,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -943,20 +411,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "3 guesses have been already used. You lost this round."
-        },
-        "date_created": "2024-03-20T09:20:44.134635",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843014,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "number": 4
         },
         "date_created": "2024-03-20T09:20:44.741075",
@@ -966,34 +420,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Let's start round 4 of 6"
-        },
-        "date_created": "2024-03-20T09:20:44.751618",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843017,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Wait a bit for the first hint about the word you need to guess"
-        },
-        "date_created": "2024-03-20T09:20:45.754144",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843018,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -1018,20 +444,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Your task is to explain the word 'obvious'. You cannot use the following words: apparent, evident, blatant"
-        },
-        "date_created": "2024-03-20T09:20:45.874788",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843021,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -1059,20 +471,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "opposite of unsure"
-        },
-        "date_created": "2024-03-20T09:21:59.802875",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843067,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "certain",
             "from": "GM impersonated as citron-funding, the guesser",
             "to": 5411
@@ -1084,48 +482,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "certain"
-        },
-        "date_created": "2024-03-20T09:23:02.580782",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843082,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "GUESS 1 'certain' was false"
-        },
-        "date_created": "2024-03-20T09:23:03.034530",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843087,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Please provide a new description"
-        },
-        "date_created": "2024-03-20T09:23:03.536658",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843088,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -1153,20 +509,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "self evident"
-        },
-        "date_created": "2024-03-20T09:24:19.401619",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843107,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "The related word 'evident' (stem=evid)  is similar to the word 'evident' (stem=evid) and it was used in the clue. You both lose :("
         },
         "date_created": "2024-03-20T09:24:19.675441",
@@ -1179,20 +521,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "The related word 'evident' (stem=evid)  is similar to the word 'evident' (stem=evid) and it was used in the clue. You both lose :("
-        },
-        "date_created": "2024-03-20T09:24:19.685549",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843111,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "number": 5
         },
         "date_created": "2024-03-20T09:24:20.291050",
@@ -1202,34 +530,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Let's start round 5 of 6"
-        },
-        "date_created": "2024-03-20T09:24:20.301991",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843114,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Wait a bit for the first hint about the word you need to guess"
-        },
-        "date_created": "2024-03-20T09:24:21.303732",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843115,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -1254,20 +554,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Your task is to explain the word 'seize'. You cannot use the following words: understand, arrest, grab"
-        },
-        "date_created": "2024-03-20T09:24:21.423690",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843118,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -1295,20 +581,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "to grab"
-        },
-        "date_created": "2024-03-20T09:24:36.866481",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843150,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "The related word 'grab' (stem=grab)  is similar to the word 'grab' (stem=grab) and it was used in the clue. You both lose :("
         },
         "date_created": "2024-03-20T09:24:37.140801",
@@ -1321,20 +593,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "The related word 'grab' (stem=grab)  is similar to the word 'grab' (stem=grab) and it was used in the clue. You both lose :("
-        },
-        "date_created": "2024-03-20T09:24:37.150965",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843154,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "number": 6
         },
         "date_created": "2024-03-20T09:24:37.755740",
@@ -1344,34 +602,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Let's start round 6 of 6"
-        },
-        "date_created": "2024-03-20T09:24:37.766216",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843157,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Wait a bit for the first hint about the word you need to guess"
-        },
-        "date_created": "2024-03-20T09:24:38.768759",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843158,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {
@@ -1396,20 +626,6 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "Your task is to explain the word 'provide'. You cannot use the following words: give, supply, furnish"
-        },
-        "date_created": "2024-03-20T09:24:38.889262",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843161,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
     },
     {
         "data": {},
@@ -1437,20 +653,6 @@
     },
     {
         "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "to give"
-        },
-        "date_created": "2024-03-20T09:24:50.546981",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843169,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
             "content": "The related word 'give' (stem=give)  is similar to the word 'give' (stem=give) and it was used in the clue. You both lose :("
         },
         "date_created": "2024-03-20T09:24:50.823281",
@@ -1460,75 +662,5 @@
         "receiver_id": null,
         "room_id": 4054,
         "user_id": null
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "The related word 'give' (stem=give)  is similar to the word 'give' (stem=give) and it was used in the clue. You both lose :("
-        },
-        "date_created": "2024-03-20T09:24:50.833926",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843173,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": true,
-            "message": "The experiment is over 🎉 🎉 thank you very much for your time!"
-        },
-        "date_created": "2024-03-20T09:24:51.394323",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843175,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": true,
-            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **1G68DX**</a>"
-        },
-        "date_created": "2024-03-20T09:24:51.414952",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843176,
-        "receiver_id": 5407,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": true,
-            "message": "<a style=\"color:Purple;\">Please remember to save your token before you close this browser window. Your token: **KXNO4N**</a>"
-        },
-        "date_created": "2024-03-20T09:24:51.471075",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843178,
-        "receiver_id": 5411,
-        "room_id": 4054,
-        "user_id": 5379
-    },
-    {
-        "data": {
-            "broadcast": false,
-            "html": false,
-            "message": "The room is closing, see you next time 👋"
-        },
-        "date_created": "2024-03-20T09:24:51.531163",
-        "date_modified": null,
-        "event": "text_message",
-        "id": 4843180,
-        "receiver_id": null,
-        "room_id": 4054,
-        "user_id": 5379
     }
 ]
