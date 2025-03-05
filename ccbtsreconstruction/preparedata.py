@@ -19,7 +19,7 @@ class Dataloader:
         self.boards, self.sorted_boards = self.load_instructions()
         self.legend_images = self.load_legend_images()
         self.legend_map = self.readjsonfile(f"{RELATED_LEGEND_PATH}/board_legend_info.json")
-        self.board_view_status = {}#self.load_image_viewing_status()
+        self.board_view_status = self.load_board_viewing_status()
         self.legend_info = self.get_legend_map()
         self.object_names = self.get_object_names()
 
@@ -48,6 +48,8 @@ class Dataloader:
         #logging.debug(f"sorted files are {sorted_files}")
         for annotfile in RELATED_INSTRUCTION_PATH.iterdir():
             if annotfile.is_file() and annotfile.exists() and annotfile.suffix in [".json"]:
+                if "board_viewing_status" in annotfile.stem:
+                    continue
                 boards[annotfile.stem] = self.readjsonfile(annotfile)
                 sorted_keys = sorted(boards[annotfile.stem].keys())
                 sorted_boards[annotfile.stem] = sorted_keys
@@ -82,18 +84,16 @@ class Dataloader:
                 logging.debug(f"Current board viewing status: {image_view}")
                 return image_view
         except FileNotFoundError:
-            logging.debug("board_viewing_status.json is not available, returning empty dict")
+            logging.debug("board_viewing_status.json is not available, creating a new one")
+            with open(f"{RELATED_INSTRUCTION_PATH}/board_viewing_status.json", "w") as file:
+                json.dump({}, file)
             return {}
         
     def get_target_board(self):
         board_info = {}
         legend_image_path = None
-        self.board_view_status = self.load_board_viewing_status()
-        if len(self.board_view_status) == len(self.boards):
-            logging.debug("All boards have been used.")
-            #self.used_images = []
-            return None, None
-        
+        #self.board_view_status = self.load_board_viewing_status()
+        #logging.debug(f"self.board_view_status = {self.board_view_status}")
         for board_file in self.boards:
             if "rb" in board_file:
                 continue
@@ -118,6 +118,7 @@ class Dataloader:
 
                 current_index += 1
                 self.save_progress(current_index, progress_file)
+                #logging.debug(f"self.board_view_status = {self.board_view_status}")
 
                 if "rb" in board_file:
                     # TODO: Add the legend image to the return
@@ -148,7 +149,7 @@ class Dataloader:
 
     def get_object_names(self):
         try:
-            with open(f"{RELATED_LEGEND_PATH}/object_names.json", "r") as file:
+            with open(f"{RELATED_LEGEND_PATH}/legend_names.json", "r") as file:
                 legend_info = json.load(file)
                 logging.debug(f"Loaded object names: {len(legend_info)}")
                 return legend_info
