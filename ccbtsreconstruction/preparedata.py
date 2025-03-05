@@ -54,7 +54,15 @@ class Dataloader:
                 sorted_keys = sorted(boards[annotfile.stem].keys())
                 sorted_boards[annotfile.stem] = sorted_keys
                 progress_file = f"{RELATED_INSTRUCTION_PATH}/{annotfile.stem}_progress.txt"
-                self.save_progress(0, progress_file)
+
+                # Check if the progress file exists, if not create one
+                if not os.path.exists(progress_file):
+                    self.save_progress(0, progress_file)
+                else:
+                    current_index = self.load_progress(progress_file)
+                    logging.debug(f"Loaded progress file: {progress_file} current_index:{current_index}")
+
+
 
         logging.debug(f"Loaded instructions: {len(boards)}, {boards.keys()}")
         return boards, sorted_boards
