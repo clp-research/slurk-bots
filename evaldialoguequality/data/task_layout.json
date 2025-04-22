@@ -1,0 +1,107 @@
+{
+  "title": "Evaluate Dialogue Quality",
+  "html": [
+    {
+      "layout-type": "div",
+      "class": "dialogue-container",
+      "layout-content": [
+        {
+          "layout-type": "div",
+          "class": "dialogue-box",
+          "layout-content": [
+            {
+              "layout-type": "textarea",
+              "id": "dialogue-1",
+              "placeholder": "Dialogue-1",
+              "rows": 50,
+              "cols": 50,
+              "wrap": "soft"
+            },
+            {
+              "layout-type": "input",
+              "type": "radio",
+              "name": "dialogue-choice",
+              "value": "dialogue-1"
+            }
+          ]
+        },
+        {
+          "layout-type": "div",
+          "class": "dialogue-box",
+          "layout-content": [
+            {
+              "layout-type": "textarea",
+              "id": "dialogue-2",
+              "placeholder": "Dialogue-2",
+              "rows": 50,
+              "cols": 50,
+              "wrap": "soft"
+            },
+            {
+              "layout-type": "input",
+              "type": "radio",
+              "name": "dialogue-choice",
+              "value": "dialogue-2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "layout-type": "div",
+      "layout-content": [
+          {
+            "layout-type": "button",
+            "class": "button",
+            "role": "button",
+            "id": "button-next",
+            "layout-content": "Next",
+            "style": "background-color: #3361ff;color:#ffffff"
+          }
+      ]
+    }
+  ],
+
+  "css": {
+    ".dialogue-container": {
+      "display": "flex",
+      "gap": "50px",
+      "margin-top": "30px",
+      "margin-left": "20px"
+    },
+    ".dialogue-box": {
+      "display": "flex",
+      "flex-direction": "column",
+      "align-items": "center"
+    },
+    "#dialogue-1, #dialogue-2": {
+      "width": "450px",
+      "height": "700px"
+    },
+    "input[type=radio]": {
+      "margin-top": "10px",
+      "transform": "scale(1.5)"
+    },
+
+    "#button-next": {
+      "width": "70px",
+      "height": "40px",
+      "margin-top": "30px",
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto"
+    }
+  },
+
+
+  "scripts": {
+    "incoming-text": "markdown",
+    "incoming-image": "display-image",
+    "submit-message": "send-message",
+    "print-history": "markdown-history",
+    "plain": [
+      "view"
+    ]
+  },
+  "show_latency": false
+}

@@ -1,0 +1,8 @@
+{
+  "api": true,
+  "send_message": true,
+  "send_command": true,  
+  "send_html_message": true,
+  "send_image": true,
+  "send_privately": true
+}
