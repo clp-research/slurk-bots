@@ -23,7 +23,8 @@ class Dataloader:
 
     def loaddialogues(self):
         try:
-            with open(f"{ROOT}/data/eval_dialogues.json", "r") as file:
+            #with open(f"{ROOT}/data/eval_dialogues.json", "r") as file:
+            with open(f"{ROOT}/data/eval_dialogues_llama.json", "r") as file:
                 eval_data = json.load(file)
                 logging.debug(f"Loaded Dialogues: {len(eval_data)}")
                 return eval_data
@@ -41,7 +42,7 @@ class Dataloader:
     def load_progress(self) :
         # Load progress
         try:
-            with open(f"{ROOT}/data/eval_progress.json", "r") as file:        
+            with open(f"{ROOT}/data/eval_progress.json", "r") as file:
                 completed_ids = set(json.load(file))
         except Exception as error:
             logging.debug(f"eval_progress.json is not available {error}, returning empty set")
