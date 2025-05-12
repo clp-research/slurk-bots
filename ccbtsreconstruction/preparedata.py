@@ -103,7 +103,7 @@ class Dataloader:
         #self.board_view_status = self.load_board_viewing_status()
         #logging.debug(f"self.board_view_status = {self.board_view_status}")
         for board_file in self.boards:
-            if "rb" in board_file:
+            if "sb" in board_file:
                 continue
 
             progress_file = f"{RELATED_INSTRUCTION_PATH}/{board_file}_progress.txt"
